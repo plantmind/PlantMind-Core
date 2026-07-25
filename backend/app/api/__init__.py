@@ -1,0 +1,3 @@
+"""
+PlantMind API Package
+"""
