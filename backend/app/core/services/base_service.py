@@ -9,6 +9,8 @@ from __future__ import annotations
 
 from abc import ABC, abstractmethod
 
+from app.core.services.service_state import ServiceState
+
 
 class BaseService(ABC):
     """
@@ -18,7 +20,7 @@ class BaseService(ABC):
     def __init__(self, name: str, version: str = "1.0"):
         self.name = name
         self.version = version
-        self.ready = False
+        self.state = ServiceState.CREATED
 
     @abstractmethod
     def initialize(self) -> None:
@@ -48,5 +50,5 @@ class BaseService(ABC):
         return {
             "name": self.name,
             "version": self.version,
-            "ready": self.ready,
+            "state": self.state.value,
         }
