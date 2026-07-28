@@ -1,9 +1,13 @@
+"""
+PlantMind Platform Schemas
+"""
+
 from pydantic import BaseModel
 
 
 class PlatformInfo(BaseModel):
     """
-    PlantMind Platform Identity
+    Platform identity information.
     """
 
     name: str
@@ -14,7 +18,7 @@ class PlatformInfo(BaseModel):
 
 class RuntimeInfo(BaseModel):
     """
-    Current runtime status
+    Runtime information.
     """
 
     status: str
@@ -28,3 +32,15 @@ class PlatformStatus(BaseModel):
 
     platform: PlatformInfo
     runtime: RuntimeInfo
+
+
+class RuntimeStatus(BaseModel):
+    """
+    Runtime capability status.
+    """
+
+    platform: str
+    version: str
+    environment: str
+    deployment: str
+    ready: bool
