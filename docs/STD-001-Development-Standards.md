@@ -60,3 +60,5 @@ The following rules shall never be violated.
 9. Every new feature must have a clear architectural purpose.
 
 10. If a file has no reason to exist, it should not exist.
+
+11. Every architectural, engineering, and implementation change must be verifiable.

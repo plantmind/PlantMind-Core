@@ -1,97 +1,147 @@
-# CORE-002 — Core Services Architecture
+# CORE-002 — Core Services Standard
 
-## Status
-
-Draft
-
----
-
-## Purpose
-
-Define the architectural foundation for all platform-wide core services.
-
-Core Services provide shared capabilities used across the entire PlantMind platform.
+| Property | Value |
+|----------|-------|
+| Status | Approved |
+| Version | 2.0 |
+| Owner | Enterprise Architecture |
+| Applies To | PlantMind Core Services |
+| Last Updated | 2026-07 |
 
 ---
 
-## Design Principles
+# Authority
+
+This document is normative.
+
+Every component within the scope of this standard SHALL comply with the requirements defined in this document unless explicitly superseded by an approved Architecture Decision Record (ADR).
+
+---
+
+# Purpose
+
+This standard defines the architectural principles, responsibilities, lifecycle, dependency rules, and governance requirements for all Core Services within the PlantMind platform.
+
+Core Services provide reusable platform capabilities that support every layer of the system.
+
+---
+
+# Scope
+
+This standard applies to every shared platform service, including but not limited to:
+
+- Configuration
+- Identity
+- Runtime
+- Logging
+- Audit
+- Metrics
+- Health Monitoring
+- Licensing
+- Feature Flags
+- Shared Platform Utilities
+
+---
+
+# Definition of a Core Service
+
+A Core Service is a reusable platform component that provides shared functionality to multiple parts of the system without containing business-specific or AI-specific logic.
+
+Core Services exist to eliminate duplication and provide a stable platform foundation.
+
+---
+
+# Architectural Philosophy
+
+Core Services SHALL remain:
+
+- Independent
+- Reusable
+- Stateless whenever practical
+- Deterministic
+- Lightweight
+- Technology-neutral
+- Enterprise-ready
+
+Business intelligence SHALL never reside inside Core Services.
+
+---
+
+# Core Design Principles
+
+Every Core Service SHALL satisfy:
 
 - Single Responsibility
+- Separation of Concerns
 - Loose Coupling
 - High Cohesion
-- Stateless by Default
 - Explicit Dependencies
-- Enterprise Ready
-- Single Source of Truth
+- Predictable Behavior
+- Testability
+- Observability
+- Extensibility
+- Security by Design
 
 ---
 
-## Core Service Responsibilities
+# Responsibilities
 
-A Core Service may provide one of the following capabilities:
+Core Services MAY provide:
 
-- Platform Identity
+- Platform Configuration
+- Identity Management
 - Runtime Information
-- Configuration
 - Health Monitoring
-- License Management
-- Audit Logging
 - Metrics Collection
-- Feature Flags
+- Audit Logging
+- License Management
+- Feature Flag Management
+- Shared Utility Functions
+
+Core Services SHALL NOT contain business workflows or domain intelligence.
 
 ---
 
-## Rules
+# Dependency Rules
 
-1. Core Services must not depend on AI Agents.
+Core Services MAY depend on:
 
-2. Core Services must not depend on Business Engines.
+- Shared Models
+- Value Objects
+- Infrastructure Components
+- Standard Libraries
 
-3. Core Services may depend only on Infrastructure components when necessary.
+Core Services SHALL NOT depend on:
 
-4. Core Services expose reusable functionality to the rest of the platform.
-
-5. Every Core Service must have a single well-defined responsibility.
-
----
-
-## Dependency Direction
-
-External Systems
-
-↓
-
-Infrastructure
-
-↓
-
-Core Services
-
-↓
-
-Business Services
-
-↓
-
-AI Agents
+- Business Services
+- Intelligence Engines
+- AI Agents
+- Workflows
+- Domain Implementations
 
 ---
 
-## Future Services
+# Architectural Position
 
-- Identity Service
-- Configuration Service
-- Runtime Service
-- Health Service
-- Metrics Service
-- Audit Service
-- License Service
+Core Services provide shared platform capabilities and SHALL NOT form an additional layer within the primary architectural dependency chain defined by ARCH-001.
+
+Core Services MAY be consumed through approved interfaces by architectural components that require platform-wide capabilities.
+
+Core Services SHALL NOT:
+
+- bypass architectural layer boundaries;
+- introduce upward dependencies;
+- depend on Intelligence Engines or AI Agents;
+- provide engineering reasoning;
+- communicate with external systems except through approved Infrastructure abstractions.
+
+ARCH-001 remains the authoritative source for platform layer order and dependency direction.
 
 ---
 
-## Service Lifecycle
+# Service Lifecycle
 
-Every Core Service follows the same lifecycle:
+Every Core Service SHALL follow the lifecycle below:
 
 Create
 
@@ -109,12 +159,87 @@ Ready
 
 ↓
 
+Operational
+
+↓
+
 Shutdown
 
-Core Services must expose a predictable lifecycle that can be managed by the Bootstrap Manager.
+Lifecycle behavior SHALL remain predictable and centrally managed.
 
 ---
 
-## Architecture Motto
+# Design Constraints
 
-> Build once. Reuse everywhere.
+Every Core Service SHALL:
+
+- expose a well-defined interface;
+- avoid global mutable state;
+- support dependency injection;
+- be independently testable;
+- produce structured logs;
+- expose operational metrics;
+- fail predictably.
+
+---
+
+# Security Requirements
+
+Core Services SHALL:
+
+- validate inputs;
+- protect sensitive information;
+- support auditability;
+- follow least-privilege principles;
+- avoid exposing internal implementation details.
+
+---
+
+# Observability
+
+Each Core Service SHALL expose:
+
+- Health Status
+- Metrics
+- Structured Logs
+- Version Information
+- Startup Status
+- Failure Information
+
+---
+
+# Change Management
+
+Any architectural modification affecting a Core Service SHALL require engineering review.
+
+Breaking changes SHALL follow approved versioning policies.
+
+---
+
+# Compliance Checklist
+
+A Core Service is compliant when:
+
+- Architecture reviewed
+- Responsibility clearly defined
+- Dependencies validated
+- Security reviewed
+- Lifecycle implemented
+- Metrics available
+- Logging implemented
+- Documentation completed
+- Tests available
+
+---
+
+# Definition of Done
+
+A Core Service is considered complete when:
+
+- It satisfies this standard.
+- All mandatory reviews have passed.
+- Documentation is complete.
+- Required tests have passed.
+- Engineering approval has been granted.
+
+---

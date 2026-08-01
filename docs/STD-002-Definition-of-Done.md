@@ -37,6 +37,7 @@ Every completed Sprint must satisfy the following requirements.
 
 - Feature has been executed successfully.
 - Runtime behavior has been verified.
+- Verification evidence has been documented.
 
 ### Quality
 

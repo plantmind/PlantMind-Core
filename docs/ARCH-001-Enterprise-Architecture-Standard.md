@@ -1,23 +1,26 @@
 # ARCH-001 — Enterprise Architecture Standard
 
-| Field | Value |
-|-------|-------|
-| Document ID | ARCH-001 |
-| Project | PlantMind |
-| Version | 1.0 |
-| Status | Draft |
-| Owner | Chief Software Architect |
-| Classification | Enterprise Architecture |
+|| Property | Value |
+|----------|-------|
+| Status | Approved |
+| Version | 2.0 |
+| Owner | Enterprise Architecture |
+| Applies To | Entire PlantMind Platform |
+| Last Updated | 2026-07 |
 
----
+# Authority
+
+This document is normative.
+
+Every component within the scope of this standard SHALL comply with the requirements defined in this document unless explicitly superseded by an approved Architecture Decision Record (ADR).
 
 # Purpose
 
-This document defines the official enterprise software architecture standard for PlantMind.
+This document defines the official enterprise architecture standard for PlantMind.
 
-It establishes the architectural principles, layer responsibilities, dependency rules, engineering constraints, and long-term design philosophy that govern the entire platform.
+It establishes the architectural principles, architectural layers, dependency rules, governance model, engineering constraints, and long-term design philosophy governing the entire platform.
 
-Every software component, AI capability, service, module, workflow, and future extension must comply with this standard unless superseded by a newer approved architecture decision.
+Every software component, intelligence engine, AI capability, service, workflow, module, integration, and future architectural extension SHALL comply with this standard unless superseded by an approved Architecture Decision Record (ADR).
 
 ---
 
@@ -25,165 +28,302 @@ Every software component, AI capability, service, module, workflow, and future e
 
 PlantMind is an Enterprise Industrial Intelligence Platform.
 
-Its purpose is to transform industrial data into trusted operational intelligence through structured knowledge, enterprise-grade software architecture, and artificial intelligence.
+Its mission is to transform industrial data into trusted engineering intelligence through structured knowledge, enterprise software architecture, and artificial intelligence.
 
-PlantMind is designed to remain maintainable, scalable, secure, explainable, and extensible throughout its entire lifecycle.
+Artificial intelligence is an enabling capability.
 
----
+Engineering intelligence is the product.
 
-# Engineering Philosophy
-
-The architecture always has priority over implementation.
-
-Features are temporary.
-
-Architecture is permanent.
-
-Engineering decisions must always favor long-term maintainability over short-term implementation speed.
-
-Every component must have one clear responsibility.
-
-Every dependency must be intentional.
-
-Every architectural decision must have a documented engineering justification.
-
-Documentation is considered part of the implementation.
+The architecture is designed to remain maintainable, scalable, secure, explainable, verifiable, and extensible throughout its entire lifecycle.
 
 ---
 
 # Architecture Motto
 
-> From Industrial Data to Trusted Operational Decisions.
+> From Industrial Data to Trusted Engineering Intelligence.
 
----# Architecture Layers
+---
+
+# Architectural Principles
+
+## Principle 1
+
+Architecture is permanent.
+
+### Implication
+
+Architectural decisions are expected to outlive implementation technologies, programming languages, frameworks, and individual software components.
+
+---
+
+## Principle 2
+
+Engineering decisions SHALL always favor long-term maintainability over short-term implementation speed.
+
+### Implication
+
+Temporary implementation gains shall never compromise the long-term evolution of the platform.
+
+---
+
+## Principle 3
+
+Every architectural component SHALL own one clear responsibility.
+
+### Implication
+
+Responsibilities shall remain cohesive, explicit, independently maintainable, and independently testable.
+
+---
+
+## Principle 4
+
+Every dependency SHALL be intentional.
+
+### Implication
+
+Dependencies shall be explicitly justified and aligned with the approved architectural model.
+
+---
+
+## Principle 5
+
+Every architectural decision SHALL have documented engineering justification.
+
+### Implication
+
+Significant design decisions shall be traceable through Architecture Decision Records (ADR).
+
+---
+
+## Principle 6
+
+Documentation is part of the implementation.
+
+### Implication
+
+No architectural capability is considered complete until its architecture, behavior, and operational intent have been documented.
+
+---
+
+## Principle 7
+
+Architecture SHALL remain verifiable.
+
+### Implication
+
+Every architectural decision shall be capable of engineering verification through documentation, implementation, or testing.
+
+---
+
+## Principle 8
+
+Human authority SHALL always remain above system intelligence.
+
+### Implication
+
+PlantMind supports engineering decisions.
+
+PlantMind never replaces authorized engineering authority.
+
+---
+
+# Engineering Philosophy
+
+Architecture governs implementation.
+
+Implementation never governs architecture.
+
+Engineering intelligence is produced through structured reasoning, not isolated algorithms.
+
+Long-term architectural integrity always has priority over implementation convenience.
+
+---
+
+# Architecture Layers
 
 PlantMind is organized into six architectural layers.
 
-Each layer has one well-defined responsibility.
+Each layer owns one architectural responsibility.
 
-A layer may depend only on the layer directly beneath it unless an approved Architecture Decision Record (ADR) explicitly states otherwise.
+Each layer may communicate only with the layer directly beneath it unless explicitly authorized through an approved Architecture Decision Record (ADR).
 
 ---
 
 ## Layer 1 — Presentation Layer
 
-Responsibilities
+### Responsibilities
 
-- REST API
-- Future Web Interface
+- REST APIs
+- Future Web Applications
 - CLI
 - External Consumers
+- Authentication Entry Points
 
-This layer receives requests and returns responses.
+### Responsibilities Summary
 
-It contains no business intelligence.
+Receives requests.
+
+Returns responses.
+
+Contains no engineering intelligence.
 
 ---
 
 ## Layer 2 — AI Agent Layer
 
-Responsibilities
+### Responsibilities
 
 - Task orchestration
-- User intent interpretation
 - Workflow coordination
+- Intent interpretation
 - Multi-engine collaboration
+- Conversation management
 
-Agents coordinate work.
+### Responsibilities Summary
 
-Agents do not implement business intelligence.
+Agents coordinate intelligence.
+
+Agents never perform engineering reasoning.
+
+Agents never own engineering knowledge.
+
+Agents never access infrastructure directly.
 
 ---
 
-## Layer 3 — Enterprise Business Engines
+## Layer 3 — Enterprise Intelligence Engine Layer
 
-Responsibilities
+### Responsibilities
 
-- Decision making
-- Root Cause Analysis
-- Risk Assessment
+#### Intelligence Domains
+
 - Operational Intelligence
-- Workflow Execution
-- Recommendation Logic
+- Decision Intelligence
+- Risk Intelligence
+- Root Cause Intelligence
+- Learning Intelligence
 
-Business intelligence belongs here.
+#### Core Capabilities
+
+- Engineering Reasoning
+- Engineering Recommendation Generation
+
+### Architectural Principles
+
+Each Intelligence Engine SHALL answer exactly one engineering question.
+
+Each Intelligence Engine SHALL own exactly one engineering responsibility.
+
+Each Intelligence Engine SHALL expose one approved output contract.
+
+Each Intelligence Engine SHALL remain independently verifiable.
+
+### Responsibilities Summary
+
+Engineering intelligence belongs exclusively to this layer.
+
+This layer transforms evidence into engineering intelligence.
+
+This layer never communicates directly with infrastructure.
 
 ---
 
 ## Layer 4 — Knowledge Layer
 
-Responsibilities
+### Responsibilities
 
 - Knowledge Graph
 - Semantic Search
-- Document Parsing
 - Knowledge Retrieval
+- Document Parsing
+- Context Construction
 - Relationship Management
 
-Knowledge is owned by this layer.
+### Responsibilities Summary
 
-This layer does not make business decisions.
+Knowledge belongs exclusively to this layer.
+
+Knowledge supports intelligence.
+
+Knowledge never performs engineering reasoning.
+
+Knowledge never communicates directly with external systems.
 
 ---
 
 ## Layer 5 — Infrastructure Layer
 
-Responsibilities
+### Responsibilities
 
-- PI Connector
+- PI System Connectors
 - Database Connectors
-- External Integrations
+- OPC UA Connectors
+- CMMS Integration
 - File Access
 - Authentication Providers
+- External Service Integration
 
-Infrastructure communicates with external systems only.
+### Responsibilities Summary
+
+Infrastructure communicates with external technologies.
+
+Infrastructure never performs engineering reasoning.
+
+Infrastructure never owns engineering knowledge.
 
 ---
 
 ## Layer 6 — External Systems
 
-Examples
+### Examples
 
 - PI System
 - Neo4j
 - PostgreSQL
 - OPC UA
-- CMMS
 - SAP
+- CMMS
 - Document Storage
+- Enterprise Identity Providers
 
-These systems remain independent from PlantMind.
+### Responsibilities Summary
+
+External systems remain independent from PlantMind.
+
+PlantMind depends on external systems.
+
+External systems never depend on PlantMind.
+
 ---
 
 # Dependency Rules
 
-The PlantMind architecture follows a strict top-down dependency model.
+PlantMind follows a strict top-down dependency model.
 
-Each layer may communicate only with the layer directly beneath it unless an approved Architecture Decision Record (ADR) explicitly permits an exception.
+Every layer may communicate only with the layer directly beneath it unless an approved Architecture Decision Record explicitly authorizes an exception.
 
-Violating these dependency rules introduces architectural coupling and reduces long-term maintainability.
+Violating these rules introduces architectural coupling, increases implementation complexity, and reduces long-term maintainability.
 
 ---
 
 ## DEP-001 — Presentation Layer
 
-The Presentation Layer may communicate only with the AI Agent Layer.
+### Allowed
 
-Allowed
+Presentation → AI Agents
 
-Presentation → Agents
+### Not Allowed
 
-Not Allowed
-
-Presentation → Engines
+Presentation → Intelligence Engines
 
 Presentation → Knowledge
 
-Presentation → Connectors
+Presentation → Infrastructure
 
-Presentation → Databases
+Presentation → External Systems
 
-Reason
+### Reason
 
 The Presentation Layer is responsible only for receiving requests and returning responses.
 
@@ -191,108 +331,245 @@ The Presentation Layer is responsible only for receiving requests and returning 
 
 ## DEP-002 — AI Agent Layer
 
-The AI Agent Layer may communicate only with the Enterprise Business Engine Layer.
+### Allowed
 
-Allowed
+AI Agents → Intelligence Engines
 
-Agents → Engines
+### Not Allowed
 
-Not Allowed
+AI Agents → Knowledge
 
-Agents → Knowledge
+AI Agents → Infrastructure
 
-Agents → Connectors
+AI Agents → External Systems
 
-Agents → Databases
+### Reason
 
-Reason
+AI Agents orchestrate engineering workflows.
 
-Agents orchestrate workflows but never access infrastructure directly.
+They never bypass architectural boundaries.
 
----
+## DEP-003 — Enterprise Intelligence Engine Layer
 
-## DEP-003 — Enterprise Business Engines
+### Allowed
 
-Business Engines may communicate with the Knowledge Layer.
+Enterprise Intelligence Engines → Knowledge Layer
 
-Allowed
+### Not Allowed
 
-Engines → Knowledge
+Enterprise Intelligence Engines → Infrastructure
 
-Not Allowed
+Enterprise Intelligence Engines → External Systems
 
-Engines → External Systems
+### Reason
 
-Reason
+Engineering intelligence depends on trusted knowledge rather than implementation technologies.
 
-Business logic depends on knowledge rather than infrastructure.
+Intelligence Engines remain independent from infrastructure to preserve architectural stability, portability, and long-term maintainability.
 
 ---
 
 ## DEP-004 — Knowledge Layer
 
-The Knowledge Layer may communicate with Infrastructure Connectors.
+### Allowed
 
-Allowed
+Knowledge Layer → Infrastructure Layer
 
-Knowledge → Connectors
+### Not Allowed
 
-Not Allowed
+Knowledge Layer → External Systems
 
-Knowledge → External Systems
+### Reason
 
-Reason
+Knowledge retrieval depends on infrastructure abstractions rather than external technologies.
 
-Knowledge retrieval must remain independent of implementation details.
+This separation isolates knowledge management from implementation details.
 
 ---
 
 ## DEP-005 — Infrastructure Layer
 
-Infrastructure Connectors may communicate only with External Systems.
+### Allowed
 
-Allowed
+Infrastructure Layer → External Systems
 
-Connectors → External Systems
+### Not Allowed
 
-Reason
+Infrastructure Layer → Presentation Layer
 
-Infrastructure acts as the gateway between PlantMind and external technologies.
+Infrastructure Layer → AI Agents
+
+Infrastructure Layer → Intelligence Engines
+
+### Reason
+
+Infrastructure serves exclusively as the gateway between PlantMind and external technologies.
+
+Infrastructure never owns engineering logic.
 
 ---
 
-## Architectural Flow
+# Architectural Flow
 
-Presentation
-
-↓
-
-AI Agents
-
-↓
-
-Enterprise Business Engines
-
-↓
-
+```
+Presentation Layer
+        │
+        ▼
+AI Agent Layer
+        │
+        ▼
+Enterprise Intelligence Engine Layer
+        │
+        ▼
 Knowledge Layer
-
-↓
-
-Infrastructure Connectors
-
-↓
-
+        │
+        ▼
+Infrastructure Layer
+        │
+        ▼
 External Systems
+```
+
+Any dependency outside this architectural flow SHALL require an approved Architecture Decision Record (ADR) before implementation.
 
 ---
 
-Any dependency outside this chain requires an Architecture Decision Record (ADR) before implementation.
+# Golden Rules
 
-## Golden Rule
+## Rule 1
 
-A lower layer must never know that an upper layer exists.
+A lower architectural layer SHALL never know that an upper layer exists.
 
-Every layer is responsible only for the layer directly beneath it.
+---
 
-This principle preserves loose coupling, architectural stability, long-term maintainability, and enables the independent evolution of each architectural layer.
+## Rule 2
+
+Every layer SHALL depend only on the layer directly beneath it unless explicitly authorized by an approved ADR.
+
+---
+
+## Rule 3
+
+Every Intelligence Engine SHALL own exactly one engineering responsibility.
+
+---
+
+## Rule 4
+
+Every Intelligence Engine SHALL answer exactly one engineering question.
+
+---
+
+## Rule 5
+
+Engineering intelligence SHALL always be evidence-driven.
+
+Reasoning without evidence is not engineering intelligence.
+
+---
+
+## Rule 6
+
+Every engineering conclusion SHALL remain explainable and traceable.
+
+---
+
+## Rule 7
+
+Human authority SHALL always remain above system intelligence.
+
+PlantMind supports engineering decisions.
+
+PlantMind never replaces authorized engineering authority.
+
+---
+
+These principles preserve loose coupling, architectural stability, explainability, maintainability, verifiability, and long-term evolution across the entire platform.
+
+---
+
+# Architecture Governance
+
+The Enterprise Architecture Standard is the highest technical authority within PlantMind.
+
+Every architectural decision SHALL comply with this document unless an approved Architecture Decision Record explicitly authorizes an exception.
+
+---
+
+## Governance Rules
+
+- Architectural changes SHALL require documented engineering justification.
+- Architectural exceptions SHALL require an approved ADR.
+- New architectural layers SHALL not be introduced without revising this standard.
+- Intelligence Engines SHALL comply with the architectural dependency model.
+- Architectural reviews SHALL be completed before major implementation milestones.
+- This document SHALL evolve through controlled revisions while preserving architectural consistency.
+
+---
+
+# Change Control
+
+Every modification to this document SHALL:
+
+1. Be technically justified.
+2. Be architecturally reviewed.
+3. Preserve the integrity of the architectural model.
+4. Be traceable through documented version history.
+5. Maintain backward architectural consistency whenever reasonably possible.
+
+---
+
+# Architecture Compliance
+
+Every PlantMind component SHALL demonstrate compliance with the approved enterprise architecture.
+
+Compliance includes, but is not limited to:
+
+- ARCH-001 — Enterprise Architecture Standard
+- ARCH-002 — Engine Design Pattern
+- ARCH-003 — Contract Design Pattern
+- CORE-001 — Foundation Certification
+- CORE-002 — Core Services Architecture
+- CORE-003 — Dependency Management Standard
+- INTEL-001 — Engineering Intelligence Principles
+
+Compliance SHALL also include:
+
+- Layer responsibility
+- Dependency model
+- Architectural principles
+- Governance rules
+- Documentation requirements
+- Verifiability
+- Explainability
+- Human authority
+
+Components that violate these requirements SHALL be considered architecturally non-compliant.
+
+---
+
+# Definition of Architectural Success
+
+The PlantMind architecture is considered successful when:
+
+- Architectural responsibilities remain clearly separated.
+- Intelligence Engines remain independently evolvable.
+- Dependencies remain intentional and minimal.
+- Engineering intelligence remains explainable.
+- Engineering conclusions remain traceable.
+- Human authority is preserved.
+- Architectural integrity is maintained throughout the evolution of the platform.
+
+---
+
+# Architecture Philosophy
+
+Industrial data becomes trusted knowledge.
+
+Trusted knowledge becomes engineering intelligence.
+
+Engineering intelligence supports engineering recommendations.
+
+Engineering recommendations support human decisions.
+
+Architecture makes this transformation sustainable.
