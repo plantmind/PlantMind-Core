@@ -7,7 +7,6 @@ from app.services.reasoning.explanation_builder import ExplanationBuilder
 from app.services.reasoning.pipeline import ReasoningPipeline
 from app.services.reasoning.report import ReasoningReport
 from app.services.reasoning.report_builder import ReportBuilder
-from app.services.reasoning.result import ReasoningResult
 from app.services.reasoning.trace import ReasoningTrace, TraceStep
 
 
@@ -23,23 +22,7 @@ class ReportGenerator:
         self,
         observations: tuple[Observation, ...],
     ) -> ReasoningReport:
-        recommendation = self._pipeline.run(observations)
-
-        decision = recommendation.decision
-        judgment = decision.judgment
-        context = judgment.context
-
-        risk = self._pipeline._risk_builder.build(context)
-        conclusion = self._pipeline._conclusion_builder.build(judgment)
-
-        result = ReasoningResult(
-            context=context,
-            risk=risk,
-            judgment=judgment,
-            conclusion=conclusion,
-            decision=decision,
-            recommendation=recommendation,
-        )
+        result = self._pipeline.run_result(observations)
 
         trace = ReasoningTrace(
             result=result,
