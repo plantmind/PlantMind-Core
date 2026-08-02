@@ -1,4 +1,4 @@
-"""Build engineering risk assessments from engineering context."""
+"""Build baseline engineering risk assessments from engineering context."""
 
 from __future__ import annotations
 
@@ -11,10 +11,15 @@ from app.domain.risk_assessment import (
 
 class RiskBuilder:
     """
-    Initial engineering risk evaluation.
+    Non-production baseline risk evaluator.
 
-    This is the baseline implementation. Future versions will use
-    alarms, PI trends, maintenance history and engineering rules.
+    This implementation estimates risk only from the number of evidence
+    items. It does not yet evaluate evidence severity, alarm priority,
+    process limits, PI trends, maintenance history, procedures, safeguards,
+    or equipment-specific engineering rules.
+
+    Its output is intended for development and pipeline validation only.
+    It must not be treated as a final industrial risk assessment.
     """
 
     def build(
@@ -40,7 +45,8 @@ class RiskBuilder:
             level=level,
             score=score,
             rationale=(
-                f"Baseline assessment generated from "
-                f"{len(context.evidence)} evidence item(s)."
+                "Development baseline only: assessment generated from "
+                f"{len(context.evidence)} evidence item(s); evidence "
+                "severity and engineering rules were not evaluated."
             ),
         )
