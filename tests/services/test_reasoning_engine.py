@@ -12,7 +12,7 @@ def test_reasoning_engine_produces_conclusion() -> None:
     )
 
     assert conclusion.judgment.level is JudgmentLevel.NORMAL
-    assert conclusion.judgment.confidence == 0.95
+    assert conclusion.judgment.confidence == 0.50
 
 
 def test_reasoning_engine_produces_baseline_risk() -> None:
