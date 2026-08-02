@@ -4,6 +4,8 @@ from pydantic_settings import BaseSettings
 class Settings(BaseSettings):
     APP_NAME: str = "PlantMind"
     VERSION: str = "1.0.0"
+    ENVIRONMENT: str = "Development"
+    DEPLOYMENT_MODE: str = "On-Premise"
 
     DATABASE_URL: str = "postgresql://plantmind:password@localhost/plantmind"
     NEO4J_URI: str = "bolt://localhost:7687"

@@ -9,7 +9,7 @@ from __future__ import annotations
 
 from typing import Dict
 
-from app.core.services import BaseService
+from app.core.services.base_service import BaseService
 
 
 class ServiceRegistry:
@@ -67,3 +67,5 @@ class ServiceRegistry:
         """
 
         return len(self._services)
+
+service_registry = ServiceRegistry()
