@@ -8,6 +8,7 @@ of the PlantMind platform.
 from __future__ import annotations
 
 from app.config import settings
+from app.core.runtime_state import RuntimeState
 
 
 class Runtime:
@@ -21,6 +22,7 @@ class Runtime:
         self.environment = settings.ENVIRONMENT
         self.deployment = settings.DEPLOYMENT_MODE
 
+        self.state = RuntimeState.CREATED
         self.ready = False
 
     def mark_ready(self) -> None:
@@ -36,7 +38,14 @@ class Runtime:
         self.ready = False
 
     @property
-    def status(self) -> dict:
+    def is_ready(self) -> bool:
+        """
+        Return whether the platform runtime is ready.
+        """
+        return self.ready
+
+    @property
+    def status(self) -> dict[str, object]:
         """
         Return runtime information.
         """
@@ -45,6 +54,7 @@ class Runtime:
             "version": self.version,
             "environment": self.environment,
             "deployment": self.deployment,
+            "state": self.state.value,
             "ready": self.ready,
         }
 
