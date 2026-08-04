@@ -26,27 +26,37 @@ class PlatformComposition:
     health: HealthCapability
 
 
+class CompositionRoot:
+    """
+    Builds the PlantMind platform dependency graph.
+    """
+
+    @staticmethod
+    def build() -> PlatformComposition:
+        runtime = Runtime()
+        registry = ServiceRegistry()
+
+        bootstrap = BootstrapManager(
+            runtime_instance=runtime,
+            registry=registry,
+        )
+
+        health = HealthCapability(
+            runtime_instance=runtime,
+            registry=registry,
+        )
+
+        return PlatformComposition(
+            runtime=runtime,
+            registry=registry,
+            bootstrap=bootstrap,
+            health=health,
+        )
+
+
 def build_platform_composition() -> PlatformComposition:
     """
-    Construct the core PlantMind platform dependency graph.
+    Backward-compatible factory.
     """
 
-    runtime = Runtime()
-    registry = ServiceRegistry()
-
-    bootstrap = BootstrapManager(
-        runtime_instance=runtime,
-        registry=registry,
-    )
-
-    health = HealthCapability(
-        runtime_instance=runtime,
-        registry=registry,
-    )
-
-    return PlatformComposition(
-        runtime=runtime,
-        registry=registry,
-        bootstrap=bootstrap,
-        health=health,
-    )
+    return CompositionRoot.build()
