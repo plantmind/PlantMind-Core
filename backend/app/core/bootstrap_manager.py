@@ -6,31 +6,35 @@ BOOT-002 — Bootstrap Lifecycle Architecture
 
 from __future__ import annotations
 
-from app.core.runtime import runtime
+from app.core.runtime import Runtime, runtime
 from app.core.services.base_service import BaseService
-from app.core.services.service_registry import service_registry
+from app.core.services.service_registry import (
+    ServiceRegistry,
+    service_registry,
+)
 
 
 class BootstrapManager:
     """
-    Coordinates the complete startup and shutdown lifecycle
-    of the PlantMind platform.
+    Coordinate platform startup and shutdown.
+
+    Runtime and Service Registry are injected explicitly.
     """
 
-    def __init__(self) -> None:
-        self.runtime = runtime
-        self.registry = service_registry
+    def __init__(
+        self,
+        runtime_instance: Runtime | None = None,
+        registry: ServiceRegistry | None = None,
+    ) -> None:
+        self.runtime = runtime_instance or runtime
+        self.registry = registry or service_registry
 
     def register(self, service: BaseService) -> None:
-        """
-        Register a platform service.
-        """
+        """Delegate service registration to the Service Registry."""
         self.registry.register(service)
 
     def startup(self) -> None:
-        """
-        Execute platform startup.
-        """
+        """Execute platform startup."""
 
         for name in self.registry.registered_services():
             service = self.registry.get(name)
@@ -48,9 +52,7 @@ class BootstrapManager:
         self.runtime.mark_ready()
 
     def shutdown(self) -> None:
-        """
-        Execute graceful platform shutdown.
-        """
+        """Execute graceful platform shutdown."""
 
         for name in reversed(self.registry.registered_services()):
             service = self.registry.get(name)
