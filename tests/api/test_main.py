@@ -16,17 +16,22 @@ def test_root_endpoint_returns_platform_status() -> None:
             "version": "1.0.0",
         },
         "runtime": {
-            "status": "Running",
+            "status": "ready",
             "environment": "Development",
         },
     }
 
 
-def test_health_endpoint_returns_healthy_status() -> None:
+def test_health_endpoint_returns_platform_health() -> None:
     with TestClient(app) as client:
         response = client.get("/health")
 
     assert response.status_code == 200
     assert response.json() == {
-        "status": "healthy",
+        "platform_name": "PlantMind",
+        "version": "1.0.0",
+        "environment": "Development",
+        "runtime_ready": True,
+        "registered_services": 0,
+        "services": [],
     }

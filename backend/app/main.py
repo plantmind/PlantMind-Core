@@ -3,7 +3,7 @@ from contextlib import asynccontextmanager
 from fastapi import FastAPI
 
 from app.config import settings
-from app.core.bootstrap import BootstrapManager
+from app.core.composition import CompositionRoot
 from app.schemas.platform import (
     PlatformInfo,
     PlatformStatus,
@@ -11,7 +11,7 @@ from app.schemas.platform import (
 )
 
 
-bootstrap = BootstrapManager()
+platform = CompositionRoot.build()
 
 
 @asynccontextmanager
@@ -20,12 +20,11 @@ async def lifespan(app: FastAPI):
     PlantMind platform lifecycle.
     """
 
-    bootstrap.initialize()
+    platform.bootstrap.startup()
 
     yield
 
-    # Shutdown lifecycle will be introduced
-    # during the Composition Root implementation.
+    platform.bootstrap.shutdown()
 
 
 app = FastAPI(
@@ -46,14 +45,12 @@ def root() -> PlatformStatus:
             version=settings.VERSION,
         ),
         runtime=RuntimeInfo(
-            status="Running",
-            environment=settings.ENVIRONMENT,
+            status=platform.runtime.state.value,
+            environment=platform.runtime.environment,
         ),
     )
 
 
 @app.get("/health")
-def health() -> dict[str, str]:
-    return {
-        "status": "healthy",
-    }
+def health():
+    return platform.health.get_status()
