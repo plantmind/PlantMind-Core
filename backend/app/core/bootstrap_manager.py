@@ -1,36 +1,35 @@
 """
 PlantMind Bootstrap Manager
 
-Coordinates the complete startup and shutdown lifecycle
-of the PlantMind platform.
+BOOT-002 — Bootstrap Lifecycle Architecture
 """
 
 from __future__ import annotations
 
 from app.core.runtime import runtime
-from app.core.services.service_registry import ServiceRegistry
 from app.core.services.base_service import BaseService
+from app.core.services.service_registry import service_registry
 
 
 class BootstrapManager:
     """
-    Coordinates platform startup and shutdown.
+    Coordinates the complete startup and shutdown lifecycle
+    of the PlantMind platform.
     """
 
     def __init__(self) -> None:
         self.runtime = runtime
-        self.registry = ServiceRegistry()
+        self.registry = service_registry
 
     def register(self, service: BaseService) -> None:
         """
         Register a platform service.
         """
-
         self.registry.register(service)
 
     def startup(self) -> None:
         """
-        Start the PlantMind platform.
+        Execute platform startup.
         """
 
         for name in self.registry.registered_services():
@@ -50,7 +49,7 @@ class BootstrapManager:
 
     def shutdown(self) -> None:
         """
-        Gracefully shutdown the PlantMind platform.
+        Execute graceful platform shutdown.
         """
 
         for name in reversed(self.registry.registered_services()):
