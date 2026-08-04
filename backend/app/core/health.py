@@ -1,22 +1,25 @@
 """
 PlantMind Health Capability
 
-Provides a unified view of the operational health of the platform.
+Provides a unified view of the operational health
+of the PlantMind platform.
 """
 
 from __future__ import annotations
 
 from dataclasses import dataclass
-from typing import List
 
-from app.core.runtime import runtime
-from app.core.services.service_registry import service_registry
+from app.core.runtime import Runtime, runtime
+from app.core.services.service_registry import (
+    ServiceRegistry,
+    service_registry,
+)
 
 
 @dataclass(frozen=True)
 class HealthStatus:
     """
-    Immutable snapshot of the current platform health.
+    Immutable snapshot of platform health.
     """
 
     platform_name: str
@@ -24,26 +27,34 @@ class HealthStatus:
     environment: str
     runtime_ready: bool
     registered_services: int
-    services: List[str]
+    services: list[str]
 
 
 class HealthCapability:
     """
-    Provides health information for the PlantMind platform.
+    Read-only health capability.
     """
+
+    def __init__(
+        self,
+        runtime_instance: Runtime | None = None,
+        registry: ServiceRegistry | None = None,
+    ) -> None:
+        self.runtime = runtime_instance or runtime
+        self.registry = registry or service_registry
 
     def get_status(self) -> HealthStatus:
         """
-        Return the current platform health snapshot.
+        Return current platform health.
         """
 
         return HealthStatus(
-            platform_name=runtime.platform_name,
-            version=runtime.version,
-            environment=runtime.environment,
-            runtime_ready=runtime.is_ready,
-            registered_services=service_registry.count,
-            services=service_registry.registered_services(),
+            platform_name=self.runtime.platform_name,
+            version=self.runtime.version,
+            environment=self.runtime.environment,
+            runtime_ready=self.runtime.is_ready,
+            registered_services=self.registry.count,
+            services=self.registry.registered_services(),
         )
 
 
