@@ -29,12 +29,14 @@ class Runtime:
         """
         Mark the platform runtime as ready.
         """
+        self.state = RuntimeState.READY
         self.ready = True
 
     def mark_not_ready(self) -> None:
         """
         Mark the platform runtime as not ready.
         """
+        self.state = RuntimeState.STOPPED
         self.ready = False
 
     @property
