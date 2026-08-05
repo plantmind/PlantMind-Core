@@ -9,9 +9,9 @@ class RegistryError(Exception):
     """Base registry exception."""
 
 
-class DuplicateRegistrationError(RegistryError):
+class DuplicateRegistrationError(RegistryError, ValueError):
     """Raised when a key is already registered."""
 
 
-class RegistrationNotFoundError(RegistryError):
+class RegistrationNotFoundError(RegistryError, LookupError):
     """Raised when a registration cannot be resolved."""

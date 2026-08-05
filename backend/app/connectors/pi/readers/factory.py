@@ -7,6 +7,7 @@ from __future__ import annotations
 from collections.abc import Callable
 
 from app.connectors.pi.readers.tag_reader import PITagReader
+from app.core.registry.registry import Registry
 
 
 ReaderFactory = Callable[[], PITagReader]
@@ -14,10 +15,10 @@ ReaderFactory = Callable[[], PITagReader]
 
 class TagReaderFactory:
     """
-    Registry-based factory for PI tag readers.
+    PI Tag Reader factory built on the generic Registry framework.
     """
 
-    _registry: dict[str, ReaderFactory] = {}
+    _registry: Registry[PITagReader] = Registry()
 
     @classmethod
     def register(
@@ -25,25 +26,19 @@ class TagReaderFactory:
         name: str,
         factory: ReaderFactory,
     ) -> None:
-        if name in cls._registry:
-            raise ValueError(
-                f"Reader '{name}' is already registered."
-            )
-
-        cls._registry[name] = factory
+        cls._registry.register(name, factory)
 
     @classmethod
     def create(
         cls,
         name: str,
     ) -> PITagReader:
-        try:
-            return cls._registry[name]()
-        except KeyError as exc:
-            raise LookupError(
-                f"Unknown PI tag reader '{name}'."
-            ) from exc
+        return cls._registry.resolve(name)
 
     @classmethod
     def registered_readers(cls) -> tuple[str, ...]:
-        return tuple(sorted(cls._registry))
+        return cls._registry.registered()
+
+    @classmethod
+    def clear(cls) -> None:
+        cls._registry.clear()
