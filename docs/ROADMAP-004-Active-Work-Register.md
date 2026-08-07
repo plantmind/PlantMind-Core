@@ -73,10 +73,11 @@ The design must preserve existing registry, lifecycle, bootstrap and composition
 ### RFC-030 Contract
 
 - Introduce an immutable `PluginRegistration` declaration containing a plugin name and factory.
-- Extend the Composition Root with an optional ordered sequence of plugin registrations.
+- Extend the Composition Root with an optional sequence of plugin registrations.
 - Preserve empty registration input as the backward-compatible default.
 - Apply registrations to the existing composed `PluginRegistry`.
 - Preserve existing `PluginRegistry` duplicate-registration semantics.
+- Preserve existing `PluginRegistry.registered()` ordering semantics; RFC-030 SHALL NOT redefine registry ordering.
 - Preserve the existing `PluginLifecycleManager` responsibility for plugin creation, activation and deactivation.
 - Preserve lazy plugin creation; composition SHALL register factories without instantiating plugins.
 - Keep `build_platform_composition` behavior aligned with `CompositionRoot.build` while preserving its no-argument compatibility.
@@ -91,7 +92,7 @@ RFC-030 implementation SHALL be driven by focused tests proving:
 1. `PluginRegistration` is immutable.
 2. Platform composition remains backward compatible when no plugin registrations are supplied.
 3. Explicit plugin registrations are added to the composed `PluginRegistry`.
-4. Registration order is deterministic and preserved.
+4. Registration ordering remains deterministic according to the existing `PluginRegistry` semantics.
 5. Composition registers plugin factories without eagerly creating plugin instances.
 6. The `PluginRegistry` resolved from `ServiceContainer` is the same registry containing the supplied registrations.
 7. `BootstrapManager` creates and activates plugins supplied through the composition boundary.
