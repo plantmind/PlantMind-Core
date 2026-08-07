@@ -6,6 +6,7 @@ Constructs and wires the core platform dependencies.
 
 from __future__ import annotations
 
+from collections.abc import Sequence
 from dataclasses import dataclass
 
 from app.core.bootstrap_manager import BootstrapManager
@@ -15,7 +16,7 @@ from app.core.configuration.configuration_provider import (
 from app.core.container.service_container import ServiceContainer
 from app.core.health import HealthCapability
 from app.core.logging.logging_provider import LoggingProvider
-from app.core.plugins import PluginRegistry
+from app.core.plugins import PluginRegistration, PluginRegistry
 from app.core.plugins.plugin_lifecycle_manager import (
     PluginLifecycleManager,
 )
@@ -42,13 +43,22 @@ class CompositionRoot:
     """Build the PlantMind platform dependency graph."""
 
     @staticmethod
-    def build() -> PlatformComposition:
+    def build(
+        plugin_registrations: Sequence[PluginRegistration] = (),
+    ) -> PlatformComposition:
         container = ServiceContainer()
         configuration = ConfigurationProvider()
         logging = LoggingProvider()
         runtime = Runtime()
         registry = ServiceRegistry()
         plugin_registry = PluginRegistry()
+
+        for registration in plugin_registrations:
+            plugin_registry.register(
+                registration.name,
+                registration.factory,
+            )
+
         plugin_lifecycle = PluginLifecycleManager(
             plugin_registry
         )
@@ -111,7 +121,11 @@ class CompositionRoot:
         )
 
 
-def build_platform_composition() -> PlatformComposition:
+def build_platform_composition(
+    plugin_registrations: Sequence[PluginRegistration] = (),
+) -> PlatformComposition:
     """Backward-compatible platform composition factory."""
 
-    return CompositionRoot.build()
+    return CompositionRoot.build(
+        plugin_registrations=plugin_registrations,
+    )

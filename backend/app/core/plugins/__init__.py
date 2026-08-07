@@ -6,6 +6,9 @@ from app.core.plugins.plugin import Plugin
 from app.core.plugins.plugin_lifecycle_manager import (
     PluginLifecycleManager,
 )
+from app.core.plugins.plugin_registration import (
+    PluginRegistration,
+)
 from app.core.plugins.plugin_registry import (
     PluginFactory,
     PluginRegistry,
@@ -14,6 +17,7 @@ from app.core.plugins.plugin_registry import (
 __all__ = [
     "Plugin",
     "PluginFactory",
+    "PluginRegistration",
     "PluginRegistry",
     "PluginLifecycleManager",
 ]
