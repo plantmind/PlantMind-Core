@@ -121,6 +121,34 @@ Regression baseline increased to:
 
 ---
 
+### Plugin Lifecycle and Composition
+
+RFC-026 through RFC-029 completed the next stage of the PlantMind plugin architecture.
+
+Major milestones included:
+
+- RFC-026 — Bootstrap Public API Consolidation
+- RFC-027 — Plugin Lifecycle Integration into Bootstrap
+- RFC-028 — Plugin Lifecycle Manager
+- RFC-029 — Plugin Infrastructure Composition
+
+RFC-028 separated plugin activation and deactivation from Bootstrap orchestration by introducing the dedicated `PluginLifecycleManager`.
+
+RFC-029 established Composition Root ownership of plugin infrastructure wiring. The same `PluginRegistry` and `PluginLifecycleManager` instances are injected into `BootstrapManager`, registered in `ServiceContainer`, and exposed through `PlatformComposition`.
+
+Technical baseline after RFC-029:
+
+- Commit: `10d6171`
+- Focused composition tests: 3 passed
+- Impacted plugin and bootstrap tests: 14 passed
+- Full regression: 164 passed
+- Remote push: verified
+- Technical working tree: clean
+
+This completed the transition from a basic plugin framework into a lifecycle-aware and composition-managed extension foundation.
+
+---
+
 ### Engineering Process Improvements
 
 The project adopted a strict engineering workflow.
@@ -165,10 +193,19 @@ PlantMind now possesses:
 
 - Stable Core Platform
 - Enterprise architectural direction
-- Generic Registry
-- Plugin Framework
+- Generic Registry Framework
+- Core Plugin Framework
+- Plugin Lifecycle Manager
+- Plugin Infrastructure Composition
 - Service Lifecycle
+- Composition Root and dependency wiring
 - Structured engineering documentation
 - Continuous regression testing
+
+Current technical baseline:
+
+- RFC-029 — Plugin Infrastructure Composition
+- Commit: `10d6171`
+- Full regression: 164 passed
 
 The project has successfully moved beyond prototype stage and entered long-term enterprise platform development.

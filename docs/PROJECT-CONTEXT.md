@@ -9,9 +9,9 @@
 | Status | Active Development |
 | Deployment Model | On-Premise |
 | Development Branch | `feature/engineering-platform` |
-| Last Completed RFC | RFC-025 — Core Plugin Framework |
-| Test Baseline | 155 passing tests |
-| Last Verified Commit | `fab2740` |
+| Last Completed RFC | RFC-029 — Plugin Infrastructure Composition |
+| Test Baseline | 164 passing tests |
+| Technical Baseline Commit | `10d6171` |
 | Purpose | Authoritative context for continuing PlantMind development across engineering sessions |
 
 ---
@@ -159,6 +159,8 @@ PI Tag Reader Factory
 Generic Registry Framework
 Registry Public API
 Core Plugin Framework
+Plugin Lifecycle Manager
+Plugin Infrastructure Composition
 7. Current PI Integration Foundation
 
 The PI integration structure currently includes:
@@ -275,18 +277,18 @@ PlantMind-Core/backend/.venv
 
 The last verified baseline is:
 
-155 passed
+164 passed
 11. Git State at This Context Version
 Branch:
 feature/engineering-platform
 
-Last completed commit:
-fab2740 RFC-025: introduce core plugin framework
+Last completed technical RFC commit:
+10d6171 RFC-029: compose plugin infrastructure
 
 Remote:
 origin/feature/engineering-platform
 
-Working tree after RFC-025:
+Technical working tree after RFC-029:
 clean
 12. Current Architectural Review
 
@@ -306,12 +308,16 @@ Core public API
 
 It must not be replaced by another Service Registry without a documented dependency review.
 
-The Generic Registry, Plugin Registry and Service Registry have distinct responsibilities:
+The Generic Registry, Plugin Registry, Plugin Lifecycle Manager, Service Registry, Bootstrap Manager and Composition Root have distinct responsibilities:
 
-Component	Responsibility
-Registry[T]	Generic factory registration and resolution
-PluginRegistry	Plugin creation and registration
-ServiceRegistry	Runtime service instances and service lifecycle
+Component               Responsibility
+Registry[T]             Generic factory registration and resolution
+PluginRegistry          Plugin creation and registration
+PluginLifecycleManager  Plugin activation and deactivation
+ServiceRegistry         Runtime service instances and service lifecycle
+BootstrapManager        Platform startup and shutdown orchestration
+CompositionRoot         Platform dependency construction and wiring
+ServiceContainer        Resolution of composed platform dependencies
 13. Deferred Architectural Work
 PI Connector Package Migration
 
@@ -354,22 +360,22 @@ Knowledge Providers
 Reasoning extensions
 Enterprise modules
 
-It must extend, not discard, RFC-025.
+It must extend, not discard, the accepted Plugin Framework.
 
 14. Immediate Development Direction
 
-RFC-025 is complete.
+RFC-029 is complete at the technical baseline.
 
-Before selecting or implementing the next RFC:
+RFC-030 has not yet been selected.
+
+Before selecting or implementing RFC-030:
 
 Review the Active Work Register.
-Review existing Bootstrap, Plugin and Service lifecycle implementations.
-Avoid duplicating the existing Service Registry.
-Determine the safest integration path between:
-Bootstrap Manager
-Plugin Registry
-Plugin activation lifecycle
-Record the selected RFC and next exact action in project documentation.
+Review current committed code and tests.
+Review accepted RFCs, ADRs, architecture documents and deferred work.
+Preserve the established Bootstrap, Registry, Plugin, Service and Composition responsibilities.
+Do not duplicate the existing Service Registry or plugin infrastructure.
+Record the selected RFC objective and next exact action before implementation begins.
 15. Session Continuation Instruction
 
 When continuing PlantMind in a new engineering session:
@@ -400,8 +406,6 @@ Conversation history
 
 The conversation is supporting context, not the authoritative engineering record.
 
-
-ثم نفّذ:
 
 ```bash
 python -m py_compile backend/app/core/plugins/__init__.py

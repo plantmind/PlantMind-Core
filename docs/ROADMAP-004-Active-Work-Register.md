@@ -3,7 +3,7 @@
 | Property | Value |
 |----------|-------|
 | Status | Active |
-| Version | 1.0 |
+| Version | 1.1 |
 | Owner | Platform Architecture |
 | Purpose | Prevent unfinished work from being lost |
 
@@ -27,87 +27,64 @@ No item may be marked complete until:
 - Git commit is verified
 - Remote push is verified
 - Working tree is clean
+- Required engineering documentation is updated
 
 ---
 
 # Active Work
 
-## RFC-021 — Mock PI Tag Reader and Factory
+## RFC-030 Selection — Architecture Review
 
 ### Status
 
-Paused intentionally before completion.
-
-### Completed
-
-- `PITagReader` contract
-- `PITagValue`
-- `MockTagReader`
-- `TagReaderFactory`
-- Factory registration
-- Factory resolution
-- Duplicate registration protection
-- Unknown reader protection
-- Unit tests for the factory
-
-### Remaining
-
-- Unit tests dedicated to `MockTagReader`
-- Public reset or isolated registry mechanism for tests
-- Remove direct test access to `_registry`
-- Export reader components through package `__init__.py`
-- Integrate factory with the future Core Registry Framework
-- Run full regression suite
-- Commit and push RFC-021
-- Verify clean working tree
-
-### Dependency
-
-RFC-022 — Core Registry Framework
-
-### Resume Condition
-
-Resume immediately after RFC-022 is implemented and tested.
-
-### Next Exact Action
-
-Refactor `TagReaderFactory` to use the Core Registry Framework, then complete RFC-021 tests and Git verification.
-
----
-
-## RFC-022 — Core Registry Framework
-
-### Status
-
-Approved — Not Started
+Not started — architecture review required.
 
 ### Objective
 
-Create a reusable registration and resolution framework for:
+Select the highest-value architectural RFC after RFC-029 without duplicating existing responsibilities or bypassing accepted platform architecture.
 
-- PI readers
-- Connectors
-- Agents
-- Engines
-- Document parsers
-- Knowledge sources
-- Workflows
-- Future plugins
+### Current Technical Baseline
 
-### Planned Components
+- Branch: `feature/engineering-platform`
+- Last completed RFC: RFC-029 — Plugin Infrastructure Composition
+- Technical baseline commit: `10d6171`
+- Full regression baseline: 164 passed
 
-- Generic registry
-- Registration validation
-- Duplicate protection
-- Resolution
-- Enumeration
-- Explicit reset or isolated registry support
-- Typed tests
-- Integration with `TagReaderFactory`
+### Dependencies
+
+RFC-029 documentation synchronization must be committed and pushed before RFC-030 selection begins.
+
+### Resume Condition
+
+The RFC-029 documentation synchronization is committed and pushed, the branch is up to date with origin, and the working tree is clean.
 
 ### Next Exact Action
 
-Inspect all existing registry and factory implementations before writing code.
+If RFC-029 documentation synchronization remains uncommitted, review, commit and push it, then verify a clean working tree.
+
+Otherwise, review current committed code, tests, accepted architecture documents, deferred work, public APIs, lifecycle ownership, dependency injection, registries, plugin infrastructure and Composition Root responsibilities before selecting RFC-030.
+
+No RFC-030 implementation may begin before that architecture review is complete.
+
+---
+
+# Recently Completed Work
+
+| RFC | Commit | Result |
+|---|---|---|
+| RFC-021 | `132baca` | Extensible PI tag reader architecture |
+| RFC-022 | `0f35b3e` | Generic registry framework |
+| RFC-023 | `dbb0a3d` | PI tag reader factory migration to generic registry |
+| RFC-024 | `ed9dd63` | Registry public API |
+| RFC-025 | `fab2740` | Core plugin framework |
+| RFC-026 | `e91a5a7` | Bootstrap public API consolidation |
+| RFC-027 | `463e13f` | Plugin lifecycle integration into Bootstrap |
+| RFC-028 | `128f129` | Plugin lifecycle manager |
+| RFC-029 | `10d6171` | Plugin infrastructure composition |
+
+The previous RFC-021 and RFC-022 active-work entries were stale relative to the committed Git history and are no longer active items.
+
+Any historical task suspected to remain incomplete must be reopened only after current-code, dependency and regression review.
 
 ---
 

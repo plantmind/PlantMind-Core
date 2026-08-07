@@ -460,3 +460,51 @@ Relevant documents must be updated when an RFC changes project state or architec
 ## Future Impact
 
 Any new engineer or AI session should be able to resume work by reading these files and the latest Git state.
+---
+
+---
+
+# AD-015 — Composition Root Owns Plugin Infrastructure Composition
+
+## Context
+
+RFC-027 integrated plugin lifecycle behavior into Bootstrap, and RFC-028 introduced the dedicated `PluginLifecycleManager`.
+
+RFC-029 established an authoritative production composition path for plugin infrastructure.
+
+Without a single composition owner, multiple consumers could construct independent plugin registries or lifecycle managers and create inconsistent runtime object graphs.
+
+## Decision
+
+The Composition Root SHALL own construction and wiring of the production plugin infrastructure.
+
+The composed platform SHALL create one `PluginRegistry` and one `PluginLifecycleManager` for each platform composition.
+
+Those same instances SHALL be:
+
+- Injected into `BootstrapManager`
+- Registered in `ServiceContainer`
+- Exposed through `PlatformComposition`
+
+`PluginRegistry`, `PluginLifecycleManager`, `BootstrapManager`, `ServiceRegistry`, and `CompositionRoot` SHALL retain distinct responsibilities.
+
+## Rationale
+
+- Maintains one authoritative production object graph.
+- Prevents duplicate plugin registries and lifecycle managers.
+- Preserves Dependency Injection.
+- Keeps lifecycle ownership inside `PluginLifecycleManager`.
+- Keeps startup and shutdown orchestration inside `BootstrapManager`.
+- Keeps dependency construction and wiring inside `CompositionRoot`.
+
+## Consequences
+
+The Composition Root is the authoritative production assembly point for plugin infrastructure.
+
+Existing backward-compatible fallback construction may remain where already established, but the composed production path SHALL use explicitly injected dependencies.
+
+No parallel plugin infrastructure should be introduced without dedicated architecture and dependency review.
+
+## Future Impact
+
+Plugin discovery, enterprise extensions, connectors, agents, engines, and future plugin capabilities must integrate with the composed plugin infrastructure instead of creating independent registries or lifecycle managers.

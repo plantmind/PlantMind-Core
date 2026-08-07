@@ -6,73 +6,86 @@
 |---|---|
 | Project | PlantMind PM-001 |
 | Branch | `feature/engineering-platform` |
-| Last Completed RFC | RFC-025 — Core Plugin Framework |
-| Last Verified Commit | `fab2740` |
-| Test Baseline | 155 passed |
+| Last Completed RFC | RFC-029 — Plugin Infrastructure Composition |
+| Technical Baseline Commit | `10d6171` |
+| Test Baseline | 164 passed |
 | Authoritative Environment | `PlantMind-Core/.venv` |
-| Working Tree Before Documentation Work | Clean |
+| Remote State | Up to date with `origin/feature/engineering-platform` |
+| Technical Working Tree After RFC-029 | Clean |
 
-## Current Documentation Work
+## Recent Engineering Sequence
 
-The following project-memory documents are being established:
+- RFC-025 — Core Plugin Framework
+- RFC-026 — Bootstrap Public API Consolidation
+- RFC-027 — Plugin Lifecycle Integration into Bootstrap
+- RFC-028 — Plugin Lifecycle Manager
+- RFC-029 — Plugin Infrastructure Composition
+
+## RFC-029 Outcome
+
+RFC-029 established Composition Root ownership of plugin infrastructure wiring.
+
+The platform composition now:
+
+- Creates one `PluginRegistry`
+- Creates one `PluginLifecycleManager`
+- Injects both into `BootstrapManager`
+- Registers both in `ServiceContainer`
+- Exposes both through `PlatformComposition`
+
+This preserves distinct responsibilities while ensuring one authoritative production object graph.
+
+## RFC-029 Verification
+
+- Compilation: passed
+- Focused composition tests: 3 passed
+- Impacted plugin/bootstrap tests: 14 passed
+- Full regression: 164 passed
+- `git diff --check`: passed
+- Commit: `10d6171`
+- Push: verified
+- Working tree: clean
+
+## Documentation Closure
+
+The technical implementation of RFC-029 is complete.
+
+The engineering-memory layer has been synchronized with the RFC-029 technical baseline.
+
+Final documentation verification completed successfully:
+
+- English-only tracked-file audit: passed
+- Git diff check: passed
+- Full regression after documentation synchronization: 164 passed
+
+Relevant maintained documents:
 
 - `docs/PROJECT-CONTEXT.md`
+- `docs/SESSION-HANDOFF.md`
 - `docs/ENGINEERING-JOURNAL.md`
 - `docs/ARCHITECTURE-DECISIONS.md`
-- `docs/SESSION-HANDOFF.md`
-
-`PROJECT-CONTEXT.md` has been populated.
-
-The remaining documents must be completed, tested through review, committed and pushed before returning to platform implementation.
+- `docs/ROADMAP-004-Active-Work-Register.md`
 
 ## Next Exact Action
 
-Populate:
+If the RFC-029 documentation synchronization is not yet committed and pushed:
 
-```text
-docs/ENGINEERING-JOURNAL.md
+1. Review the final documentation diff.
+2. Commit and push the documentation synchronization.
+3. Confirm the branch is up to date with origin and the working tree is clean.
 
-Then populate:
+Once those conditions are satisfied, perform the architecture review required before selecting RFC-030.
 
-docs/ARCHITECTURE-DECISIONS.md
+Do not begin RFC-030 implementation before the architecture review is complete.
 
-Afterward:
-
-Review all four documentation files.
-Run the full regression suite.
-Review git status.
-Commit and push the project-memory documentation.
-Confirm a clean working tree.
-Resume architecture review for the next RFC.
-Planned Technical Direction
-
-The proposed next technical RFC is under review:
-
-Plugin Discovery and Bootstrap Integration
-
-Before implementation, inspect:
-
-backend/app/core/bootstrap_manager.py
-backend/app/core/composition/composition_root.py
-backend/app/core/plugins/
-Existing service lifecycle and dependency wiring
-
-No new Service Registry shall be created because the existing service lifecycle framework is already authoritative.
-
-Required Test Command
-PYTHONPATH=backend ./.venv/bin/python -m pytest -q
-Continuation Rule
-
-Any new engineering session must read these files before proposing changes:
-
-docs/PROJECT-CONTEXT.md
-docs/SESSION-HANDOFF.md
-docs/ROADMAP-004-Active-Work-Register.md
-docs/ARCHITECTURE-DECISIONS.md
-docs/ENGINEERING-JOURNAL.md
-
-احفظ الملف، ثم نفّذ:
+## Required Test Command
 
 ```bash
-wc -l docs/SESSION-HANDOFF.md
-git status --short
+PYTHONPATH=backend ./.venv/bin/python -m pytest -q
+```
+
+## Continuation Rule
+
+Any new engineering session must read the engineering-memory documents and verify the latest committed Git state before proposing or implementing changes.
+
+The repository is the Source of Truth.
