@@ -6,6 +6,7 @@ from __future__ import annotations
 
 from collections.abc import Callable
 
+from app.core.plugins.errors import PluginIdentityMismatchError
 from app.core.plugins.plugin import Plugin
 from app.core.registry import Registry
 
@@ -37,7 +38,15 @@ class PluginRegistry:
         Create a registered plugin instance.
         """
 
-        return self._registry.resolve(name)
+        plugin = self._registry.resolve(name)
+
+        if plugin.name != name:
+            raise PluginIdentityMismatchError(
+                f"Plugin identity mismatch: registered as '{name}' "
+                f"but instance reports '{plugin.name}'."
+            )
+
+        return plugin
 
     def registered(self) -> tuple[str, ...]:
         """
