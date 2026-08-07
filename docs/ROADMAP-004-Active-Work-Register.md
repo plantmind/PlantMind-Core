@@ -33,96 +33,83 @@ No item may be marked complete until:
 
 # Active Work
 
-## RFC-032 — Plugin Metadata Contract
+## RFC-033 — Plugin Version Format Contract
 
 ### Status
 
-Completed. Technical implementation and documentation verification are complete.
+Architecture review complete; contract and TDD scope defined; implementation not started.
 
 ### Objective
 
-Introduce a minimal immutable metadata contract for registered plugins without changing the authoritative plugin identity, lifecycle architecture, controlled registration boundary, or existing backward-compatible plugin registration behavior.
+Establish a deterministic validation contract for `PluginMetadata.plugin_version` without introducing version compatibility evaluation, discovery, package loading, or external version-parsing dependencies.
 
 ### Current Technical Baseline
 
 - Branch: `feature/engineering-platform`
-- Current technical RFC: RFC-032 — Plugin Metadata Contract
+- Last completed RFC: RFC-032 — Plugin Metadata Contract
 - Technical implementation commit: `6b4d80f`
-- Previous documentation baseline commit: `8462b53`
+- Documentation baseline commit: `04a5fc8`
 - Full regression baseline: 194 passed
 
 ### Architectural Finding
 
-The current Plugin Framework has an authoritative registration identity but no explicit plugin metadata or plugin-version contract.
+RFC-032 introduced an explicit plugin version but currently accepts any string value.
 
-`APP_VERSION` represents the PlantMind application version and SHALL NOT be reused as an implicit plugin version.
+The Plugin Framework requires a stable version-format invariant before future compatibility or catalog mechanisms can safely depend on plugin versions.
 
-ARCH-003 requires contracts to expose explicit version information and preserve immutable contract semantics.
+No version parsing utility or dedicated version dependency currently exists in the Core platform.
 
-Plugin metadata must extend the existing controlled registration model without creating a second identity, registry, discovery mechanism, or compatibility engine.
+Validation belongs to the immutable `PluginMetadata` contract rather than Registry, Composition, Lifecycle or Bootstrap responsibilities.
 
 ### Dependencies
 
-- Existing `Plugin` contract
-- Existing `PluginRegistration`
-- Existing `PluginRegistry`
+- `PluginMetadata` introduced by RFC-032
+- Plugin-specific error hierarchy
 - Plugin identity invariant established by RFC-031
 - Controlled registration boundary established by RFC-030
-- Composition ownership established by RFC-029
 - ARCH-003 Contract Design Pattern
 
-### RFC-032 Contract
+### RFC-033 Contract
 
-- Introduce an immutable `PluginMetadata` contract.
-- `PluginMetadata` SHALL declare an explicit `plugin_version`.
-- `PluginMetadata` SHALL expose an explicit immutable metadata contract version.
-- Plugin metadata SHALL NOT introduce another authoritative plugin name.
-- `PluginRegistration.name` SHALL remain the authoritative plugin identity.
-- Existing registrations without metadata SHALL remain backward compatible.
-- `PluginRegistration` MAY carry `PluginMetadata`.
-- Metadata supplied through controlled composition SHALL be associated with the same existing `PluginRegistry` registration.
-- Metadata access SHALL NOT instantiate the plugin factory.
-- Clearing the `PluginRegistry` SHALL also clear associated plugin metadata.
-- Existing duplicate-registration, registration-not-found, ordering and identity semantics SHALL remain unchanged.
-- Plugin metadata SHALL NOT alter lifecycle or Bootstrap behavior.
-- `APP_VERSION` SHALL NOT be used as an implicit plugin version.
-- RFC-032 SHALL NOT introduce semantic-version compatibility evaluation, plugin discovery, filesystem scanning, package loading, capability catalogs, or security approval policy.
+- `plugin_version` SHALL use canonical `MAJOR.MINOR.PATCH` format.
+- `MAJOR`, `MINOR` and `PATCH` SHALL each be non-negative decimal integers.
+- Numeric components SHALL NOT contain leading zeros except for the value `0`.
+- Examples of valid versions include `0.1.0`, `1.0.0` and `12.4.27`.
+- Prefixes such as `v`, surrounding whitespace, missing components and additional components SHALL be rejected.
+- Pre-release and build metadata syntax SHALL NOT be introduced by RFC-033.
+- Validation SHALL occur when `PluginMetadata` is constructed.
+- Invalid versions SHALL raise a dedicated `InvalidPluginVersionError`.
+- `InvalidPluginVersionError` SHALL remain within the plugin-specific error hierarchy and SHALL preserve `ValueError` semantics.
+- Validation SHALL NOT be moved into `PluginRegistry`, `CompositionRoot`, `PluginLifecycleManager` or `BootstrapManager`.
+- `PluginMetadata.contract_version` semantics SHALL remain unchanged.
+- Existing valid RFC-032 metadata behavior SHALL remain unchanged.
+- RFC-033 SHALL NOT introduce version comparison, semantic-version compatibility evaluation, plugin discovery, filesystem scanning, package loading, capability catalogs or security approval policy.
+- RFC-033 SHALL NOT introduce an external version-parsing dependency.
 
 ### TDD Scope
 
-RFC-032 implementation SHALL be driven by focused tests proving:
+RFC-033 implementation SHALL be driven by focused tests proving:
 
-1. `PluginMetadata` is immutable.
-2. Plugin version is explicitly represented independently from `APP_VERSION`.
-3. The metadata contract exposes its own immutable contract version.
-4. Existing `PluginRegistration(name, factory)` construction remains backward compatible.
-5. A `PluginRegistration` can carry explicit plugin metadata.
-6. Composition forwards supplied metadata into the same composed `PluginRegistry`.
-7. Plugin metadata can be read without creating the plugin instance.
-8. Clearing the Plugin Registry removes associated metadata.
-9. Duplicate plugin registration preserves the existing `DuplicateRegistrationError` behavior without corrupting metadata.
-10. Plugin metadata does not change RFC-031 identity validation or existing lifecycle behavior.
+1. `0.1.0` is accepted.
+2. `1.0.0` is accepted.
+3. Multi-digit numeric components are accepted.
+4. Missing version components are rejected.
+5. Additional version components are rejected.
+6. Leading-zero numeric components are rejected.
+7. A `v` prefix is rejected.
+8. Surrounding whitespace is rejected rather than silently normalized.
+9. Pre-release or build suffixes are rejected.
+10. Invalid versions raise `InvalidPluginVersionError` while valid metadata preserves RFC-032 behavior.
 
 ### Implementation Boundary
 
-RFC-032 should modify only the minimum plugin metadata, registration, registry, composition and focused test surfaces required to establish the metadata contract.
+RFC-033 should modify only the minimum plugin metadata, plugin error, public API and focused test surfaces required to enforce the version-format contract.
 
-Do not redesign the `Plugin` contract, Generic Registry, Plugin Lifecycle Manager, Bootstrap Manager or Composition Root ownership model.
-
-### Verification
-
-- Compilation: passed
-- Focused RFC-032 tests: 10 passed
-- Impacted plugin, composition and bootstrap tests: 44 passed
-- Full regression: 194 passed
-- `git diff --check`: passed
-- Technical commit: `6b4d80f`
-- Push: verified
-- Technical working tree: clean
+Do not modify Generic Registry, `PluginRegistry`, `PluginRegistration`, Composition Root, Plugin Lifecycle Manager or Bootstrap Manager unless a failing regression proves a dependency that requires architecture review.
 
 ### Next Exact Action
 
-Commit and push the RFC-032 documentation closure if not already completed, then perform the architecture review required before selecting RFC-033.
+Write the RFC-033 failing focused tests before implementation.
 
 ---
 
@@ -141,6 +128,7 @@ Commit and push the RFC-032 documentation closure if not already completed, then
 | RFC-029 | `10d6171` | Plugin infrastructure composition |
 | RFC-030 | `72a8533` | Controlled plugin registration boundary |
 | RFC-031 | `defc1fe` | Plugin identity consistency contract |
+| RFC-032 | `6b4d80f` | Plugin metadata contract |
 
 The previous RFC-021 and RFC-022 active-work entries were stale relative to the committed Git history and are no longer active items.
 
