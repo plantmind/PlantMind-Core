@@ -33,91 +33,85 @@ No item may be marked complete until:
 
 # Active Work
 
-## RFC-031 — Plugin Identity Consistency Contract
+## RFC-032 — Plugin Metadata Contract
 
 ### Status
 
-Completed. Technical implementation and documentation verification are complete.
+Architecture review complete; contract and TDD scope defined; implementation not started.
 
 ### Objective
 
-Enforce one authoritative plugin identity by requiring every plugin instance created from a registered name to report the same `Plugin.name` as its registry identity.
+Introduce a minimal immutable metadata contract for registered plugins without changing the authoritative plugin identity, lifecycle architecture, controlled registration boundary, or existing backward-compatible plugin registration behavior.
 
 ### Current Technical Baseline
 
 - Branch: `feature/engineering-platform`
-- Current technical RFC: RFC-031 — Plugin Identity Consistency Contract
+- Last completed RFC: RFC-031 — Plugin Identity Consistency Contract
 - Technical implementation commit: `defc1fe`
-- Previous documentation baseline commit: `2c06b53`
+- Documentation baseline commit: `8462b53`
 - Full regression baseline: 184 passed
 
 ### Architectural Finding
 
-The current `PluginRegistry` resolves a plugin factory by registration name but does not verify that the created plugin reports the same identity through `Plugin.name`.
+The current Plugin Framework has an authoritative registration identity but no explicit plugin metadata or plugin-version contract.
 
-`PluginLifecycleManager` later reports active plugin identities from `Plugin.name`.
+`APP_VERSION` represents the PlantMind application version and SHALL NOT be reused as an implicit plugin version.
 
-Without an explicit consistency contract, registry identity and runtime plugin identity can diverge.
+ARCH-003 requires contracts to expose explicit version information and preserve immutable contract semantics.
+
+Plugin metadata must extend the existing controlled registration model without creating a second identity, registry, discovery mechanism, or compatibility engine.
 
 ### Dependencies
 
 - Existing `Plugin` contract
+- Existing `PluginRegistration`
 - Existing `PluginRegistry`
-- Existing `PluginLifecycleManager`
-- Existing Generic Registry behavior
+- Plugin identity invariant established by RFC-031
 - Controlled registration boundary established by RFC-030
 - Composition ownership established by RFC-029
+- ARCH-003 Contract Design Pattern
 
-### RFC-031 Contract
+### RFC-032 Contract
 
-- The registration name SHALL remain the authoritative registry identity.
-- A plugin created for registration name `X` SHALL report `plugin.name == X`.
-- Identity validation SHALL occur when the plugin instance is created, not during composition.
-- Plugin creation SHALL remain lazy.
-- Identity mismatch SHALL raise a dedicated plugin-specific error.
-- Plugin identity errors SHALL NOT be added to the Generic Registry error hierarchy.
-- A plugin with mismatched identity SHALL NOT be activated.
-- Existing duplicate-registration and registration-not-found behavior SHALL remain unchanged.
-- Existing registry ordering semantics SHALL remain unchanged.
-- `PluginLifecycleManager` SHALL retain activation and deactivation responsibility.
-- `BootstrapManager` SHALL retain startup and shutdown orchestration responsibility.
-- RFC-031 SHALL NOT introduce plugin metadata, version compatibility, discovery, filesystem scanning, package loading, or security approval policy.
+- Introduce an immutable `PluginMetadata` contract.
+- `PluginMetadata` SHALL declare an explicit `plugin_version`.
+- `PluginMetadata` SHALL expose an explicit immutable metadata contract version.
+- Plugin metadata SHALL NOT introduce another authoritative plugin name.
+- `PluginRegistration.name` SHALL remain the authoritative plugin identity.
+- Existing registrations without metadata SHALL remain backward compatible.
+- `PluginRegistration` MAY carry `PluginMetadata`.
+- Metadata supplied through controlled composition SHALL be associated with the same existing `PluginRegistry` registration.
+- Metadata access SHALL NOT instantiate the plugin factory.
+- Clearing the `PluginRegistry` SHALL also clear associated plugin metadata.
+- Existing duplicate-registration, registration-not-found, ordering and identity semantics SHALL remain unchanged.
+- Plugin metadata SHALL NOT alter lifecycle or Bootstrap behavior.
+- `APP_VERSION` SHALL NOT be used as an implicit plugin version.
+- RFC-032 SHALL NOT introduce semantic-version compatibility evaluation, plugin discovery, filesystem scanning, package loading, capability catalogs, or security approval policy.
 
 ### TDD Scope
 
-RFC-031 implementation SHALL be driven by focused tests proving:
+RFC-032 implementation SHALL be driven by focused tests proving:
 
-1. A plugin whose runtime name matches its registration name is created normally.
-2. A plugin whose runtime name differs from its registration name raises the dedicated identity mismatch error.
-3. The mismatch error exposes the expected registration identity and actual plugin identity in a deterministic diagnostic message.
-4. Identity validation occurs only when the factory is resolved and the plugin instance is created.
-5. Composition remains lazy and does not instantiate plugins merely to validate identity.
-6. A mismatched plugin supplied through the controlled composition boundary is rejected before activation.
-7. A mismatched plugin is not added to the active plugin set.
-8. Matching plugins continue to activate and deactivate through the existing lifecycle path.
-9. Existing duplicate-registration behavior remains unchanged.
-10. Existing registration-not-found behavior remains unchanged.
+1. `PluginMetadata` is immutable.
+2. Plugin version is explicitly represented independently from `APP_VERSION`.
+3. The metadata contract exposes its own immutable contract version.
+4. Existing `PluginRegistration(name, factory)` construction remains backward compatible.
+5. A `PluginRegistration` can carry explicit plugin metadata.
+6. Composition forwards supplied metadata into the same composed `PluginRegistry`.
+7. Plugin metadata can be read without creating the plugin instance.
+8. Clearing the Plugin Registry removes associated metadata.
+9. Duplicate plugin registration preserves the existing `DuplicateRegistrationError` behavior without corrupting metadata.
+10. Plugin metadata does not change RFC-031 identity validation or existing lifecycle behavior.
 
 ### Implementation Boundary
 
-RFC-031 should modify only the minimum plugin error, registry and focused test surfaces required to establish plugin identity consistency.
+RFC-032 should modify only the minimum plugin metadata, registration, registry, composition and focused test surfaces required to establish the metadata contract.
 
-Do not redesign the `Plugin` contract, Generic Registry, Composition Root, lifecycle architecture or Bootstrap orchestration.
-
-### Verification
-
-- Compilation: passed
-- Focused RFC-031 tests: 10 passed
-- Impacted plugin, composition and bootstrap tests: 34 passed
-- Full regression: 184 passed
-- `git diff --check`: passed
-- Technical commit: `defc1fe`
-- Push: verified
-- Technical working tree: clean
+Do not redesign the `Plugin` contract, Generic Registry, Plugin Lifecycle Manager, Bootstrap Manager or Composition Root ownership model.
 
 ### Next Exact Action
 
-Commit and push the RFC-031 documentation closure if not already completed, then perform the architecture review required before selecting RFC-032.
+Write the RFC-032 failing focused tests before implementation.
 
 ---
 
