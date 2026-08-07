@@ -15,6 +15,10 @@ from app.core.configuration.configuration_provider import (
 from app.core.container.service_container import ServiceContainer
 from app.core.health import HealthCapability
 from app.core.logging.logging_provider import LoggingProvider
+from app.core.plugins import PluginRegistry
+from app.core.plugins.plugin_lifecycle_manager import (
+    PluginLifecycleManager,
+)
 from app.core.runtime import Runtime
 from app.core.services.service_registry import ServiceRegistry
 
@@ -28,6 +32,8 @@ class PlatformComposition:
     logging: LoggingProvider
     runtime: Runtime
     registry: ServiceRegistry
+    plugin_registry: PluginRegistry
+    plugin_lifecycle: PluginLifecycleManager
     bootstrap: BootstrapManager
     health: HealthCapability
 
@@ -42,10 +48,16 @@ class CompositionRoot:
         logging = LoggingProvider()
         runtime = Runtime()
         registry = ServiceRegistry()
+        plugin_registry = PluginRegistry()
+        plugin_lifecycle = PluginLifecycleManager(
+            plugin_registry
+        )
 
         bootstrap = BootstrapManager(
             runtime_instance=runtime,
             registry=registry,
+            plugin_registry=plugin_registry,
+            plugin_lifecycle=plugin_lifecycle,
         )
 
         health = HealthCapability(
@@ -70,6 +82,14 @@ class CompositionRoot:
             registry,
         )
         container.register_instance(
+            PluginRegistry,
+            plugin_registry,
+        )
+        container.register_instance(
+            PluginLifecycleManager,
+            plugin_lifecycle,
+        )
+        container.register_instance(
             BootstrapManager,
             bootstrap,
         )
@@ -84,6 +104,8 @@ class CompositionRoot:
             logging=logging,
             runtime=runtime,
             registry=registry,
+            plugin_registry=plugin_registry,
+            plugin_lifecycle=plugin_lifecycle,
             bootstrap=bootstrap,
             health=health,
         )
