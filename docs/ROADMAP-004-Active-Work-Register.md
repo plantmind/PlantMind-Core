@@ -33,15 +33,15 @@ No item may be marked complete until:
 
 # Active Work
 
-## RFC-030 Selection — Architecture Review
+## RFC-030 — Controlled Plugin Registration Boundary
 
 ### Status
 
-Not started — architecture review required.
+Architecture review complete; contract and TDD scope defined; implementation not started.
 
 ### Objective
 
-Select the highest-value architectural RFC after RFC-029 without duplicating existing responsibilities or bypassing accepted platform architecture.
+Introduce an explicit and deterministic boundary for registering approved plugins into the existing `PluginRegistry` without duplicating registry, lifecycle, bootstrap, or composition responsibilities.
 
 ### Current Technical Baseline
 
@@ -52,19 +52,58 @@ Select the highest-value architectural RFC after RFC-029 without duplicating exi
 
 ### Dependencies
 
-RFC-029 documentation synchronization must be committed and pushed before RFC-030 selection begins.
+- Existing `PluginRegistry`
+- Existing `PluginLifecycleManager`
+- Existing Composition Root ownership established by RFC-029
+- Existing Bootstrap lifecycle integration
+- Existing Generic Registry behavior and duplicate-registration protection
 
 ### Resume Condition
 
-The RFC-029 documentation synchronization is committed and pushed, the branch is up to date with origin, and the working tree is clean.
+Architecture review is complete. The RFC-030 contract, responsibility boundary and TDD scope are defined and reviewed.
+
+Implementation may begin only through the documented failing-test-first TDD sequence.
 
 ### Next Exact Action
 
-If RFC-029 documentation synchronization remains uncommitted, review, commit and push it, then verify a clean working tree.
+Write the RFC-030 failing focused tests before implementation.
 
-Otherwise, review current committed code, tests, accepted architecture documents, deferred work, public APIs, lifecycle ownership, dependency injection, registries, plugin infrastructure and Composition Root responsibilities before selecting RFC-030.
+The design must preserve existing registry, lifecycle, bootstrap and composition responsibilities and must not introduce automatic filesystem discovery or a parallel plugin registry.
 
-No RFC-030 implementation may begin before that architecture review is complete.
+### RFC-030 Contract
+
+- Introduce an immutable `PluginRegistration` declaration containing a plugin name and factory.
+- Extend the Composition Root with an optional ordered sequence of plugin registrations.
+- Preserve empty registration input as the backward-compatible default.
+- Apply registrations to the existing composed `PluginRegistry`.
+- Preserve existing `PluginRegistry` duplicate-registration semantics.
+- Preserve the existing `PluginLifecycleManager` responsibility for plugin creation, activation and deactivation.
+- Preserve lazy plugin creation; composition SHALL register factories without instantiating plugins.
+- Keep `build_platform_composition` behavior aligned with `CompositionRoot.build` while preserving its no-argument compatibility.
+- Preserve `BootstrapManager` responsibility for startup and shutdown orchestration.
+- Do not introduce a second registrar, registry, lifecycle manager, or plugin object graph.
+- Do not introduce filesystem discovery, dynamic module scanning, or automatic plugin loading in RFC-030.
+
+### TDD Scope
+
+RFC-030 implementation SHALL be driven by focused tests proving:
+
+1. `PluginRegistration` is immutable.
+2. Platform composition remains backward compatible when no plugin registrations are supplied.
+3. Explicit plugin registrations are added to the composed `PluginRegistry`.
+4. Registration order is deterministic and preserved.
+5. Composition registers plugin factories without eagerly creating plugin instances.
+6. The `PluginRegistry` resolved from `ServiceContainer` is the same registry containing the supplied registrations.
+7. `BootstrapManager` creates and activates plugins supplied through the composition boundary.
+8. Duplicate plugin registrations preserve the existing `DuplicateRegistrationError` behavior.
+9. The backward-compatible `build_platform_composition` factory continues to work with no registrations.
+10. `build_platform_composition` forwards explicit registrations through the same controlled boundary.
+
+### Implementation Boundary
+
+RFC-030 should modify only the minimum plugin-contract and composition surfaces required to establish this boundary.
+
+Plugin discovery, security approval policy, plugin metadata, version compatibility, package loading and enterprise extension catalogs are explicitly outside RFC-030.
 
 ---
 
