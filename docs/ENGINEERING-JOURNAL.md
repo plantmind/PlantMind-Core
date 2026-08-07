@@ -282,6 +282,44 @@ Verification:
 - Technical working tree after implementation: clean
 
 
+---
+
+### RFC-033 — Plugin Version Format Contract
+
+RFC-033 established a canonical version-format invariant for plugin metadata.
+
+The implementation:
+
+- Requires `PluginMetadata.plugin_version` to use canonical `MAJOR.MINOR.PATCH` format.
+- Requires each version component to be a non-negative decimal integer.
+- Rejects leading zeros except for the value `0`.
+- Rejects missing and additional version components.
+- Rejects `v` prefixes.
+- Rejects surrounding whitespace rather than normalizing it.
+- Rejects pre-release and build suffixes.
+- Rejects invalid separators.
+- Validates the version when immutable `PluginMetadata` is constructed.
+- Introduces the plugin-specific `InvalidPluginVersionError`.
+- Preserves `ValueError` semantics for invalid plugin versions.
+- Preserves valid RFC-032 metadata behavior.
+- Preserves `PluginMetadata.contract_version` semantics.
+- Preserves existing Registry, Composition Root, Plugin Lifecycle and Bootstrap responsibilities.
+- Introduces no external version-parsing dependency.
+- Introduces no version comparison, semantic-version compatibility evaluation, plugin discovery, filesystem scanning, package loading, capability catalog or security approval policy.
+
+Verification:
+
+- Compilation: passed
+- Focused RFC-033 tests: 10 passed
+- Impacted plugin, composition and bootstrap tests: 54 passed
+- Full regression: 204 passed
+- Invalid separator verification: passed
+- `git diff --check`: passed
+- Technical commit: `569e4fb`
+- Remote push: verified
+- Technical working tree after implementation: clean
+
+
 # Current Status
 
 PlantMind now possesses:
@@ -295,6 +333,7 @@ PlantMind now possesses:
 - Controlled Plugin Registration Boundary
 - Plugin Identity Consistency Contract
 - Plugin Metadata Contract
+- Plugin Version Format Contract
 - Service Lifecycle
 - Composition Root and dependency wiring
 - Structured engineering documentation
@@ -302,8 +341,8 @@ PlantMind now possesses:
 
 Current technical baseline:
 
-- RFC-032 — Plugin Metadata Contract
-- Commit: `6b4d80f`
-- Full regression: 194 passed
+- RFC-033 — Plugin Version Format Contract
+- Commit: `569e4fb`
+- Full regression: 204 passed
 
 The project has successfully moved beyond prototype stage and entered long-term enterprise platform development.

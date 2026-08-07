@@ -6,12 +6,12 @@
 |---|---|
 | Project | PlantMind PM-001 |
 | Branch | `feature/engineering-platform` |
-| Last Completed RFC | RFC-032 — Plugin Metadata Contract |
-| Technical Baseline Commit | `6b4d80f` |
-| Test Baseline | 194 passed |
+| Last Completed RFC | RFC-033 — Plugin Version Format Contract |
+| Technical Baseline Commit | `569e4fb` |
+| Test Baseline | 204 passed |
 | Authoritative Environment | `PlantMind-Core/.venv` |
 | Remote State | Up to date with `origin/feature/engineering-platform` |
-| Technical Working Tree After RFC-032 | Clean |
+| Technical Working Tree After RFC-033 | Clean |
 
 ## Recent Engineering Sequence
 
@@ -23,52 +23,48 @@
 - RFC-030 — Controlled Plugin Registration Boundary
 - RFC-031 — Plugin Identity Consistency Contract
 - RFC-032 — Plugin Metadata Contract
+- RFC-033 — Plugin Version Format Contract
 
-## RFC-032 Outcome
+## RFC-033 Outcome
 
-RFC-032 established the minimal immutable metadata contract for registered plugins.
+RFC-033 established a canonical version-format invariant for plugin metadata.
 
-The plugin infrastructure now:
+The plugin metadata contract now:
 
-- Provides immutable `PluginMetadata`
-- Requires an explicit `plugin_version`
-- Exposes immutable metadata contract version `1.0`
-- Keeps `PluginRegistration.name` as the authoritative plugin identity
-- Preserves backward-compatible `PluginRegistration(name, factory)` construction
-- Allows `PluginRegistration` to carry optional metadata
-- Associates metadata with the same existing `PluginRegistry`
-- Exposes metadata without instantiating plugin factories
-- Clears associated metadata when the Plugin Registry is cleared
-- Preserves duplicate-registration semantics without metadata corruption
-- Preserves RFC-031 runtime identity validation
-- Preserves lazy plugin creation and Composition Root ownership
-- Preserves `PluginLifecycleManager` lifecycle ownership
-- Preserves `BootstrapManager` startup and shutdown orchestration
-- Keeps plugin version independent from PlantMind `APP_VERSION`
-- Introduces no semantic-version compatibility evaluation, plugin discovery, filesystem scanning, package loading, capability catalog or security approval policy
+- Requires `plugin_version` to use canonical `MAJOR.MINOR.PATCH` format
+- Requires each version component to be a non-negative decimal integer
+- Rejects leading zeros except for the value `0`
+- Rejects missing and additional version components
+- Rejects `v` prefixes
+- Rejects surrounding whitespace rather than normalizing it
+- Rejects pre-release and build suffixes
+- Rejects invalid separators
+- Validates versions when immutable `PluginMetadata` is constructed
+- Raises plugin-specific `InvalidPluginVersionError` for invalid versions
+- Preserves `ValueError` semantics for invalid plugin versions
+- Preserves `PluginMetadata.contract_version` semantics
+- Preserves valid RFC-032 plugin metadata behavior
+- Preserves Registry, Composition Root, Plugin Lifecycle and Bootstrap responsibilities
+- Introduces no external version-parsing dependency
+- Introduces no version comparison, semantic-version compatibility evaluation, plugin discovery, filesystem scanning, package loading, capability catalog or security approval policy
 
-## RFC-032 Verification
+## RFC-033 Verification
 
 - Compilation: passed
-- Focused RFC-032 tests: 10 passed
-- Impacted plugin, composition and bootstrap tests: 44 passed
-- Full regression: 194 passed
+- Focused RFC-033 tests: 10 passed
+- Impacted plugin, composition and bootstrap tests: 54 passed
+- Full regression: 204 passed
+- Invalid separator verification: passed
 - `git diff --check`: passed
-- Technical commit: `6b4d80f`
+- Technical commit: `569e4fb`
 - Push: verified
 - Technical working tree: clean
 
 ## Documentation Closure
 
-The technical implementation of RFC-032 is complete.
+The technical implementation of RFC-033 is complete.
 
-The engineering-memory layer has been synchronized with the RFC-032 technical baseline.
-
-Final documentation verification completed successfully:
-
-- English-only tracked-file audit: passed
-- Git diff check: passed
-- Full regression after documentation synchronization: 194 passed
+The engineering-memory layer has been synchronized with the RFC-033 technical baseline.
 
 Relevant maintained documents:
 
@@ -80,18 +76,16 @@ Relevant maintained documents:
 
 ## Next Exact Action
 
-Complete RFC-032 documentation synchronization across the maintained engineering-memory documents.
+Begin architecture review for RFC-034 from the latest committed Git state.
 
-Then:
+Before selecting or implementing RFC-034:
 
-1. Review the final documentation diff.
-2. Run the English-only tracked-file audit.
-3. Run `git diff --check`.
-4. Run the full regression suite.
-5. Commit and push the RFC-032 documentation closure.
-6. Confirm the branch is up to date with origin and the working tree is clean.
-
-Only after RFC-032 documentation closure is complete may the architecture review for RFC-033 begin.
+1. Review the Active Work Register.
+2. Review current committed code and tests.
+3. Review accepted RFCs, ADRs, architecture documents and deferred work.
+4. Preserve the established Registry, Plugin Identity, Plugin Metadata, Plugin Version Format, Plugin Lifecycle, Controlled Registration, Service, Bootstrap and Composition responsibilities.
+5. Do not introduce version compatibility evaluation, plugin discovery, filesystem scanning, package loading, capability catalogs or security approval policy without dedicated architecture review.
+6. Record the selected RFC objective and next exact action before implementation begins.
 
 ## Required Test Command
 

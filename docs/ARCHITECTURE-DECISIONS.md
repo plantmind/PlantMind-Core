@@ -684,3 +684,66 @@ RFC-032 does not evaluate semantic-version compatibility and does not define plu
 Future plugin compatibility, discovery, catalog, package-loading or security-approval mechanisms must build on this metadata contract while preserving the authoritative registration identity, lazy creation, controlled registration boundary and existing lifecycle responsibilities.
 
 Any expansion of plugin metadata semantics requires dedicated architecture review before implementation.
+
+---
+
+# AD-019 — Plugin Version Format Is Validated at Metadata Construction
+
+## Context
+
+RFC-032 introduced explicit plugin version metadata but did not constrain the format of `plugin_version`.
+
+Future compatibility, catalog or governance mechanisms require plugin versions to have a stable canonical representation before they can safely depend on version information.
+
+Version-format validation must not create new Registry, Composition, Lifecycle or Bootstrap responsibilities.
+
+## Decision
+
+`PluginMetadata.plugin_version` SHALL use canonical `MAJOR.MINOR.PATCH` format.
+
+`MAJOR`, `MINOR` and `PATCH` SHALL each be non-negative decimal integers.
+
+Numeric components SHALL NOT contain leading zeros except for the value `0`.
+
+Missing components, additional components, `v` prefixes, surrounding whitespace, pre-release suffixes, build suffixes and invalid separators SHALL be rejected.
+
+Validation SHALL occur when immutable `PluginMetadata` is constructed.
+
+Invalid plugin versions SHALL raise the plugin-specific `InvalidPluginVersionError`.
+
+`InvalidPluginVersionError` SHALL preserve `ValueError` semantics.
+
+`PluginMetadata.contract_version` semantics SHALL remain unchanged.
+
+Valid RFC-032 plugin metadata behavior SHALL remain unchanged.
+
+Version validation SHALL NOT be moved into `PluginRegistry`, `PluginRegistration`, `CompositionRoot`, `PluginLifecycleManager` or `BootstrapManager`.
+
+RFC-033 SHALL NOT introduce an external version-parsing dependency.
+
+## Rationale
+
+- Establishes a deterministic canonical plugin version representation.
+- Fails invalid metadata at its natural contract boundary.
+- Keeps validation responsibility with the immutable metadata model.
+- Preserves existing Registry, Composition Root, Lifecycle and Bootstrap responsibilities.
+- Avoids unnecessary dependency expansion.
+- Creates a stable foundation for future version-aware architecture without implementing compatibility policy prematurely.
+
+## Consequences
+
+Plugin metadata containing a non-canonical version cannot be constructed.
+
+Existing registrations without metadata remain backward compatible.
+
+Valid RFC-032 metadata continues to behave as before.
+
+Plugin version format is now enforced independently from PlantMind `APP_VERSION`.
+
+RFC-033 does not define version comparison, semantic-version compatibility evaluation, plugin discovery, filesystem scanning, package loading, capability catalogs or security approval policy.
+
+## Future Impact
+
+Any future plugin compatibility, catalog, discovery, package-loading or governance mechanism must build on this canonical version-format invariant.
+
+Version comparison or compatibility policy requires a dedicated architecture review and must not be inferred from RFC-033 alone.

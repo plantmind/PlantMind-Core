@@ -9,9 +9,9 @@
 | Status | Active Development |
 | Deployment Model | On-Premise |
 | Development Branch | `feature/engineering-platform` |
-| Last Completed RFC        | RFC-032 — Plugin Metadata Contract                                                     |
-| Test Baseline             | 194 passing tests                                                                      |
-| Technical Baseline Commit | `6b4d80f`                                                                              |
+| Last Completed RFC        | RFC-033 — Plugin Version Format Contract                                               |
+| Test Baseline             | 204 passing tests                                                                      |
+| Technical Baseline Commit | `569e4fb`                                                                              |
 | Purpose | Authoritative context for continuing PlantMind development across engineering sessions |
 
 ---
@@ -364,35 +364,35 @@ It must extend, not discard, the accepted Plugin Framework.
 
 14. Immediate Development Direction
 
-RFC-032 is complete at the technical baseline.
+RFC-033 is complete at the technical baseline.
 
-The Plugin Metadata Contract introduces immutable `PluginMetadata` with an explicit plugin version and an immutable metadata contract version.
+The Plugin Version Format Contract now requires `PluginMetadata.plugin_version` to use canonical `MAJOR.MINOR.PATCH` format.
 
-Plugin metadata extends the existing controlled registration model without introducing another authoritative plugin identity. `PluginRegistration.name` remains the authoritative identity established by RFC-031.
+Each version component is a non-negative decimal integer, and leading zeros are rejected except for the value `0`.
 
-Existing `PluginRegistration(name, factory)` construction remains backward compatible, while registrations may optionally carry plugin metadata.
+Version validation occurs when immutable `PluginMetadata` is constructed.
 
-The existing `PluginRegistry` retains registration ownership and now associates optional metadata with the same plugin registration. Metadata can be read without instantiating the plugin factory, preserving lazy plugin creation.
+Invalid plugin versions raise the plugin-specific `InvalidPluginVersionError`, which preserves `ValueError` semantics.
 
-`CompositionRoot` forwards supplied metadata through the existing controlled registration boundary into the same composed `PluginRegistry`.
+The contract rejects missing or additional components, `v` prefixes, surrounding whitespace, pre-release suffixes, build suffixes and invalid separators.
 
-Registry clearing removes associated plugin metadata. Existing duplicate-registration, registration-not-found, ordering, plugin identity validation, lifecycle ownership and Bootstrap orchestration semantics remain unchanged.
+Existing valid RFC-032 metadata behavior and `PluginMetadata.contract_version` semantics remain unchanged.
 
-`APP_VERSION` remains the PlantMind application version and is not used as an implicit plugin version.
+Version validation remains inside the metadata contract and does not move into `PluginRegistry`, `PluginRegistration`, Composition Root, Plugin Lifecycle Manager or Bootstrap Manager.
 
-RFC-032 introduces no semantic-version compatibility evaluation, plugin discovery, filesystem scanning, package loading, capability catalog or security approval policy.
+RFC-033 introduces no external version-parsing dependency, version comparison, semantic-version compatibility evaluation, plugin discovery, filesystem scanning, package loading, capability catalog or security approval policy.
 
-Technical verification completed with 10 focused RFC-032 tests, 44 impacted plugin/composition/bootstrap tests and a full regression baseline of 194 passing tests.
+Technical verification completed with 10 focused RFC-033 tests, 54 impacted plugin/composition/bootstrap tests and a full regression baseline of 204 passing tests.
 
-RFC-033 has not yet been selected.
+RFC-034 has not yet been selected.
 
-Before selecting or implementing RFC-033:
+Before selecting or implementing RFC-034:
 
 Review the Active Work Register.
 Review current committed code and tests.
 Review accepted RFCs, ADRs, architecture documents and deferred work.
-Preserve the established Registry, Plugin Identity, Plugin Metadata, Plugin Lifecycle, Controlled Registration, Service, Bootstrap and Composition responsibilities.
-Do not introduce plugin discovery, semantic-version compatibility evaluation, filesystem scanning, package loading, capability catalogs or security approval policy without dedicated architecture review.
+Preserve the established Registry, Plugin Identity, Plugin Metadata, Plugin Version Format, Plugin Lifecycle, Controlled Registration, Service, Bootstrap and Composition responsibilities.
+Do not introduce version compatibility evaluation, plugin discovery, filesystem scanning, package loading, capability catalogs or security approval policy without dedicated architecture review.
 Record the selected RFC objective and next exact action before implementation begins.
 15. Session Continuation Instruction
 
