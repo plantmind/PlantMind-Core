@@ -616,3 +616,71 @@ Future plugin metadata, discovery, package loading, version compatibility and se
 ## Future Impact
 
 Any future enterprise extension framework, plugin catalog, discovery mechanism or security approval layer must use the authoritative registry identity consistently and must not introduce an alternate runtime plugin identity.
+
+---
+
+# AD-018 — Plugin Metadata Extends the Existing Registration Contract
+
+## Context
+
+RFC-032 introduced metadata for registered plugins after RFC-031 established the plugin registration name as the authoritative plugin identity.
+
+Plugin metadata must provide explicit version information without creating a second identity, registry, lifecycle path, discovery mechanism, or compatibility engine.
+
+The metadata model must also preserve lazy plugin creation and the controlled registration boundary established by RFC-030.
+
+## Decision
+
+Plugin metadata SHALL be represented by immutable `PluginMetadata`.
+
+`PluginMetadata` SHALL require an explicit `plugin_version`.
+
+The metadata contract SHALL expose immutable contract version `1.0`.
+
+`PluginRegistration.name` SHALL remain the authoritative plugin identity and plugin metadata SHALL NOT introduce another plugin name.
+
+`PluginRegistration` MAY contain optional `PluginMetadata`.
+
+Existing `PluginRegistration(name, factory)` construction SHALL remain backward compatible.
+
+Plugin metadata SHALL be associated with the same registration inside the existing `PluginRegistry`.
+
+Metadata lookup SHALL NOT instantiate the registered plugin factory.
+
+`CompositionRoot` SHALL forward supplied plugin metadata through the existing controlled registration boundary into the same composed `PluginRegistry`.
+
+Clearing `PluginRegistry` SHALL also clear its associated plugin metadata.
+
+Existing duplicate-registration, registration-not-found, registry ordering and RFC-031 identity-validation semantics SHALL remain unchanged.
+
+`PluginLifecycleManager` SHALL retain activation and deactivation responsibility.
+
+`BootstrapManager` SHALL retain startup and shutdown orchestration responsibility.
+
+PlantMind `APP_VERSION` SHALL NOT be used as an implicit plugin version.
+
+## Rationale
+
+- Provides explicit plugin-version metadata without coupling plugins to the PlantMind application version.
+- Preserves one authoritative plugin identity.
+- Preserves the existing composed plugin infrastructure.
+- Maintains lazy plugin creation.
+- Preserves backward compatibility for existing plugin registrations.
+- Prevents metadata from creating a parallel registry or lifecycle responsibility.
+- Establishes a minimal contract that future plugin capabilities can extend through dedicated architecture decisions.
+
+## Consequences
+
+Plugin metadata is optional for existing registrations but, when supplied, is stored alongside the authoritative registration in the existing `PluginRegistry`.
+
+Metadata can be inspected independently of plugin instantiation.
+
+Metadata lifecycle follows registration lifecycle and is removed when the Plugin Registry is cleared.
+
+RFC-032 does not evaluate semantic-version compatibility and does not define plugin discovery, filesystem scanning, package loading, capability catalogs or security approval policy.
+
+## Future Impact
+
+Future plugin compatibility, discovery, catalog, package-loading or security-approval mechanisms must build on this metadata contract while preserving the authoritative registration identity, lazy creation, controlled registration boundary and existing lifecycle responsibilities.
+
+Any expansion of plugin metadata semantics requires dedicated architecture review before implementation.

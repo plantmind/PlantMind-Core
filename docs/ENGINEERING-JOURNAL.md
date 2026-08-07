@@ -246,6 +246,42 @@ Verification:
 
 ---
 
+### RFC-032 — Plugin Metadata Contract
+
+RFC-032 introduced a minimal immutable metadata contract for registered plugins while preserving the existing authoritative plugin identity and lifecycle architecture.
+
+The implementation:
+
+- Introduced immutable `PluginMetadata`.
+- Requires an explicit `plugin_version`.
+- Exposes immutable metadata contract version `1.0`.
+- Keeps `PluginRegistration.name` as the authoritative plugin identity.
+- Preserves backward-compatible `PluginRegistration(name, factory)` construction.
+- Allows `PluginRegistration` to carry optional metadata.
+- Associates metadata with the same existing `PluginRegistry`.
+- Exposes plugin metadata without instantiating plugin factories.
+- Clears associated metadata when the Plugin Registry is cleared.
+- Preserves duplicate-registration semantics without corrupting existing metadata.
+- Preserves RFC-031 plugin identity validation.
+- Preserves lazy plugin creation.
+- Preserves `PluginLifecycleManager` lifecycle ownership.
+- Preserves `BootstrapManager` startup and shutdown orchestration.
+- Preserves Composition Root ownership and the controlled registration boundary.
+- Keeps plugin version independent from PlantMind `APP_VERSION`.
+- Introduces no semantic-version compatibility evaluation, plugin discovery, filesystem scanning, package loading, capability catalog or security approval policy.
+
+Verification:
+
+- Compilation: passed
+- Focused RFC-032 tests: 10 passed
+- Impacted plugin, composition and bootstrap tests: 44 passed
+- Full regression: 194 passed
+- `git diff --check`: passed
+- Technical commit: `6b4d80f`
+- Remote push: verified
+- Technical working tree after implementation: clean
+
+
 # Current Status
 
 PlantMind now possesses:
@@ -258,6 +294,7 @@ PlantMind now possesses:
 - Plugin Infrastructure Composition
 - Controlled Plugin Registration Boundary
 - Plugin Identity Consistency Contract
+- Plugin Metadata Contract
 - Service Lifecycle
 - Composition Root and dependency wiring
 - Structured engineering documentation
@@ -265,8 +302,8 @@ PlantMind now possesses:
 
 Current technical baseline:
 
-- RFC-031 — Plugin Identity Consistency Contract
-- Commit: `defc1fe`
-- Full regression: 184 passed
+- RFC-032 — Plugin Metadata Contract
+- Commit: `6b4d80f`
+- Full regression: 194 passed
 
 The project has successfully moved beyond prototype stage and entered long-term enterprise platform development.

@@ -9,9 +9,9 @@
 | Status | Active Development |
 | Deployment Model | On-Premise |
 | Development Branch | `feature/engineering-platform` |
-| Last Completed RFC | RFC-031 — Plugin Identity Consistency Contract |
-| Test Baseline | 184 passing tests |
-| Technical Baseline Commit | `defc1fe` |
+| Last Completed RFC        | RFC-032 — Plugin Metadata Contract                                                     |
+| Test Baseline             | 194 passing tests                                                                      |
+| Technical Baseline Commit | `6b4d80f`                                                                              |
 | Purpose | Authoritative context for continuing PlantMind development across engineering sessions |
 
 ---
@@ -364,23 +364,35 @@ It must extend, not discard, the accepted Plugin Framework.
 
 14. Immediate Development Direction
 
-RFC-031 is complete at the technical baseline.
+RFC-032 is complete at the technical baseline.
 
-The Plugin Identity Consistency Contract now guarantees that a plugin instance created for a registered identity must report the same identity through `Plugin.name`.
+The Plugin Metadata Contract introduces immutable `PluginMetadata` with an explicit plugin version and an immutable metadata contract version.
 
-Identity validation occurs at the existing `PluginRegistry.create()` boundary, preserving lazy creation and preventing mismatched plugins from reaching activation.
+Plugin metadata extends the existing controlled registration model without introducing another authoritative plugin identity. `PluginRegistration.name` remains the authoritative identity established by RFC-031.
 
-The implementation preserves Generic Registry behavior, duplicate-registration and registration-not-found semantics, registry ordering, controlled registration, plugin lifecycle ownership, Bootstrap orchestration and Composition Root responsibilities.
+Existing `PluginRegistration(name, factory)` construction remains backward compatible, while registrations may optionally carry plugin metadata.
 
-RFC-032 has not yet been selected.
+The existing `PluginRegistry` retains registration ownership and now associates optional metadata with the same plugin registration. Metadata can be read without instantiating the plugin factory, preserving lazy plugin creation.
 
-Before selecting or implementing RFC-032:
+`CompositionRoot` forwards supplied metadata through the existing controlled registration boundary into the same composed `PluginRegistry`.
+
+Registry clearing removes associated plugin metadata. Existing duplicate-registration, registration-not-found, ordering, plugin identity validation, lifecycle ownership and Bootstrap orchestration semantics remain unchanged.
+
+`APP_VERSION` remains the PlantMind application version and is not used as an implicit plugin version.
+
+RFC-032 introduces no semantic-version compatibility evaluation, plugin discovery, filesystem scanning, package loading, capability catalog or security approval policy.
+
+Technical verification completed with 10 focused RFC-032 tests, 44 impacted plugin/composition/bootstrap tests and a full regression baseline of 194 passing tests.
+
+RFC-033 has not yet been selected.
+
+Before selecting or implementing RFC-033:
 
 Review the Active Work Register.
 Review current committed code and tests.
 Review accepted RFCs, ADRs, architecture documents and deferred work.
-Preserve the established Registry, Plugin Identity, Plugin Lifecycle, Controlled Registration, Service, Bootstrap and Composition responsibilities.
-Do not introduce plugin metadata, discovery, package loading or security approval policy without dedicated architecture review.
+Preserve the established Registry, Plugin Identity, Plugin Metadata, Plugin Lifecycle, Controlled Registration, Service, Bootstrap and Composition responsibilities.
+Do not introduce plugin discovery, semantic-version compatibility evaluation, filesystem scanning, package loading, capability catalogs or security approval policy without dedicated architecture review.
 Record the selected RFC objective and next exact action before implementation begins.
 15. Session Continuation Instruction
 
