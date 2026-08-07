@@ -33,88 +33,80 @@ No item may be marked complete until:
 
 # Active Work
 
-## RFC-030 — Controlled Plugin Registration Boundary
+## RFC-031 — Plugin Identity Consistency Contract
 
 ### Status
 
-Completed. Technical implementation and documentation verification are complete.
+Architecture review complete; contract and TDD scope defined; implementation not started.
 
 ### Objective
 
-Introduce an explicit and deterministic boundary for registering approved plugins into the existing `PluginRegistry` without duplicating registry, lifecycle, bootstrap, or composition responsibilities.
+Enforce one authoritative plugin identity by requiring every plugin instance created from a registered name to report the same `Plugin.name` as its registry identity.
 
 ### Current Technical Baseline
 
 - Branch: `feature/engineering-platform`
-- Current technical RFC: RFC-030 — Controlled Plugin Registration Boundary
-- Technical baseline commit: `72a8533`
+- Last completed RFC: RFC-030 — Controlled Plugin Registration Boundary
+- Technical implementation commit: `72a8533`
+- Documentation baseline commit: `2c06b53`
 - Full regression baseline: 174 passed
+
+### Architectural Finding
+
+The current `PluginRegistry` resolves a plugin factory by registration name but does not verify that the created plugin reports the same identity through `Plugin.name`.
+
+`PluginLifecycleManager` later reports active plugin identities from `Plugin.name`.
+
+Without an explicit consistency contract, registry identity and runtime plugin identity can diverge.
 
 ### Dependencies
 
+- Existing `Plugin` contract
 - Existing `PluginRegistry`
 - Existing `PluginLifecycleManager`
-- Existing Composition Root ownership established by RFC-029
-- Existing Bootstrap lifecycle integration
-- Existing Generic Registry behavior and duplicate-registration protection
+- Existing Generic Registry behavior
+- Controlled registration boundary established by RFC-030
+- Composition ownership established by RFC-029
 
-### Resume Condition
+### RFC-031 Contract
 
-RFC-030 technical implementation is complete and verified.
-
-RFC-030 implementation and documentation verification are complete.
-
-### Verification
-
-- Focused RFC-030 tests: 10 passed
-- Impacted plugin, composition and bootstrap tests: 24 passed
-- Full regression: 174 passed
-- `git diff --check`: passed
-- Technical commit: `72a8533`
-- Push: verified
-- Technical working tree: clean
-
-### Next Exact Action
-
-Commit and push the RFC-030 documentation closure if not already completed, then perform the architecture review required before selecting RFC-031.
-
-The design must preserve existing registry, lifecycle, bootstrap and composition responsibilities and must not introduce automatic filesystem discovery or a parallel plugin registry.
-
-### RFC-030 Contract
-
-- Introduce an immutable `PluginRegistration` declaration containing a plugin name and factory.
-- Extend the Composition Root with an optional sequence of plugin registrations.
-- Preserve empty registration input as the backward-compatible default.
-- Apply registrations to the existing composed `PluginRegistry`.
-- Preserve existing `PluginRegistry` duplicate-registration semantics.
-- Preserve existing `PluginRegistry.registered()` ordering semantics; RFC-030 SHALL NOT redefine registry ordering.
-- Preserve the existing `PluginLifecycleManager` responsibility for plugin creation, activation and deactivation.
-- Preserve lazy plugin creation; composition SHALL register factories without instantiating plugins.
-- Keep `build_platform_composition` behavior aligned with `CompositionRoot.build` while preserving its no-argument compatibility.
-- Preserve `BootstrapManager` responsibility for startup and shutdown orchestration.
-- Do not introduce a second registrar, registry, lifecycle manager, or plugin object graph.
-- Do not introduce filesystem discovery, dynamic module scanning, or automatic plugin loading in RFC-030.
+- The registration name SHALL remain the authoritative registry identity.
+- A plugin created for registration name `X` SHALL report `plugin.name == X`.
+- Identity validation SHALL occur when the plugin instance is created, not during composition.
+- Plugin creation SHALL remain lazy.
+- Identity mismatch SHALL raise a dedicated plugin-specific error.
+- Plugin identity errors SHALL NOT be added to the Generic Registry error hierarchy.
+- A plugin with mismatched identity SHALL NOT be activated.
+- Existing duplicate-registration and registration-not-found behavior SHALL remain unchanged.
+- Existing registry ordering semantics SHALL remain unchanged.
+- `PluginLifecycleManager` SHALL retain activation and deactivation responsibility.
+- `BootstrapManager` SHALL retain startup and shutdown orchestration responsibility.
+- RFC-031 SHALL NOT introduce plugin metadata, version compatibility, discovery, filesystem scanning, package loading, or security approval policy.
 
 ### TDD Scope
 
-RFC-030 implementation SHALL be driven by focused tests proving:
+RFC-031 implementation SHALL be driven by focused tests proving:
 
-1. `PluginRegistration` is immutable.
-2. Platform composition remains backward compatible when no plugin registrations are supplied.
-3. Explicit plugin registrations are added to the composed `PluginRegistry`.
-4. Registration ordering remains deterministic according to the existing `PluginRegistry` semantics.
-5. Composition registers plugin factories without eagerly creating plugin instances.
-6. The `PluginRegistry` resolved from `ServiceContainer` is the same registry containing the supplied registrations.
-7. `BootstrapManager` creates and activates plugins supplied through the composition boundary.
-8. Duplicate plugin registrations preserve the existing `DuplicateRegistrationError` behavior.
-9. The backward-compatible `build_platform_composition` factory continues to work with no registrations.
-10. `build_platform_composition` forwards explicit registrations through the same controlled boundary.
+1. A plugin whose runtime name matches its registration name is created normally.
+2. A plugin whose runtime name differs from its registration name raises the dedicated identity mismatch error.
+3. The mismatch error exposes the expected registration identity and actual plugin identity in a deterministic diagnostic message.
+4. Identity validation occurs only when the factory is resolved and the plugin instance is created.
+5. Composition remains lazy and does not instantiate plugins merely to validate identity.
+6. A mismatched plugin supplied through the controlled composition boundary is rejected before activation.
+7. A mismatched plugin is not added to the active plugin set.
+8. Matching plugins continue to activate and deactivate through the existing lifecycle path.
+9. Existing duplicate-registration behavior remains unchanged.
+10. Existing registration-not-found behavior remains unchanged.
 
 ### Implementation Boundary
 
-RFC-030 should modify only the minimum plugin-contract and composition surfaces required to establish this boundary.
+RFC-031 should modify only the minimum plugin error, registry and focused test surfaces required to establish plugin identity consistency.
 
-Plugin discovery, security approval policy, plugin metadata, version compatibility, package loading and enterprise extension catalogs are explicitly outside RFC-030.
+Do not redesign the `Plugin` contract, Generic Registry, Composition Root, lifecycle architecture or Bootstrap orchestration.
+
+### Next Exact Action
+
+Write the RFC-031 failing focused tests before implementation.
 
 ---
 
