@@ -57,6 +57,7 @@ class CompositionRoot:
             plugin_registry.register(
                 registration.name,
                 registration.factory,
+                metadata=registration.metadata,
             )
 
         plugin_lifecycle = PluginLifecycleManager(
