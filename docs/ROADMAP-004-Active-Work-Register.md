@@ -33,95 +33,99 @@ No item may be marked complete until:
 
 # Active Work
 
-## RFC-033 — Plugin Version Format Contract
+## RFC-034 — Bootstrap Startup Failure Atomicity Contract
 
 ### Status
 
-Completed.
+Architecture review complete; contract and TDD scope defined; implementation not started.
 
 ### Objective
 
-Establish a deterministic validation contract for `PluginMetadata.plugin_version` without introducing version compatibility evaluation, discovery, package loading, or external version-parsing dependencies.
+Enforce fail-fast and atomic startup behavior at the Bootstrap orchestration boundary so that a failed startup cannot leave successfully started services or plugins intentionally running and Runtime cannot become READY.
 
 ### Current Technical Baseline
 
 - Branch: `feature/engineering-platform`
-- Current technical RFC: RFC-033 — Plugin Version Format Contract
-- Technical implementation commit: `569e4fb`
-- Previous documentation baseline commit: `04a5fc8`
+- Last completed RFC: RFC-033 — Plugin Version Format Contract
+- RFC-033 technical commit: `569e4fb`
+- Documentation baseline commit: `e3d3b3a`
 - Full regression baseline: 204 passed
 
-### Architectural Finding
+### Architectural Findings
 
-RFC-032 introduced an explicit plugin version but currently accepts any string value.
-
-The Plugin Framework requires a stable version-format invariant before future compatibility or catalog mechanisms can safely depend on plugin versions.
-
-No version parsing utility or dedicated version dependency currently exists in the Core platform.
-
-Validation belongs to the immutable `PluginMetadata` contract rather than Registry, Composition, Lifecycle or Bootstrap responsibilities.
+- BOOT-002 requires Bootstrap to stop startup immediately when a critical dependency fails.
+- BOOT-002 prohibits partial startup unless explicitly supported.
+- BOOT-002 defines Service Validation before Service Initialization.
+- RUNTIME-001 defines `FAILED` as the state for a critical failure preventing safe operation.
+- Runtime currently exposes no public operation for transitioning to `FAILED`.
+- `BootstrapManager.startup()` currently validates and initializes services one at a time rather than completing the validation phase before initialization.
+- `BootstrapManager.startup()` currently performs no compensating cleanup when service initialization or plugin activation fails.
+- `PluginLifecycleManager` already tracks successfully activated plugins and deactivates active plugins in reverse order.
+- Startup recovery strategies remain a future enhancement and are not part of RFC-034.
 
 ### Dependencies
 
-- `PluginMetadata` introduced by RFC-032
-- Plugin-specific error hierarchy
-- Plugin identity invariant established by RFC-031
-- Controlled registration boundary established by RFC-030
-- ARCH-003 Contract Design Pattern
+- BOOT-002 — Bootstrap Lifecycle Architecture
+- BOOT-001 — Platform Bootstrap Lifecycle
+- RUNTIME-001 — Platform Lifecycle Architecture
+- `Runtime`
+- `BootstrapManager`
+- `ServiceRegistry`
+- `BaseService`
+- `PluginLifecycleManager`
 
-### RFC-033 Contract
+### RFC-034 Contract
 
-- `plugin_version` SHALL use canonical `MAJOR.MINOR.PATCH` format.
-- `MAJOR`, `MINOR` and `PATCH` SHALL each be non-negative decimal integers.
-- Numeric components SHALL NOT contain leading zeros except for the value `0`.
-- Examples of valid versions include `0.1.0`, `1.0.0` and `12.4.27`.
-- Prefixes such as `v`, surrounding whitespace, missing components and additional components SHALL be rejected.
-- Pre-release and build metadata syntax SHALL NOT be introduced by RFC-033.
-- Validation SHALL occur when `PluginMetadata` is constructed.
-- Invalid versions SHALL raise a dedicated `InvalidPluginVersionError`.
-- `InvalidPluginVersionError` SHALL remain within the plugin-specific error hierarchy and SHALL preserve `ValueError` semantics.
-- Validation SHALL NOT be moved into `PluginRegistry`, `CompositionRoot`, `PluginLifecycleManager` or `BootstrapManager`.
-- `PluginMetadata.contract_version` semantics SHALL remain unchanged.
-- Existing valid RFC-032 metadata behavior SHALL remain unchanged.
-- RFC-033 SHALL NOT introduce version comparison, semantic-version compatibility evaluation, plugin discovery, filesystem scanning, package loading, capability catalogs or security approval policy.
-- RFC-033 SHALL NOT introduce an external version-parsing dependency.
+- Bootstrap startup SHALL remain deterministic and fail fast.
+- All registered services SHALL complete validation before any registered service is initialized.
+- A service validation failure SHALL stop startup before service initialization or plugin activation begins.
+- A service initialization failure SHALL stop further initialization.
+- Only services whose `initialize()` operation completed successfully during the current startup attempt SHALL be eligible for startup rollback.
+- Successfully initialized services SHALL be shut down in reverse initialization order when a later startup stage fails.
+- A plugin activation failure SHALL stop further activation.
+- Successfully activated plugins SHALL be deactivated through the existing `PluginLifecycleManager` before initialized services are rolled back.
+- Plugin rollback SHALL preserve the existing reverse activation order.
+- Runtime SHALL expose a public failure transition operation owned by Runtime.
+- A critical startup failure SHALL transition Runtime to `FAILED` through that public Runtime operation.
+- Runtime readiness SHALL remain false after a failed startup.
+- Runtime SHALL NOT transition to READY unless all mandatory startup stages complete successfully.
+- The original startup exception SHALL remain the primary propagated failure when compensating cleanup completes successfully.
+- Successful startup and shutdown behavior SHALL remain backward compatible.
+- RFC-034 SHALL NOT introduce retry logic, automatic startup recovery, dependency graphs, parallel initialization, plugin discovery, service-state redesign, logging architecture redesign, or version compatibility policy.
 
 ### TDD Scope
 
-RFC-033 implementation SHALL be driven by focused tests proving:
+RFC-034 implementation SHALL be driven by focused tests proving:
 
-1. `0.1.0` is accepted.
-2. `1.0.0` is accepted.
-3. Multi-digit numeric components are accepted.
-4. Missing version components are rejected.
-5. Additional version components are rejected.
-6. Leading-zero numeric components are rejected.
-7. A `v` prefix is rejected.
-8. Surrounding whitespace is rejected rather than silently normalized.
-9. Pre-release or build suffixes are rejected.
-10. Invalid versions raise `InvalidPluginVersionError` while valid metadata preserves RFC-032 behavior.
+1. Runtime can transition to `FAILED` through its public API while remaining not ready.
+2. A service validation failure prevents all service initialization.
+3. A service validation failure prevents plugin activation.
+4. A service initialization failure prevents subsequent service initialization.
+5. Previously initialized services are shut down in reverse initialization order after initialization failure.
+6. A plugin activation failure rolls back previously activated plugins in reverse activation order.
+7. A plugin activation failure rolls back initialized services after plugin rollback.
+8. Any critical startup failure leaves Runtime in `FAILED` and not ready.
+9. The original startup exception remains the propagated failure when rollback completes successfully.
+10. Existing successful startup and shutdown behavior remains unchanged.
 
 ### Implementation Boundary
 
-RFC-033 should modify only the minimum plugin metadata, plugin error, public API and focused test surfaces required to enforce the version-format contract.
+RFC-034 should modify only the minimum Runtime, Bootstrap orchestration and focused test surfaces required to enforce the contract.
 
-Do not modify Generic Registry, `PluginRegistry`, `PluginRegistration`, Composition Root, Plugin Lifecycle Manager or Bootstrap Manager unless a failing regression proves a dependency that requires architecture review.
+`Runtime` retains ownership of Runtime state transitions.
 
-### Verification
+`BootstrapManager` retains startup and shutdown orchestration ownership.
 
-- Compilation: passed
-- Focused RFC-033 tests: 10 passed
-- Impacted plugin, composition and bootstrap tests: 54 passed
-- Full regression: 204 passed
-- Invalid separator verification: passed
-- `git diff --check`: passed
-- Technical commit: `569e4fb`
-- Push: verified
-- Technical working tree: clean
+`PluginLifecycleManager` retains plugin lifecycle ownership and its existing public deactivation path should be reused unless a failing focused test proves an architecture-reviewed change is required.
+
+Do not redesign `ServiceRegistry`, `BaseService`, `ServiceState`, `PluginRegistry`, `PluginRegistration`, Composition Root, plugin metadata, plugin versioning or existing lifecycle ownership.
+
+Secondary rollback-failure aggregation and startup recovery strategies require separate architecture review and are outside RFC-034.
 
 ### Next Exact Action
 
-Begin architecture review for RFC-034 from the RFC-033 technical and documentation baseline.
+Write the RFC-034 failing focused tests before implementation.
+
 
 ---
 
