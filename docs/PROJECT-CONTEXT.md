@@ -9,9 +9,9 @@
 | Status | Active Development |
 | Deployment Model | On-Premise |
 | Development Branch | `feature/engineering-platform` |
-| Last Completed RFC | RFC-029 — Plugin Infrastructure Composition |
-| Test Baseline | 164 passing tests |
-| Technical Baseline Commit | `10d6171` |
+| Last Completed RFC | RFC-030 — Controlled Plugin Registration Boundary |
+| Test Baseline | 174 passing tests |
+| Technical Baseline Commit | `72a8533` |
 | Purpose | Authoritative context for continuing PlantMind development across engineering sessions |
 
 ---
@@ -277,18 +277,18 @@ PlantMind-Core/backend/.venv
 
 The last verified baseline is:
 
-164 passed
+174 passed
 11. Git State at This Context Version
 Branch:
 feature/engineering-platform
 
 Last completed technical RFC commit:
-10d6171 RFC-029: compose plugin infrastructure
+72a8533 RFC-030: implement controlled plugin registration boundary
 
 Remote:
 origin/feature/engineering-platform
 
-Technical working tree after RFC-029:
+Technical working tree after RFC-030:
 clean
 12. Current Architectural Review
 
@@ -364,17 +364,21 @@ It must extend, not discard, the accepted Plugin Framework.
 
 14. Immediate Development Direction
 
-RFC-029 is complete at the technical baseline.
+RFC-030 is complete at the technical baseline.
 
-RFC-030 has not yet been selected.
+The Controlled Plugin Registration Boundary now provides an explicit and deterministic path for approved plugin registrations to enter the existing composed `PluginRegistry`.
 
-Before selecting or implementing RFC-030:
+The implementation preserves lazy plugin creation, existing registry ordering and duplicate-registration semantics, the existing plugin lifecycle boundary, and backward-compatible composition entry points.
+
+RFC-031 has not yet been selected.
+
+Before selecting or implementing RFC-031:
 
 Review the Active Work Register.
 Review current committed code and tests.
 Review accepted RFCs, ADRs, architecture documents and deferred work.
-Preserve the established Bootstrap, Registry, Plugin, Service and Composition responsibilities.
-Do not duplicate the existing Service Registry or plugin infrastructure.
+Preserve the established Bootstrap, Registry, Plugin Lifecycle, Controlled Registration, Service and Composition responsibilities.
+Do not duplicate existing plugin infrastructure or introduce automatic plugin discovery without architecture review.
 Record the selected RFC objective and next exact action before implementation begins.
 15. Session Continuation Instruction
 

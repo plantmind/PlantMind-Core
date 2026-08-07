@@ -37,7 +37,7 @@ No item may be marked complete until:
 
 ### Status
 
-Architecture review complete; contract and TDD scope defined; implementation not started.
+Completed. Technical implementation and documentation verification are complete.
 
 ### Objective
 
@@ -46,9 +46,9 @@ Introduce an explicit and deterministic boundary for registering approved plugin
 ### Current Technical Baseline
 
 - Branch: `feature/engineering-platform`
-- Last completed RFC: RFC-029 — Plugin Infrastructure Composition
-- Technical baseline commit: `10d6171`
-- Full regression baseline: 164 passed
+- Current technical RFC: RFC-030 — Controlled Plugin Registration Boundary
+- Technical baseline commit: `72a8533`
+- Full regression baseline: 174 passed
 
 ### Dependencies
 
@@ -60,13 +60,23 @@ Introduce an explicit and deterministic boundary for registering approved plugin
 
 ### Resume Condition
 
-Architecture review is complete. The RFC-030 contract, responsibility boundary and TDD scope are defined and reviewed.
+RFC-030 technical implementation is complete and verified.
 
-Implementation may begin only through the documented failing-test-first TDD sequence.
+RFC-030 implementation and documentation verification are complete.
+
+### Verification
+
+- Focused RFC-030 tests: 10 passed
+- Impacted plugin, composition and bootstrap tests: 24 passed
+- Full regression: 174 passed
+- `git diff --check`: passed
+- Technical commit: `72a8533`
+- Push: verified
+- Technical working tree: clean
 
 ### Next Exact Action
 
-Write the RFC-030 failing focused tests before implementation.
+Commit and push the RFC-030 documentation closure if not already completed, then perform the architecture review required before selecting RFC-031.
 
 The design must preserve existing registry, lifecycle, bootstrap and composition responsibilities and must not introduce automatic filesystem discovery or a parallel plugin registry.
 
@@ -121,6 +131,7 @@ Plugin discovery, security approval policy, plugin metadata, version compatibili
 | RFC-027 | `463e13f` | Plugin lifecycle integration into Bootstrap |
 | RFC-028 | `128f129` | Plugin lifecycle manager |
 | RFC-029 | `10d6171` | Plugin infrastructure composition |
+| RFC-030 | `72a8533` | Controlled plugin registration boundary |
 
 The previous RFC-021 and RFC-022 active-work entries were stale relative to the committed Git history and are no longer active items.
 

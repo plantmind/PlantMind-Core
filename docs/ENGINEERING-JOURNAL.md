@@ -187,6 +187,35 @@ These documents became part of the engineering process itself rather than option
 
 ---
 
+### RFC-030 — Controlled Plugin Registration Boundary
+
+RFC-030 introduced an explicit controlled boundary for supplying approved plugin registrations to the existing composed plugin infrastructure.
+
+The implementation:
+
+- Introduced immutable `PluginRegistration` declarations.
+- Extended `CompositionRoot.build` with an optional registration sequence.
+- Extended `build_platform_composition` through the same registration boundary.
+- Registers factories into the existing composed `PluginRegistry`.
+- Preserves lazy plugin creation.
+- Preserves existing registry ordering and duplicate-registration semantics.
+- Preserves `PluginLifecycleManager` ownership of creation, activation and deactivation.
+- Preserves `BootstrapManager` startup and shutdown orchestration.
+- Preserves backward-compatible composition with no registrations.
+- Introduces no parallel registrar, registry, lifecycle manager or plugin object graph.
+
+Verification:
+
+- Focused RFC-030 tests: 10 passed
+- Impacted plugin, composition and bootstrap tests: 24 passed
+- Full regression: 174 passed
+- `git diff --check`: passed
+- Technical commit: `72a8533`
+- Remote push: verified
+- Technical working tree after implementation: clean
+
+---
+
 # Current Status
 
 PlantMind now possesses:
@@ -197,6 +226,7 @@ PlantMind now possesses:
 - Core Plugin Framework
 - Plugin Lifecycle Manager
 - Plugin Infrastructure Composition
+- Controlled Plugin Registration Boundary
 - Service Lifecycle
 - Composition Root and dependency wiring
 - Structured engineering documentation
@@ -204,8 +234,8 @@ PlantMind now possesses:
 
 Current technical baseline:
 
-- RFC-029 — Plugin Infrastructure Composition
-- Commit: `10d6171`
-- Full regression: 164 passed
+- RFC-030 — Controlled Plugin Registration Boundary
+- Commit: `72a8533`
+- Full regression: 174 passed
 
 The project has successfully moved beyond prototype stage and entered long-term enterprise platform development.

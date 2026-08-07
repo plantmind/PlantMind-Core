@@ -462,8 +462,6 @@ Relevant documents must be updated when an RFC changes project state or architec
 Any new engineer or AI session should be able to resume work by reading these files and the latest Git state.
 ---
 
----
-
 # AD-015 — Composition Root Owns Plugin Infrastructure Composition
 
 ## Context
@@ -508,3 +506,58 @@ No parallel plugin infrastructure should be introduced without dedicated archite
 ## Future Impact
 
 Plugin discovery, enterprise extensions, connectors, agents, engines, and future plugin capabilities must integrate with the composed plugin infrastructure instead of creating independent registries or lifecycle managers.
+
+
+---
+
+# AD-016 — Plugin Registration Enters Through the Composition Boundary
+
+## Context
+
+RFC-030 introduced a controlled registration boundary for supplying plugins to the production platform composition.
+
+Before RFC-030, the Composition Root owned plugin infrastructure construction but had no explicit production boundary for supplying plugin registrations.
+
+Adding a separate registrar, automatic discovery mechanism, or parallel registry would duplicate existing responsibilities and weaken the authoritative plugin object graph established by RFC-029.
+
+## Decision
+
+Plugin registrations SHALL enter the production platform explicitly through the Composition Root.
+
+Registrations SHALL be represented by immutable `PluginRegistration` declarations containing a plugin name and factory.
+
+The Composition Root SHALL apply those registrations to the existing composed `PluginRegistry`.
+
+`PluginRegistry` SHALL remain the owner of registration and duplicate-registration semantics.
+
+`PluginLifecycleManager` SHALL remain the owner of plugin creation, activation and deactivation.
+
+`BootstrapManager` SHALL remain the owner of startup and shutdown orchestration.
+
+Plugin factories SHALL remain lazy during composition and SHALL NOT be instantiated merely because they are registered.
+
+The no-registration composition path SHALL remain backward compatible.
+
+RFC-030 SHALL NOT introduce automatic filesystem discovery, dynamic module scanning, package loading, or a second registrar, registry, lifecycle manager, or plugin object graph.
+
+## Rationale
+
+- Preserves one authoritative plugin infrastructure.
+- Preserves existing registry semantics.
+- Prevents duplicated registration responsibility.
+- Maintains lazy plugin creation.
+- Maintains Dependency Injection and Composition Root ownership.
+- Keeps lifecycle and bootstrap responsibilities separated.
+- Provides a controlled extension point for future enterprise plugin capabilities.
+
+## Consequences
+
+Production plugin registrations must be supplied through the established composition boundary.
+
+Future plugin sources may prepare `PluginRegistration` declarations, but they must integrate with the existing `PluginRegistry` rather than bypassing or replacing it.
+
+Automatic discovery, security approval policy, metadata, version compatibility and package loading require separate architecture review before introduction.
+
+## Future Impact
+
+Future enterprise extension catalogs, connector plugins, agents, engines and approved discovery mechanisms should feed the controlled registration boundary while preserving the authoritative composed plugin infrastructure.
