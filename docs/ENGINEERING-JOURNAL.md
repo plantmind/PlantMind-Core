@@ -216,6 +216,36 @@ Verification:
 
 ---
 
+### RFC-031 — Plugin Identity Consistency Contract
+
+RFC-031 established a single authoritative identity contract between plugin registration and runtime plugin instances.
+
+The implementation:
+
+- Treats the registered plugin name as the authoritative registry identity.
+- Validates `Plugin.name` when `PluginRegistry.create()` resolves and creates a plugin instance.
+- Introduces the plugin-specific `PluginIdentityMismatchError`.
+- Rejects identity mismatches before plugin activation.
+- Preserves lazy plugin creation and composition behavior.
+- Preserves Generic Registry duplicate-registration and registration-not-found semantics.
+- Preserves existing registry ordering.
+- Preserves `PluginLifecycleManager` lifecycle ownership.
+- Preserves `BootstrapManager` startup and shutdown orchestration.
+- Introduces no metadata, discovery, filesystem scanning, package loading or security approval policy.
+
+Verification:
+
+- Compilation: passed
+- Focused RFC-031 tests: 10 passed
+- Impacted plugin, composition and bootstrap tests: 34 passed
+- Full regression: 184 passed
+- `git diff --check`: passed
+- Technical commit: `defc1fe`
+- Remote push: verified
+- Technical working tree after implementation: clean
+
+---
+
 # Current Status
 
 PlantMind now possesses:
@@ -227,6 +257,7 @@ PlantMind now possesses:
 - Plugin Lifecycle Manager
 - Plugin Infrastructure Composition
 - Controlled Plugin Registration Boundary
+- Plugin Identity Consistency Contract
 - Service Lifecycle
 - Composition Root and dependency wiring
 - Structured engineering documentation
@@ -234,8 +265,8 @@ PlantMind now possesses:
 
 Current technical baseline:
 
-- RFC-030 — Controlled Plugin Registration Boundary
-- Commit: `72a8533`
-- Full regression: 174 passed
+- RFC-031 — Plugin Identity Consistency Contract
+- Commit: `defc1fe`
+- Full regression: 184 passed
 
 The project has successfully moved beyond prototype stage and entered long-term enterprise platform development.

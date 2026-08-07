@@ -9,9 +9,9 @@
 | Status | Active Development |
 | Deployment Model | On-Premise |
 | Development Branch | `feature/engineering-platform` |
-| Last Completed RFC | RFC-030 — Controlled Plugin Registration Boundary |
-| Test Baseline | 174 passing tests |
-| Technical Baseline Commit | `72a8533` |
+| Last Completed RFC | RFC-031 — Plugin Identity Consistency Contract |
+| Test Baseline | 184 passing tests |
+| Technical Baseline Commit | `defc1fe` |
 | Purpose | Authoritative context for continuing PlantMind development across engineering sessions |
 
 ---
@@ -277,18 +277,18 @@ PlantMind-Core/backend/.venv
 
 The last verified baseline is:
 
-174 passed
+184 passed
 11. Git State at This Context Version
 Branch:
 feature/engineering-platform
 
 Last completed technical RFC commit:
-72a8533 RFC-030: implement controlled plugin registration boundary
+defc1fe RFC-031: enforce plugin identity consistency
 
 Remote:
 origin/feature/engineering-platform
 
-Technical working tree after RFC-030:
+Technical working tree after RFC-031:
 clean
 12. Current Architectural Review
 
@@ -364,21 +364,23 @@ It must extend, not discard, the accepted Plugin Framework.
 
 14. Immediate Development Direction
 
-RFC-030 is complete at the technical baseline.
+RFC-031 is complete at the technical baseline.
 
-The Controlled Plugin Registration Boundary now provides an explicit and deterministic path for approved plugin registrations to enter the existing composed `PluginRegistry`.
+The Plugin Identity Consistency Contract now guarantees that a plugin instance created for a registered identity must report the same identity through `Plugin.name`.
 
-The implementation preserves lazy plugin creation, existing registry ordering and duplicate-registration semantics, the existing plugin lifecycle boundary, and backward-compatible composition entry points.
+Identity validation occurs at the existing `PluginRegistry.create()` boundary, preserving lazy creation and preventing mismatched plugins from reaching activation.
 
-RFC-031 has not yet been selected.
+The implementation preserves Generic Registry behavior, duplicate-registration and registration-not-found semantics, registry ordering, controlled registration, plugin lifecycle ownership, Bootstrap orchestration and Composition Root responsibilities.
 
-Before selecting or implementing RFC-031:
+RFC-032 has not yet been selected.
+
+Before selecting or implementing RFC-032:
 
 Review the Active Work Register.
 Review current committed code and tests.
 Review accepted RFCs, ADRs, architecture documents and deferred work.
-Preserve the established Bootstrap, Registry, Plugin Lifecycle, Controlled Registration, Service and Composition responsibilities.
-Do not duplicate existing plugin infrastructure or introduce automatic plugin discovery without architecture review.
+Preserve the established Registry, Plugin Identity, Plugin Lifecycle, Controlled Registration, Service, Bootstrap and Composition responsibilities.
+Do not introduce plugin metadata, discovery, package loading or security approval policy without dedicated architecture review.
 Record the selected RFC objective and next exact action before implementation begins.
 15. Session Continuation Instruction
 

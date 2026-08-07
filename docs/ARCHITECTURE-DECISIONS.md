@@ -561,3 +561,58 @@ Automatic discovery, security approval policy, metadata, version compatibility a
 ## Future Impact
 
 Future enterprise extension catalogs, connector plugins, agents, engines and approved discovery mechanisms should feed the controlled registration boundary while preserving the authoritative composed plugin infrastructure.
+
+
+---
+
+# AD-017 — Plugin Runtime Identity Must Match Registry Identity
+
+## Context
+
+RFC-031 identified a possible divergence between the identity used to register a plugin and the identity reported by the created plugin instance through `Plugin.name`.
+
+The `PluginRegistry` resolves factories by registration name, while runtime lifecycle reporting uses the identity exposed by the plugin instance.
+
+Without an explicit consistency rule, one plugin could be known by different identities across registration and runtime lifecycle boundaries.
+
+## Decision
+
+The plugin registration name SHALL be the authoritative plugin identity.
+
+Every plugin instance created for registration name `X` SHALL report `plugin.name == X`.
+
+Identity validation SHALL occur at the existing `PluginRegistry.create()` boundary after lazy factory resolution and before the plugin instance is returned to lifecycle orchestration.
+
+An identity mismatch SHALL raise the plugin-specific `PluginIdentityMismatchError`.
+
+A mismatched plugin SHALL NOT proceed to activation.
+
+Plugin identity errors SHALL remain separate from the Generic Registry error hierarchy.
+
+`PluginLifecycleManager` SHALL retain plugin activation and deactivation responsibility.
+
+`BootstrapManager` SHALL retain startup and shutdown orchestration responsibility.
+
+Composition SHALL remain lazy and SHALL NOT instantiate plugins merely to validate identity.
+
+## Rationale
+
+- Establishes one authoritative plugin identity across registration and runtime.
+- Prevents registry and lifecycle identity divergence.
+- Detects invalid plugin factories before activation.
+- Preserves lazy plugin creation.
+- Keeps identity validation within the plugin-specific registry boundary.
+- Preserves Generic Registry independence.
+- Preserves existing lifecycle, Bootstrap and Composition Root responsibilities.
+
+## Consequences
+
+Plugin factories must produce instances whose `Plugin.name` matches the registration name used by `PluginRegistry`.
+
+Existing duplicate-registration, registration-not-found and ordering semantics remain unchanged.
+
+Future plugin metadata, discovery, package loading, version compatibility and security approval mechanisms must preserve this identity invariant.
+
+## Future Impact
+
+Any future enterprise extension framework, plugin catalog, discovery mechanism or security approval layer must use the authoritative registry identity consistently and must not introduce an alternate runtime plugin identity.
