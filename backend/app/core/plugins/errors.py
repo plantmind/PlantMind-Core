@@ -11,3 +11,7 @@ class PluginError(Exception):
 
 class PluginIdentityMismatchError(PluginError, ValueError):
     """Raised when registry and runtime plugin identities differ."""
+
+
+class InvalidPluginVersionError(PluginError, ValueError):
+    """Raised when a plugin version violates the version-format contract."""
