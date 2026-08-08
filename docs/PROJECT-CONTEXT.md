@@ -364,91 +364,102 @@ It must extend, not discard, the accepted Plugin Framework.
 
 14. Immediate Development Direction
 
-RFC-048 — Runtime Operational Transition Contract is technically complete.
+RFC-049 — Mandatory Capability Composition Contract is technically complete.
 
-RFC-048 established the authoritative guarded Runtime transition from:
+RFC-049 established the canonical deployment-neutral composition boundary for:
 
-`READY` → `OPERATIONAL`
+- capability availability sources;
+- mandatory-capability policy.
 
-The approved transition operation is:
+`CompositionRoot.build(...)` now supports explicit composition-time injection of:
 
-`Runtime.request_operational(evidence: OperationalTransitionEvidence) -> None`
+- `Sequence[CapabilityAvailabilitySource]`;
+- `MandatoryCapabilityPolicy`.
+
+The existing fail-closed default remains unchanged.
+
+When no capability availability sources are supplied:
+
+- `CapabilityAvailabilityObserver` is composed with no sources.
+
+When no mandatory-capability policy is supplied:
+
+- composition creates an `UNCONFIGURED` policy;
+- `required_capabilities` remains empty;
+- default mandatory-capability coverage remains `UNSATISFIED`.
+
+Explicitly supplied availability sources preserve:
+
+- source ordering;
+- source object identity.
+
+CompositionRoot does not invoke, merge, deduplicate, prioritize or reinterpret availability sources.
+
+Explicitly supplied mandatory-capability policy preserves exact object identity across:
+
+- `PlatformComposition`;
+- `ServiceContainer`;
+- `MandatoryCapabilityCoverageEvaluator`.
+
+Policy validation remains owned by `MandatoryCapabilityPolicy`.
+
+Availability observation remains owned by `CapabilityAvailabilityObserver`.
+
+Coverage evaluation remains owned by `MandatoryCapabilityCoverageEvaluator`.
+
+Configured policy does not require matching availability sources at composition time.
+
+Missing capability observations remain coverage diagnostics.
+
+Duplicate capability sources remain preserved for existing ambiguous-capability evaluation semantics.
+
+`ConfigurationProvider` does not own mandatory-capability policy.
+
+Core composition remains capability-name agnostic.
+
+RFC-049 introduced no deployment-specific capability names.
+
+CompositionRoot does not:
+
+- evaluate mandatory-capability coverage;
+- construct `OperationalTransitionEvidence`;
+- call `Runtime.request_operational(...)`;
+- perform lifecycle-transition decisions.
 
 Runtime remains the sole lifecycle-transition authority.
 
-Operational transition succeeds only when:
+`build_platform_composition(...)` remains backward compatible and forwards RFC-049 composition inputs.
 
-- Runtime state is exactly `RuntimeState.READY`;
-- request admission is enabled;
-- supplied `OperationalTransitionEvidence.is_complete` is `True`.
+Existing no-argument and plugin-registration composition behavior remains supported.
 
-Runtime evaluates its own lifecycle state and request-admission state directly.
+RFC-049 verification:
 
-External evidence does not duplicate Runtime-owned preconditions.
-
-No public `mark_operational()` bypass exists.
-
-Successful transition:
-
-- sets Runtime state to `RuntimeState.OPERATIONAL`;
-- preserves readiness;
-- preserves request admission;
-- does not mutate supplied evidence.
-
-Rejected transition:
-
-- raises `RuntimeError`;
-- preserves lifecycle state;
-- preserves readiness;
-- preserves request admission;
-- preserves supplied evidence.
-
-Transition rejection is atomic and fail-closed.
-
-Bootstrap does not automatically transition Runtime to `OPERATIONAL`.
-
-`ApplicationFacade`, `IntegrationGateway`, `OrchestrationService` and `WorkflowExecutor` do not own operational lifecycle-transition authority.
-
-`HealthCapability` remains read-only reporting.
-
-No independent operational-eligibility service or competing lifecycle controller was introduced.
-
-RFC-048 does not introduce:
-
-- automatic operational transition;
-- operational recovery;
-- `DEGRADED` transition behavior;
-- evidence freshness or TTL;
-- transition retry;
-- traffic draining;
-- `ServiceState.OPERATIONAL`.
-
-RFC-048 verification:
-
-- Contract commit: `ac1c625`
-- Technical commit: `b714ceb`
-- Architecture decision: AD-034
-- Focused TDD suite: 18 passed
-- Impacted regression: 93 passed
-- Full regression: 362 passed
+- Contract commit: `ca5ccbf`
+- Technical commit: `496fe42`
+- Architecture decision: AD-035
+- Focused TDD suite: 15 passed
+- Impacted regression: 101 passed
+- Full regression: 377 passed
 - Compilation: passed
 - Remote technical push: verified
 
-RFC-049 is now in architecture review.
+RFC-050 is now in architecture review.
 
-Before selecting or implementing RFC-049:
+Before selecting or implementing RFC-050:
 
-Review the Source of Truth from the RFC-048 baseline.
+Review the Source of Truth from the RFC-049 baseline.
 Preserve Runtime as the sole lifecycle-transition authority.
-Preserve guarded `Runtime.request_operational(...)` semantics.
-Preserve Runtime ownership of lifecycle state, readiness and request admission.
-Preserve atomic fail-closed transition rejection.
-Preserve external operational-transition evidence as evidence only.
-Do not introduce a public `mark_operational()` bypass.
-Do not create a competing operational-eligibility or lifecycle authority.
-Do not introduce automatic operational transition without a separately approved contract.
-Do not introduce `DEGRADED`, recovery, freshness, retry or traffic-draining behavior without architecture review.
-Record the selected RFC-049 objective before TDD or production implementation begins.
+Preserve fail-closed mandatory-capability defaults.
+Preserve availability observation ownership.
+Preserve mandatory-capability policy ownership.
+Preserve mandatory-capability coverage ownership.
+Preserve exact composition identity semantics.
+Do not hard-code deployment-specific capability identifiers.
+Do not evaluate coverage inside CompositionRoot.
+Do not construct operational-transition evidence inside CompositionRoot.
+Do not call `Runtime.request_operational(...)` during composition.
+Do not introduce operational-transition coordination without a separately approved contract.
+Record the selected RFC-050 objective before TDD or production implementation begins.
 
 15. Session Continuation Instruction
 

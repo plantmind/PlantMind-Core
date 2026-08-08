@@ -1076,6 +1076,80 @@ Verification:
 - `git diff --cached --check`: passed
 - Remote technical push: verified
 
+
+### RFC-049 — Mandatory Capability Composition Contract
+
+RFC-049 established the canonical deployment-neutral composition boundary for mandatory-capability dependencies.
+
+`CompositionRoot.build(...)` now supports explicit composition-time injection of:
+
+- `Sequence[CapabilityAvailabilitySource]`;
+- `MandatoryCapabilityPolicy`.
+
+Default composition remains fail-closed.
+
+When no availability sources are supplied:
+
+- `CapabilityAvailabilityObserver` contains no sources.
+
+When no mandatory-capability policy is supplied:
+
+- policy state remains `UNCONFIGURED`;
+- required capabilities remain empty;
+- mandatory-capability coverage remains `UNSATISFIED`.
+
+Explicit availability sources preserve:
+
+- source ordering;
+- source object identity.
+
+CompositionRoot does not invoke, merge, deduplicate, prioritize or reinterpret supplied sources.
+
+Explicit mandatory-capability policy preserves exact object identity across:
+
+- `PlatformComposition`;
+- `ServiceContainer`;
+- `MandatoryCapabilityCoverageEvaluator`.
+
+Policy validation remains owned by `MandatoryCapabilityPolicy`.
+
+Availability observation remains owned by `CapabilityAvailabilityObserver`.
+
+Coverage evaluation remains owned by `MandatoryCapabilityCoverageEvaluator`.
+
+Configured policy does not require matching availability sources during composition.
+
+Missing capability observations remain coverage diagnostics.
+
+Duplicate capability sources remain preserved for existing ambiguity evaluation semantics.
+
+`ConfigurationProvider` does not own mandatory-capability policy.
+
+Core composition remains capability-name agnostic.
+
+CompositionRoot does not:
+
+- evaluate mandatory-capability coverage;
+- construct `OperationalTransitionEvidence`;
+- call `Runtime.request_operational(...)`;
+- perform lifecycle-transition decisions.
+
+Runtime remains the sole lifecycle-transition authority.
+
+`build_platform_composition(...)` remains backward compatible and forwards RFC-049 capability composition inputs.
+
+Verification:
+
+- Contract commit: `ca5ccbf`
+- Technical commit: `496fe42`
+- Architecture decision: AD-035
+- Focused TDD suite: 15 passed
+- Impacted regression: 101 passed
+- Full regression: 377 passed
+- Compilation: passed
+- `git diff --cached --check`: passed
+- Remote technical push: verified
+
 ---
 
 # Current Status
@@ -1107,6 +1181,7 @@ PlantMind now possesses:
 - Operational Workload Evidence Contract
 - Operational Transition Evidence Aggregation Contract
 - Runtime Operational Transition Contract
+- Mandatory Capability Composition Contract
 - Service Lifecycle
 - Composition Root and dependency wiring
 - Structured engineering documentation
@@ -1114,22 +1189,22 @@ PlantMind now possesses:
 
 Current technical baseline:
 
-- RFC-048 — Runtime Operational Transition Contract
-- Contract commit: `ac1c625`
-- Technical commit: `b714ceb`
-- Full regression baseline: 362 passed
-- Architecture decision: AD-034
-- Guarded `READY` to `OPERATIONAL` transition: established
-- Runtime lifecycle authority: preserved
-- Runtime readiness after successful transition: preserved
-- Request admission after successful transition: preserved
-- Atomic fail-closed rejection: established
-- Public `mark_operational()` bypass: not introduced
-- Automatic operational transition: not introduced
-- Operational recovery: not introduced
-- `DEGRADED` transition behavior: not introduced
+- RFC-049 — Mandatory Capability Composition Contract
+- Contract commit: `ca5ccbf`
+- Technical commit: `496fe42`
+- Full regression baseline: 377 passed
+- Architecture decision: AD-035
+- Capability-source composition injection: established
+- Mandatory-capability policy composition injection: established
+- Source identity and ordering: preserved
+- Policy identity across composition graph: preserved
+- Default fail-closed composition: preserved
+- Deployment-specific capability identifiers: not introduced
+- Coverage evaluation during composition: not introduced
+- Operational-transition evidence construction during composition: not introduced
+- Runtime lifecycle transition during composition: not introduced
 
-The next engineering step is architecture review for RFC-049.
+The next engineering step is architecture review for RFC-050.
 
 The project remains in long-term enterprise platform development.
 

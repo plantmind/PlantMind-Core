@@ -2,17 +2,17 @@
 
 ## Current State
 
-| Property                     | Value                                                    |
-| ---------------------------- | -------------------------------------------------------- |
-| Project                      | PlantMind PM-001                                         |
-| Branch                       | `feature/engineering-platform`                           |
-| Last Completed RFC           | RFC-048 — Runtime Operational Transition Contract        |
-| Technical Baseline Commit    | `b714ceb`                                                |
-| Architecture Baseline Commit | `ac1c625`                                                |
-| Test Baseline                | 362 passed                                               |
-| Authoritative Environment    | `PlantMind-Core/.venv`                                   |
-| Remote State                 | Up to date with `origin/feature/engineering-platform`    |
-| RFC-048 Technical Push       | Verified                                                 |
+| Property                     | Value                                                     |
+| ---------------------------- | --------------------------------------------------------- |
+| Project                      | PlantMind PM-001                                          |
+| Branch                       | `feature/engineering-platform`                            |
+| Last Completed RFC           | RFC-049 — Mandatory Capability Composition Contract       |
+| Technical Baseline Commit    | `496fe42`                                                 |
+| Architecture Baseline Commit | `ca5ccbf`                                                 |
+| Test Baseline                | 377 passed                                                |
+| Authoritative Environment    | `PlantMind-Core/.venv`                                    |
+| Remote State                 | Up to date with `origin/feature/engineering-platform`     |
+| RFC-049 Technical Push       | Verified                                                  |
 
 ## Recent Engineering Sequence
 
@@ -40,6 +40,7 @@
 - RFC-046 — Operational Workload Evidence Contract
 - RFC-047 — Operational Transition Evidence Aggregation Contract
 - RFC-048 — Runtime Operational Transition Contract
+- RFC-049 — Mandatory Capability Composition Contract
 
 ## RFC-036 Outcome
 
@@ -680,11 +681,84 @@ No independent operational-eligibility service or competing lifecycle controller
 - Automatic operational transition: not introduced
 - Independent operational-eligibility authority: not introduced
 
+## RFC-049 Outcome
+
+RFC-049 established the canonical deployment-neutral composition boundary for:
+
+- capability availability sources;
+- mandatory-capability policy.
+
+`CompositionRoot.build(...)` now supports explicit composition-time injection of:
+
+- `Sequence[CapabilityAvailabilitySource]`;
+- `MandatoryCapabilityPolicy`.
+
+Default composition remains fail-closed.
+
+When no capability availability sources are supplied:
+
+- `CapabilityAvailabilityObserver` contains no sources.
+
+When no mandatory-capability policy is supplied:
+
+- policy state is `UNCONFIGURED`;
+- required capabilities are empty;
+- mandatory-capability coverage remains `UNSATISFIED`.
+
+Explicit availability sources preserve ordering and object identity.
+
+CompositionRoot does not invoke, merge, deduplicate, prioritize or reinterpret sources.
+
+Explicit mandatory-capability policy preserves exact object identity across:
+
+- `PlatformComposition`;
+- `ServiceContainer`;
+- `MandatoryCapabilityCoverageEvaluator`.
+
+Policy validation remains owned by `MandatoryCapabilityPolicy`.
+
+Availability observation remains owned by `CapabilityAvailabilityObserver`.
+
+Coverage evaluation remains owned by `MandatoryCapabilityCoverageEvaluator`.
+
+Configured policy does not require matching availability sources at composition time.
+
+Duplicate capability sources remain preserved for existing ambiguity semantics.
+
+Core composition remains capability-name agnostic.
+
+CompositionRoot does not evaluate coverage, construct `OperationalTransitionEvidence` or request Runtime operational transition.
+
+Runtime remains the sole lifecycle-transition authority.
+
+`build_platform_composition(...)` remains backward compatible and forwards RFC-049 composition inputs.
+
+## RFC-049 Verification
+
+- Contract commit: `ca5ccbf`
+- Technical commit: `496fe42`
+- Architecture decision: AD-035
+- Focused TDD suite: 15 passed
+- Impacted regression: 101 passed
+- Full regression: 377 passed
+- Compilation: passed
+- `git diff --cached --check`: passed
+- Remote technical push: verified
+- Capability-source composition input: introduced
+- Mandatory-capability policy composition input: introduced
+- Source identity and ordering: preserved
+- Policy identity: preserved
+- Default fail-closed composition: preserved
+- Deployment-specific capability names: not introduced
+- Coverage evaluation during composition: not introduced
+- Operational-transition evidence construction: not introduced
+- Runtime lifecycle transition during composition: not introduced
+
 ## Documentation Closure
 
-RFC-048 technical implementation is complete.
+RFC-049 technical implementation is complete.
 
-The engineering-memory layer is being synchronized with the RFC-048 technical baseline.
+The engineering-memory layer is being synchronized with the RFC-049 technical baseline.
 
 Relevant maintained documents:
 
@@ -696,21 +770,23 @@ Relevant maintained documents:
 
 ## Next Exact Action
 
-Begin architecture review for RFC-049 from the RFC-048 authoritative Runtime operational-transition baseline.
+Begin architecture review for RFC-050 from the RFC-049 mandatory-capability composition baseline.
 
-Before selecting or implementing RFC-049:
+Before selecting or implementing RFC-050:
 
-1. Review the Source of Truth from the RFC-048 baseline.
+1. Review the Source of Truth from the RFC-049 baseline.
 2. Preserve Runtime as the sole lifecycle-transition authority.
-3. Preserve guarded `Runtime.request_operational(...)` semantics.
-4. Preserve Runtime ownership of lifecycle state, readiness and request admission.
-5. Preserve atomic fail-closed transition rejection.
-6. Preserve external operational-transition evidence as evidence only.
-7. Do not introduce a public `mark_operational()` bypass.
-8. Do not create a competing operational-eligibility or lifecycle authority.
-9. Do not introduce automatic operational transition without a separately approved contract.
-10. Do not introduce `DEGRADED`, recovery, freshness, retry or traffic-draining behavior without architecture review.
-11. Record the RFC-049 objective before TDD or production implementation begins.
+3. Preserve fail-closed mandatory-capability defaults.
+4. Preserve availability observation ownership.
+5. Preserve mandatory-capability policy ownership.
+6. Preserve mandatory-capability coverage ownership.
+7. Preserve exact composition identity semantics.
+8. Do not hard-code deployment-specific capability identifiers.
+9. Do not evaluate coverage inside CompositionRoot.
+10. Do not construct operational-transition evidence inside CompositionRoot.
+11. Do not call `Runtime.request_operational(...)` during composition.
+12. Do not introduce operational-transition coordination without a separately approved contract.
+13. Record the RFC-050 objective before TDD or production implementation begins.
 
 ## Required Test Command
 

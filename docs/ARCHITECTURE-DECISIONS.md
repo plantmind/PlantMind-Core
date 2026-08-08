@@ -2646,3 +2646,160 @@ RFC-048 does not introduce:
 - Compilation: passed
 - `git diff --cached --check`: passed
 - Remote technical push: verified
+
+# AD-035 — Mandatory Capability Composition Boundary
+
+## Status
+
+Accepted.
+
+## Context
+
+RFC-043 established the capability availability observation boundary.
+
+RFC-044 established immutable mandatory-capability policy.
+
+RFC-045 established deterministic fail-closed mandatory-capability coverage evaluation.
+
+RFC-048 established Runtime as the sole authoritative operational-transition authority.
+
+Before RFC-049, canonical production composition always created:
+
+- `CapabilityAvailabilityObserver(sources=())`;
+- an `UNCONFIGURED` empty `MandatoryCapabilityPolicy`.
+
+This preserved safe fail-closed behavior but provided no canonical composition-time path for deployment-approved availability sources or mandatory-capability policy.
+
+## Decision
+
+`CompositionRoot` SHALL provide the canonical composition-time injection boundary for:
+
+- capability availability sources;
+- mandatory-capability policy.
+
+The existing architecture types remain authoritative:
+
+- `CapabilityAvailabilitySource`;
+- `MandatoryCapabilityPolicy`;
+- `CapabilityAvailabilityObserver`;
+- `MandatoryCapabilityCoverageEvaluator`.
+
+No duplicate capability configuration model is introduced.
+
+## Fail-Closed Default
+
+When no capability availability sources are supplied, the observer SHALL contain no sources.
+
+When no mandatory-capability policy is supplied, composition SHALL create the existing canonical policy:
+
+- state `MandatoryCapabilityPolicyState.UNCONFIGURED`;
+- empty `required_capabilities`.
+
+Default mandatory-capability coverage therefore remains `UNSATISFIED`.
+
+RFC-049 does not weaken default fail-closed behavior.
+
+## Policy Identity
+
+When a `MandatoryCapabilityPolicy` is explicitly supplied:
+
+- the exact supplied instance is exposed through `PlatformComposition`;
+- the exact supplied instance is registered in `ServiceContainer`;
+- the exact supplied instance is consumed by `MandatoryCapabilityCoverageEvaluator`.
+
+CompositionRoot SHALL NOT copy, reconstruct, normalize or reinterpret the supplied policy.
+
+Policy validation remains owned by `MandatoryCapabilityPolicy`.
+
+## Availability Source Identity
+
+Explicitly supplied availability sources SHALL be forwarded to the existing `CapabilityAvailabilityObserver`.
+
+Composition SHALL preserve:
+
+- source ordering;
+- source object identity.
+
+CompositionRoot SHALL NOT:
+
+- invoke sources during composition;
+- merge sources;
+- deduplicate sources;
+- prioritize sources;
+- reinterpret source observations.
+
+Observation behavior remains owned by `CapabilityAvailabilityObserver`.
+
+## Missing and Duplicate Source Semantics
+
+A configured mandatory-capability policy does not require matching sources at composition time.
+
+Missing observations remain coverage diagnostics owned by `MandatoryCapabilityCoverageEvaluator`.
+
+Multiple sources for the same capability SHALL remain preserved.
+
+Existing ambiguous-capability coverage semantics remain authoritative.
+
+CompositionRoot SHALL NOT introduce source-selection policy.
+
+## Configuration Ownership
+
+`ConfigurationProvider` does not own mandatory-capability policy.
+
+Core composition remains capability-name agnostic.
+
+Deployment-specific capability identifiers SHALL NOT be invented or hard-coded by CompositionRoot.
+
+Deployment-approved policy and source construction occur outside core composition decision logic and are supplied explicitly through the composition boundary.
+
+## Runtime Boundary
+
+Capability composition SHALL NOT modify Runtime lifecycle behavior.
+
+CompositionRoot SHALL NOT call:
+
+`Runtime.request_operational(...)`
+
+Composition of availability sources or mandatory-capability policy does not automatically cause an operational transition.
+
+Runtime remains the sole lifecycle-transition authority.
+
+## Operational Transition Evidence Boundary
+
+RFC-049 does not construct `OperationalTransitionEvidence`.
+
+RFC-049 does not combine operational-workload evidence with mandatory-capability coverage.
+
+Operational-transition coordination remains a separate future architecture concern.
+
+## Compatibility
+
+`build_platform_composition(...)` SHALL remain a backward-compatible composition factory.
+
+It SHALL forward RFC-049 capability inputs to `CompositionRoot.build(...)`.
+
+Existing callers using no arguments or only plugin registrations remain supported.
+
+## Consequences
+
+PlantMind now has a canonical deployment-neutral path for supplying real mandatory-capability dependencies without weakening core fail-closed behavior.
+
+The platform can now compose deployment-approved capability sources and policy while keeping:
+
+- observation ownership separate;
+- coverage ownership separate;
+- configuration ownership separate;
+- Runtime lifecycle authority separate.
+
+RFC-049 introduces no concrete production capability sources and no deployment-specific mandatory capability names.
+
+## Verification
+
+- RFC-049 contract commit: `ca5ccbf`
+- RFC-049 technical commit: `496fe42`
+- Focused TDD suite: 15 passed
+- Impacted regression: 101 passed
+- Full regression: 377 passed
+- Compilation: passed
+- `git diff --cached --check`: passed
+- Remote technical push: verified
