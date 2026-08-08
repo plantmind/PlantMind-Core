@@ -39,6 +39,13 @@ class Runtime:
         self.state = RuntimeState.STOPPED
         self.ready = False
 
+    def mark_failed(self) -> None:
+        """
+        Mark the platform runtime as failed.
+        """
+        self.state = RuntimeState.FAILED
+        self.ready = False
+
     @property
     def is_ready(self) -> bool:
         """

@@ -39,3 +39,14 @@ def test_runtime_status_exposes_state_and_readiness() -> None:
     assert status["version"] == runtime.version
     assert status["environment"] == runtime.environment
     assert status["deployment"] == runtime.deployment
+
+
+def test_mark_failed_sets_failed_state_and_not_ready() -> None:
+    runtime = Runtime()
+    runtime.mark_ready()
+
+    runtime.mark_failed()
+
+    assert runtime.state is RuntimeState.FAILED
+    assert runtime.is_ready is False
+    assert runtime.ready is False

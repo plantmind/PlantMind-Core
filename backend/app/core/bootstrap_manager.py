@@ -61,13 +61,40 @@ class BootstrapManager:
                 continue
 
             if not service.validate():
+                self.runtime.mark_failed()
                 raise RuntimeError(
                     f"Service '{service.name}' failed validation."
                 )
 
-            service.initialize()
+        initialized_services: list[BaseService] = []
 
-        self.plugin_lifecycle.activate_all()
+        try:
+            for name in self.registry.registered_services():
+                service = self.registry.get(name)
+
+                if service is None:
+                    continue
+
+                service.initialize()
+                initialized_services.append(service)
+        except Exception:
+            for service in reversed(initialized_services):
+                service.shutdown()
+
+            self.runtime.mark_failed()
+            raise
+
+        try:
+            self.plugin_lifecycle.activate_all()
+        except Exception:
+            self.plugin_lifecycle.deactivate_all()
+
+            for service in reversed(initialized_services):
+                service.shutdown()
+
+            self.runtime.mark_failed()
+            raise
+
         self.runtime.mark_ready()
 
     def shutdown(self) -> None:
