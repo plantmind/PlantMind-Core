@@ -1024,3 +1024,90 @@ RFC-037 does not implement API middleware, request rejection responses, authenti
 Future API hosting components must enforce admission according to the Runtime-owned request-admission state.
 
 Health verification, API admission enforcement, request rejection policy, traffic draining, OPERATIONAL and DEGRADED transitions require separate architecture review.
+
+---
+
+# AD-024 — Runtime Owns Readiness Verification
+
+## Context
+
+RUNTIME-001 defines readiness as a Runtime decision.
+
+Bootstrap may request readiness but SHALL NOT directly own or manipulate Runtime lifecycle state.
+
+BOOT-002 requires health verification before Runtime transitions to `READY`.
+
+Before RFC-038, Bootstrap directly called `Runtime.mark_ready()` after service and plugin startup without an explicit Runtime-owned verification contract.
+
+`ConfigurationProvider` already owns mandatory configuration validation.
+
+`HealthCapability` is read-only observation and derives part of its status from Runtime readiness. Using it as the pre-READY decision owner would create a circular readiness dependency.
+
+`ServiceRegistry` owns service inventory and SHALL remain independent of lifecycle decisions.
+
+## Decision
+
+Runtime SHALL remain the exclusive owner of the readiness decision.
+
+Runtime readiness verification SHALL consume immutable `ReadinessEvidence`.
+
+Readiness evidence SHALL represent completion of mandatory startup requirements without transferring lifecycle ownership to Bootstrap.
+
+Runtime SHALL deterministically accept or reject a readiness request based on the supplied evidence.
+
+Runtime SHALL NOT enter `READY` when any mandatory readiness evidence is unsatisfied.
+
+Rejected readiness SHALL leave Runtime not ready and request admission disabled.
+
+Bootstrap SHALL invoke mandatory configuration validation before service validation, initialization or plugin activation.
+
+Configuration validation SHALL remain owned by `ConfigurationProvider`.
+
+Bootstrap SHALL construct readiness evidence only after mandatory startup stages complete successfully.
+
+Bootstrap SHALL request Runtime readiness before enabling request admission.
+
+Readiness rejection SHALL participate in RFC-034 startup rollback semantics.
+
+`HealthCapability` SHALL remain read-only observation and SHALL NOT become a readiness decision component.
+
+`ServiceRegistry` SHALL remain independent of lifecycle decisions.
+
+Composition Root SHALL inject the composed `ConfigurationProvider` and `HealthCapability` instances into Bootstrap.
+
+Existing `Runtime.mark_ready()` compatibility SHALL remain available until a separate compatibility review authorizes removal.
+
+## Rationale
+
+- Preserves Runtime ownership of lifecycle decisions.
+- Makes readiness deterministic and explicitly verifiable.
+- Separates readiness evidence from lifecycle state mutation.
+- Prevents Bootstrap from becoming the readiness authority.
+- Preserves ConfigurationProvider ownership of configuration validation.
+- Avoids circular dependency between Runtime readiness and HealthCapability observation.
+- Preserves ServiceRegistry independence from lifecycle decisions.
+- Preserves RFC-037 ordering between `READY` and request admission.
+- Keeps Composition Root as the dependency-construction authority.
+
+## Consequences
+
+Production Bootstrap now uses the validated Runtime readiness path instead of directly publishing `READY`.
+
+Incomplete readiness evidence prevents Runtime from entering `READY`.
+
+Configuration validation now participates in mandatory Bootstrap startup sequencing.
+
+Readiness rejection participates in startup rollback and leaves request admission disabled.
+
+HealthCapability remains observation-only.
+
+Existing RFC-034, RFC-035, RFC-036 and RFC-037 lifecycle behavior remains compatible.
+
+RFC-038 does not define OPERATIONAL or DEGRADED transitions, API admission enforcement, request rejection policy, traffic draining, retry, recovery, dependency-aware startup, parallel startup or health-report redesign.
+
+## Future Impact
+
+Future lifecycle work must preserve Runtime ownership of readiness decisions and immutable readiness evidence unless replaced by a dedicated architecture decision.
+
+OPERATIONAL and DEGRADED transitions, API request-admission enforcement, traffic draining, retry and recovery require separate architecture review.
+

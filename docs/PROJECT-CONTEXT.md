@@ -364,40 +364,52 @@ It must extend, not discard, the accepted Plugin Framework.
 
 14. Immediate Development Direction
 
-RFC-037 is complete at technical commit `788b03b`.
+RFC-038 is complete at technical commit `b65cceb`.
 
-Runtime now owns explicit request-admission state independently from readiness.
+Runtime readiness is now an explicit Runtime-owned decision driven by immutable `ReadinessEvidence`.
 
-Request admission is disabled when Runtime is created.
+Runtime accepts complete mandatory readiness evidence and rejects incomplete evidence without entering `READY`.
 
-Bootstrap enables request admission only after mandatory startup succeeds and Runtime reaches `READY`.
+Rejected readiness leaves Runtime not ready and request admission disabled.
 
-Bootstrap disables request admission before requesting Runtime transition to `STOPPING`.
+Bootstrap now invokes mandatory configuration validation before service validation, initialization or plugin activation.
 
-Runtime transitions to `STOPPING` and `FAILED` disable request admission.
+Configuration validation remains owned by `ConfigurationProvider`.
 
-Startup validation, initialization and plugin activation failures leave request admission disabled.
+Bootstrap constructs readiness evidence only after mandatory startup stages complete successfully and requests the Runtime-owned readiness decision before enabling request admission.
 
-Failed managed shutdown leaves request admission disabled while Runtime transitions to `FAILED`.
+Readiness rejection participates in existing RFC-034 startup rollback semantics.
 
-Existing RFC-034 startup atomicity, RFC-035 shutdown lifecycle and RFC-036 shutdown failure-containment behavior remain compatible.
+`HealthCapability` remains read-only observation and is not used as the readiness decision owner.
 
-API hosting remains responsible for future enforcement of request admission according to Runtime state.
+`ServiceRegistry` remains independent of lifecycle decisions.
 
-RFC-037 introduces no API server, middleware, authentication, authorization, health verification, OPERATIONAL transition, DEGRADED transition, retry, recovery or traffic-draining policy.
+Composition Root injects the composed `ConfigurationProvider` and `HealthCapability` instances into Bootstrap.
 
-Technical verification completed with 11 focused request-admission tests, 35 Runtime and Bootstrap lifecycle tests, 75 impacted regression tests and a full regression baseline of 236 passing tests.
+Existing `Runtime.mark_ready()` compatibility remains available, while production Bootstrap uses the validated readiness path.
 
-RFC-038 has not yet been selected.
+RFC-037 request-admission ordering remains preserved: Runtime reaches `READY` before request admission is enabled.
 
-Before selecting or implementing RFC-038:
+Existing RFC-035 shutdown lifecycle and RFC-036 shutdown failure-containment behavior remain compatible.
+
+RFC-038 introduces no OPERATIONAL or DEGRADED transitions, API admission middleware, request rejection policy, traffic draining, retry, recovery, dependency-aware startup, parallel startup or health-report redesign.
+
+Technical verification completed with 52 focused RFC-038 tests, 91 impacted regression tests and a full regression baseline of 248 passing tests.
+
+RFC-039 has not yet been selected.
+
+Before selecting or implementing RFC-039:
 
 Review the Active Work Register.
 Review current committed code and tests.
 Review accepted RFCs, ADRs, architecture documents and deferred work.
-Preserve established Runtime ownership, Bootstrap orchestration, Service Registry, Plugin Lifecycle, Registry, Metadata, Version Format and Composition responsibilities.
-Preserve request-admission ownership in Runtime and enforcement ownership in the future API hosting layer.
-Do not introduce health verification, OPERATIONAL or DEGRADED transitions, API admission middleware, traffic draining, retry or recovery without dedicated architecture review.
+Preserve Runtime ownership of lifecycle and readiness decisions.
+Preserve Bootstrap lifecycle orchestration ownership.
+Preserve ConfigurationProvider ownership of configuration validation.
+Preserve HealthCapability as read-only observation.
+Preserve Composition Root dependency-construction ownership.
+Preserve Runtime request-admission ownership and future API-hosting enforcement ownership.
+Do not introduce OPERATIONAL or DEGRADED transitions, API admission enforcement, traffic draining, retry or recovery without dedicated architecture review.
 Record the selected RFC objective and next exact action before implementation begins.
 
 15. Session Continuation Instruction

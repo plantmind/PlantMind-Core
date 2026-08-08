@@ -452,6 +452,41 @@ Verification:
 
 ---
 
+### RFC-038 — Runtime Readiness Verification Contract
+
+RFC-038 established deterministic Runtime-owned readiness verification aligned with BOOT-002 and RUNTIME-001.
+
+The implementation:
+
+- Introduces immutable `ReadinessEvidence`.
+- Makes Runtime the exclusive readiness decision owner.
+- Allows Runtime to enter `READY` only when mandatory readiness evidence is complete.
+- Keeps rejected readiness not ready with request admission disabled.
+- Makes Bootstrap validate configuration before service validation, initialization and plugin activation.
+- Preserves configuration validation ownership in `ConfigurationProvider`.
+- Makes Bootstrap construct readiness evidence only after mandatory startup stages succeed.
+- Makes Bootstrap request Runtime readiness before enabling request admission.
+- Preserves RFC-034 rollback semantics when readiness is rejected.
+- Keeps `HealthCapability` read-only and outside readiness decision ownership.
+- Keeps `ServiceRegistry` independent of lifecycle decisions.
+- Makes Composition Root inject the composed ConfigurationProvider and HealthCapability instances into Bootstrap.
+- Preserves existing `Runtime.mark_ready()` compatibility.
+- Preserves RFC-035, RFC-036 and RFC-037 lifecycle behavior.
+- Introduces no OPERATIONAL or DEGRADED transition, API admission enforcement, traffic draining, retry or recovery.
+
+Verification:
+
+- Focused RFC-038 suite: 52 passed
+- Impacted regression: 91 passed
+- Full regression: 248 passed
+- Compilation: passed
+- `git diff --check`: passed
+- Contract commit: `cc683fc`
+- Technical commit: `b65cceb`
+- Remote technical push: verified
+
+---
+
 # Current Status
 
 PlantMind now possesses:
@@ -470,6 +505,7 @@ PlantMind now possesses:
 - Bootstrap Shutdown Lifecycle Compliance Contract
 - Managed Shutdown Failure Containment Contract
 - Runtime Request Admission Control Contract
+- Runtime Readiness Verification Contract
 - Service Lifecycle
 - Composition Root and dependency wiring
 - Structured engineering documentation
@@ -477,11 +513,11 @@ PlantMind now possesses:
 
 Current technical baseline:
 
-- RFC-037 — Runtime Request Admission Control Contract
-- Contract commit: `e6d2e51`
-- Technical commit: `788b03b`
-- Full regression: 236 passed
+- RFC-038 — Runtime Readiness Verification Contract
+- Contract commit: `cc683fc`
+- Technical commit: `b65cceb`
+- Full regression: 248 passed
 
-The next engineering step is architecture review for RFC-038.
+The next engineering step is architecture review for RFC-039.
 
 The project remains in long-term enterprise platform development.
