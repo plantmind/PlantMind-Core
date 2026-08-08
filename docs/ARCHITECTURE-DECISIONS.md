@@ -1110,4 +1110,3 @@ RFC-038 does not define OPERATIONAL or DEGRADED transitions, API admission enfor
 Future lifecycle work must preserve Runtime ownership of readiness decisions and immutable readiness evidence unless replaced by a dedicated architecture decision.
 
 OPERATIONAL and DEGRADED transitions, API request-admission enforcement, traffic draining, retry and recovery require separate architecture review.
-
