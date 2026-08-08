@@ -64,16 +64,18 @@ class CompositionRoot:
             plugin_registry
         )
 
+        health = HealthCapability(
+            runtime_instance=runtime,
+            registry=registry,
+        )
+
         bootstrap = BootstrapManager(
             runtime_instance=runtime,
             registry=registry,
             plugin_registry=plugin_registry,
             plugin_lifecycle=plugin_lifecycle,
-        )
-
-        health = HealthCapability(
-            runtime_instance=runtime,
-            registry=registry,
+            configuration=configuration,
+            health=health,
         )
 
         container.register_instance(
@@ -120,7 +122,6 @@ class CompositionRoot:
             bootstrap=bootstrap,
             health=health,
         )
-
 
 def build_platform_composition(
     plugin_registrations: Sequence[PluginRegistration] = (),

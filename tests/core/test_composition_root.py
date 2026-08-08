@@ -41,3 +41,21 @@ def test_bootstrap_uses_composed_plugin_lifecycle() -> None:
         bootstrap.plugin_lifecycle
         is platform.plugin_lifecycle
     )
+
+
+def test_bootstrap_uses_composed_configuration() -> None:
+    platform = CompositionRoot.build()
+
+    assert (
+        platform.bootstrap.configuration
+        is platform.configuration
+    )
+
+
+def test_bootstrap_uses_composed_health_capability() -> None:
+    platform = CompositionRoot.build()
+
+    assert (
+        platform.bootstrap.health
+        is platform.health
+    )

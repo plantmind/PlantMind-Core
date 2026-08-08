@@ -6,7 +6,16 @@ BOOT-002 — Bootstrap Lifecycle Architecture
 
 from __future__ import annotations
 
+from app.core.configuration.configuration_provider import (
+    ConfigurationProvider,
+    configuration_provider,
+)
+from app.core.health import (
+    HealthCapability,
+    health as health_capability,
+)
 from app.core.plugins import PluginRegistry
+from app.core.readiness import ReadinessEvidence
 from app.core.plugins.plugin_lifecycle_manager import (
     PluginLifecycleManager,
 )
@@ -32,9 +41,15 @@ class BootstrapManager:
         registry: ServiceRegistry | None = None,
         plugin_registry: PluginRegistry | None = None,
         plugin_lifecycle: PluginLifecycleManager | None = None,
+        configuration: ConfigurationProvider | None = None,
+        health: HealthCapability | None = None,
     ) -> None:
         self.runtime = runtime_instance or runtime
         self.registry = registry or service_registry
+        self.configuration = (
+            configuration or configuration_provider
+        )
+        self.health = health or health_capability
 
         resolved_plugin_registry = (
             plugin_registry or PluginRegistry()
@@ -53,6 +68,12 @@ class BootstrapManager:
 
     def startup(self) -> None:
         """Execute platform startup."""
+
+        try:
+            self.configuration.validate()
+        except Exception:
+            self.runtime.mark_failed()
+            raise
 
         for name in self.registry.registered_services():
             service = self.registry.get(name)
@@ -95,7 +116,39 @@ class BootstrapManager:
             self.runtime.mark_failed()
             raise
 
-        self.runtime.mark_ready()
+        try:
+            evidence = ReadinessEvidence(
+                configuration_validated=True,
+                runtime_created=True,
+                bootstrap_completed=True,
+                required_services_initialized=True,
+                required_services_validated=True,
+                service_registry_operational=(
+                    self.registry is not None
+                ),
+                health_capability_initialized=(
+                    self.health is not None
+                ),
+                runtime_metadata_available=all(
+                    (
+                        bool(self.runtime.platform_name),
+                        bool(self.runtime.version),
+                        bool(self.runtime.environment),
+                        bool(self.runtime.deployment),
+                    )
+                ),
+            )
+
+            self.runtime.request_readiness(evidence)
+        except Exception:
+            self.plugin_lifecycle.deactivate_all()
+
+            for service in reversed(initialized_services):
+                service.shutdown()
+
+            self.runtime.mark_failed()
+            raise
+
         self.runtime.enable_request_admission()
 
     def shutdown(self) -> None:

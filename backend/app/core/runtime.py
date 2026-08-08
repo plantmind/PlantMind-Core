@@ -8,6 +8,7 @@ of the PlantMind platform.
 from __future__ import annotations
 
 from app.config import settings
+from app.core.readiness import ReadinessEvidence
 from app.core.runtime_state import RuntimeState
 
 
@@ -25,6 +26,16 @@ class Runtime:
         self.state = RuntimeState.CREATED
         self.ready = False
         self._request_admission_enabled = False
+
+    def request_readiness(self, evidence: ReadinessEvidence) -> None:
+        """Validate readiness evidence and enter READY when complete."""
+        if not evidence.is_complete:
+            self.disable_request_admission()
+            raise RuntimeError(
+                "Mandatory runtime readiness requirements are not satisfied."
+            )
+
+        self.mark_ready()
 
     def mark_ready(self) -> None:
         """
