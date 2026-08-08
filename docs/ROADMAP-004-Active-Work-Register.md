@@ -33,104 +33,27 @@ No item may be marked complete until:
 
 # Active Work
 
-## RFC-041 — Operational Workload Entry Boundary Contract
+## RFC-042 — Architecture Review
 
 ### Status
 
-Architecture review complete. Contract definition active.
+Ready for architecture review. No RFC-042 contract has been selected.
 
 ### Objective
 
-Establish one canonical production entry boundary for PlantMind operational workloads and integrate that boundary into the platform dependency graph before any future `READY` to `OPERATIONAL` transition is implemented.
+Select the next architecture-controlled PlantMind increment from the RFC-041 operational workload entry boundary baseline.
 
-### Architecture Findings
+### Current Technical Baseline
 
-- `ApplicationFacade` is the current stable application-level entry point.
-- Current code explicitly directs external interfaces to use `ApplicationFacade` rather than internal orchestration or reasoning services.
-- `IntegrationGateway` isolates external-facing integration concerns from internal application architecture.
-- `OrchestrationService` coordinates the PlantMind workflow.
-- `WorkflowExecutor` performs concrete workflow execution.
-- Enterprise Engines SHALL NOT become workload orchestration owners.
-- Production API hosting currently exposes observation endpoints only and is not the operational workload execution boundary.
-- `ApplicationFacade`, `IntegrationGateway`, `OrchestrationService` and `WorkflowExecutor` are not currently composed by `CompositionRoot`.
-- Current optional constructors allow these components to construct downstream dependencies independently.
-- No approved Runtime `READY` to `OPERATIONAL` transition exists.
-
-### Contract Direction
-
-The canonical workload path SHALL be:
-
-External Interface
-
-↓
-
-`ApplicationFacade`
-
-↓
-
-`IntegrationGateway`
-
-↓
-
-`OrchestrationService`
-
-↓
-
-`WorkflowExecutor`
-
-↓
-
-Approved reasoning and presentation capabilities
-
-`ApplicationFacade` SHALL be the canonical application-level operational workload entry boundary.
-
-`IntegrationGateway` SHALL remain an integration-isolation boundary and SHALL NOT compete with `ApplicationFacade` as the platform application entry authority.
-
-`OrchestrationService` SHALL remain responsible for workflow coordination.
-
-`WorkflowExecutor` SHALL remain responsible for concrete workflow execution.
-
-Enterprise Engines SHALL NOT own orchestration.
-
-Production composition SHALL use one explicitly constructed dependency chain owned by `CompositionRoot`.
-
-External production interfaces SHALL consume the composed `ApplicationFacade` rather than independently constructing internal workload services.
-
-### Lifecycle Boundary
-
-RFC-041 SHALL establish the operational workload entry boundary but SHALL NOT transition Runtime to `OPERATIONAL`.
-
-Admission of a request, invocation of `ApplicationFacade`, workflow execution, or workflow completion SHALL NOT automatically modify Runtime lifecycle state under RFC-041.
-
-A future Runtime operational-transition RFC may use the RFC-041 workload boundary as lifecycle evidence only after transition conditions and authority are separately approved.
-
-### Expected Technical Scope
-
-RFC-041 MAY modify production composition code to:
-
-- construct the workload dependency chain explicitly;
-- expose the composed `ApplicationFacade`;
-- preserve one dependency graph from facade through workflow execution;
-- prevent production composition from relying on independent implicit construction.
-
-Existing backward-compatible constructors MAY remain where required by current tests and compatibility contracts.
-
-### Non-Goals
-
-RFC-041 SHALL NOT:
-
-- add `Runtime.mark_operational()` or equivalent;
-- transition Runtime to `OPERATIONAL`;
-- implement `DEGRADED`;
-- add `ServiceState.OPERATIONAL`;
-- add production business API routes solely for testing;
-- redesign reasoning or Enterprise Engines;
-- duplicate orchestration responsibilities;
-- introduce authentication, authorization, retry, recovery or traffic draining.
+- Branch: `feature/engineering-platform`
+- Last completed RFC: RFC-041 — Operational Workload Entry Boundary Contract
+- RFC-041 contract commit: `6a49e92`
+- RFC-041 technical commit: `1693a9b`
+- Full regression baseline: 263 passed
 
 ### Next Exact Action
 
-Define and commit the RFC-041 contract before TDD or production implementation begins.
+Review the Source of Truth and select the RFC-042 objective before defining any new contract, TDD scope or implementation.
 
 ---
 
@@ -158,6 +81,7 @@ Define and commit the RFC-041 contract before TDD or production implementation b
 | RFC-038 | `b65cceb` | Runtime readiness verification contract |
 | RFC-039 | `bc26371` | API request admission enforcement contract |
 | RFC-040 | `376970e` | Platform operational semantics alignment contract |
+| RFC-041 | `1693a9b` | Operational workload entry boundary contract |
 
 RFC-039 verification:
 
@@ -186,6 +110,21 @@ RFC-040 verification:
 - Remote alignment push: verified
 
 RFC-040 is complete.
+
+RFC-041 verification:
+
+- Contract commit: `6a49e92`
+- Technical commit: `1693a9b`
+- Focused TDD suite: 7 passed
+- Impacted regression: 41 passed
+- Full regression: 263 passed
+- Compilation: passed
+- `git diff --check`: passed
+- Remote technical push: verified
+- Runtime lifecycle transition behavior: unchanged
+- `OPERATIONAL` transition: not introduced
+
+RFC-041 is technically complete.
 
 ---
 

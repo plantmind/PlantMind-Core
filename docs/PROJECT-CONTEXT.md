@@ -364,72 +364,84 @@ It must extend, not discard, the accepted Plugin Framework.
 
 14. Immediate Development Direction
 
-RFC-040 is complete at alignment commit `376970e`.
+RFC-041 is complete at technical commit `1693a9b`.
 
-RFC-040 established authoritative platform operational semantics without modifying production Python code.
+RFC-041 established the canonical production operational workload entry boundary and integrated it into the platform dependency graph.
 
-`READY`, request admission and `OPERATIONAL` are distinct platform concepts.
+The approved production workload path is:
 
-`READY` means mandatory startup and readiness requirements have completed successfully.
+External Interface
 
-A Runtime in `READY` is eligible for request admission, but `READY` does not mean Runtime is `OPERATIONAL`.
+↓
 
-Request admission remains an independent Runtime-owned control governing whether new operational requests may enter the API hosting boundary.
+`ApplicationFacade`
 
-Enabling request admission does not transition Runtime to `OPERATIONAL`.
+↓
 
-`OPERATIONAL` remains a distinct Runtime lifecycle state with no approved transition implementation yet.
+`IntegrationGateway`
 
-A future `READY` to `OPERATIONAL` transition requires a dedicated architecture contract defining the operational workload execution boundary and authorized Runtime transition.
+↓
+
+`OrchestrationService`
+
+↓
+
+`WorkflowExecutor`
+
+↓
+
+Approved reasoning and presentation capabilities
+
+`ApplicationFacade` is the canonical application-level operational workload entry boundary.
+
+`IntegrationGateway` remains the integration-isolation boundary and does not compete with `ApplicationFacade` as the application entry authority.
+
+`OrchestrationService` remains responsible for workflow coordination.
+
+`WorkflowExecutor` remains responsible for concrete workflow execution.
+
+Enterprise Engines remain outside orchestration ownership.
+
+`CompositionRoot` now explicitly constructs the workload dependency chain, registers the composed instances in `ServiceContainer`, and exposes them through `PlatformComposition`.
+
+Production composition therefore uses one explicit dependency graph rather than independently constructed workload services.
+
+Existing standalone constructors remain backward compatible.
+
+Executing a workload through the composed `ApplicationFacade` does not modify Runtime lifecycle state or request-admission state.
+
+RFC-041 does not introduce a `READY` to `OPERATIONAL` transition.
 
 Runtime remains the sole authoritative owner of platform lifecycle state.
 
-Bootstrap remains the startup and shutdown coordinator. Successful startup terminates at Runtime `READY`, followed by request-admission enablement.
+The RFC-041 workload boundary may become lifecycle evidence for a future operational-transition RFC only after transition conditions and authority are separately approved.
 
-HealthCapability remains read-only observation and reporting. It does not determine readiness, control request admission or authorize lifecycle transitions.
+RFC-041 verification:
 
-API request-admission enforcement remains read-only with respect to Runtime lifecycle state.
+- Contract commit: `6a49e92`
+- Technical commit: `1693a9b`
+- Focused TDD suite: 7 passed
+- Impacted regression: 41 passed
+- Full regression: 263 passed
+- Compilation: passed
+- `git diff --check`: passed
+- Remote technical push: verified
 
-The `Operational` stage documented for Core Services represents target architectural lifecycle intent and is not currently implemented as `ServiceState.OPERATIONAL`.
+RFC-042 has not yet been selected.
 
-Service lifecycle semantics remain separate from platform Runtime lifecycle semantics.
-
-`DEGRADED` remains deferred and requires separate architecture review.
-
-RFC-040 aligned:
-
-- `BOOT-001 — Platform Bootstrap Lifecycle`
-- `CAP-002 — Health Capability`
-- `CORE-002 — Core Services Architecture`
-
-RFC-040 architecture decision:
-
-- AD-026 — Platform Operational Semantics Alignment
-
-RFC-040 verification:
-
-- Contract commit: `63d75ec`
-- Alignment commit: `376970e`
-- Production Python changes: none
-- Full regression: 256 passed
-- Documentation validation: passed
-- Remote alignment push: verified
-
-RFC-041 has not yet been selected.
-
-Before selecting or implementing RFC-041:
+Before selecting or implementing RFC-042:
 
 Review the Active Work Register.
 Review current committed code and tests.
 Review accepted RFCs, ADRs, architecture documents and deferred work.
+Preserve `ApplicationFacade` as the canonical workload entry boundary.
+Preserve `IntegrationGateway` as the integration-isolation boundary.
+Preserve `OrchestrationService` workflow-coordination ownership.
+Preserve `WorkflowExecutor` concrete execution ownership.
+Preserve Composition Root ownership of production dependency construction.
 Preserve Runtime lifecycle-state ownership.
-Preserve the distinction between `READY`, request admission and `OPERATIONAL`.
-Preserve Bootstrap coordination ownership.
-Preserve HealthCapability read-only observation.
-Preserve API-hosting request-admission enforcement ownership.
-Do not introduce an `OPERATIONAL` transition until its workload execution boundary and transition authority are explicitly approved.
-Do not introduce `ServiceState.OPERATIONAL` without dedicated architecture review.
-Keep `DEGRADED`, traffic draining, retry, recovery, authentication and authorization outside the next implementation unless explicitly selected through architecture review.
+Do not infer or implement `OPERATIONAL` merely from workload invocation or completion.
+Do not introduce duplicate application, integration or orchestration entry boundaries.
 Record the selected RFC objective and next exact action before implementation begins.
 
 15. Session Continuation Instruction

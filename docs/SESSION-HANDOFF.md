@@ -6,12 +6,12 @@
 |---|---|
 | Project | PlantMind PM-001 |
 | Branch | `feature/engineering-platform` |
-| Last Completed RFC | RFC-040 — Platform Operational Semantics Alignment Contract |
-| Technical Baseline Commit | `376970e` |
-| Test Baseline | 256 passed |
+| Last Completed RFC | RFC-041 — Operational Workload Entry Boundary Contract |
+| Technical Baseline Commit | `1693a9b` |
+| Test Baseline | 263 passed |
 | Authoritative Environment | `PlantMind-Core/.venv` |
 | Remote State | Up to date with `origin/feature/engineering-platform` |
-| RFC-040 Alignment Push | Verified |
+| RFC-041 Technical Push | Verified |
 
 ## Recent Engineering Sequence
 
@@ -31,6 +31,7 @@
 - RFC-038 — Runtime Readiness Verification Contract
 - RFC-039 — API Request Admission Enforcement Contract
 - RFC-040 — Platform Operational Semantics Alignment Contract
+- RFC-041 — Operational Workload Entry Boundary Contract
 
 ## RFC-036 Outcome
 
@@ -196,11 +197,67 @@ Architecture decision:
 - Documentation validation: passed
 - Remote alignment push: verified
 
+## RFC-041 Outcome
+
+RFC-041 established the canonical production operational workload entry boundary.
+
+The approved production workload path is:
+
+External Interface
+
+↓
+
+`ApplicationFacade`
+
+↓
+
+`IntegrationGateway`
+
+↓
+
+`OrchestrationService`
+
+↓
+
+`WorkflowExecutor`
+
+↓
+
+Approved reasoning and presentation capabilities
+
+The implementation:
+
+- Makes `ApplicationFacade` the canonical application-level workload entry boundary.
+- Keeps `IntegrationGateway` as the integration-isolation boundary.
+- Keeps `OrchestrationService` responsible for workflow coordination.
+- Keeps `WorkflowExecutor` responsible for concrete workflow execution.
+- Keeps Enterprise Engines outside orchestration ownership.
+- Makes `CompositionRoot` construct the workload dependency chain explicitly.
+- Registers the same composed workload instances in `ServiceContainer`.
+- Exposes the composed workload instances through `PlatformComposition`.
+- Preserves existing standalone constructor compatibility.
+- Preserves Runtime lifecycle ownership.
+- Confirms workload execution does not modify Runtime lifecycle state.
+- Confirms workload execution does not modify request-admission state.
+- Introduces no `READY` to `OPERATIONAL` transition.
+- Introduces no `DEGRADED` behavior or service-level `OPERATIONAL` state.
+
+## RFC-041 Verification
+
+- Contract commit: `6a49e92`
+- Technical commit: `1693a9b`
+- Focused TDD suite: 7 passed
+- Impacted regression: 41 passed
+- Full regression: 263 passed
+- Compilation: passed
+- `git diff --check`: passed
+- Remote technical push: verified
+
 ## Documentation Closure
 
-RFC-040 architecture and documentation alignment is complete.
+RFC-041 technical implementation is complete.
 
-The engineering-memory layer is being synchronized with the RFC-040 aligned architecture baseline.
+The engineering-memory layer is being synchronized with the RFC-041 technical baseline.
 
 Relevant maintained documents:
 
@@ -212,21 +269,21 @@ Relevant maintained documents:
 
 ## Next Exact Action
 
-Begin architecture review for RFC-041 from the RFC-040 aligned baseline.
+Begin architecture review for RFC-042 from the RFC-041 technical baseline.
 
-Before selecting or implementing RFC-041:
+Before selecting or implementing RFC-042:
 
 1. Review the Active Work Register.
 2. Review current committed code and tests.
 3. Review accepted RFCs, ADRs, architecture documents and deferred work.
-4. Preserve Runtime lifecycle-state ownership.
-5. Preserve the distinction between `READY`, request admission and `OPERATIONAL`.
-6. Preserve Bootstrap coordination ownership.
-7. Preserve HealthCapability read-only observation.
-8. Preserve API-hosting request-admission enforcement ownership.
-9. Do not implement `READY` to `OPERATIONAL` until the operational workload execution boundary and authorized Runtime transition are explicitly approved.
-10. Do not introduce `ServiceState.OPERATIONAL` without dedicated architecture review.
-11. Keep `DEGRADED`, traffic draining, retry, recovery, authentication and authorization deferred unless explicitly selected through architecture review.
+4. Preserve `ApplicationFacade` as the canonical workload entry boundary.
+5. Preserve `IntegrationGateway` as the integration-isolation boundary.
+6. Preserve `OrchestrationService` workflow-coordination ownership.
+7. Preserve `WorkflowExecutor` concrete execution ownership.
+8. Preserve Composition Root ownership of production dependency construction.
+9. Preserve Runtime lifecycle-state ownership.
+10. Do not infer or implement `OPERATIONAL` merely from workload invocation or completion.
+11. Do not introduce duplicate application, integration or orchestration entry boundaries.
 12. Record the selected RFC objective and next exact action before implementation begins.
 
 ## Required Test Command

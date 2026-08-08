@@ -562,6 +562,64 @@ Verification:
 
 ---
 
+### RFC-041 — Operational Workload Entry Boundary Contract
+
+RFC-041 established the canonical production operational workload entry boundary and integrated it into the platform dependency graph.
+
+The approved workload path is:
+
+External Interface
+
+↓
+
+`ApplicationFacade`
+
+↓
+
+`IntegrationGateway`
+
+↓
+
+`OrchestrationService`
+
+↓
+
+`WorkflowExecutor`
+
+↓
+
+Approved reasoning and presentation capabilities
+
+The implementation:
+
+- Establishes `ApplicationFacade` as the canonical application-level workload entry boundary.
+- Preserves `IntegrationGateway` as the integration-isolation boundary.
+- Preserves `OrchestrationService` workflow-coordination ownership.
+- Preserves `WorkflowExecutor` concrete execution ownership.
+- Keeps Enterprise Engines outside orchestration ownership.
+- Makes `CompositionRoot` explicitly construct the workload dependency chain.
+- Registers the same composed workload instances in `ServiceContainer`.
+- Exposes the same instances through `PlatformComposition`.
+- Preserves existing standalone constructor compatibility.
+- Preserves Runtime lifecycle-state ownership.
+- Confirms workload execution does not modify Runtime lifecycle state.
+- Confirms workload execution does not modify request-admission state.
+- Introduces no `READY` to `OPERATIONAL` transition.
+- Introduces no `DEGRADED` behavior or `ServiceState.OPERATIONAL`.
+
+Verification:
+
+- Contract commit: `6a49e92`
+- Technical commit: `1693a9b`
+- Focused TDD suite: 7 passed
+- Impacted regression: 41 passed
+- Full regression: 263 passed
+- Compilation: passed
+- `git diff --check`: passed
+- Remote technical push: verified
+
+---
+
 # Current Status
 
 PlantMind now possesses:
@@ -583,6 +641,7 @@ PlantMind now possesses:
 - Runtime Readiness Verification Contract
 - API Request Admission Enforcement Contract
 - Platform Operational Semantics Alignment Contract
+- Operational Workload Entry Boundary Contract
 - Service Lifecycle
 - Composition Root and dependency wiring
 - Structured engineering documentation
@@ -590,12 +649,11 @@ PlantMind now possesses:
 
 Current technical baseline:
 
-- RFC-040 — Platform Operational Semantics Alignment Contract
-- Contract commit: `63d75ec`
-- Alignment commit: `376970e`
-- Full regression: 256 passed
-- Production Python changes: none
+- RFC-041 — Operational Workload Entry Boundary Contract
+- Contract commit: `6a49e92`
+- Technical commit: `1693a9b`
+- Full regression: 263 passed
 
-The next engineering step is architecture review for RFC-041.
+The next engineering step is architecture review for RFC-042.
 
 The project remains in long-term enterprise platform development.

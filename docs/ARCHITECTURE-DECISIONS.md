@@ -1345,3 +1345,160 @@ A future operational-transition RFC must define:
 - shutdown interaction.
 
 `DEGRADED`, traffic draining, retry, recovery, authentication and authorization remain separate architecture concerns.
+
+---
+
+# AD-027 — Operational Workload Entry Boundary
+
+## Context
+
+RFC-040 established that `READY`, request admission and `OPERATIONAL` are distinct platform concepts.
+
+A future Runtime transition from `READY` to `OPERATIONAL` requires an approved operational workload execution boundary before lifecycle transition semantics can be defined.
+
+PlantMind already contains an application workload path consisting of:
+
+- `ApplicationFacade`
+- `IntegrationGateway`
+- `OrchestrationService`
+- `WorkflowExecutor`
+
+Before RFC-041, these components could construct downstream dependencies independently and were not part of the production `CompositionRoot` dependency graph.
+
+The existing `ApplicationFacade` contract identifies it as the stable application-level entry point and directs external interfaces away from internal orchestration and reasoning services.
+
+## Decision
+
+The canonical PlantMind operational workload path SHALL be:
+
+External Interface
+
+↓
+
+`ApplicationFacade`
+
+↓
+
+`IntegrationGateway`
+
+↓
+
+`OrchestrationService`
+
+↓
+
+`WorkflowExecutor`
+
+↓
+
+Approved reasoning and presentation capabilities
+
+### ApplicationFacade
+
+`ApplicationFacade` SHALL be the canonical application-level operational workload entry boundary.
+
+Production external interfaces SHALL enter application workload execution through the composed `ApplicationFacade`.
+
+External production interfaces SHALL NOT bypass `ApplicationFacade` by directly depending on internal orchestration or reasoning services unless separately architecture-approved.
+
+### IntegrationGateway
+
+`IntegrationGateway` SHALL remain the integration-isolation boundary.
+
+It SHALL isolate external-facing integration concerns from internal application architecture.
+
+It SHALL NOT compete with `ApplicationFacade` as the canonical application workload entry authority.
+
+### OrchestrationService
+
+`OrchestrationService` SHALL remain responsible for workflow coordination.
+
+It SHALL NOT become the external production application entry authority.
+
+### WorkflowExecutor
+
+`WorkflowExecutor` SHALL remain responsible for concrete workflow execution.
+
+It SHALL execute approved workflow stages without owning platform Runtime lifecycle state.
+
+### Enterprise Engines
+
+Enterprise Engines SHALL NOT own workflow orchestration or platform workload-entry responsibilities.
+
+Cross-engine coordination SHALL continue through approved orchestration components.
+
+### Composition Root
+
+`CompositionRoot` SHALL own production construction of the operational workload dependency chain.
+
+Production composition SHALL explicitly construct:
+
+- `WorkflowExecutor`
+- `OrchestrationService`
+- `IntegrationGateway`
+- `ApplicationFacade`
+
+The same composed instances SHALL be registered in `ServiceContainer` and exposed through `PlatformComposition`.
+
+Production composition SHALL NOT rely on independent implicit construction of parallel workload dependency chains.
+
+Backward-compatible standalone constructors MAY remain where required by existing compatibility contracts and tests.
+
+## Lifecycle Boundary
+
+RFC-041 establishes the operational workload entry boundary but does not implement a Runtime transition to `OPERATIONAL`.
+
+The following events SHALL NOT automatically modify Runtime lifecycle state under RFC-041:
+
+- request admission;
+- invocation of `ApplicationFacade`;
+- invocation of `IntegrationGateway`;
+- workflow execution;
+- workflow completion.
+
+Runtime remains the sole authoritative owner of platform lifecycle state.
+
+A future operational-transition RFC MAY use execution through the RFC-041 workload boundary as lifecycle evidence only after defining:
+
+- exact transition conditions;
+- transition authority;
+- failure semantics;
+- lifecycle observation requirements;
+- interaction with request admission;
+- shutdown behavior.
+
+## Rationale
+
+This decision establishes one production workload entry path without introducing another application or orchestration layer.
+
+It preserves existing component responsibilities and prevents external interfaces from coupling directly to internal workflow implementation.
+
+It brings the workload path under Composition Root dependency ownership and prevents parallel production dependency graphs.
+
+It establishes the prerequisite boundary required for future `READY` to `OPERATIONAL` lifecycle design without prematurely introducing that transition.
+
+## Consequences
+
+`ApplicationFacade` is now the canonical production workload entry boundary.
+
+The workload dependency chain is explicitly composed by `CompositionRoot`.
+
+The same workload instances are available through `ServiceContainer` and `PlatformComposition`.
+
+Existing standalone construction remains backward compatible.
+
+Runtime lifecycle behavior is unchanged.
+
+Request-admission behavior is unchanged.
+
+No `OPERATIONAL` or `DEGRADED` lifecycle transition is introduced.
+
+No `ServiceState.OPERATIONAL` is introduced.
+
+## Future Impact
+
+A future Runtime operational-transition RFC must build on this workload boundary rather than creating a competing execution boundary.
+
+Any new production external interface must consume the approved composed application boundary unless a separate architecture decision explicitly authorizes another path.
+
+Authentication, authorization, traffic draining, retry, recovery and degraded-state behavior remain separate architecture concerns.
