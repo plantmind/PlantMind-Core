@@ -1186,4 +1186,3 @@ Future production operational API routes must remain behind the Runtime-owned ad
 Any new observation exemption must be explicit and architecture-reviewed.
 
 OPERATIONAL and DEGRADED transitions, traffic draining, authentication, authorization, retry and recovery remain separate architecture concerns.
-
