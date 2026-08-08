@@ -33,110 +33,31 @@ No item may be marked complete until:
 
 # Active Work
 
-## RFC-037 — Runtime Request Admission Control Contract
+## RFC-038 — Architecture Review
 
 ### Status
 
-Architecture review complete; contract and TDD scope defined; implementation not started.
+Ready for architecture review. No RFC-038 contract has been selected.
 
 ### Objective
 
-Establish Runtime-owned request-admission state and align Bootstrap startup and shutdown orchestration with the request-admission boundaries defined by BOOT-002 and RUNTIME-001.
+Select the next architecture-controlled PlantMind increment from the latest committed technical baseline.
 
 ### Current Technical Baseline
 
 - Branch: `feature/engineering-platform`
-- Last completed RFC: RFC-036 — Managed Shutdown Failure Containment Contract
-- RFC-036 technical commit: `438d7e4`
-- Documentation baseline commit: `2f77dbf`
-- Full regression baseline: 225 passed
-
-### Architectural Findings
-
-- BOOT-002 requires Request Admission Enabled only after Runtime reaches READY.
-- BOOT-002 requires Request Admission Disabled before Runtime enters STOPPING.
-- RUNTIME-001 assigns Request Admission State ownership to Runtime.
-- RUNTIME-001 assigns request-admission enforcement to the API hosting layer.
-- Runtime currently exposes lifecycle readiness but no explicit request-admission state.
-- Bootstrap currently reaches READY without explicitly enabling request admission.
-- Bootstrap currently enters STOPPING without explicitly disabling request admission.
-- RUNTIME-001 defines OPERATIONAL only after operational workloads begin being served.
-- No current API hosting integration exists in the Core lifecycle implementation.
-- BOOT-002 makes health verification an optional Bootstrap interaction rather than a mandatory current lifecycle dependency.
-
-### Dependencies
-
-- BOOT-002 — Bootstrap Lifecycle Architecture
-- RUNTIME-001 — Platform Lifecycle Architecture
-- RFC-034 — Bootstrap Startup Failure Atomicity Contract
-- RFC-035 — Bootstrap Shutdown Lifecycle Compliance Contract
-- RFC-036 — Managed Shutdown Failure Containment Contract
-- `Runtime`
-- `BootstrapManager`
-
-### RFC-037 Contract
-
-- Runtime SHALL own request-admission state.
-- Request admission SHALL be disabled when Runtime is created.
-- Runtime SHALL expose a public read interface for request-admission state.
-- Runtime SHALL expose public operations to enable and disable request admission.
-- Bootstrap SHALL enable request admission only after all mandatory startup stages succeed and Runtime has reached READY.
-- Failed startup SHALL never leave request admission enabled.
-- Bootstrap SHALL disable request admission before requesting Runtime transition to STOPPING.
-- Request admission SHALL remain disabled throughout managed shutdown.
-- Failed managed shutdown SHALL leave request admission disabled while Runtime transitions to FAILED.
-- Runtime transitions to FAILED SHALL disable request admission.
-- Runtime transitions to STOPPING SHALL not permit request admission to remain enabled.
-- Existing Runtime readiness semantics SHALL remain unchanged.
-- Existing successful startup, shutdown and RFC-036 failure-containment behavior SHALL remain backward compatible.
-- API hosting layers SHALL remain responsible for enforcing admission according to Runtime state.
-- RFC-037 SHALL NOT implement an API server, middleware, authentication, authorization, health verification, OPERATIONAL transition, DEGRADED transition, workload execution, retry, recovery or traffic-draining policy.
-
-### TDD Scope
-
-RFC-037 implementation SHALL be driven by focused tests proving:
-
-1. Request admission is disabled when Runtime is created.
-2. Runtime exposes request-admission state through a public read interface.
-3. Runtime can explicitly enable request admission.
-4. Runtime can explicitly disable request admission.
-5. Runtime failure transition disables request admission.
-6. Runtime STOPPING transition disables request admission.
-7. Successful Bootstrap startup enables request admission only after Runtime reaches READY.
-8. Startup validation failure leaves request admission disabled.
-9. Startup initialization failure leaves request admission disabled.
-10. Startup plugin activation failure leaves request admission disabled.
-11. Bootstrap disables request admission before managed shutdown begins.
-12. Successful shutdown leaves request admission disabled.
-13. Failed managed shutdown leaves request admission disabled.
-14. Existing RFC-034, RFC-035 and RFC-036 lifecycle behavior remains compatible.
-
-### Implementation Boundary
-
-RFC-037 should modify only the minimum Runtime, Bootstrap orchestration and focused test surfaces required to establish request-admission state ownership and lifecycle coordination.
-
-`Runtime` retains exclusive ownership of request-admission state.
-
-`BootstrapManager` retains startup and shutdown orchestration ownership.
-
-The future API hosting layer will enforce admission by reading Runtime state; RFC-037 SHALL NOT implement that hosting layer.
-
-Do not introduce a second admission controller, middleware layer, traffic router, health subsystem or operational-workload manager.
-
-Health verification, API enforcement, OPERATIONAL and DEGRADED transitions, traffic draining and request rejection response policy require separate architecture review.
+- Last completed RFC: RFC-037 — Runtime Request Admission Control Contract
+- RFC-037 contract commit: `e6d2e51`
+- RFC-037 technical commit: `788b03b`
+- Full regression baseline: 236 passed
 
 ### Next Exact Action
 
-Commit the RFC-037 contract, then write failing focused Runtime request-admission tests before implementation.
-
+Review the Source of Truth and select the RFC-038 objective before defining any new contract, TDD scope or implementation.
 
 ---
 
 # Recently Completed Work
-
-| RFC-036 | `438d7e4` | Managed shutdown failure containment contract |
-
-| RFC-035 | `3e613df` | Bootstrap shutdown lifecycle compliance contract |
 
 | RFC | Commit | Result |
 |---|---|---|
@@ -154,12 +75,24 @@ Commit the RFC-037 contract, then write failing focused Runtime request-admissio
 | RFC-032 | `6b4d80f` | Plugin metadata contract |
 | RFC-033 | `569e4fb` | Plugin version format contract |
 | RFC-034 | `a174009` | Bootstrap startup failure atomicity contract |
+| RFC-035 | `3e613df` | Bootstrap shutdown lifecycle compliance contract |
+| RFC-036 | `438d7e4` | Managed shutdown failure containment contract |
+| RFC-037 | `788b03b` | Runtime request admission control contract |
 
-The previous RFC-021 and RFC-022 active-work entries were stale relative to the committed Git history and are no longer active items.
+RFC-037 verification:
 
-Any historical task suspected to remain incomplete must be reopened only after current-code, dependency and regression review.
+- Contract commit: `e6d2e51`
+- Technical commit: `788b03b`
+- Focused request-admission tests: 11 passed
+- Runtime and Bootstrap lifecycle suite: 35 passed
+- Impacted regression: 75 passed
+- Full regression: 236 passed
+- Remote push: verified
+
+RFC-037 is closed.
 
 ---
+
 
 # Deferred Architecture Work
 

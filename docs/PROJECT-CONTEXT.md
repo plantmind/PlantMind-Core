@@ -364,45 +364,40 @@ It must extend, not discard, the accepted Plugin Framework.
 
 14. Immediate Development Direction
 
-RFC-036 is complete at the technical baseline.
+RFC-037 is complete at technical commit `788b03b`.
 
-The Managed Shutdown Failure Containment Contract makes managed shutdown best-effort while preserving deterministic lifecycle ownership.
+Runtime now owns explicit request-admission state independently from readiness.
 
-`PluginLifecycleManager` now attempts all active plugin deactivations in reverse activation order even when one or more deactivations fail.
+Request admission is disabled when Runtime is created.
 
-Successfully deactivated plugins are removed from the active set, while plugins whose deactivation fails remain tracked as active because their final lifecycle state is unresolved.
+Bootstrap enables request admission only after mandatory startup succeeds and Runtime reaches `READY`.
 
-A single plugin deactivation failure remains the directly propagated original exception.
+Bootstrap disables request admission before requesting Runtime transition to `STOPPING`.
 
-Multiple plugin deactivation failures are propagated through `ExceptionGroup` in deterministic encounter order.
+Runtime transitions to `STOPPING` and `FAILED` disable request admission.
 
-Bootstrap continues to registered-service shutdown even when plugin deactivation reports failure.
+Startup validation, initialization and plugin activation failures leave request admission disabled.
 
-Bootstrap attempts all registered service shutdown operations in deterministic reverse registry enumeration order even when individual service shutdown operations fail.
+Failed managed shutdown leaves request admission disabled while Runtime transitions to `FAILED`.
 
-Any managed shutdown failure transitions Runtime to `FAILED` and keeps readiness false.
+Existing RFC-034 startup atomicity, RFC-035 shutdown lifecycle and RFC-036 shutdown failure-containment behavior remain compatible.
 
-Runtime transitions to `STOPPED` only when all required managed shutdown operations complete successfully.
+API hosting remains responsible for future enforcement of request admission according to Runtime state.
 
-A single Bootstrap-managed shutdown failure remains the directly propagated original exception.
+RFC-037 introduces no API server, middleware, authentication, authorization, health verification, OPERATIONAL transition, DEGRADED transition, retry, recovery or traffic-draining policy.
 
-Multiple Bootstrap-managed shutdown failures are propagated through `ExceptionGroup` in deterministic encounter order.
+Technical verification completed with 11 focused request-admission tests, 35 Runtime and Bootstrap lifecycle tests, 75 impacted regression tests and a full regression baseline of 236 passing tests.
 
-RFC-035 successful shutdown behavior and RFC-034 startup atomicity behavior remain backward compatible.
+RFC-038 has not yet been selected.
 
-RFC-036 introduces no automatic retry, automatic recovery, dependency graph, parallel shutdown, ServiceState redesign, request-admission implementation, logging architecture redesign or process termination policy.
-
-Technical verification completed with 31 focused lifecycle and shutdown-containment tests, 64 impacted runtime/bootstrap/plugin/composition tests and a full regression baseline of 225 passing tests.
-
-RFC-037 has not yet been selected.
-
-Before selecting or implementing RFC-037:
+Before selecting or implementing RFC-038:
 
 Review the Active Work Register.
 Review current committed code and tests.
 Review accepted RFCs, ADRs, architecture documents and deferred work.
 Preserve established Runtime ownership, Bootstrap orchestration, Service Registry, Plugin Lifecycle, Registry, Metadata, Version Format and Composition responsibilities.
-Do not introduce shutdown retry, automatic recovery, dependency-aware shutdown, parallel shutdown, ServiceState redesign, process termination policy or structured shutdown telemetry without dedicated architecture review.
+Preserve request-admission ownership in Runtime and enforcement ownership in the future API hosting layer.
+Do not introduce health verification, OPERATIONAL or DEGRADED transitions, API admission middleware, traffic draining, retry or recovery without dedicated architecture review.
 Record the selected RFC objective and next exact action before implementation begins.
 
 15. Session Continuation Instruction

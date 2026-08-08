@@ -421,6 +421,37 @@ Verification:
 - Remote push: verified
 
 
+### RFC-037 — Runtime Request Admission Control Contract
+
+RFC-037 established explicit Runtime-owned request-admission state and aligned Bootstrap startup and shutdown orchestration with BOOT-002 and RUNTIME-001.
+
+The implementation:
+
+- Adds request-admission state to Runtime.
+- Defaults request admission to disabled.
+- Exposes public enable, disable and read operations.
+- Disables admission when Runtime enters `STOPPING` or `FAILED`.
+- Enables admission only after successful Bootstrap startup reaches `READY`.
+- Disables admission before Bootstrap requests `STOPPING`.
+- Preserves disabled admission across startup failure paths.
+- Preserves disabled admission across failed managed shutdown.
+- Preserves RFC-034, RFC-035 and RFC-036 lifecycle behavior.
+- Leaves request-admission enforcement to the future API hosting layer.
+- Introduces no API server, middleware, health verification, OPERATIONAL transition, DEGRADED transition, retry, recovery or traffic-draining policy.
+
+Verification:
+
+- Focused request-admission tests: 11 passed
+- Runtime and Bootstrap lifecycle suite: 35 passed
+- Impacted regression: 75 passed
+- Full regression: 236 passed
+- `git diff --check`: passed
+- Contract commit: `e6d2e51`
+- Technical commit: `788b03b`
+- Remote technical push: verified
+
+---
+
 # Current Status
 
 PlantMind now possesses:
@@ -438,6 +469,7 @@ PlantMind now possesses:
 - Bootstrap Startup Failure Atomicity Contract
 - Bootstrap Shutdown Lifecycle Compliance Contract
 - Managed Shutdown Failure Containment Contract
+- Runtime Request Admission Control Contract
 - Service Lifecycle
 - Composition Root and dependency wiring
 - Structured engineering documentation
@@ -445,8 +477,11 @@ PlantMind now possesses:
 
 Current technical baseline:
 
-- RFC-036 — Managed Shutdown Failure Containment Contract
-- Commit: `438d7e4`
-- Full regression: 225 passed
+- RFC-037 — Runtime Request Admission Control Contract
+- Contract commit: `e6d2e51`
+- Technical commit: `788b03b`
+- Full regression: 236 passed
 
-The project has successfully moved beyond prototype stage and entered long-term enterprise platform development.
+The next engineering step is architecture review for RFC-038.
+
+The project remains in long-term enterprise platform development.

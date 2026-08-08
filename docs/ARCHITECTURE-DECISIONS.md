@@ -961,3 +961,66 @@ RFC-036 does not define automatic retry, automatic recovery, dependency-aware sh
 Future shutdown stages must participate in the same deterministic best-effort containment model unless a dedicated architecture decision replaces it.
 
 Retry policy, recovery strategy, dependency-aware shutdown, structured failure telemetry and process termination remain separate architecture concerns.
+---
+
+# AD-023 — Runtime Owns Request Admission State
+
+## Context
+
+BOOT-002 defines Request Admission Enabled only after Runtime reaches `READY` and Request Admission Disabled before Runtime enters `STOPPING`.
+
+RUNTIME-001 assigns Request Admission State ownership to Runtime and assigns request-admission enforcement to the API hosting layer.
+
+Before RFC-037, Runtime exposed readiness but no explicit request-admission state. Bootstrap reached `READY` without explicitly enabling admission and entered `STOPPING` without explicitly disabling admission first.
+
+## Decision
+
+Runtime SHALL exclusively own request-admission state.
+
+Request admission SHALL be disabled when Runtime is created.
+
+Runtime SHALL expose public operations to enable and disable request admission and a public read interface for admission state.
+
+Bootstrap SHALL enable request admission only after all mandatory startup stages succeed and Runtime has reached `READY`.
+
+Failed startup SHALL never leave request admission enabled.
+
+Bootstrap SHALL disable request admission before requesting Runtime transition to `STOPPING`.
+
+Runtime transitions to `STOPPING` and `FAILED` SHALL not permit request admission to remain enabled.
+
+Request admission SHALL remain disabled throughout managed shutdown.
+
+Failed managed shutdown SHALL leave request admission disabled while Runtime is `FAILED`.
+
+The API hosting layer SHALL remain responsible for enforcing request admission according to Runtime state.
+
+## Rationale
+
+- Separates lifecycle readiness from workload admission.
+- Keeps Runtime as the authoritative owner of platform lifecycle and admission state.
+- Keeps Bootstrap focused on lifecycle orchestration.
+- Prevents workload admission before mandatory startup completes.
+- Prevents new workload admission after managed shutdown begins.
+- Preserves existing startup atomicity and shutdown failure-containment behavior.
+- Avoids creating a second admission controller outside Runtime.
+
+## Consequences
+
+Runtime now exposes explicit request-admission state independently from readiness.
+
+Successful Bootstrap startup transitions Runtime to `READY` before enabling request admission.
+
+Bootstrap disables request admission before requesting `STOPPING`.
+
+Critical startup and managed shutdown failures leave request admission disabled.
+
+Existing RFC-034, RFC-035 and RFC-036 lifecycle contracts remain compatible.
+
+RFC-037 does not implement API middleware, request rejection responses, authentication, authorization, health verification, OPERATIONAL transition, DEGRADED transition, traffic draining, retry or recovery.
+
+## Future Impact
+
+Future API hosting components must enforce admission according to the Runtime-owned request-admission state.
+
+Health verification, API admission enforcement, request rejection policy, traffic draining, OPERATIONAL and DEGRADED transitions require separate architecture review.
