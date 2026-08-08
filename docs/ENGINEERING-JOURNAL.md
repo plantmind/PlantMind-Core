@@ -356,6 +356,35 @@ Verification:
 - Technical working tree after implementation: clean
 
 
+---
+
+### RFC-035 — Bootstrap Shutdown Lifecycle Compliance Contract
+
+RFC-035 aligned Bootstrap shutdown behavior with BOOT-002 and RUNTIME-001 while preserving established lifecycle ownership.
+
+The implementation:
+
+- Adds the Runtime-owned public `mark_stopping()` transition.
+- Sets Runtime readiness false when entering `STOPPING`.
+- Requires Bootstrap to transition Runtime to `STOPPING` before plugin or service shutdown begins.
+- Preserves plugin deactivation ownership in `PluginLifecycleManager`.
+- Preserves deterministic reverse registry enumeration order for service shutdown.
+- Transitions Runtime to `STOPPED` only after required shutdown work completes successfully.
+- Preserves existing `Runtime.mark_not_ready()` behavior.
+- Preserves RFC-034 startup atomicity behavior.
+- Introduces no shutdown retry logic, cleanup-failure aggregation, automatic recovery, dependency graph, parallel shutdown, ServiceState redesign, request-admission implementation, plugin discovery or logging architecture redesign.
+
+Verification:
+
+- Compilation: passed
+- Focused Runtime and Bootstrap tests: 11 passed
+- Impacted runtime, bootstrap, plugin lifecycle and composition tests: 56 passed
+- Full regression: 217 passed
+- `git diff --check`: passed
+- Technical commit: `3e613df`
+- Remote push: verified
+
+
 # Current Status
 
 PlantMind now possesses:
@@ -371,6 +400,7 @@ PlantMind now possesses:
 - Plugin Metadata Contract
 - Plugin Version Format Contract
 - Bootstrap Startup Failure Atomicity Contract
+- Bootstrap Shutdown Lifecycle Compliance Contract
 - Service Lifecycle
 - Composition Root and dependency wiring
 - Structured engineering documentation
@@ -378,8 +408,8 @@ PlantMind now possesses:
 
 Current technical baseline:
 
-- RFC-034 — Bootstrap Startup Failure Atomicity Contract
-- Commit: `a174009`
-- Full regression: 214 passed
+- RFC-035 — Bootstrap Shutdown Lifecycle Compliance Contract
+- Commit: `3e613df`
+- Full regression: 217 passed
 
 The project has successfully moved beyond prototype stage and entered long-term enterprise platform development.

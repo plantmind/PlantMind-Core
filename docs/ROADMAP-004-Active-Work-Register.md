@@ -37,7 +37,7 @@ No item may be marked complete until:
 
 ### Status
 
-Architecture review complete; contract and TDD scope defined; implementation not started.
+Completed.
 
 ### Objective
 
@@ -46,10 +46,10 @@ Align the implemented Bootstrap shutdown lifecycle with BOOT-002 and RUNTIME-001
 ### Current Technical Baseline
 
 - Branch: `feature/engineering-platform`
-- Last completed RFC: RFC-034 — Bootstrap Startup Failure Atomicity Contract
-- RFC-034 technical commit: `a174009`
-- Documentation baseline commit: `6e34e7f`
-- Full regression baseline: 214 passed
+- Current technical RFC: RFC-035 — Bootstrap Shutdown Lifecycle Compliance Contract
+- Technical implementation commit: `3e613df`
+- Previous documentation baseline commit: `6e34e7f`
+- Full regression baseline: 217 passed
 
 ### Architectural Findings
 
@@ -114,14 +114,26 @@ Do not redesign `ServiceRegistry`, `BaseService`, `ServiceState`, `PluginRegistr
 
 Shutdown-failure aggregation, retry and recovery require separate architecture review and remain outside RFC-035.
 
+### Verification
+
+- Compilation: passed
+- Focused RFC-035 tests: 11 passed
+- Impacted runtime, bootstrap, plugin lifecycle and composition tests: 56 passed
+- Full regression: 217 passed
+- `git diff --check`: passed after EOF cleanup
+- Technical commit: `3e613df`
+- Push: verified
+
 ### Next Exact Action
 
-Write the RFC-035 failing focused tests before implementation.
+Synchronize the engineering-memory documents with the RFC-035 technical baseline before selecting RFC-036.
 
 
 ---
 
 # Recently Completed Work
+
+| RFC-035 | `3e613df` | Bootstrap shutdown lifecycle compliance contract |
 
 | RFC | Commit | Result |
 |---|---|---|

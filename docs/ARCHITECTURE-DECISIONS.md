@@ -817,3 +817,73 @@ Secondary failures that occur during compensating cleanup require separate archi
 Future startup stages and infrastructure integrations must preserve atomic failure semantics and must not introduce intentional partial startup without dedicated architecture approval.
 
 Startup recovery, retry policy, rollback-failure aggregation and dependency-aware initialization remain separate future architecture concerns.
+
+---
+
+# AD-021 — Runtime Enters STOPPING Before Managed Shutdown
+
+## Context
+
+BOOT-002 defines the official shutdown pipeline as:
+
+1. Request Admission Disabled
+2. Runtime Transition to STOPPING
+3. Service Shutdown
+4. Infrastructure Shutdown
+5. Runtime Transition to STOPPED
+
+Before RFC-035, `BootstrapManager.shutdown()` performed managed shutdown work without first transitioning Runtime to `STOPPING`.
+
+Runtime exposed `STOPPED` through existing behavior but did not expose a public transition operation for `STOPPING`.
+
+RFC-035 aligns the implementation with BOOT-002 and RUNTIME-001 without changing established lifecycle ownership.
+
+## Decision
+
+Runtime SHALL expose a public transition operation for `STOPPING`.
+
+The Runtime-owned `STOPPING` transition SHALL set readiness to false.
+
+Bootstrap SHALL request Runtime transition to `STOPPING` before managed plugin or service shutdown begins.
+
+Runtime state SHALL continue to be modified only through Runtime public interfaces.
+
+Plugin deactivation SHALL remain owned by `PluginLifecycleManager`.
+
+Registered services SHALL continue to shut down in deterministic reverse registry enumeration order.
+
+Bootstrap SHALL request transition to `STOPPED` only after required shutdown operations complete successfully.
+
+Existing `Runtime.mark_not_ready()` behavior SHALL remain backward compatible.
+
+RFC-034 startup failure atomicity semantics SHALL remain unchanged.
+
+## Rationale
+
+- Aligns implementation with the accepted BOOT-002 shutdown pipeline.
+- Makes shutdown state observable before managed components begin stopping.
+- Keeps Runtime as the exclusive owner of Runtime state transitions.
+- Keeps Bootstrap as the lifecycle orchestration authority.
+- Preserves Plugin Lifecycle ownership.
+- Avoids unnecessary changes to `ServiceRegistry` ordering semantics.
+- Preserves existing startup and successful shutdown behavior.
+
+## Consequences
+
+Runtime now exposes an explicit public `STOPPING` transition.
+
+Runtime is not ready throughout managed shutdown.
+
+Bootstrap enters `STOPPING` before plugin deactivation and service shutdown.
+
+Service shutdown order remains based on reverse `ServiceRegistry.registered_services()` enumeration.
+
+Runtime reaches `STOPPED` only after required shutdown work completes successfully.
+
+RFC-035 does not define shutdown retry logic, cleanup-failure aggregation, automatic recovery, dependency graphs, parallel shutdown, ServiceState redesign, request-admission implementation, plugin discovery or logging architecture redesign.
+
+## Future Impact
+
+Any future shutdown stage must preserve the Runtime `STOPPING` boundary and established ownership responsibilities.
+
+Shutdown failure semantics, cleanup-failure aggregation, recovery policy and request-admission behavior require separate architecture review.

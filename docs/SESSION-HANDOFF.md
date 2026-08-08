@@ -6,12 +6,12 @@
 |---|---|
 | Project | PlantMind PM-001 |
 | Branch | `feature/engineering-platform` |
-| Last Completed RFC | RFC-034 — Bootstrap Startup Failure Atomicity Contract |
-| Technical Baseline Commit | `a174009` |
-| Test Baseline | 214 passed |
+| Last Completed RFC | RFC-035 — Bootstrap Shutdown Lifecycle Compliance Contract |
+| Technical Baseline Commit | `3e613df` |
+| Test Baseline | 217 passed |
 | Authoritative Environment | `PlantMind-Core/.venv` |
 | Remote State | Up to date with `origin/feature/engineering-platform` |
-| Technical Working Tree After RFC-034 | Clean |
+| Technical Working Tree After RFC-035 | Clean |
 
 ## Recent Engineering Sequence
 
@@ -25,43 +25,41 @@
 - RFC-032 — Plugin Metadata Contract
 - RFC-033 — Plugin Version Format Contract
 - RFC-034 — Bootstrap Startup Failure Atomicity Contract
+- RFC-035 — Bootstrap Shutdown Lifecycle Compliance Contract
 
-## RFC-034 Outcome
+## RFC-035 Outcome
 
-RFC-034 established atomic failure behavior for Bootstrap startup.
+RFC-035 aligned Bootstrap shutdown behavior with the accepted BOOT-002 and RUNTIME-001 lifecycle contracts.
 
-The Bootstrap lifecycle now:
+The implementation:
 
-- Completes validation of all registered services before any service initialization begins
-- Stops startup immediately when service validation fails
-- Stops subsequent service initialization when initialization fails
-- Tracks only services whose initialization completed successfully
-- Rolls back successfully initialized services in reverse initialization order
-- Reuses `PluginLifecycleManager` to roll back successfully activated plugins in reverse activation order
-- Rolls back plugins before initialized services when plugin activation fails
-- Exposes a Runtime-owned public transition to `FAILED`
-- Leaves Runtime not ready after any critical startup failure
-- Prevents Runtime from transitioning to READY unless startup completes successfully
-- Preserves the original startup exception when compensating cleanup succeeds
-- Preserves successful startup and graceful shutdown behavior
-- Introduces no retry logic, automatic startup recovery, dependency graph, parallel initialization, plugin discovery, ServiceState redesign, logging architecture redesign or version compatibility policy
+- Adds the Runtime-owned public `mark_stopping()` transition.
+- Sets Runtime readiness false when entering `STOPPING`.
+- Requires Bootstrap to request `STOPPING` before plugin or service shutdown work begins.
+- Preserves plugin deactivation ownership in `PluginLifecycleManager`.
+- Preserves deterministic reverse registry enumeration order for service shutdown.
+- Requests Runtime transition to `STOPPED` only after required shutdown operations complete successfully.
+- Preserves existing `Runtime.mark_not_ready()` behavior.
+- Preserves RFC-034 startup atomicity behavior.
+- Does not redesign `ServiceRegistry`, `BaseService`, `ServiceState`, Plugin Registry, Composition Root or startup orchestration.
+- Introduces no shutdown retry logic, cleanup-failure aggregation, automatic recovery, dependency graphs, parallel shutdown, request-admission implementation, plugin discovery or logging architecture redesign.
 
-## RFC-034 Verification
+## RFC-035 Verification
 
 - Compilation: passed
-- Focused RFC-034 tests: 10 passed
-- Impacted runtime, bootstrap, plugin lifecycle and composition tests: 53 passed
-- Full regression: 214 passed
+- Focused Runtime and Bootstrap tests: 11 passed
+- Impacted runtime, bootstrap, plugin lifecycle and composition tests: 56 passed
+- Full regression: 217 passed
 - `git diff --check`: passed
-- Technical commit: `a174009`
+- Technical commit: `3e613df`
 - Push: verified
-- Technical working tree: clean
+- Technical working tree after implementation: clean
 
 ## Documentation Closure
 
-The technical implementation of RFC-034 is complete.
+The technical implementation of RFC-035 is complete.
 
-The engineering-memory layer has been synchronized with the RFC-034 technical baseline.
+The engineering-memory layer has been synchronized with the RFC-035 technical baseline.
 
 Relevant maintained documents:
 
@@ -73,15 +71,15 @@ Relevant maintained documents:
 
 ## Next Exact Action
 
-Begin architecture review for RFC-035 from the latest committed Git state.
+Begin architecture review for RFC-036 from the latest committed Git state.
 
-Before selecting or implementing RFC-035:
+Before selecting or implementing RFC-036:
 
 1. Review the Active Work Register.
 2. Review current committed code and tests.
 3. Review accepted RFCs, ADRs, architecture documents and deferred work.
 4. Preserve established Runtime ownership, Bootstrap orchestration, Service Registry, Plugin Lifecycle, Registry, Metadata, Version Format and Composition responsibilities.
-5. Do not introduce startup recovery strategies, dependency graphs, plugin discovery, parallel initialization, ServiceState redesign or version compatibility policy without dedicated architecture review.
+5. Do not introduce shutdown recovery, cleanup-failure aggregation, dependency graphs, parallel shutdown, ServiceState redesign or request-admission implementation without dedicated architecture review.
 6. Record the selected RFC objective and next exact action before implementation begins.
 
 ## Required Test Command
