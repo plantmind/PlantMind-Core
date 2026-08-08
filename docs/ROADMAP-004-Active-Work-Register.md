@@ -78,7 +78,7 @@ Align the implemented Bootstrap shutdown lifecycle with BOOT-002 and RUNTIME-001
 - The `STOPPING` transition SHALL set Runtime readiness to false.
 - Bootstrap shutdown SHALL request Runtime transition to `STOPPING` before component shutdown begins.
 - Runtime SHALL remain not ready throughout shutdown.
-- Registered services SHALL be shut down in deterministic reverse registration order.
+- Registered services SHALL be shut down in deterministic reverse registry enumeration order.
 - Existing plugin deactivation SHALL remain owned by `PluginLifecycleManager`.
 - Bootstrap SHALL request Runtime transition to `STOPPED` only after required shutdown operations complete successfully.
 - `Runtime.mark_not_ready()` backward-compatible behavior SHALL remain unchanged unless a failing regression proves an architecture-reviewed change is required.
