@@ -10,6 +10,7 @@ from collections.abc import Sequence
 from dataclasses import dataclass
 
 from app.core.availability import CapabilityAvailabilityObserver
+from app.core.availability.source import CapabilityAvailabilitySource
 from app.core.bootstrap_manager import BootstrapManager
 from app.core.capability_coverage import (
     MandatoryCapabilityCoverageEvaluator,
@@ -66,6 +67,10 @@ class CompositionRoot:
     @staticmethod
     def build(
         plugin_registrations: Sequence[PluginRegistration] = (),
+        capability_availability_sources: Sequence[
+            CapabilityAvailabilitySource
+        ] = (),
+        mandatory_capability_policy: MandatoryCapabilityPolicy | None = None,
     ) -> PlatformComposition:
         container = ServiceContainer()
         configuration = ConfigurationProvider()
@@ -91,13 +96,14 @@ class CompositionRoot:
         )
 
         availability_observer = CapabilityAvailabilityObserver(
-            sources=(),
+            sources=capability_availability_sources,
         )
 
-        mandatory_capability_policy = MandatoryCapabilityPolicy(
-            state=MandatoryCapabilityPolicyState.UNCONFIGURED,
-            required_capabilities=(),
-        )
+        if mandatory_capability_policy is None:
+            mandatory_capability_policy = MandatoryCapabilityPolicy(
+                state=MandatoryCapabilityPolicyState.UNCONFIGURED,
+                required_capabilities=(),
+            )
 
         mandatory_capability_coverage_evaluator = MandatoryCapabilityCoverageEvaluator(
             mandatory_capability_policy
@@ -208,9 +214,15 @@ class CompositionRoot:
 
 def build_platform_composition(
     plugin_registrations: Sequence[PluginRegistration] = (),
+    capability_availability_sources: Sequence[
+        CapabilityAvailabilitySource
+    ] = (),
+    mandatory_capability_policy: MandatoryCapabilityPolicy | None = None,
 ) -> PlatformComposition:
     """Backward-compatible platform composition factory."""
 
     return CompositionRoot.build(
         plugin_registrations=plugin_registrations,
+        capability_availability_sources=capability_availability_sources,
+        mandatory_capability_policy=mandatory_capability_policy,
     )
