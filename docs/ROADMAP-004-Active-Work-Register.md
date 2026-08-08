@@ -33,318 +33,56 @@ No item may be marked complete until:
 
 # Active Work
 
-## RFC-048 — Runtime Operational Transition Contract
+## RFC-049 — Architecture Review
 
 ### Status
 
-Contract defined. Ready for contract verification and commit.
+Ready for architecture review. No RFC-049 contract has been selected.
 
 ### Objective
 
-Establish the authoritative fail-closed Runtime `READY` to `OPERATIONAL` transition boundary in which Runtime directly validates its own lifecycle state and request-admission state together with complete external `OperationalTransitionEvidence`, while preserving Runtime as the sole lifecycle-transition authority.
+Select the next architecture-controlled PlantMind increment from the RFC-048 authoritative Runtime operational-transition baseline.
 
-### Architectural Position
+### Current Technical Baseline
 
-AD-028 established that Runtime alone owns final lifecycle-transition authority.
+- Branch: `feature/engineering-platform`
+- Last completed RFC: RFC-048 — Runtime Operational Transition Contract
+- RFC-048 contract commit: `ac1c625`
+- RFC-048 technical commit: `b714ceb`
+- Architecture decision: AD-034
+- Focused TDD suite: 18 passed
+- Impacted regression: 93 passed
+- Full regression baseline: 362 passed
 
-RFC-047 established immutable external `OperationalTransitionEvidence`.
+### Current Architecture Boundary
 
-Runtime-owned preconditions remain:
+PlantMind now has:
 
-- lifecycle state is `READY`;
-- request admission is enabled.
+- Runtime-owned readiness;
+- Runtime-owned request admission;
+- correlated operational-workload evidence;
+- mandatory-capability coverage evidence;
+- immutable external operational-transition evidence;
+- authoritative guarded `Runtime.request_operational(...)`;
+- atomic fail-closed `READY` to `OPERATIONAL` transition semantics.
 
-External evidence completeness remains represented by:
+Runtime remains the sole lifecycle-transition authority.
 
-`OperationalTransitionEvidence.is_complete`
+A successful operational transition requires:
 
-RFC-048 SHALL combine those conditions only inside Runtime.
+- Runtime state exactly `READY`;
+- request admission enabled;
+- complete `OperationalTransitionEvidence`.
 
-No independent operational-eligibility service or lifecycle decision authority SHALL be introduced.
+No public `mark_operational()` bypass exists.
 
-### Authoritative Transition Operation
+Bootstrap, Health and workload-execution components do not own operational lifecycle-transition authority.
 
-RFC-048 SHALL introduce one guarded Runtime operation:
-
-`request_operational(evidence: OperationalTransitionEvidence) -> None`
-
-This SHALL be the only approved public operation for entering `RuntimeState.OPERATIONAL`.
-
-RFC-048 SHALL NOT introduce a public:
-
-`mark_operational()`
-
-or another unguarded operational-state mutation method.
-
-### Required Preconditions
-
-`Runtime.request_operational()` SHALL transition Runtime to `OPERATIONAL` only when all of the following are true:
-
-- current Runtime state is exactly `RuntimeState.READY`;
-- request admission is enabled;
-- supplied `OperationalTransitionEvidence.is_complete` is `True`.
-
-All conditions are mandatory.
-
-Runtime SHALL evaluate its own lifecycle state directly.
-
-Runtime SHALL evaluate its own request-admission state directly.
-
-Runtime SHALL consume external evidence completeness without accepting duplicated external attestations of Runtime-owned state.
-
-### Successful Transition Semantics
-
-When all required preconditions are satisfied:
-
-- Runtime state SHALL become `RuntimeState.OPERATIONAL`;
-- Runtime readiness SHALL remain `True`;
-- request admission SHALL remain enabled;
-- supplied evidence SHALL not be mutated;
-- no additional lifecycle state SHALL be entered.
-
-The transition SHALL represent:
-
-`READY` → `OPERATIONAL`
-
-only.
-
-### Failure-Closed Transition Semantics
-
-If any required precondition is not satisfied, `request_operational()` SHALL raise `RuntimeError`.
-
-Failure SHALL be atomic.
-
-On rejection:
-
-- Runtime lifecycle state SHALL remain unchanged;
-- Runtime readiness SHALL remain unchanged;
-- request-admission state SHALL remain unchanged;
-- supplied evidence SHALL remain unchanged.
-
-RFC-048 SHALL NOT partially transition Runtime.
-
-### Invalid Lifecycle State
-
-Operational transition SHALL be rejected unless current Runtime state is exactly `READY`.
-
-Requests from any other lifecycle state SHALL fail closed, including:
-
-- `CREATED`;
-- `BOOTSTRAPPING`;
-- `INITIALIZING`;
-- `OPERATIONAL`;
-- `DEGRADED`;
-- `STOPPING`;
-- `STOPPED`;
-- `FAILED`.
-
-RFC-048 SHALL NOT interpret an already `OPERATIONAL` Runtime as another successful `READY` to `OPERATIONAL` transition.
-
-Repeated operational-transition requests after successful transition therefore SHALL be rejected.
-
-### Request Admission Boundary
-
-Request admission is a Runtime-owned operational-transition precondition.
-
-If request admission is disabled while Runtime is `READY`, operational transition SHALL be rejected.
-
-RFC-048 SHALL NOT automatically enable request admission.
-
-RFC-048 SHALL NOT automatically disable request admission when an operational-transition request is rejected.
-
-Admission-control policy remains distinct from transition rejection.
-
-### External Evidence Boundary
-
-Runtime SHALL require supplied `OperationalTransitionEvidence`.
-
-External evidence SHALL be accepted only through its existing derived:
-
-`is_complete`
-
-contract.
-
-Runtime SHALL NOT:
-
-- reconstruct operational-workload evidence;
-- inspect workload UUID correlation independently;
-- collect capability-availability observations;
-- evaluate mandatory-capability policy;
-- reevaluate mandatory-capability coverage;
-- mutate external evidence.
-
-Those responsibilities remain owned by RFC-043 through RFC-047 boundaries.
-
-### Evidence Incompleteness
-
-When `OperationalTransitionEvidence.is_complete` is `False`, transition SHALL be rejected.
-
-Incomplete evidence SHALL NOT cause Runtime to:
-
-- become `OPERATIONAL`;
-- become `FAILED`;
-- become `STOPPED`;
-- become `DEGRADED`;
-- disable request admission;
-- modify readiness.
-
-Evidence incompleteness means only that the requested operational transition is not currently permitted.
-
-### Atomicity Boundary
-
-Runtime SHALL validate all required transition conditions before mutating lifecycle state.
-
-No successful-state mutation SHALL occur before all checks pass.
-
-A rejected transition SHALL leave Runtime observably equivalent to its pre-request lifecycle, readiness and admission state.
-
-### Runtime Readiness Semantics
-
-`OPERATIONAL` SHALL remain a ready runtime condition.
-
-After successful transition:
-
-- `Runtime.state` SHALL be `RuntimeState.OPERATIONAL`;
-- `Runtime.is_ready` SHALL remain `True`;
-- the existing readiness boolean SHALL not be reset.
-
-RFC-048 SHALL NOT redefine startup readiness semantics.
-
-### Existing Lifecycle Operations
-
-Existing Runtime operations SHALL retain their current responsibilities:
-
-- `request_readiness()`;
-- `mark_ready()`;
-- `mark_not_ready()`;
-- `mark_stopping()`;
-- `mark_failed()`;
-- request-admission enablement;
-- request-admission disablement.
-
-RFC-048 SHALL NOT redesign existing startup, stopping or failure behavior.
-
-Existing `mark_stopping()` and `mark_failed()` admission-disabling behavior SHALL remain unchanged.
-
-### Runtime Status
-
-Existing Runtime status reporting SHALL naturally expose `operational` through the existing lifecycle-state value after successful transition.
-
-RFC-048 SHALL NOT introduce a second operational-status flag.
-
-`RuntimeState.OPERATIONAL` remains the authoritative operational lifecycle representation.
-
-### Composition Boundary
-
-RFC-048 requires no new lifecycle authority in `CompositionRoot`.
-
-The existing composed Runtime instance remains the lifecycle authority.
-
-`CompositionRoot` SHALL NOT construct or register:
-
-- an operational-transition manager;
-- an operational-eligibility decision service;
-- a competing Runtime lifecycle controller.
-
-### Bootstrap Boundary
-
-Bootstrap remains responsible for startup through readiness and request-admission enablement.
-
-RFC-048 SHALL NOT make Bootstrap automatically transition Runtime to `OPERATIONAL`.
-
-Operational transition requires explicit Runtime invocation with approved external evidence after the required operational evidence exists.
-
-### Application and Workflow Boundary
-
-`ApplicationFacade`, `IntegrationGateway`, `OrchestrationService` and `WorkflowExecutor` SHALL NOT call Runtime lifecycle-transition operations as part of RFC-048.
-
-They remain evidence-producing or workload-execution boundaries only.
-
-RFC-048 SHALL NOT create hidden lifecycle side effects during workload execution.
-
-### Health Boundary
-
-`HealthCapability` remains read-only reporting.
-
-RFC-048 SHALL NOT allow Health to request, authorize or execute Runtime lifecycle transitions.
-
-### No Independent Eligibility State
-
-RFC-048 SHALL NOT introduce:
-
-- `OperationalEligibilityState`;
-- an operational-eligibility evaluator;
-- a second operational readiness boolean;
-- duplicated lifecycle decision state.
-
-The authoritative result of successful evaluation is the Runtime lifecycle transition itself.
-
-### Implementation Scope
-
-RFC-048 MAY implement:
-
-- `Runtime.request_operational()`;
-- guarded `READY` to `OPERATIONAL` transition;
-- direct Runtime-owned lifecycle-state validation;
-- direct Runtime-owned request-admission validation;
-- external evidence completeness validation;
-- atomic fail-closed rejection;
-- preservation of readiness and admission semantics;
-- focused Runtime transition tests;
-- impacted regression tests.
-
-### Non-Goals
-
-RFC-048 SHALL NOT:
-
-- introduce a public `mark_operational()`;
-- introduce an independent operational-eligibility service;
-- modify `OperationalTransitionEvidence`;
-- modify workload-evidence generation;
-- modify mandatory-capability coverage evaluation;
-- collect availability observations;
-- automatically transition during Bootstrap;
-- automatically transition during workload execution;
-- introduce `DEGRADED` behavior;
-- introduce `ServiceState.OPERATIONAL`;
-- implement operational recovery;
-- implement transition retry;
-- implement evidence freshness or TTL;
-- implement traffic draining;
-- implement authentication or authorization.
-
-### TDD Boundary
-
-Before production implementation, focused tests SHALL establish:
-
-- Runtime initially has no operational state transition;
-- complete external evidence alone cannot transition a non-`READY` Runtime;
-- `READY` alone cannot transition when request admission is disabled;
-- `READY` plus request admission cannot transition with incomplete external evidence;
-- `READY` plus enabled request admission plus complete external evidence transitions to `OPERATIONAL`;
-- successful transition preserves `is_ready == True`;
-- successful transition preserves enabled request admission;
-- supplied external evidence is not mutated;
-- rejected transition raises `RuntimeError`;
-- rejected transition preserves lifecycle state;
-- rejected transition preserves readiness;
-- rejected transition preserves request admission;
-- transition from `CREATED` is rejected;
-- transition from `OPERATIONAL` is rejected;
-- transition from `STOPPING` is rejected;
-- transition from `STOPPED` is rejected;
-- transition from `FAILED` is rejected;
-- repeated operational-transition request is rejected;
-- no public `mark_operational()` bypass is introduced;
-- Runtime status reports `operational` after successful transition;
-- Bootstrap does not automatically transition Runtime to `OPERATIONAL`;
-- canonical workload execution does not automatically transition Runtime to `OPERATIONAL`;
-- Health does not become lifecycle-transition authority;
-- no independent operational-eligibility service is introduced through `CompositionRoot`.
+No automatic operational transition, operational recovery or `DEGRADED` behavior has been introduced.
 
 ### Next Exact Action
 
-Verify and commit the RFC-048 contract before writing focused TDD tests or production Python.
+Review the Source of Truth from the RFC-048 baseline and select the RFC-049 objective before defining any new contract, TDD scope or production implementation.
 
 ---
 
@@ -379,6 +117,7 @@ Verify and commit the RFC-048 contract before writing focused TDD tests or produ
 | RFC-045 | `0b410ce` | Mandatory capability coverage evaluation contract |
 | RFC-046 | `6aca0a1` | Operational workload evidence contract |
 | RFC-047 | `ebc4769` | Operational transition evidence aggregation contract |
+| RFC-048 | `b714ceb` | Runtime operational transition contract |
 
 RFC-039 verification:
 
@@ -528,6 +267,28 @@ RFC-047 verification:
 - `OPERATIONAL` transition: not introduced
 
 RFC-047 is technically complete.
+
+RFC-048 verification:
+
+- Contract commit: `ac1c625`
+- Technical commit: `b714ceb`
+- Architecture decision: AD-034
+- Focused TDD suite: 18 passed
+- Impacted regression: 93 passed
+- Full regression: 362 passed
+- Compilation: passed
+- `git diff --cached --check`: passed
+- Remote technical push: verified
+- Guarded Runtime operational transition: introduced
+- Public `mark_operational()` bypass: not introduced
+- Runtime readiness after success: preserved
+- Request admission after success: preserved
+- Rejected transition mutation: none
+- Bootstrap automatic operational transition: not introduced
+- Workload-triggered lifecycle transition: not introduced
+- Independent operational-eligibility authority: not introduced
+
+RFC-048 is technically complete.
 
 ---
 

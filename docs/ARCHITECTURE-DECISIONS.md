@@ -2528,3 +2528,121 @@ RFC-047 verification completed with:
 - `git diff --cached --check`: passed
 - Remote technical push: verified
 
+# AD-034 — Runtime Operational Transition Authority Boundary
+
+## Status
+
+Accepted.
+
+## Context
+
+AD-028 established Runtime as the sole authoritative lifecycle owner.
+
+RFC-047 established immutable `OperationalTransitionEvidence` as the aggregate of approved external operational-transition evidence.
+
+The remaining architectural gap was the authoritative decision boundary for entering `RuntimeState.OPERATIONAL`.
+
+Runtime already owned:
+
+- lifecycle state;
+- readiness state;
+- request admission.
+
+External transition evidence already represented:
+
+- correlated canonical operational-workload evidence;
+- mandatory-capability coverage evidence;
+- deterministic external evidence completeness.
+
+A second eligibility service or lifecycle authority would duplicate Runtime responsibility and weaken lifecycle ownership.
+
+## Decision
+
+Runtime SHALL remain the sole authority capable of deciding and executing the `READY` to `OPERATIONAL` lifecycle transition.
+
+The guarded transition operation is:
+
+`Runtime.request_operational(evidence: OperationalTransitionEvidence) -> None`
+
+Runtime SHALL transition to `RuntimeState.OPERATIONAL` only when:
+
+- current lifecycle state is exactly `RuntimeState.READY`;
+- request admission is enabled;
+- supplied `OperationalTransitionEvidence.is_complete` is `True`.
+
+Runtime SHALL evaluate lifecycle state and request admission directly.
+
+External evidence SHALL NOT duplicate Runtime-owned lifecycle or admission state.
+
+No public `mark_operational()` bypass SHALL exist.
+
+## Failure Semantics
+
+Operational-transition rejection is fail-closed and atomic.
+
+If any required precondition is not satisfied:
+
+- `RuntimeError` is raised;
+- lifecycle state remains unchanged;
+- readiness remains unchanged;
+- request admission remains unchanged;
+- supplied evidence remains unchanged.
+
+Incomplete external evidence SHALL NOT automatically cause `FAILED`, `STOPPED` or `DEGRADED`.
+
+Rejected transition SHALL NOT automatically disable request admission.
+
+## Successful Transition Semantics
+
+A successful transition performs only:
+
+`READY` → `OPERATIONAL`
+
+After success:
+
+- `Runtime.state` is `RuntimeState.OPERATIONAL`;
+- Runtime remains ready;
+- request admission remains enabled.
+
+No separate operational boolean or duplicate operational lifecycle state is introduced.
+
+## Authority Boundaries
+
+Bootstrap SHALL NOT automatically transition Runtime to `OPERATIONAL`.
+
+`ApplicationFacade`, `IntegrationGateway`, `OrchestrationService` and `WorkflowExecutor` SHALL NOT own or invoke lifecycle-transition authority as part of RFC-048.
+
+`HealthCapability` remains read-only reporting.
+
+`CompositionRoot` SHALL NOT introduce an operational-transition manager, independent operational-eligibility evaluator or competing lifecycle controller.
+
+Existing workload-evidence, capability-availability, capability-policy, capability-coverage and transition-evidence responsibilities remain unchanged.
+
+## Consequences
+
+PlantMind now has an explicit authoritative path from startup readiness into operational lifecycle state.
+
+The operational transition is guarded by both Runtime-owned preconditions and approved external evidence while maintaining strict separation of responsibility.
+
+Repeated transition requests after Runtime has already entered `OPERATIONAL` are rejected because the transition is valid only from exactly `READY`.
+
+RFC-048 does not introduce:
+
+- automatic operational transition;
+- operational recovery;
+- `DEGRADED` transition behavior;
+- evidence freshness or TTL;
+- traffic draining;
+- retry behavior;
+- `ServiceState.OPERATIONAL`.
+
+## Verification
+
+- RFC-048 contract commit: `ac1c625`
+- RFC-048 technical commit: `b714ceb`
+- Focused TDD suite: 18 passed
+- Impacted regression: 93 passed
+- Full regression: 362 passed
+- Compilation: passed
+- `git diff --cached --check`: passed
+- Remote technical push: verified

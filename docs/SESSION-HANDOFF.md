@@ -2,17 +2,17 @@
 
 ## Current State
 
-| Property                     | Value                                                         |
-| ---------------------------- | ------------------------------------------------------------- |
-| Project                      | PlantMind PM-001                                              |
-| Branch                       | `feature/engineering-platform`                                |
-| Last Completed RFC           | RFC-047 — Operational Transition Evidence Aggregation Contract |
-| Technical Baseline Commit    | `ebc4769`                                                     |
-| Architecture Baseline Commit | `35004dc`                                                     |
-| Test Baseline                | 344 passed                                                    |
-| Authoritative Environment    | `PlantMind-Core/.venv`                                        |
-| Remote State                 | Up to date with `origin/feature/engineering-platform`         |
-| RFC-047 Technical Push       | Verified                                                      |
+| Property                     | Value                                                    |
+| ---------------------------- | -------------------------------------------------------- |
+| Project                      | PlantMind PM-001                                         |
+| Branch                       | `feature/engineering-platform`                           |
+| Last Completed RFC           | RFC-048 — Runtime Operational Transition Contract        |
+| Technical Baseline Commit    | `b714ceb`                                                |
+| Architecture Baseline Commit | `ac1c625`                                                |
+| Test Baseline                | 362 passed                                               |
+| Authoritative Environment    | `PlantMind-Core/.venv`                                   |
+| Remote State                 | Up to date with `origin/feature/engineering-platform`    |
+| RFC-048 Technical Push       | Verified                                                 |
 
 ## Recent Engineering Sequence
 
@@ -39,6 +39,7 @@
 - RFC-045 — Mandatory Capability Coverage Evaluation Contract
 - RFC-046 — Operational Workload Evidence Contract
 - RFC-047 — Operational Transition Evidence Aggregation Contract
+- RFC-048 — Runtime Operational Transition Contract
 
 ## RFC-036 Outcome
 
@@ -615,11 +616,75 @@ RFC-047 introduces no Runtime `READY` to `OPERATIONAL` transition.
 - Runtime lifecycle behavior: unchanged
 - `OPERATIONAL` transition: not introduced
 
+## RFC-048 Outcome
+
+RFC-048 established the authoritative guarded Runtime transition from:
+
+`READY` → `OPERATIONAL`
+
+The approved transition operation is:
+
+`Runtime.request_operational(evidence: OperationalTransitionEvidence) -> None`
+
+Runtime remains the sole lifecycle-transition authority.
+
+Operational transition succeeds only when:
+
+- Runtime state is exactly `RuntimeState.READY`;
+- request admission is enabled;
+- supplied `OperationalTransitionEvidence.is_complete` is `True`.
+
+No public `mark_operational()` bypass exists.
+
+Successful transition:
+
+- sets Runtime state to `RuntimeState.OPERATIONAL`;
+- preserves readiness;
+- preserves request admission;
+- preserves supplied external evidence.
+
+Rejected transition:
+
+- raises `RuntimeError`;
+- preserves lifecycle state;
+- preserves readiness;
+- preserves request admission;
+- preserves supplied external evidence.
+
+Transition rejection is atomic and fail-closed.
+
+Bootstrap does not automatically transition Runtime to `OPERATIONAL`.
+
+Operational workload execution does not automatically transition Runtime to `OPERATIONAL`.
+
+`HealthCapability` remains read-only reporting.
+
+No independent operational-eligibility service or competing lifecycle controller was introduced.
+
+## RFC-048 Verification
+
+- Contract commit: `ac1c625`
+- Technical commit: `b714ceb`
+- Architecture decision: AD-034
+- Focused TDD suite: 18 passed
+- Impacted regression: 93 passed
+- Full regression: 362 passed
+- Compilation: passed
+- `git diff --cached --check`: passed
+- Remote technical push: verified
+- Guarded Runtime operational transition: introduced
+- Public `mark_operational()` bypass: not introduced
+- Runtime readiness after success: preserved
+- Request admission after success: preserved
+- Rejected-transition mutation: none
+- Automatic operational transition: not introduced
+- Independent operational-eligibility authority: not introduced
+
 ## Documentation Closure
 
-RFC-047 technical implementation is complete.
+RFC-048 technical implementation is complete.
 
-The engineering-memory layer is being synchronized with the RFC-047 technical baseline.
+The engineering-memory layer is being synchronized with the RFC-048 technical baseline.
 
 Relevant maintained documents:
 
@@ -631,23 +696,21 @@ Relevant maintained documents:
 
 ## Next Exact Action
 
-Begin architecture review for RFC-048 from the RFC-047 operational-transition evidence aggregation baseline.
+Begin architecture review for RFC-049 from the RFC-048 authoritative Runtime operational-transition baseline.
 
-Before selecting or implementing RFC-048:
+Before selecting or implementing RFC-049:
 
-1. Review the Source of Truth from the RFC-047 baseline.
-2. Preserve Runtime as the sole lifecycle decision authority.
-3. Preserve Runtime ownership of lifecycle state, readiness and request admission.
-4. Preserve `OperationalWorkloadEvidence` as correlated workload provenance evidence.
-5. Preserve `MandatoryCapabilityCoverageResult` as mandatory-capability coverage evidence.
-6. Preserve `OperationalTransitionEvidence` as external evidence aggregation only.
-7. Do not duplicate Runtime-owned preconditions in external evidence.
-8. Do not treat external evidence completeness as final operational eligibility.
-9. Do not modify or regenerate supplied evidence objects.
-10. Do not introduce global mutable operational-transition evidence state.
-11. Do not implement `READY` to `OPERATIONAL` without a separately approved Runtime transition contract.
-12. Do not introduce duplicate workload, policy, availability, coverage, evidence or lifecycle authorities.
-13. Record the RFC-048 objective before TDD or production implementation begins.
+1. Review the Source of Truth from the RFC-048 baseline.
+2. Preserve Runtime as the sole lifecycle-transition authority.
+3. Preserve guarded `Runtime.request_operational(...)` semantics.
+4. Preserve Runtime ownership of lifecycle state, readiness and request admission.
+5. Preserve atomic fail-closed transition rejection.
+6. Preserve external operational-transition evidence as evidence only.
+7. Do not introduce a public `mark_operational()` bypass.
+8. Do not create a competing operational-eligibility or lifecycle authority.
+9. Do not introduce automatic operational transition without a separately approved contract.
+10. Do not introduce `DEGRADED`, recovery, freshness, retry or traffic-draining behavior without architecture review.
+11. Record the RFC-049 objective before TDD or production implementation begins.
 
 ## Required Test Command
 

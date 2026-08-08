@@ -364,97 +364,91 @@ It must extend, not discard, the accepted Plugin Framework.
 
 14. Immediate Development Direction
 
-RFC-047 — Operational Transition Evidence Aggregation Contract is technically complete.
+RFC-048 — Runtime Operational Transition Contract is technically complete.
 
-RFC-047 established one immutable fail-closed aggregate for approved external operational-transition evidence.
+RFC-048 established the authoritative guarded Runtime transition from:
 
-PlantMind now separates:
+`READY` → `OPERATIONAL`
 
-- Runtime-owned lifecycle preconditions;
-- correlated operational-workload evidence;
-- mandatory-capability coverage evidence;
-- external operational-transition evidence completeness;
-- final Runtime lifecycle-transition authority.
+The approved transition operation is:
 
-RFC-047 introduced immutable:
+`Runtime.request_operational(evidence: OperationalTransitionEvidence) -> None`
 
-`OperationalTransitionEvidence`
+Runtime remains the sole lifecycle-transition authority.
 
-containing:
+Operational transition succeeds only when:
 
-- `operational_workload: OperationalWorkloadEvidence | None`
-- `mandatory_capability_coverage: MandatoryCapabilityCoverageResult | None`
+- Runtime state is exactly `RuntimeState.READY`;
+- request admission is enabled;
+- supplied `OperationalTransitionEvidence.is_complete` is `True`.
 
-`OperationalTransitionEvidence.is_complete` is derived and read-only.
+Runtime evaluates its own lifecycle state and request-admission state directly.
 
-External evidence is complete only when:
+External evidence does not duplicate Runtime-owned preconditions.
 
-- operational-workload evidence is present;
-- mandatory-capability coverage evidence is present;
-- mandatory-capability coverage state is `SATISFIED`.
+No public `mark_operational()` bypass exists.
 
-Every incomplete or unsatisfied combination fails closed.
+Successful transition:
 
-`is_complete` represents external evidence completeness only.
+- sets Runtime state to `RuntimeState.OPERATIONAL`;
+- preserves readiness;
+- preserves request admission;
+- does not mutate supplied evidence.
 
-It does not represent final operational eligibility.
+Rejected transition:
 
-The aggregate does not contain or duplicate:
+- raises `RuntimeError`;
+- preserves lifecycle state;
+- preserves readiness;
+- preserves request admission;
+- preserves supplied evidence.
 
-- Runtime lifecycle state;
-- Runtime readiness;
-- request-admission state;
-- external readiness attestations;
-- external request-admission attestations.
+Transition rejection is atomic and fail-closed.
 
-Runtime continues to evaluate its own lifecycle state and request-admission state directly.
+Bootstrap does not automatically transition Runtime to `OPERATIONAL`.
 
-RFC-047 consumes existing validated `OperationalWorkloadEvidence` without recreating, replacing or rec correlating workload provenance.
+`ApplicationFacade`, `IntegrationGateway`, `OrchestrationService` and `WorkflowExecutor` do not own operational lifecycle-transition authority.
 
-RFC-047 consumes existing `MandatoryCapabilityCoverageResult` without collecting availability observations or reevaluating mandatory-capability coverage.
+`HealthCapability` remains read-only reporting.
 
-The exact supplied evidence objects are preserved by identity.
+No independent operational-eligibility service or competing lifecycle controller was introduced.
 
-RFC-047 introduces no current-time checks, freshness policy, TTL, retry, probing, source priority, external I/O or mutable internal evidence state.
+RFC-048 does not introduce:
 
-No global mutable evidence collector, recorder or persistent aggregate was introduced.
+- automatic operational transition;
+- operational recovery;
+- `DEGRADED` transition behavior;
+- evidence freshness or TTL;
+- transition retry;
+- traffic draining;
+- `ServiceState.OPERATIONAL`.
 
-`CompositionRoot` does not own a global `OperationalTransitionEvidence` instance.
+RFC-048 verification:
 
-Runtime remains the sole authoritative owner of platform lifecycle state.
-
-A complete external evidence aggregate remains evidence only.
-
-RFC-047 introduces no `mark_operational()`, `request_operational()` or `READY` to `OPERATIONAL` transition.
-
-RFC-047 verification:
-
-- Contract commit: `35004dc`
-- Technical commit: `ebc4769`
-- Architecture decision: AD-033
-- Focused TDD suite: 17 passed
-- Impacted regression: 56 passed
-- Full regression: 344 passed
+- Contract commit: `ac1c625`
+- Technical commit: `b714ceb`
+- Architecture decision: AD-034
+- Focused TDD suite: 18 passed
+- Impacted regression: 93 passed
+- Full regression: 362 passed
 - Compilation: passed
 - Remote technical push: verified
 
-RFC-048 is now in architecture review.
+RFC-049 is now in architecture review.
 
-Before selecting or implementing RFC-048:
+Before selecting or implementing RFC-049:
 
-Review the Source of Truth from the RFC-047 baseline.
-Preserve Runtime as the sole lifecycle decision authority.
+Review the Source of Truth from the RFC-048 baseline.
+Preserve Runtime as the sole lifecycle-transition authority.
+Preserve guarded `Runtime.request_operational(...)` semantics.
 Preserve Runtime ownership of lifecycle state, readiness and request admission.
-Preserve `OperationalWorkloadEvidence` as correlated workload provenance evidence.
-Preserve `MandatoryCapabilityCoverageResult` as mandatory-capability coverage evidence.
-Preserve `OperationalTransitionEvidence` as external evidence aggregation only.
-Do not duplicate Runtime-owned preconditions in external evidence.
-Do not treat external evidence completeness as final operational eligibility.
-Do not modify or regenerate supplied evidence objects.
-Do not introduce global mutable operational-transition evidence state.
-Do not implement `READY` to `OPERATIONAL` without a separately approved Runtime transition contract.
-Do not introduce duplicate workload, policy, availability, coverage, evidence or lifecycle authorities.
-Record the selected RFC-048 objective before TDD or production implementation begins.
+Preserve atomic fail-closed transition rejection.
+Preserve external operational-transition evidence as evidence only.
+Do not introduce a public `mark_operational()` bypass.
+Do not create a competing operational-eligibility or lifecycle authority.
+Do not introduce automatic operational transition without a separately approved contract.
+Do not introduce `DEGRADED`, recovery, freshness, retry or traffic-draining behavior without architecture review.
+Record the selected RFC-049 objective before TDD or production implementation begins.
 
 15. Session Continuation Instruction
 

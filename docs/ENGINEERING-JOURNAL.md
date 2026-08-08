@@ -1014,6 +1014,68 @@ Verification:
 - `git diff --cached --check`: passed
 - Remote technical push: verified
 
+
+### RFC-048 — Runtime Operational Transition Contract
+
+RFC-048 established the authoritative guarded Runtime lifecycle transition:
+
+`READY` → `OPERATIONAL`
+
+The approved transition operation is:
+
+`Runtime.request_operational(evidence: OperationalTransitionEvidence) -> None`
+
+Runtime remains the sole lifecycle-transition authority.
+
+Transition succeeds only when:
+
+- Runtime state is exactly `RuntimeState.READY`;
+- request admission is enabled;
+- supplied `OperationalTransitionEvidence.is_complete` is `True`.
+
+Runtime evaluates its own lifecycle state and request-admission state directly.
+
+No public `mark_operational()` bypass was introduced.
+
+Successful transition:
+
+- sets Runtime state to `RuntimeState.OPERATIONAL`;
+- preserves Runtime readiness;
+- preserves request admission;
+- preserves supplied evidence.
+
+Rejected transition is atomic and fail-closed.
+
+On rejection:
+
+- `RuntimeError` is raised;
+- lifecycle state remains unchanged;
+- readiness remains unchanged;
+- request admission remains unchanged;
+- supplied evidence remains unchanged.
+
+Incomplete evidence does not automatically cause `FAILED`, `STOPPED` or `DEGRADED`.
+
+Bootstrap does not automatically transition Runtime to `OPERATIONAL`.
+
+Operational workload execution does not automatically transition Runtime to `OPERATIONAL`.
+
+`HealthCapability` remains read-only reporting.
+
+No independent operational-eligibility evaluator, transition manager or competing lifecycle authority was introduced.
+
+Verification:
+
+- Contract commit: `ac1c625`
+- Technical commit: `b714ceb`
+- Architecture decision: AD-034
+- Focused TDD suite: 18 passed
+- Impacted regression: 93 passed
+- Full regression: 362 passed
+- Compilation: passed
+- `git diff --cached --check`: passed
+- Remote technical push: verified
+
 ---
 
 # Current Status
@@ -1044,6 +1106,7 @@ PlantMind now possesses:
 - Mandatory Capability Coverage Evaluation Contract
 - Operational Workload Evidence Contract
 - Operational Transition Evidence Aggregation Contract
+- Runtime Operational Transition Contract
 - Service Lifecycle
 - Composition Root and dependency wiring
 - Structured engineering documentation
@@ -1051,20 +1114,22 @@ PlantMind now possesses:
 
 Current technical baseline:
 
-- RFC-047 — Operational Transition Evidence Aggregation Contract
-- Contract commit: `35004dc`
-- Technical commit: `ebc4769`
-- Full regression baseline: 344 passed
-- Architecture decision: AD-033
-- Operational-workload evidence: established
-- Mandatory-capability coverage evidence: established
-- External transition evidence aggregation: established
-- Runtime-owned preconditions in external evidence: none
-- Operational eligibility: not introduced
-- Runtime lifecycle behavior: unchanged
-- `OPERATIONAL` transition: not introduced
+- RFC-048 — Runtime Operational Transition Contract
+- Contract commit: `ac1c625`
+- Technical commit: `b714ceb`
+- Full regression baseline: 362 passed
+- Architecture decision: AD-034
+- Guarded `READY` to `OPERATIONAL` transition: established
+- Runtime lifecycle authority: preserved
+- Runtime readiness after successful transition: preserved
+- Request admission after successful transition: preserved
+- Atomic fail-closed rejection: established
+- Public `mark_operational()` bypass: not introduced
+- Automatic operational transition: not introduced
+- Operational recovery: not introduced
+- `DEGRADED` transition behavior: not introduced
 
-The next engineering step is architecture review for RFC-048.
+The next engineering step is architecture review for RFC-049.
 
 The project remains in long-term enterprise platform development.
 
