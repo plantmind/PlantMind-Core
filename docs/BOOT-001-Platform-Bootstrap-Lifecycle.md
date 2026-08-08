@@ -14,9 +14,11 @@
 
 This document defines the official startup lifecycle of the PlantMind Enterprise Platform.
 
-Its purpose is to ensure that every platform component is initialized in a predictable, deterministic, and verifiable order before the platform begins serving requests.
+Its purpose is to ensure that every platform component is initialized in a predictable, deterministic, and verifiable order before Runtime enters `READY` and operational request admission may be enabled.
 
-A successful startup guarantees that the platform operates from a fully validated and consistent state.
+A successful startup establishes a fully validated and consistent `READY` state.
+
+Successful startup does not by itself establish the `OPERATIONAL` lifecycle state.
 
 ---
 
@@ -40,7 +42,8 @@ The startup process shall always follow these principles:
 - Configuration must be validated before any service is initialized.
 - Components shall be initialized only after their dependencies are available.
 - Critical startup failures shall immediately stop platform initialization.
-- The platform shall never expose APIs while initialization is incomplete.
+- Operational request admission shall remain disabled while initialization is incomplete.
+- Approved observation interfaces remain governed by the API hosting observation-exemption contract.
 - Every startup phase shall produce structured and traceable logs.
 - Startup behavior shall be deterministic across all supported environments.
 
@@ -59,8 +62,9 @@ The startup sequence shall execute in the following order:
 7. Register Enterprise Engines
 8. Register AI Agents
 9. Initialize Security Services
-10. Execute Platform Health Checks
-11. Mark Platform Status as READY
+10. Execute Mandatory Readiness Verification
+11. Request Runtime Readiness
+12. Enable Request Admission only after Runtime enters READY
 
 ---
 
@@ -70,7 +74,7 @@ If any critical initialization step fails:
 
 - Immediately terminate the startup process.
 - Record the failure using the platform logging system.
-- Prevent API endpoints from becoming available.
+- Prevent operational request admission from being enabled.
 - Return a clear startup status indicating the failed stage.
 - Provide sufficient diagnostic information for troubleshooting.
 
@@ -78,7 +82,7 @@ If any critical initialization step fails:
 
 # Successful Startup Criteria
 
-The platform shall be considered operational only when:
+Platform startup shall be considered successfully complete only when:
 
 - Runtime environment has been validated.
 - Configuration has been successfully loaded.
@@ -87,8 +91,14 @@ The platform shall be considered operational only when:
 - Enterprise engines have been registered.
 - AI agents have been registered.
 - Security services have been initialized.
-- All health checks have passed.
-- Platform status is set to **READY**.
+- Mandatory readiness verification has completed successfully.
+- Runtime has entered **READY**.
+
+After Runtime reaches `READY`, request admission may be enabled according to the Runtime request-admission contract.
+
+`READY` and enabled request admission SHALL NOT be interpreted as the `OPERATIONAL` lifecycle state.
+
+A future transition from `READY` to `OPERATIONAL` requires a separately approved architecture contract defining the operational workload execution boundary and authorized Runtime transition.
 
 ---
 
@@ -111,5 +121,8 @@ Future versions of the bootstrap lifecycle may include:
 - ARCH-001 — Enterprise Architecture Standard
 - CORE-001 — Foundation Certification
 - STD-001 — Development Standards
+- RUNTIME-001 — Platform Lifecycle Architecture
+- BOOT-002 — Bootstrap Lifecycle Architecture
+- ROADMAP-004 — Active Work Register, RFC-040
 
 ---

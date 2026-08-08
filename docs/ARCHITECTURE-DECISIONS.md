@@ -1186,3 +1186,162 @@ Future production operational API routes must remain behind the Runtime-owned ad
 Any new observation exemption must be explicit and architecture-reviewed.
 
 OPERATIONAL and DEGRADED transitions, traffic draining, authentication, authorization, retry and recovery remain separate architecture concerns.
+
+---
+
+# AD-026 — Platform Operational Semantics Alignment
+
+## Context
+
+PlantMind defines `READY` and `OPERATIONAL` as distinct Runtime lifecycle states.
+
+RFC-037 established Runtime-owned request admission.
+
+RFC-038 established Runtime-owned readiness verification.
+
+RFC-039 established API-hosting enforcement of Runtime-owned request admission.
+
+Architecture review for RFC-040 identified terminology that could be interpreted inconsistently across Bootstrap, Health Capability and Core Service lifecycle documentation.
+
+Successful Bootstrap startup currently terminates at Runtime `READY` and subsequently enables request admission.
+
+No approved Runtime operation currently performs a transition from `READY` to `OPERATIONAL`.
+
+The implemented Core Service state model does not currently contain `ServiceState.OPERATIONAL`.
+
+## Decision
+
+`READY`, request admission and `OPERATIONAL` SHALL remain distinct platform concepts.
+
+### READY
+
+`READY` means mandatory startup and readiness requirements have completed successfully.
+
+Runtime in `READY` is eligible for request admission.
+
+`READY` SHALL NOT itself mean that Runtime is `OPERATIONAL`.
+
+### Request Admission
+
+Request admission remains an independent Runtime-owned control.
+
+Enabling request admission SHALL permit eligible new operational requests to enter the API hosting boundary.
+
+Enabling request admission SHALL NOT itself transition Runtime to `OPERATIONAL`.
+
+### OPERATIONAL
+
+`OPERATIONAL` remains a distinct Runtime lifecycle state.
+
+Runtime SHALL NOT enter `OPERATIONAL` merely because:
+
+- Bootstrap completed successfully;
+- Runtime entered `READY`;
+- request admission was enabled;
+- API hosting admitted a request.
+
+A future transition from `READY` to `OPERATIONAL` requires a separately approved architecture contract defining the operational workload execution boundary and authorized Runtime transition.
+
+### Runtime
+
+Runtime remains the sole authoritative owner of platform lifecycle state.
+
+Only an approved Runtime public operation may perform a future `OPERATIONAL` transition.
+
+RFC-040 does not introduce that operation.
+
+### Bootstrap
+
+Bootstrap remains responsible for startup and shutdown coordination.
+
+Successful Bootstrap startup terminates at Runtime `READY`, followed by request-admission enablement.
+
+Bootstrap SHALL NOT transition Runtime to `OPERATIONAL` under RFC-040.
+
+### Health Capability
+
+Health Capability remains a read-only observation and reporting capability.
+
+Health Capability SHALL NOT:
+
+- determine Runtime readiness;
+- enable or disable request admission;
+- initiate or authorize an `OPERATIONAL` transition;
+- maintain an independent platform lifecycle state;
+- interpret enabled request admission as proof that Runtime is `OPERATIONAL`.
+
+### API Hosting
+
+API request-admission enforcement remains read-only with respect to Runtime lifecycle ownership.
+
+Admitting an operational request SHALL NOT itself produce a Runtime lifecycle transition.
+
+### Core Service Lifecycle
+
+The `Operational` stage documented in CORE-002 represents target architectural lifecycle intent.
+
+It SHALL NOT be interpreted as currently implemented `ServiceState` behavior.
+
+RFC-040 SHALL NOT introduce `ServiceState.OPERATIONAL`.
+
+Service lifecycle semantics remain separate from platform Runtime lifecycle semantics.
+
+Any future service-level `OPERATIONAL` state requires dedicated architecture review.
+
+### DEGRADED
+
+`DEGRADED` remains deferred.
+
+RFC-040 does not define degraded-state detection, transition, recovery or operational semantics.
+
+## Rationale
+
+This decision prevents three independent concepts from being collapsed into one implicit state transition.
+
+It preserves Runtime as the single lifecycle authority.
+
+It prevents Bootstrap, Health Capability and API hosting from becoming competing lifecycle decision owners.
+
+It preserves current committed behavior while establishing an explicit architecture boundary for future operational workload execution.
+
+It prevents documentation-only lifecycle intent from being mistaken for implemented service behavior.
+
+## Consequences
+
+Successful startup continues to terminate at Runtime `READY`.
+
+Request admission may continue to be enabled after `READY`.
+
+API hosting may continue to admit operational requests according to Runtime-owned admission state without changing lifecycle state.
+
+Health Capability remains observation-only.
+
+No production Python implementation changes are introduced by RFC-040.
+
+No `ServiceState.OPERATIONAL` is introduced.
+
+A future `READY` to `OPERATIONAL` implementation requires a dedicated RFC.
+
+## Documentation Alignment
+
+RFC-040 aligns:
+
+- `BOOT-001 — Platform Bootstrap Lifecycle`
+- `CAP-002 — Health Capability`
+- `CORE-002 — Core Services Architecture`
+
+`RUNTIME-001` remains authoritative for platform lifecycle state semantics.
+
+## Future Impact
+
+A future operational-transition RFC must define:
+
+- the approved operational workload execution boundary;
+- the authorized Runtime transition operation;
+- exact `READY` to `OPERATIONAL` transition conditions;
+- lifecycle observability requirements;
+- interaction with request admission;
+- failure semantics;
+- shutdown interaction.
+
+`DEGRADED`, traffic draining, retry, recovery, authentication and authorization remain separate architecture concerns.

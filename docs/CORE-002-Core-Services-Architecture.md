@@ -141,7 +141,7 @@ ARCH-001 remains the authoritative source for platform layer order and dependenc
 
 # Service Lifecycle
 
-Every Core Service SHALL follow the lifecycle below:
+CORE-002 defines the following target architectural lifecycle intent for Core Services:
 
 Create
 
@@ -165,7 +165,19 @@ Operational
 
 Shutdown
 
-Lifecycle behavior SHALL remain predictable and centrally managed.
+This sequence describes architectural intent and SHALL NOT be interpreted as a statement that every lifecycle stage currently exists in the implemented `ServiceState` model.
+
+The current implementation does not define `ServiceState.OPERATIONAL`.
+
+RFC-040 SHALL NOT add or infer `ServiceState.OPERATIONAL`.
+
+A Core Service becoming ready SHALL NOT by itself imply that the platform Runtime has entered the `OPERATIONAL` lifecycle state.
+
+Service-level lifecycle semantics SHALL remain separate from platform Runtime lifecycle semantics.
+
+Any future introduction of a service-level `OPERATIONAL` state requires dedicated architecture review defining its transition authority, validation requirements, failure semantics, and relationship to platform lifecycle state.
+
+Implemented service initialization and shutdown coordination SHALL continue to follow the approved Bootstrap and Service Registry ownership boundaries.
 
 ---
 
