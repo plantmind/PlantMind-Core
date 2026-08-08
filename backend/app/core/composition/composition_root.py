@@ -25,6 +25,9 @@ from app.core.configuration.configuration_provider import (
 from app.core.container.service_container import ServiceContainer
 from app.core.health import HealthCapability
 from app.core.logging.logging_provider import LoggingProvider
+from app.core.operational_transition_coordinator import (
+    OperationalTransitionCoordinator,
+)
 from app.core.plugins import PluginRegistration, PluginRegistry
 from app.core.plugins.plugin_lifecycle_manager import (
     PluginLifecycleManager,
@@ -55,6 +58,7 @@ class PlatformComposition:
     availability_observer: CapabilityAvailabilityObserver
     mandatory_capability_policy: MandatoryCapabilityPolicy
     mandatory_capability_coverage_evaluator: MandatoryCapabilityCoverageEvaluator
+    operational_transition_coordinator: OperationalTransitionCoordinator
     workflow_executor: WorkflowExecutor
     orchestration_service: OrchestrationService
     integration_gateway: IntegrationGateway
@@ -107,6 +111,12 @@ class CompositionRoot:
 
         mandatory_capability_coverage_evaluator = MandatoryCapabilityCoverageEvaluator(
             mandatory_capability_policy
+        )
+
+        operational_transition_coordinator = OperationalTransitionCoordinator(
+            runtime=runtime,
+            availability_observer=availability_observer,
+            coverage_evaluator=mandatory_capability_coverage_evaluator,
         )
 
         bootstrap = BootstrapManager(
@@ -177,6 +187,10 @@ class CompositionRoot:
             mandatory_capability_coverage_evaluator,
         )
         container.register_instance(
+            OperationalTransitionCoordinator,
+            operational_transition_coordinator,
+        )
+        container.register_instance(
             WorkflowExecutor,
             workflow_executor,
         )
@@ -206,6 +220,7 @@ class CompositionRoot:
             availability_observer=availability_observer,
             mandatory_capability_policy=mandatory_capability_policy,
             mandatory_capability_coverage_evaluator=mandatory_capability_coverage_evaluator,
+            operational_transition_coordinator=operational_transition_coordinator,
             workflow_executor=workflow_executor,
             orchestration_service=orchestration_service,
             integration_gateway=integration_gateway,
