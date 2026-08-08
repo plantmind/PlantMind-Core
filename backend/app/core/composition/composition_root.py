@@ -22,6 +22,12 @@ from app.core.plugins.plugin_lifecycle_manager import (
 )
 from app.core.runtime import Runtime
 from app.core.services.service_registry import ServiceRegistry
+from app.services.application_facade import ApplicationFacade
+from app.services.integration_gateway import IntegrationGateway
+from app.services.orchestration.orchestration_service import (
+    OrchestrationService,
+)
+from app.services.orchestration.workflow_executor import WorkflowExecutor
 
 
 @dataclass(frozen=True)
@@ -37,6 +43,10 @@ class PlatformComposition:
     plugin_lifecycle: PluginLifecycleManager
     bootstrap: BootstrapManager
     health: HealthCapability
+    workflow_executor: WorkflowExecutor
+    orchestration_service: OrchestrationService
+    integration_gateway: IntegrationGateway
+    application_facade: ApplicationFacade
 
 
 class CompositionRoot:
@@ -78,6 +88,17 @@ class CompositionRoot:
             health=health,
         )
 
+        workflow_executor = WorkflowExecutor()
+        orchestration_service = OrchestrationService(
+            executor=workflow_executor,
+        )
+        integration_gateway = IntegrationGateway(
+            orchestration_service=orchestration_service,
+        )
+        application_facade = ApplicationFacade(
+            gateway=integration_gateway,
+        )
+
         container.register_instance(
             ConfigurationProvider,
             configuration,
@@ -110,6 +131,22 @@ class CompositionRoot:
             HealthCapability,
             health,
         )
+        container.register_instance(
+            WorkflowExecutor,
+            workflow_executor,
+        )
+        container.register_instance(
+            OrchestrationService,
+            orchestration_service,
+        )
+        container.register_instance(
+            IntegrationGateway,
+            integration_gateway,
+        )
+        container.register_instance(
+            ApplicationFacade,
+            application_facade,
+        )
 
         return PlatformComposition(
             container=container,
@@ -121,6 +158,10 @@ class CompositionRoot:
             plugin_lifecycle=plugin_lifecycle,
             bootstrap=bootstrap,
             health=health,
+            workflow_executor=workflow_executor,
+            orchestration_service=orchestration_service,
+            integration_gateway=integration_gateway,
+            application_facade=application_facade,
         )
 
 def build_platform_composition(
