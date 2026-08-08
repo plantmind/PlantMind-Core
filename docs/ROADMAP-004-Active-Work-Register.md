@@ -33,27 +33,105 @@ No item may be marked complete until:
 
 # Active Work
 
-## RFC-038 — Architecture Review
+## RFC-038 — Runtime Readiness Verification Contract
 
 ### Status
 
-Ready for architecture review. No RFC-038 contract has been selected.
+Architecture review complete; contract and TDD scope defined; implementation not started.
 
 ### Objective
 
-Select the next architecture-controlled PlantMind increment from the latest committed technical baseline.
+Establish deterministic Runtime-owned readiness verification and align Bootstrap startup orchestration with the mandatory readiness requirements defined by BOOT-002 and RUNTIME-001.
+
+### Architectural Findings
+
+- RUNTIME-001 makes readiness a Runtime decision.
+- Bootstrap may request readiness but SHALL NOT own Runtime state.
+- ConfigurationProvider already owns mandatory configuration validation.
+- Current Bootstrap startup does not invoke ConfigurationProvider validation.
+- HealthCapability is read-only observation and reads Runtime readiness; it SHALL NOT become the readiness decision owner.
+- Using HealthCapability as a pre-READY decision dependency would create a circular readiness dependency.
+- ServiceRegistry owns service inventory and SHALL remain independent of lifecycle decisions.
+- Current Bootstrap already owns deterministic service validation, initialization, plugin activation and rollback orchestration.
+- Runtime metadata is already owned and available from Runtime.
+- RFC-037 requires Request Admission to remain disabled until Runtime reaches READY.
+
+### Dependencies
+
+- BOOT-002 — Bootstrap Lifecycle Architecture
+- RUNTIME-001 — Platform Lifecycle Architecture
+- RFC-034 — Bootstrap Startup Failure Atomicity Contract
+- RFC-035 — Bootstrap Shutdown Lifecycle Compliance Contract
+- RFC-036 — Managed Shutdown Failure Containment Contract
+- RFC-037 — Runtime Request Admission Control Contract
+- ConfigurationProvider
+- Runtime
+- BootstrapManager
+- ServiceRegistry
+- HealthCapability
+
+### RFC-038 Contract
+
+- Runtime SHALL remain the exclusive owner of the READY lifecycle decision.
+- Bootstrap SHALL request readiness only after all mandatory startup stages required by the current Core implementation have completed successfully.
+- ConfigurationProvider SHALL remain the owner of configuration validation.
+- Bootstrap SHALL invoke mandatory configuration validation before service validation or initialization.
+- Runtime readiness verification SHALL consume immutable readiness evidence rather than infer readiness from HealthCapability.
+- Readiness evidence SHALL represent completed mandatory startup conditions without transferring lifecycle ownership to Bootstrap.
+- Runtime SHALL deterministically accept or reject the readiness request from the supplied evidence.
+- Runtime SHALL NOT enter READY when any mandatory readiness evidence is unsatisfied.
+- Bootstrap SHALL enable request admission only after Runtime has accepted the readiness request and entered READY.
+- Failed readiness verification SHALL leave request admission disabled.
+- Failed readiness verification SHALL participate in RFC-034 startup failure atomicity and rollback semantics.
+- HealthCapability SHALL remain read-only observation and SHALL NOT become a readiness decision component.
+- ServiceRegistry SHALL remain independent of lifecycle decisions.
+- Existing RFC-035, RFC-036 and RFC-037 shutdown and request-admission behavior SHALL remain compatible.
+- Existing Runtime mark_ready compatibility SHALL not be removed in RFC-038; production Bootstrap SHALL use the validated readiness path.
+- RFC-038 SHALL NOT implement OPERATIONAL or DEGRADED transitions, API admission middleware, request rejection policy, traffic draining, retry, recovery, dependency-aware startup, parallel startup or health-report redesign.
+
+### TDD Scope
+
+RFC-038 implementation SHALL be driven by focused tests proving:
+
+1. Readiness evidence is immutable.
+2. Runtime accepts complete readiness evidence and enters READY.
+3. Runtime rejects incomplete mandatory readiness evidence.
+4. Rejected readiness leaves Runtime not ready.
+5. Rejected readiness leaves request admission disabled.
+6. Bootstrap invokes configuration validation before service validation.
+7. Configuration validation failure prevents service validation, initialization and plugin activation.
+8. Configuration validation failure transitions Runtime to FAILED.
+9. Bootstrap constructs readiness evidence only after mandatory startup stages succeed.
+10. Bootstrap requests validated readiness before enabling request admission.
+11. Readiness rejection rolls back initialized plugins and services according to RFC-034 ordering.
+12. HealthCapability remains read-only and is not used as the readiness decision owner.
+13. Existing mark_ready compatibility remains available.
+14. Existing RFC-034, RFC-035, RFC-036 and RFC-037 lifecycle behavior remains compatible.
+
+### Implementation Boundary
+
+- Introduce only the minimum immutable readiness-evidence contract and Runtime validation path.
+- Inject ConfigurationProvider into Bootstrap through existing composition ownership.
+- Preserve Composition Root as dependency-construction authority.
+- Preserve Bootstrap as lifecycle orchestrator.
+- Preserve Runtime as lifecycle-state and readiness-decision owner.
+- Preserve HealthCapability as observation only.
+- Do not introduce a second health subsystem or readiness manager.
+- Do not implement OPERATIONAL, DEGRADED, API enforcement, retry, recovery or traffic draining.
 
 ### Current Technical Baseline
 
 - Branch: `feature/engineering-platform`
 - Last completed RFC: RFC-037 — Runtime Request Admission Control Contract
-- RFC-037 contract commit: `e6d2e51`
 - RFC-037 technical commit: `788b03b`
+- Documentation baseline commit: `0d4d1f3`
 - Full regression baseline: 236 passed
 
 ### Next Exact Action
 
-Review the Source of Truth and select the RFC-038 objective before defining any new contract, TDD scope or implementation.
+Commit the RFC-038 contract, then write failing focused tests for immutable readiness evidence and Runtime readiness validation before implementation.
+
+
 
 ---
 
