@@ -6,12 +6,12 @@
 |---|---|
 | Project | PlantMind PM-001 |
 | Branch | `feature/engineering-platform` |
-| Last Completed RFC | RFC-039 — API Request Admission Enforcement Contract |
-| Technical Baseline Commit | `bc26371` |
+| Last Completed RFC | RFC-040 — Platform Operational Semantics Alignment Contract |
+| Technical Baseline Commit | `376970e` |
 | Test Baseline | 256 passed |
 | Authoritative Environment | `PlantMind-Core/.venv` |
 | Remote State | Up to date with `origin/feature/engineering-platform` |
-| Working Tree After RFC-039 Closure | Clean |
+| RFC-040 Alignment Push | Verified |
 
 ## Recent Engineering Sequence
 
@@ -30,6 +30,7 @@
 - RFC-037 — Runtime Request Admission Control Contract
 - RFC-038 — Runtime Readiness Verification Contract
 - RFC-039 — API Request Admission Enforcement Contract
+- RFC-040 — Platform Operational Semantics Alignment Contract
 
 ## RFC-036 Outcome
 
@@ -156,11 +157,50 @@ The implementation:
 - Technical commit: `bc26371`
 - Remote technical push: verified
 
+## RFC-040 Outcome
+
+RFC-040 aligned PlantMind platform operational semantics without changing production Python behavior.
+
+The architecture now explicitly establishes:
+
+- `READY`, request admission and `OPERATIONAL` as distinct platform concepts.
+- `READY` as successful completion of mandatory startup and readiness requirements.
+- Request admission as an independent Runtime-owned control.
+- Enabled request admission as insufficient by itself to establish `OPERATIONAL`.
+- `OPERATIONAL` as a distinct Runtime lifecycle state with no approved transition implementation yet.
+- Runtime as the sole authoritative owner of platform lifecycle state.
+- Bootstrap as startup and shutdown coordinator only.
+- Successful Bootstrap startup terminating at Runtime `READY`, followed by request-admission enablement.
+- HealthCapability as read-only observation and reporting.
+- API request-admission enforcement as read-only with respect to Runtime lifecycle state.
+- Core Service `Operational` as target architectural lifecycle intent rather than currently implemented `ServiceState` behavior.
+- Service lifecycle semantics as distinct from platform Runtime lifecycle semantics.
+- `DEGRADED` as deferred pending separate architecture review.
+
+RFC-040 aligned:
+
+- `BOOT-001 — Platform Bootstrap Lifecycle`
+- `CAP-002 — Health Capability`
+- `CORE-002 — Core Services Architecture`
+
+Architecture decision:
+
+- AD-026 — Platform Operational Semantics Alignment
+
+## RFC-040 Verification
+
+- Contract commit: `63d75ec`
+- Alignment commit: `376970e`
+- Production Python changes: none
+- Full regression: 256 passed
+- Documentation validation: passed
+- Remote alignment push: verified
+
 ## Documentation Closure
 
-The technical implementation of RFC-039 is complete.
+RFC-040 architecture and documentation alignment is complete.
 
-The engineering-memory layer has been synchronized with the RFC-039 technical baseline.
+The engineering-memory layer is being synchronized with the RFC-040 aligned architecture baseline.
 
 Relevant maintained documents:
 
@@ -172,21 +212,22 @@ Relevant maintained documents:
 
 ## Next Exact Action
 
-Begin architecture review for RFC-040 from the latest committed Git state.
+Begin architecture review for RFC-041 from the RFC-040 aligned baseline.
 
-Before selecting or implementing RFC-040:
+Before selecting or implementing RFC-041:
 
 1. Review the Active Work Register.
 2. Review current committed code and tests.
 3. Review accepted RFCs, ADRs, architecture documents and deferred work.
-4. Preserve Runtime ownership of request-admission state.
-5. Preserve API-hosting ownership of request-admission enforcement.
-6. Preserve Bootstrap lifecycle orchestration ownership.
-7. Preserve Runtime readiness-decision ownership and HealthCapability read-only observation.
-8. Preserve Composition Root dependency-construction ownership.
-9. Keep observation exemptions explicit and narrow.
-10. Do not introduce OPERATIONAL or DEGRADED transitions, traffic draining, authentication, authorization, retry or recovery without dedicated architecture review.
-11. Record the selected RFC objective and next exact action before implementation begins.
+4. Preserve Runtime lifecycle-state ownership.
+5. Preserve the distinction between `READY`, request admission and `OPERATIONAL`.
+6. Preserve Bootstrap coordination ownership.
+7. Preserve HealthCapability read-only observation.
+8. Preserve API-hosting request-admission enforcement ownership.
+9. Do not implement `READY` to `OPERATIONAL` until the operational workload execution boundary and authorized Runtime transition are explicitly approved.
+10. Do not introduce `ServiceState.OPERATIONAL` without dedicated architecture review.
+11. Keep `DEGRADED`, traffic draining, retry, recovery, authentication and authorization deferred unless explicitly selected through architecture review.
+12. Record the selected RFC objective and next exact action before implementation begins.
 
 ## Required Test Command
 

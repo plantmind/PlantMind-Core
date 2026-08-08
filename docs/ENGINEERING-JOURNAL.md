@@ -522,6 +522,46 @@ Verification:
 
 ---
 
+### RFC-040 — Platform Operational Semantics Alignment Contract
+
+RFC-040 resolved conflicting operational lifecycle terminology without changing production Python behavior.
+
+The architecture now establishes:
+
+- `READY`, request admission and `OPERATIONAL` as distinct platform concepts.
+- `READY` as successful completion of mandatory startup and readiness requirements.
+- Request admission as an independent Runtime-owned control.
+- Enabled request admission as insufficient by itself to establish `OPERATIONAL`.
+- `OPERATIONAL` as a distinct Runtime lifecycle state with no approved transition implementation yet.
+- Runtime as the sole authoritative owner of platform lifecycle state.
+- Bootstrap as startup and shutdown coordinator only.
+- HealthCapability as read-only observation and reporting.
+- API request-admission enforcement as read-only with respect to Runtime lifecycle state.
+- Core Service `Operational` as target architectural lifecycle intent rather than implemented `ServiceState` behavior.
+- Service lifecycle semantics as separate from platform Runtime lifecycle semantics.
+- `DEGRADED` as deferred pending separate architecture review.
+
+Documentation aligned:
+
+- `BOOT-001 — Platform Bootstrap Lifecycle`
+- `CAP-002 — Health Capability`
+- `CORE-002 — Core Services Architecture`
+
+Architecture decision:
+
+- AD-026 — Platform Operational Semantics Alignment
+
+Verification:
+
+- Contract commit: `63d75ec`
+- Alignment commit: `376970e`
+- Production Python changes: none
+- Full regression: 256 passed
+- Documentation validation: passed
+- Remote alignment push: verified
+
+---
+
 # Current Status
 
 PlantMind now possesses:
@@ -542,6 +582,7 @@ PlantMind now possesses:
 - Runtime Request Admission Control Contract
 - Runtime Readiness Verification Contract
 - API Request Admission Enforcement Contract
+- Platform Operational Semantics Alignment Contract
 - Service Lifecycle
 - Composition Root and dependency wiring
 - Structured engineering documentation
@@ -549,11 +590,12 @@ PlantMind now possesses:
 
 Current technical baseline:
 
-- RFC-039 — API Request Admission Enforcement Contract
-- Contract commit: `4b738df`
-- Technical commit: `bc26371`
+- RFC-040 — Platform Operational Semantics Alignment Contract
+- Contract commit: `63d75ec`
+- Alignment commit: `376970e`
 - Full regression: 256 passed
+- Production Python changes: none
 
-The next engineering step is architecture review for RFC-040.
+The next engineering step is architecture review for RFC-041.
 
 The project remains in long-term enterprise platform development.

@@ -33,149 +33,28 @@ No item may be marked complete until:
 
 # Active Work
 
-## RFC-040 — Platform Operational Semantics Alignment Contract
+## RFC-041 — Architecture Review
 
 ### Status
 
-Contract defined. Documentation alignment active.
+Ready for architecture review. No RFC-041 contract has been selected.
 
 ### Objective
 
-Establish one authoritative meaning for `READY`, request admission and `OPERATIONAL` before any future implementation of the `READY` to `OPERATIONAL` lifecycle transition.
+Select the next architecture-controlled PlantMind increment from the RFC-040 aligned operational-semantics baseline.
 
-### Architecture Problem
+### Current Technical Baseline
 
-Current architecture contains terminology that can be interpreted inconsistently:
-
-- Runtime defines `READY` and `OPERATIONAL` as distinct platform lifecycle states.
-- Bootstrap currently completes successful startup at `READY` and then enables request admission.
-- Request admission currently permits new operational API requests but does not transition Runtime to `OPERATIONAL`.
-- HealthCapability is read-only observation and must not become a lifecycle decision authority.
-- BOOT-001 uses the word operational for successful startup criteria while ending at `READY`.
-- CORE-002 describes a conceptual service lifecycle containing `Operational`, while the implemented `ServiceState` does not contain `OPERATIONAL`.
-- No approved Runtime operation currently performs the `READY` to `OPERATIONAL` transition.
-
-### Contract
-
-#### READY
-
-`READY` means all mandatory startup and readiness requirements have completed successfully.
-
-A Runtime in `READY` is eligible for request admission.
-
-`READY` does not mean the platform has entered the `OPERATIONAL` lifecycle state.
-
-#### Request Admission
-
-Request admission is an independent Runtime-owned control indicating whether new operational requests may enter the API hosting boundary.
-
-Request admission may be enabled after Runtime reaches `READY`.
-
-Enabling request admission SHALL NOT itself transition Runtime to `OPERATIONAL`.
-
-#### OPERATIONAL
-
-`OPERATIONAL` remains a distinct Runtime lifecycle state.
-
-The platform SHALL NOT enter `OPERATIONAL` merely because:
-
-- Bootstrap completed;
-- Runtime entered `READY`;
-- request admission was enabled;
-- an API middleware allowed a request.
-
-A future `READY` to `OPERATIONAL` transition SHALL require a dedicated architecture contract defining the approved operational workload execution boundary and transition authority.
-
-#### Runtime
-
-Runtime remains the sole authoritative owner of platform lifecycle state.
-
-Only an approved Runtime public operation may perform a future `OPERATIONAL` transition.
-
-RFC-040 SHALL NOT add such an operation.
-
-#### Bootstrap
-
-Bootstrap remains the startup and shutdown coordinator.
-
-Successful Bootstrap startup SHALL terminate at Runtime `READY`, followed by request-admission enablement.
-
-Bootstrap SHALL NOT transition Runtime to `OPERATIONAL` under RFC-040.
-
-#### HealthCapability
-
-HealthCapability remains read-only observation.
-
-HealthCapability MAY report observed Runtime lifecycle and health information.
-
-HealthCapability SHALL NOT decide, initiate or authorize the `OPERATIONAL` transition.
-
-HealthCapability SHALL NOT become a second lifecycle authority.
-
-#### API Hosting
-
-API request-admission enforcement remains read-only with respect to Runtime lifecycle ownership.
-
-Allowing an operational request through the admission boundary SHALL NOT itself cause a lifecycle transition.
-
-#### Core Service Lifecycle
-
-The `Operational` stage described by CORE-002 SHALL be treated as architectural lifecycle intent and not as currently implemented `ServiceState` behavior.
-
-RFC-040 SHALL NOT add `ServiceState.OPERATIONAL`.
-
-Any future expansion of Core Service lifecycle states requires dedicated architecture review.
-
-#### DEGRADED
-
-`DEGRADED` remains deferred.
-
-RFC-040 SHALL NOT define or implement degraded-state detection, transition or recovery.
-
-### Documentation Alignment Required
-
-RFC-040 SHALL align conflicting terminology in:
-
-- `docs/BOOT-001-Platform-Bootstrap-Lifecycle.md`
-- `docs/CAP-002-Health-Capability.md`
-- `docs/CORE-002-Core-Services-Architecture.md`
-
-Alignment SHALL preserve accepted ADR decisions and current committed behavior.
-
-`RUNTIME-001` remains authoritative for the distinction between `READY` and `OPERATIONAL`.
-
-### Non-Goals
-
-RFC-040 SHALL NOT:
-
-- modify production Python code;
-- add a Runtime operational transition method;
-- modify Bootstrap execution behavior;
-- modify request-admission behavior;
-- modify API middleware behavior;
-- add `ServiceState.OPERATIONAL`;
-- implement operational workload detection;
-- implement `DEGRADED`;
-- implement traffic draining;
-- implement retry or recovery;
-- introduce authentication or authorization behavior.
-
-### Verification
-
-RFC-040 completion requires:
-
-- conflicting lifecycle terminology aligned;
-- Runtime lifecycle ownership preserved;
-- Bootstrap ownership preserved;
-- HealthCapability read-only boundary preserved;
-- API admission ownership preserved;
-- no production code changes;
-- documentation diff validation passed;
-- full regression remains unchanged from the RFC-039 technical baseline unless unrelated repository state requires otherwise.
+- Branch: `feature/engineering-platform`
+- Last completed RFC: RFC-040 — Platform Operational Semantics Alignment Contract
+- RFC-040 contract commit: `63d75ec`
+- RFC-040 alignment commit: `376970e`
+- Full regression baseline: 256 passed
+- Production Python changes in RFC-040: none
 
 ### Next Exact Action
 
-Align BOOT-001, CAP-002 and CORE-002 with this contract without changing production code.
+Review the Source of Truth and select the RFC-041 objective before defining any new contract, TDD scope or implementation.
 
 ---
 
@@ -202,6 +81,7 @@ Align BOOT-001, CAP-002 and CORE-002 with this contract without changing product
 | RFC-037 | `788b03b` | Runtime request admission control contract |
 | RFC-038 | `b65cceb` | Runtime readiness verification contract |
 | RFC-039 | `bc26371` | API request admission enforcement contract |
+| RFC-040 | `376970e` | Platform operational semantics alignment contract |
 
 RFC-039 verification:
 
@@ -215,6 +95,21 @@ RFC-039 verification:
 - Remote technical push: verified
 
 RFC-039 is technically complete.
+
+RFC-040 verification:
+
+- Contract commit: `63d75ec`
+- Alignment commit: `376970e`
+- Architecture decision: AD-026 — Platform Operational Semantics Alignment
+- BOOT-001 aligned
+- CAP-002 aligned
+- CORE-002 aligned
+- Production Python changes: none
+- Full regression: 256 passed
+- `git diff --check`: passed after EOF normalization
+- Remote alignment push: verified
+
+RFC-040 is complete.
 
 ---
 

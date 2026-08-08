@@ -364,50 +364,72 @@ It must extend, not discard, the accepted Plugin Framework.
 
 14. Immediate Development Direction
 
-RFC-039 is complete at technical commit `bc26371`.
+RFC-040 is complete at alignment commit `376970e`.
 
-The API hosting layer now enforces the Runtime-owned request-admission state for operational requests.
+RFC-040 established authoritative platform operational semantics without modifying production Python code.
 
-`RequestAdmissionMiddleware` observes Runtime through the public request-admission interface and does not modify Runtime lifecycle or admission state.
+`READY`, request admission and `OPERATIONAL` are distinct platform concepts.
 
-Operational requests received while request admission is disabled are rejected deterministically with HTTP `503 Service Unavailable`.
+`READY` means mandatory startup and readiness requirements have completed successfully.
 
-The rejection response uses the stable platform-owned detail message `PlantMind is not accepting operational requests.`
+A Runtime in `READY` is eligible for request admission, but `READY` does not mean Runtime is `OPERATIONAL`.
 
-Platform status `/` and platform health `/health` remain explicitly exempt observation endpoints while request admission is disabled.
+Request admission remains an independent Runtime-owned control governing whether new operational requests may enter the API hosting boundary.
 
-Observation exemptions are explicit; nested or unrelated health-like paths are not admitted through a wildcard exemption.
+Enabling request admission does not transition Runtime to `OPERATIONAL`.
 
-The production FastAPI application wires request-admission enforcement to the same composed `platform.runtime` instance used by the platform lifecycle.
+`OPERATIONAL` remains a distinct Runtime lifecycle state with no approved transition implementation yet.
 
-`HealthCapability` remains read-only observation and does not participate in request-admission decisions.
+A future `READY` to `OPERATIONAL` transition requires a dedicated architecture contract defining the operational workload execution boundary and authorized Runtime transition.
 
-Bootstrap remains responsible for lifecycle orchestration and Runtime admission enable/disable commands.
+Runtime remains the sole authoritative owner of platform lifecycle state.
 
-No production business endpoint was introduced solely for RFC-039 testing.
+Bootstrap remains the startup and shutdown coordinator. Successful startup terminates at Runtime `READY`, followed by request-admission enablement.
 
-Existing RFC-037 request-admission ownership and lifecycle behavior remain compatible.
+HealthCapability remains read-only observation and reporting. It does not determine readiness, control request admission or authorize lifecycle transitions.
 
-Existing RFC-038 readiness verification and READY-before-admission ordering remain compatible.
+API request-admission enforcement remains read-only with respect to Runtime lifecycle state.
 
-RFC-039 introduces no OPERATIONAL or DEGRADED transition, authentication, authorization, rate limiting, retry, recovery, traffic draining or business workflow implementation.
+The `Operational` stage documented for Core Services represents target architectural lifecycle intent and is not currently implemented as `ServiceState.OPERATIONAL`.
 
-Technical verification completed with 39 focused API and lifecycle tests, 88 impacted regression tests and a full regression baseline of 256 passing tests.
+Service lifecycle semantics remain separate from platform Runtime lifecycle semantics.
 
-RFC-040 has not yet been selected.
+`DEGRADED` remains deferred and requires separate architecture review.
 
-Before selecting or implementing RFC-040:
+RFC-040 aligned:
+
+- `BOOT-001 — Platform Bootstrap Lifecycle`
+- `CAP-002 — Health Capability`
+- `CORE-002 — Core Services Architecture`
+
+RFC-040 architecture decision:
+
+- AD-026 — Platform Operational Semantics Alignment
+
+RFC-040 verification:
+
+- Contract commit: `63d75ec`
+- Alignment commit: `376970e`
+- Production Python changes: none
+- Full regression: 256 passed
+- Documentation validation: passed
+- Remote alignment push: verified
+
+RFC-041 has not yet been selected.
+
+Before selecting or implementing RFC-041:
 
 Review the Active Work Register.
 Review current committed code and tests.
 Review accepted RFCs, ADRs, architecture documents and deferred work.
-Preserve Runtime ownership of request-admission state.
-Preserve API-hosting ownership of request-admission enforcement.
-Preserve Bootstrap lifecycle orchestration ownership.
-Preserve Runtime readiness-decision ownership and HealthCapability read-only observation.
-Preserve Composition Root dependency-construction ownership.
-Keep observation exemptions explicit and narrow.
-Do not introduce OPERATIONAL or DEGRADED transitions, traffic draining, authentication, authorization, retry or recovery without dedicated architecture review.
+Preserve Runtime lifecycle-state ownership.
+Preserve the distinction between `READY`, request admission and `OPERATIONAL`.
+Preserve Bootstrap coordination ownership.
+Preserve HealthCapability read-only observation.
+Preserve API-hosting request-admission enforcement ownership.
+Do not introduce an `OPERATIONAL` transition until its workload execution boundary and transition authority are explicitly approved.
+Do not introduce `ServiceState.OPERATIONAL` without dedicated architecture review.
+Keep `DEGRADED`, traffic draining, retry, recovery, authentication and authorization outside the next implementation unless explicitly selected through architecture review.
 Record the selected RFC objective and next exact action before implementation begins.
 
 15. Session Continuation Instruction
