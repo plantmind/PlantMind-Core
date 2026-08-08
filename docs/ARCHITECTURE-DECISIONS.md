@@ -1617,3 +1617,202 @@ A future RFC SHALL define the capability-availability observation boundary befor
 That capability SHALL provide evidence only and SHALL remain separate from lifecycle decision authority.
 
 A later Runtime operational-transition RFC may consume that evidence together with RFC-041 workload evidence and Runtime-owned preconditions.
+
+---
+
+# AD-029 — Mandatory Capability Availability Observation Boundary
+
+## Context
+
+RFC-042 established that a future Runtime `READY` to `OPERATIONAL` transition requires trustworthy live evidence that mandatory capabilities remain available during operational execution.
+
+The existing platform did not provide a trusted live capability-availability observation contract.
+
+`ServiceRegistry` provides registration and lookup semantics but does not prove current capability availability.
+
+Startup validation and readiness evidence establish startup conditions but do not prove continuing availability.
+
+`HealthCapability` is the authoritative read-only health reporting interface but is not the owner of capability-specific probes or lifecycle decisions.
+
+RFC-043 establishes the missing availability observation boundary.
+
+## Decision
+
+PlantMind SHALL use a dedicated read-only capability-availability observation architecture.
+
+The approved dependency direction is:
+
+Capability-Specific Availability Sources
+
+↓
+
+`CapabilityAvailabilityObserver`
+
+↓
+
+Immutable `CapabilityAvailabilityObservation`
+
+↓
+
+Approved Consumers
+
+`HealthCapability` MAY report approved availability observations in a future integration.
+
+A future Runtime operational-transition contract MAY consume trusted availability evidence derived from this boundary.
+
+Neither consumer becomes the owner of capability-specific observation.
+
+## Availability State
+
+Capability availability SHALL use:
+
+`CapabilityAvailabilityState`
+
+with exactly:
+
+- `AVAILABLE`
+- `UNAVAILABLE`
+- `UNKNOWN`
+
+`AVAILABLE` means a trusted source successfully established current availability.
+
+`UNAVAILABLE` means a trusted source successfully established current unavailability.
+
+`UNKNOWN` means trustworthy current availability could not be established.
+
+Observation failure SHALL produce `UNKNOWN`.
+
+`UNKNOWN` SHALL NOT be interpreted as `AVAILABLE`.
+
+## Immutable Observation
+
+`CapabilityAvailabilityObservation` SHALL be immutable and SHALL contain:
+
+- `capability_name`;
+- availability state;
+- `observed_at`;
+- `source_name`.
+
+Capability and source identities SHALL be non-empty.
+
+Observation timestamps SHALL be timezone-aware and normalized to UTC.
+
+Naive timestamps SHALL be rejected.
+
+The observation contains evidence only and carries no lifecycle-transition authority.
+
+## Trusted Source Boundary
+
+`CapabilityAvailabilitySource` SHALL define the abstract source contract for one explicitly identified capability.
+
+A source SHALL expose:
+
+- `capability_name`;
+- `source_name`;
+- `observe()`.
+
+A source SHALL NOT:
+
+- declare mandatory-capability policy;
+- change Runtime lifecycle state;
+- change request-admission state;
+- fabricate availability evidence.
+
+Production sources SHALL represent real approved observation mechanisms.
+
+Test doubles MAY be used to verify contract behavior but SHALL NOT be treated as production sources.
+
+## Observer Boundary
+
+`CapabilityAvailabilityObserver` SHALL coordinate explicitly supplied trusted sources.
+
+Observation order SHALL preserve explicit composition order and remain deterministic.
+
+Failure of one source SHALL:
+
+- produce `UNKNOWN` for that source capability;
+- preserve the declared capability identity;
+- preserve the declared source identity;
+- not prevent observation of remaining sources.
+
+An observer with no sources SHALL return no availability evidence.
+
+The observer SHALL NOT:
+
+- perform automatic discovery;
+- scan packages;
+- introduce a second service registry;
+- infer mandatory-capability membership;
+- convert `UNKNOWN` to `AVAILABLE`;
+- modify Runtime lifecycle or request admission.
+
+## Mandatory Capability Policy
+
+Capability availability observation and mandatory-capability policy are separate responsibilities.
+
+A capability source SHALL NOT declare itself mandatory.
+
+Observer membership SHALL NOT imply mandatory status.
+
+Mandatory-capability membership remains a future platform composition or configuration policy concern.
+
+## HealthCapability Boundary
+
+`HealthCapability` remains the authoritative read-only platform health reporting interface.
+
+It MAY consume availability observations in a separately approved reporting integration.
+
+It SHALL NOT become:
+
+- the capability-specific probe owner;
+- the operational-eligibility decision authority;
+- the Runtime lifecycle transition authority.
+
+## Runtime Boundary
+
+Runtime remains the sole authoritative owner of platform lifecycle state.
+
+Runtime SHALL NOT perform capability-specific availability probes.
+
+RFC-043 introduces no Runtime `READY` to `OPERATIONAL` transition behavior.
+
+A future operational-transition contract MAY consume trusted immutable availability evidence produced through this architecture.
+
+## Composition Ownership
+
+`CompositionRoot` SHALL own production construction and wiring of the single `CapabilityAvailabilityObserver`.
+
+The same composed observer SHALL be registered in `ServiceContainer` and exposed through `PlatformComposition`.
+
+No competing production availability-observation graph SHALL be independently constructed.
+
+RFC-043 introduces no fabricated production capability sources.
+
+The currently composed observer therefore has no production sources and produces no false availability evidence.
+
+## Consequences
+
+PlantMind now has a deterministic fail-closed availability observation foundation.
+
+Availability evidence is attributable to explicit trusted sources.
+
+Unknown availability remains distinguishable from confirmed unavailability.
+
+One failing source cannot prevent observation of other capabilities.
+
+Capability observation remains separate from lifecycle authority, health reporting and mandatory-capability policy.
+
+No `OPERATIONAL`, `DEGRADED` or `ServiceState.OPERATIONAL` behavior is introduced.
+
+## Verification
+
+RFC-043 verification completed with:
+
+- Contract commit: `0d30cfb`
+- Technical commit: `ed807f0`
+- Focused TDD suite: 15 passed
+- Impacted regression: 40 passed
+- Full regression: 278 passed
+- Compilation: passed
+- `git diff --cached --check`: passed
+- Remote technical push: verified

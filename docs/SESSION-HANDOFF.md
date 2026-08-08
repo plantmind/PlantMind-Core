@@ -6,13 +6,13 @@
 |---|---|
 | Project | PlantMind PM-001 |
 | Branch | `feature/engineering-platform` |
-| Last Completed RFC | RFC-042 — Runtime Operational Transition Evidence Contract |
-| Technical Baseline Commit | `1693a9b` |
-| Architecture Baseline Commit | `3168014` |
-| Test Baseline | 263 passed |
+| Last Completed RFC | RFC-043 — Mandatory Capability Availability Observation Contract |
+| Technical Baseline Commit | `ed807f0` |
+| Architecture Baseline Commit | `0d30cfb` |
+| Test Baseline | 278 passed |
 | Authoritative Environment | `PlantMind-Core/.venv` |
 | Remote State | Up to date with `origin/feature/engineering-platform` |
-| RFC-042 Contract Push | Verified |
+| RFC-043 Technical Push | Verified |
 
 ## Recent Engineering Sequence
 
@@ -34,6 +34,7 @@
 - RFC-040 — Platform Operational Semantics Alignment Contract
 - RFC-041 — Operational Workload Entry Boundary Contract
 - RFC-042 — Runtime Operational Transition Evidence Contract
+- RFC-043 — Mandatory Capability Availability Observation Contract
 
 ## RFC-036 Outcome
 
@@ -295,11 +296,83 @@ RFC-042 introduces no production transition behavior.
 - `OPERATIONAL` transition: not introduced
 - Blocking dependency: trusted mandatory-capability availability observation
 
+## RFC-043 Outcome
+
+RFC-043 established the dedicated read-only capability-availability observation boundary required by RFC-042.
+
+The approved architecture is:
+
+Capability-Specific Availability Sources
+
+↓
+
+`CapabilityAvailabilityObserver`
+
+↓
+
+Immutable `CapabilityAvailabilityObservation`
+
+↓
+
+Approved Consumers
+
+`CapabilityAvailabilityState` defines:
+
+- `AVAILABLE`
+- `UNAVAILABLE`
+- `UNKNOWN`
+
+`UNKNOWN` represents absence of trustworthy current availability evidence and SHALL NOT be interpreted as `AVAILABLE`.
+
+`CapabilityAvailabilityObservation` is immutable and records capability identity, availability state, timezone-aware UTC-normalized observation time and trusted source identity.
+
+`CapabilityAvailabilitySource` defines the abstract trusted-source contract for one explicitly identified capability.
+
+`CapabilityAvailabilityObserver`:
+
+- observes explicitly composed trusted sources;
+- preserves deterministic composition order;
+- maps source observation failure to `UNKNOWN`;
+- isolates source failures so remaining sources are still observed;
+- produces no evidence when no sources are composed;
+- does not modify Runtime lifecycle state;
+- does not modify request-admission state;
+- does not infer mandatory-capability policy.
+
+`CompositionRoot` owns the production `CapabilityAvailabilityObserver`.
+
+The same observer instance is registered in `ServiceContainer` and exposed through `PlatformComposition`.
+
+No fabricated production capability sources were introduced.
+
+The currently composed production observer therefore has no sources and produces no false availability evidence.
+
+`HealthCapability` remains read-only health reporting.
+
+Runtime remains the sole lifecycle-state authority.
+
+RFC-043 introduces no Runtime `READY` to `OPERATIONAL` transition.
+
+## RFC-043 Verification
+
+- Contract commit: `0d30cfb`
+- Technical commit: `ed807f0`
+- Architecture decision: AD-029
+- Focused TDD suite: 15 passed
+- Impacted regression: 40 passed
+- Full regression: 278 passed
+- Compilation: passed
+- `git diff --cached --check`: passed
+- Remote technical push: verified
+- Production capability sources: none
+- Runtime lifecycle behavior: unchanged
+- `OPERATIONAL` transition: not introduced
+
 ## Documentation Closure
 
-RFC-042 architecture contract is complete.
+RFC-043 technical implementation is complete.
 
-The engineering-memory layer is being synchronized with the RFC-042 architecture baseline.
+The engineering-memory layer is being synchronized with the RFC-043 technical baseline.
 
 Relevant maintained documents:
 
@@ -311,21 +384,20 @@ Relevant maintained documents:
 
 ## Next Exact Action
 
-Begin architecture review for RFC-043 from the RFC-042 operational-transition evidence baseline.
+Begin architecture review for RFC-044 from the RFC-043 capability-availability observation baseline.
 
-Before selecting or implementing RFC-043:
+Before selecting or implementing RFC-044:
 
-1. Review the existing service lifecycle architecture.
-2. Review `HealthCapability` and its read-only observation responsibilities.
-3. Review `ServiceRegistry`, `BaseService` and `ServiceState`.
-4. Review accepted RFCs, ADRs and capability architecture.
-5. Preserve Runtime as the sole lifecycle decision authority.
-6. Preserve `HealthCapability` as read-only.
-7. Do not treat registration as availability.
-8. Do not treat startup validation as continuing operational availability.
-9. Do not implement `READY` to `OPERATIONAL` transition behavior.
-10. Do not introduce `ServiceState.OPERATIONAL` or `DEGRADED`.
-11. Define the trusted mandatory-capability availability observation boundary before production implementation begins.
+1. Review the Source of Truth from the RFC-043 baseline.
+2. Preserve Runtime as the sole lifecycle decision authority.
+3. Preserve `HealthCapability` as read-only health reporting.
+4. Preserve `CapabilityAvailabilityObserver` as the read-only availability observation coordinator.
+5. Do not fabricate production capability sources.
+6. Do not infer mandatory-capability policy from observer membership.
+7. Do not interpret `UNKNOWN` as `AVAILABLE`.
+8. Do not introduce duplicate availability observers, registries or lifecycle authorities.
+9. Do not implement `READY` to `OPERATIONAL` until all separately approved prerequisites are satisfied.
+10. Record the RFC-044 objective before TDD or production implementation begins.
 
 ## Required Test Command
 

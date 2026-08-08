@@ -664,6 +664,79 @@ Verification:
 
 ---
 
+### RFC-043 — Mandatory Capability Availability Observation Contract
+
+RFC-043 established a dedicated read-only and fail-closed capability-availability observation foundation.
+
+The approved architecture is:
+
+Capability-Specific Availability Sources
+
+↓
+
+`CapabilityAvailabilityObserver`
+
+↓
+
+Immutable `CapabilityAvailabilityObservation`
+
+↓
+
+Approved Consumers
+
+`CapabilityAvailabilityState` defines:
+
+- `AVAILABLE`
+- `UNAVAILABLE`
+- `UNKNOWN`
+
+`UNKNOWN` represents inability to establish trustworthy current availability and SHALL NOT be interpreted as `AVAILABLE`.
+
+`CapabilityAvailabilityObservation` is immutable and contains:
+
+- capability identity;
+- availability state;
+- timezone-aware UTC-normalized observation time;
+- trusted source identity.
+
+`CapabilityAvailabilitySource` defines the abstract trusted-source boundary for one explicitly identified capability.
+
+`CapabilityAvailabilityObserver`:
+
+- coordinates explicitly composed trusted sources;
+- preserves deterministic composition order;
+- maps source observation failures to `UNKNOWN`;
+- isolates source failures;
+- produces no evidence when no sources are composed;
+- does not infer mandatory-capability policy;
+- does not modify Runtime lifecycle state;
+- does not modify request-admission state.
+
+`CompositionRoot` owns the production availability observer.
+
+The same observer instance is registered in `ServiceContainer` and exposed through `PlatformComposition`.
+
+No fabricated production capability sources were introduced.
+
+`HealthCapability` remains the authoritative read-only health reporting interface.
+
+Runtime remains the sole authoritative lifecycle-state owner.
+
+RFC-043 introduces no `READY` to `OPERATIONAL` transition behavior.
+
+Verification:
+
+- Contract commit: `0d30cfb`
+- Technical commit: `ed807f0`
+- Architecture decision: AD-029
+- Focused TDD suite: 15 passed
+- Impacted regression: 40 passed
+- Full regression: 278 passed
+- Compilation: passed
+- Remote technical push: verified
+
+---
+
 # Current Status
 
 PlantMind now possesses:
@@ -687,6 +760,7 @@ PlantMind now possesses:
 - Platform Operational Semantics Alignment Contract
 - Operational Workload Entry Boundary Contract
 - Runtime Operational Transition Evidence Contract
+- Mandatory Capability Availability Observation Contract
 - Service Lifecycle
 - Composition Root and dependency wiring
 - Structured engineering documentation
@@ -694,13 +768,13 @@ PlantMind now possesses:
 
 Current technical baseline:
 
-- RFC-042 — Runtime Operational Transition Evidence Contract
-- Contract commit: `3168014`
-- Technical production baseline: `1693a9b`
-- Full regression baseline: 263 passed
-- Production Python changes: none
-- Blocking dependency: trusted mandatory-capability availability observation
+- RFC-043 — Mandatory Capability Availability Observation Contract
+- Contract commit: `0d30cfb`
+- Technical commit: `ed807f0`
+- Full regression baseline: 278 passed
+- Architecture decision: AD-029
+- Production capability sources: none
 
-The next engineering step is architecture review for RFC-043.
+The next engineering step is architecture review for RFC-044.
 
 The project remains in long-term enterprise platform development.

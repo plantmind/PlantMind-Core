@@ -364,65 +364,90 @@ It must extend, not discard, the accepted Plugin Framework.
 
 14. Immediate Development Direction
 
-RFC-042 — Runtime Operational Transition Evidence Contract is complete.
+RFC-043 — Mandatory Capability Availability Observation Contract is technically complete.
 
-RFC-042 established the evidence and authority boundaries required before PlantMind may implement a future Runtime `READY` to `OPERATIONAL` transition.
+RFC-043 established a dedicated read-only and fail-closed capability-availability observation foundation.
 
-Runtime remains the sole authoritative owner of platform lifecycle state.
+The approved architecture is:
 
-Runtime-owned operational preconditions SHALL be evaluated directly by Runtime and SHALL NOT be duplicated as externally supplied evidence.
+Capability-Specific Availability Sources
 
-A future operational transition requires Runtime itself to verify:
+↓
 
-- lifecycle state is `READY`;
-- request admission is enabled.
+`CapabilityAvailabilityObserver`
 
-External operational-transition evidence represents independently observable facts that Runtime does not own directly.
+↓
 
-The required evidence categories are:
+Immutable `CapabilityAvailabilityObservation`
 
-- canonical operational workload entry through the composed `ApplicationFacade`;
-- concrete workflow execution start through the composed `WorkflowExecutor`;
-- trustworthy live availability of mandatory capabilities required for operational workload execution.
+↓
 
-`ApplicationFacade` and `WorkflowExecutor` may provide workload-execution evidence but SHALL NOT become lifecycle authorities.
+Approved Consumers
 
-`ServiceRegistry` registration, startup service validation, startup readiness evidence and current `HealthCapability` reporting SHALL NOT be treated as proof of continuing mandatory-capability availability.
+`CapabilityAvailabilityState` defines exactly:
 
-The committed platform does not currently implement a trustworthy mandatory-capability availability observation contract.
+- `AVAILABLE`
+- `UNAVAILABLE`
+- `UNKNOWN`
 
-This architecture gap blocks implementation of the Runtime `READY` to `OPERATIONAL` transition.
+`UNKNOWN` represents inability to establish trustworthy current availability and SHALL NOT be interpreted as `AVAILABLE`.
 
-PlantMind SHALL NOT satisfy this gap through fabricated evidence, hard-coded availability values, registration counts, startup-only validation or assumptions derived from request admission or workload completion.
+`CapabilityAvailabilityObservation` is immutable and records:
 
-RFC-042 introduces no production Python transition behavior.
+- capability identity;
+- observed availability state;
+- timezone-aware UTC-normalized observation time;
+- trusted source identity.
 
-RFC-042 verification:
+`CapabilityAvailabilitySource` defines the abstract trusted-source boundary for one explicitly identified capability.
 
-- Contract commit: `3168014`
-- Architecture decision: AD-028
-- Production Python changes: none
-- Runtime lifecycle behavior: unchanged
-- `OPERATIONAL` transition: not introduced
-- Full regression baseline remains: 263 passed
+`CapabilityAvailabilityObserver` coordinates explicitly composed sources in deterministic composition order.
 
-RFC-043 is now in architecture review.
+A source observation failure produces `UNKNOWN` for that source capability without preventing observation of remaining sources.
 
-The next architecture-controlled prerequisite is a trustworthy read-only mandatory-capability availability observation contract.
+An observer with no sources produces no availability evidence.
 
-Before selecting or implementing RFC-043:
+Capability availability observation remains separate from mandatory-capability policy.
 
-Review the existing service lifecycle architecture.
-Review HealthCapability and its current observation responsibilities.
-Review ServiceRegistry and BaseService contracts.
-Review accepted RFCs, ADRs and capability architecture.
+Source membership SHALL NOT imply mandatory status.
+
+`HealthCapability` remains the authoritative read-only health reporting interface and does not become the capability-specific probe owner or lifecycle authority.
+
+Runtime remains the sole authoritative owner of platform lifecycle state and does not perform capability-specific probes.
+
+`CompositionRoot` owns the single production `CapabilityAvailabilityObserver`, registers the same instance in `ServiceContainer`, and exposes it through `PlatformComposition`.
+
+No fabricated production capability sources were introduced.
+
+The currently composed observer therefore contains no production sources and produces no false availability evidence.
+
+RFC-043 introduces no Runtime `READY` to `OPERATIONAL` transition behavior.
+
+RFC-043 verification:
+
+- Contract commit: `0d30cfb`
+- Technical commit: `ed807f0`
+- Architecture decision: AD-029
+- Focused TDD suite: 15 passed
+- Impacted regression: 40 passed
+- Full regression: 278 passed
+- Compilation: passed
+- Remote technical push: verified
+
+RFC-044 is now in architecture review.
+
+Before selecting or implementing RFC-044:
+
+Review the Source of Truth from the RFC-043 baseline.
 Preserve Runtime as the sole lifecycle decision authority.
-Preserve HealthCapability as read-only.
-Do not treat service registration as availability.
-Do not treat startup validation as continuing operational availability.
-Do not introduce `READY` to `OPERATIONAL` transition behavior.
-Do not introduce `ServiceState.OPERATIONAL` or `DEGRADED`.
-Define the trusted capability-availability observation boundary before production implementation begins.
+Preserve `HealthCapability` as read-only health reporting.
+Preserve `CapabilityAvailabilityObserver` as the read-only availability observation coordinator.
+Do not fabricate production capability sources.
+Do not infer mandatory policy from observer membership.
+Do not treat `UNKNOWN` as `AVAILABLE`.
+Do not implement `READY` to `OPERATIONAL` without the separately approved remaining prerequisites.
+Do not introduce duplicate availability observers, registries or lifecycle authorities.
+Record the selected RFC-044 objective before TDD or production implementation begins.
 
 15. Session Continuation Instruction
 

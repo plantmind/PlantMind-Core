@@ -33,243 +33,41 @@ No item may be marked complete until:
 
 # Active Work
 
-## RFC-043 — Mandatory Capability Availability Observation Contract
+## RFC-044 — Architecture Review
 
 ### Status
 
-Contract defined. Ready for contract verification and commit.
+Ready for architecture review. No RFC-044 contract has been selected.
 
 ### Objective
 
-Establish a trustworthy read-only observation boundary for live PlantMind capability availability without introducing lifecycle decision authority or fabricated production probes.
+Select the next architecture-controlled PlantMind increment from the RFC-043 capability-availability observation baseline.
 
-### Availability State Contract
+### Current Technical Baseline
 
-RFC-043 SHALL introduce:
+- Branch: `feature/engineering-platform`
+- Last completed RFC: RFC-043 — Mandatory Capability Availability Observation Contract
+- RFC-043 contract commit: `0d30cfb`
+- RFC-043 technical commit: `ed807f0`
+- Focused TDD suite: 15 passed
+- Impacted regression: 40 passed
+- Full regression baseline: 278 passed
 
-`CapabilityAvailabilityState`
+### Current Architecture Boundary
 
-with exactly these states:
+PlantMind now has a read-only, fail-closed capability-availability observation foundation.
 
-- `AVAILABLE`
-- `UNAVAILABLE`
-- `UNKNOWN`
+No production capability sources are fabricated or implicitly discovered.
 
-`AVAILABLE` means the trusted source successfully established current capability availability.
+The composed `CapabilityAvailabilityObserver` currently has no production sources and therefore produces no false availability evidence.
 
-`UNAVAILABLE` means the trusted source successfully established that the capability is not currently available.
+Runtime lifecycle behavior remains unchanged.
 
-`UNKNOWN` means current availability cannot be established with trustworthy evidence.
-
-`UNKNOWN` SHALL include observation failure or inability to determine current availability.
-
-`UNKNOWN` SHALL NOT be treated as `AVAILABLE`.
-
-Availability SHALL NOT be represented by an ambiguous boolean-only contract.
-
-### Immutable Observation Contract
-
-RFC-043 SHALL introduce an immutable:
-
-`CapabilityAvailabilityObservation`
-
-with these fields:
-
-- `capability_name: str`
-- `state: CapabilityAvailabilityState`
-- `observed_at: datetime`
-- `source_name: str`
-
-The observation SHALL use `@dataclass(frozen=True)`.
-
-`capability_name` SHALL identify the observed capability.
-
-`source_name` SHALL identify the trusted source responsible for the observation.
-
-Both identifiers SHALL be non-empty.
-
-`observed_at` SHALL require timezone-aware datetime information.
-
-Accepted observation timestamps SHALL be normalized to UTC.
-
-Naive datetimes SHALL be rejected.
-
-An observation SHALL report evidence only and SHALL contain no lifecycle-transition authority.
-
-### Trusted Source Contract
-
-RFC-043 SHALL introduce an abstract:
-
-`CapabilityAvailabilitySource`
-
-The source contract SHALL expose:
-
-- `capability_name`
-- `source_name`
-- `observe() -> CapabilityAvailabilityObservation`
-
-Core availability-source contracts SHALL follow the existing PlantMind abstract-base-class pattern.
-
-A source SHALL observe one explicitly identified capability.
-
-A source SHALL NOT declare whether its capability is mandatory.
-
-A source SHALL NOT modify Runtime lifecycle state.
-
-A source SHALL NOT modify request-admission state.
-
-A source SHALL NOT depend on `HealthCapability` for lifecycle decisions.
-
-Production sources SHALL represent real approved observation mechanisms only.
-
-RFC-043 SHALL NOT introduce fabricated production sources for capabilities that do not yet expose trustworthy probes.
-
-### Observer Contract
-
-RFC-043 SHALL introduce:
-
-`CapabilityAvailabilityObserver`
-
-The observer SHALL be a read-only coordinator over explicitly supplied trusted `CapabilityAvailabilitySource` instances.
-
-The observer SHALL NOT introduce:
-
-- automatic discovery;
-- package scanning;
-- a second service registry;
-- inferred mandatory-capability membership.
-
-Production source composition SHALL remain owned by `CompositionRoot`.
-
-The observer SHALL produce immutable capability availability observations from its composed sources.
-
-Observation ordering SHALL be deterministic.
-
-A failure while obtaining current availability from one source SHALL NOT cause that capability to be interpreted as available.
-
-Source observation failure SHALL result in `UNKNOWN` availability for the declared capability.
-
-Failure of one source SHALL NOT prevent observation of other composed sources.
-
-The observer SHALL NOT convert `UNKNOWN` to `AVAILABLE`.
-
-### Source Identity Boundary
-
-The observer SHALL preserve the explicitly declared capability and source identities of its composed trusted sources.
-
-Availability evidence SHALL remain attributable to its observation source.
-
-Source identity SHALL NOT be inferred from `ServiceRegistry` membership.
-
-Capability identity SHALL NOT be inferred from service count, startup order or request traffic.
-
-### Mandatory Capability Policy Boundary
-
-RFC-043 SHALL NOT decide which capabilities are mandatory.
-
-Mandatory-capability membership remains platform composition or configuration policy.
-
-The observer SHALL observe explicitly composed sources without converting source membership into mandatory policy.
-
-A future operational-transition contract SHALL separately verify that all capabilities required by the approved mandatory-capability policy are covered by trustworthy current observations.
-
-### HealthCapability Boundary
-
-`HealthCapability` remains the authoritative read-only platform health reporting interface.
-
-`HealthCapability` MAY consume availability observations in a future approved reporting integration.
-
-RFC-043 SHALL NOT require `HealthCapability` to become the availability producer.
-
-`HealthCapability` SHALL NOT:
-
-- probe capability-specific dependencies on behalf of Runtime;
-- decide operational eligibility;
-- initiate lifecycle transitions;
-- fabricate missing availability observations;
-- infer availability from service registration;
-- interpret `UNKNOWN` as `AVAILABLE`.
-
-### Runtime Boundary
-
-Runtime remains the sole authoritative lifecycle-state owner.
-
-Runtime SHALL NOT perform capability-specific availability probes.
-
-RFC-043 SHALL NOT implement Runtime `READY` to `OPERATIONAL` transition behavior.
-
-A future operational-transition RFC MAY consume trusted immutable availability evidence produced through this boundary.
-
-### Composition Ownership
-
-`CompositionRoot` SHALL own production construction and wiring of:
-
-- the approved capability availability sources;
-- the single composed `CapabilityAvailabilityObserver`;
-- approved consumers of that observer.
-
-Production code SHALL NOT independently construct competing availability observation graphs.
-
-No production capability source SHALL be registered unless it has a real approved observation mechanism.
-
-An observer with no composed production sources SHALL produce no false availability evidence.
-
-### Implementation Scope
-
-RFC-043 MAY implement:
-
-- `CapabilityAvailabilityState`;
-- immutable `CapabilityAvailabilityObservation`;
-- abstract `CapabilityAvailabilitySource`;
-- read-only `CapabilityAvailabilityObserver`;
-- Composition Root ownership of the observer;
-- focused contract and composition tests.
-
-Test doubles MAY be used to verify observer semantics.
-
-Test doubles SHALL NOT be treated as production availability sources.
-
-### Non-Goals
-
-RFC-043 SHALL NOT:
-
-- implement `READY` to `OPERATIONAL`;
-- add `Runtime.mark_operational()`, `request_operational()` or equivalent;
-- introduce `DEGRADED`;
-- add `ServiceState.OPERATIONAL`;
-- make `ServiceState.READY` sufficient availability evidence;
-- modify `BaseService` to fabricate availability;
-- make `ServiceRegistry` an availability authority;
-- create another service registry;
-- make `HealthCapability` a lifecycle authority;
-- define mandatory-capability policy;
-- implement multi-source capability aggregation;
-- implement caching or freshness policy;
-- implement retry or recovery;
-- implement traffic draining;
-- introduce authentication or authorization.
-
-### TDD Boundary
-
-Before production implementation, focused tests SHALL establish:
-
-- availability-state semantics;
-- observation immutability;
-- non-empty capability and source identities;
-- timezone-aware timestamp requirement;
-- UTC timestamp normalization;
-- deterministic observer output;
-- successful source observation;
-- source failure mapped to `UNKNOWN`;
-- failure isolation between sources;
-- no fabricated evidence when no sources are composed;
-- Composition Root ownership of the same observer instance;
-- no Runtime lifecycle mutation during observation;
-- no request-admission mutation during observation.
+No `READY` to `OPERATIONAL` transition is implemented.
 
 ### Next Exact Action
 
-Verify and commit the RFC-043 contract before writing focused TDD tests or production Python.
+Review the Source of Truth and select the RFC-044 objective from the RFC-043 baseline before defining any new contract, TDD scope or production implementation.
 
 ---
 
@@ -299,6 +97,7 @@ Verify and commit the RFC-043 contract before writing focused TDD tests or produ
 | RFC-040 | `376970e` | Platform operational semantics alignment contract |
 | RFC-041 | `1693a9b` | Operational workload entry boundary contract |
 | RFC-042 | `3168014` | Runtime operational transition evidence contract |
+| RFC-043 | `ed807f0` | Mandatory capability availability observation contract |
 
 RFC-039 verification:
 
@@ -354,6 +153,23 @@ RFC-042 verification:
 - Blocking dependency identified: trusted mandatory-capability availability observation
 
 RFC-042 is complete.
+
+RFC-043 verification:
+
+- Contract commit: `0d30cfb`
+- Technical commit: `ed807f0`
+- Architecture decision: AD-029
+- Focused TDD suite: 15 passed
+- Impacted regression: 40 passed
+- Full regression: 278 passed
+- Compilation: passed
+- `git diff --cached --check`: passed
+- Remote technical push: verified
+- Production capability sources: none
+- Runtime lifecycle behavior: unchanged
+- `OPERATIONAL` transition: not introduced
+
+RFC-043 is technically complete.
 
 ---
 
