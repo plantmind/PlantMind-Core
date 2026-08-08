@@ -316,3 +316,64 @@ def test_successful_startup_and_shutdown_behavior_remains_unchanged() -> None:
     ]
     assert runtime.state is RuntimeState.STOPPED
     assert runtime.is_ready is False
+
+
+def test_validation_failure_leaves_request_admission_disabled() -> None:
+    runtime = Runtime()
+    registry = ServiceRegistry()
+
+    registry.register(
+        RecordingService("service-a", [], valid=False),
+    )
+
+    manager = BootstrapManager(
+        runtime_instance=runtime,
+        registry=registry,
+        plugin_registry=PluginRegistry(),
+    )
+
+    with pytest.raises(RuntimeError, match="Service .* failed validation"):
+        manager.startup()
+
+    assert runtime.is_request_admission_enabled is False
+
+
+def test_initialization_failure_leaves_request_admission_disabled() -> None:
+    runtime = Runtime()
+    registry = ServiceRegistry()
+
+    registry.register(
+        FailingInitializeService("service-a", []),
+    )
+
+    manager = BootstrapManager(
+        runtime_instance=runtime,
+        registry=registry,
+        plugin_registry=PluginRegistry(),
+    )
+
+    with pytest.raises(RuntimeError, match="Service service-a initialization failed"):
+        manager.startup()
+
+    assert runtime.is_request_admission_enabled is False
+
+
+def test_plugin_activation_failure_leaves_request_admission_disabled() -> None:
+    runtime = Runtime()
+    plugins = PluginRegistry()
+
+    plugins.register(
+        "plugin-a",
+        lambda: FailingActivationPlugin("plugin-a", []),
+    )
+
+    manager = BootstrapManager(
+        runtime_instance=runtime,
+        registry=ServiceRegistry(),
+        plugin_registry=plugins,
+    )
+
+    with pytest.raises(RuntimeError, match="Plugin plugin-a activation failed"):
+        manager.startup()
+
+    assert runtime.is_request_admission_enabled is False

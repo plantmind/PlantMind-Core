@@ -174,3 +174,67 @@ def test_shutdown_services_follow_reverse_registry_enumeration_order() -> None:
         "shutdown:service-z",
         "shutdown:service-a",
     ]
+
+
+class AdmissionRecordingRuntime(Runtime):
+    def __init__(self, events: list[str]) -> None:
+        super().__init__()
+        self._admission_events = events
+
+    def mark_ready(self) -> None:
+        self._admission_events.append("runtime:ready")
+        super().mark_ready()
+
+    def enable_request_admission(self) -> None:
+        self._admission_events.append("admission:enabled")
+        super().enable_request_admission()
+
+    def disable_request_admission(self) -> None:
+        self._admission_events.append("admission:disabled")
+        super().disable_request_admission()
+
+    def mark_stopping(self) -> None:
+        self._admission_events.append("runtime:stopping")
+        super().mark_stopping()
+
+
+def test_startup_enables_request_admission_after_ready() -> None:
+    events: list[str] = []
+    runtime = AdmissionRecordingRuntime(events)
+
+    manager = BootstrapManager(
+        runtime_instance=runtime,
+        registry=ServiceRegistry(),
+        plugin_registry=PluginRegistry(),
+    )
+
+    manager.startup()
+
+    assert events == [
+        "runtime:ready",
+        "admission:enabled",
+    ]
+    assert runtime.is_ready is True
+    assert runtime.is_request_admission_enabled is True
+
+
+def test_shutdown_disables_request_admission_before_stopping() -> None:
+    events: list[str] = []
+    runtime = AdmissionRecordingRuntime(events)
+
+    manager = BootstrapManager(
+        runtime_instance=runtime,
+        registry=ServiceRegistry(),
+        plugin_registry=PluginRegistry(),
+    )
+
+    manager.startup()
+    events.clear()
+
+    manager.shutdown()
+
+    assert events[:2] == [
+        "admission:disabled",
+        "runtime:stopping",
+    ]
+    assert runtime.is_request_admission_enabled is False

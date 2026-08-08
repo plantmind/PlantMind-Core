@@ -61,3 +61,45 @@ def test_mark_stopping_sets_stopping_state_and_not_ready() -> None:
     assert runtime.state is RuntimeState.STOPPING
     assert runtime.is_ready is False
     assert runtime.ready is False
+
+def test_request_admission_is_disabled_by_default() -> None:
+    runtime = Runtime()
+
+    assert runtime.is_request_admission_enabled is False
+
+
+def test_request_admission_can_be_enabled() -> None:
+    runtime = Runtime()
+
+    runtime.enable_request_admission()
+
+    assert runtime.is_request_admission_enabled is True
+
+
+def test_request_admission_can_be_disabled() -> None:
+    runtime = Runtime()
+    runtime.enable_request_admission()
+
+    runtime.disable_request_admission()
+
+    assert runtime.is_request_admission_enabled is False
+
+
+def test_mark_stopping_disables_request_admission() -> None:
+    runtime = Runtime()
+    runtime.enable_request_admission()
+
+    runtime.mark_stopping()
+
+    assert runtime.is_request_admission_enabled is False
+    assert runtime.state is RuntimeState.STOPPING
+
+
+def test_mark_failed_disables_request_admission() -> None:
+    runtime = Runtime()
+    runtime.enable_request_admission()
+
+    runtime.mark_failed()
+
+    assert runtime.is_request_admission_enabled is False
+    assert runtime.state is RuntimeState.FAILED

@@ -24,6 +24,7 @@ class Runtime:
 
         self.state = RuntimeState.CREATED
         self.ready = False
+        self._request_admission_enabled = False
 
     def mark_ready(self) -> None:
         """
@@ -43,6 +44,7 @@ class Runtime:
         """Mark the platform runtime as stopping."""
         self.state = RuntimeState.STOPPING
         self.ready = False
+        self.disable_request_admission()
 
     def mark_failed(self) -> None:
         """
@@ -50,6 +52,20 @@ class Runtime:
         """
         self.state = RuntimeState.FAILED
         self.ready = False
+        self.disable_request_admission()
+
+    def enable_request_admission(self) -> None:
+        """Enable request admission."""
+        self._request_admission_enabled = True
+
+    def disable_request_admission(self) -> None:
+        """Disable request admission."""
+        self._request_admission_enabled = False
+
+    @property
+    def is_request_admission_enabled(self) -> bool:
+        """Return whether request admission is enabled."""
+        return self._request_admission_enabled
 
     @property
     def is_ready(self) -> bool:

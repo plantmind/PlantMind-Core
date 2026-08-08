@@ -96,10 +96,12 @@ class BootstrapManager:
             raise
 
         self.runtime.mark_ready()
+        self.runtime.enable_request_admission()
 
     def shutdown(self) -> None:
         """Execute graceful platform shutdown."""
 
+        self.runtime.disable_request_admission()
         self.runtime.mark_stopping()
 
         failures: list[Exception] = []

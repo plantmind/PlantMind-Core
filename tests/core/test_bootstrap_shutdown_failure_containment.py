@@ -219,3 +219,33 @@ def test_multiple_shutdown_failures_are_flattened_in_encounter_order() -> None:
     )
     assert runtime.state is RuntimeState.FAILED
     assert runtime.is_ready is False
+
+
+def test_failed_shutdown_leaves_request_admission_disabled() -> None:
+    runtime = Runtime()
+    services = ServiceRegistry()
+    shutdown_error = RuntimeError("service-a shutdown failed")
+
+    services.register(
+        RecordingService(
+            "service-a",
+            [],
+            shutdown_error,
+        )
+    )
+
+    manager = BootstrapManager(
+        runtime_instance=runtime,
+        registry=services,
+        plugin_registry=PluginRegistry(),
+    )
+
+    manager.startup()
+
+    assert runtime.is_request_admission_enabled is True
+
+    with pytest.raises(RuntimeError):
+        manager.shutdown()
+
+    assert runtime.is_request_admission_enabled is False
+    assert runtime.state is RuntimeState.FAILED
