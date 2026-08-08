@@ -33,41 +33,220 @@ No item may be marked complete until:
 
 # Active Work
 
-## RFC-044 — Architecture Review
+## RFC-044 — Mandatory Capability Policy Contract
 
 ### Status
 
-Ready for architecture review. No RFC-044 contract has been selected.
+Contract defined. Ready for contract verification and commit.
 
 ### Objective
 
-Select the next architecture-controlled PlantMind increment from the RFC-043 capability-availability observation baseline.
+Establish an explicit immutable mandatory-capability policy that distinguishes unconfigured policy from approved configured requirements and remains separate from configuration access, availability observation and Runtime lifecycle authority.
 
-### Current Technical Baseline
+### Policy State
 
-- Branch: `feature/engineering-platform`
-- Last completed RFC: RFC-043 — Mandatory Capability Availability Observation Contract
-- RFC-043 contract commit: `0d30cfb`
-- RFC-043 technical commit: `ed807f0`
-- Focused TDD suite: 15 passed
-- Impacted regression: 40 passed
-- Full regression baseline: 278 passed
+RFC-044 SHALL introduce:
 
-### Current Architecture Boundary
+`MandatoryCapabilityPolicyState`
 
-PlantMind now has a read-only, fail-closed capability-availability observation foundation.
+with exactly:
 
-No production capability sources are fabricated or implicitly discovered.
+- `UNCONFIGURED`
+- `CONFIGURED`
 
-The composed `CapabilityAvailabilityObserver` currently has no production sources and therefore produces no false availability evidence.
+`UNCONFIGURED` means no approved mandatory-capability requirements have been established for the current platform composition or deployment.
 
-Runtime lifecycle behavior remains unchanged.
+`CONFIGURED` means an explicit approved set of mandatory-capability requirements has been established.
 
-No `READY` to `OPERATIONAL` transition is implemented.
+Policy state SHALL NOT be inferred solely from collection length by downstream consumers.
+
+### Immutable Policy Contract
+
+RFC-044 SHALL introduce an immutable:
+
+`MandatoryCapabilityPolicy`
+
+with:
+
+- `state: MandatoryCapabilityPolicyState`
+- `required_capabilities: tuple[str, ...]`
+
+The policy SHALL use `@dataclass(frozen=True)`.
+
+Explicit capability ordering SHALL be preserved.
+
+Capability identifiers SHALL:
+
+- be non-empty;
+- not contain leading or trailing whitespace;
+- be unique within the policy.
+
+Duplicate identifiers SHALL be rejected rather than silently collapsed.
+
+### State Invariants
+
+The policy SHALL enforce:
+
+`UNCONFIGURED`
+
+- requires `required_capabilities` to be empty;
+- represents absence of approved mandatory-capability requirements;
+- SHALL NOT be interpreted as successful operational eligibility.
+
+`CONFIGURED`
+
+- requires at least one mandatory capability;
+- SHALL NOT permit an empty `required_capabilities` collection.
+
+A `CONFIGURED` empty policy SHALL be invalid.
+
+This prevents vacuous policy satisfaction during future availability-coverage evaluation.
+
+### Explicit Configuration Semantics
+
+RFC-044 SHALL NOT fabricate production mandatory capabilities.
+
+The current production composition MAY use:
+
+`MandatoryCapabilityPolicyState.UNCONFIGURED`
+
+with an empty capability collection until real mandatory-capability requirements are architecture-approved.
+
+No default capability names SHALL be invented solely to make the policy configured.
+
+### Policy Ownership
+
+`MandatoryCapabilityPolicy` owns:
+
+- mandatory-capability membership representation;
+- policy-state invariants;
+- identifier validation;
+- deterministic requirement ordering.
+
+`ConfigurationProvider` remains responsible for configuration access and mandatory configuration validation.
+
+`ConfigurationProvider` SHALL NOT become the semantic policy owner.
+
+A future configuration-backed integration MAY provide raw configured capability identifiers to policy construction.
+
+Policy invariants SHALL remain owned by `MandatoryCapabilityPolicy`.
+
+### Availability Boundary
+
+`MandatoryCapabilityPolicy` defines what capabilities are required.
+
+`CapabilityAvailabilityObserver` observes what capability availability evidence currently exists.
+
+Neither component SHALL own the responsibility of the other.
+
+Observer source membership SHALL NOT imply mandatory-policy membership.
+
+Availability state SHALL NOT modify policy membership.
+
+Policy membership SHALL NOT fabricate availability evidence.
+
+### Future Coverage Evaluation
+
+RFC-044 SHALL NOT implement mandatory-capability availability coverage evaluation.
+
+A future architecture-controlled evaluator MAY compare:
+
+- a `CONFIGURED` mandatory-capability policy;
+- trusted immutable observations from `CapabilityAvailabilityObserver`.
+
+Future eligibility evaluation SHALL fail closed when:
+
+- policy state is `UNCONFIGURED`;
+- required capability evidence is missing;
+- required capability state is `UNKNOWN`;
+- required capability state is `UNAVAILABLE`.
+
+Those evaluation semantics require a separate approved RFC.
+
+### Runtime Boundary
+
+Runtime remains the sole authoritative owner of platform lifecycle state.
+
+Runtime SHALL NOT define mandatory-capability membership.
+
+Runtime SHALL NOT infer mandatory requirements from observer sources.
+
+RFC-044 SHALL NOT implement `READY` to `OPERATIONAL`.
+
+### HealthCapability Boundary
+
+`HealthCapability` remains read-only health reporting.
+
+It SHALL NOT:
+
+- define mandatory-capability policy;
+- decide policy satisfaction;
+- decide operational eligibility;
+- modify Runtime lifecycle state.
+
+### Composition Ownership
+
+`CompositionRoot` SHALL construct one explicit `MandatoryCapabilityPolicy`.
+
+The same composed policy SHALL be:
+
+- registered in `ServiceContainer`;
+- exposed through `PlatformComposition`.
+
+Production code SHALL NOT independently construct competing mandatory-capability policies.
+
+Until real mandatory requirements are approved, production composition SHALL use one explicit `UNCONFIGURED` policy rather than fabricated capability names.
+
+### Implementation Scope
+
+RFC-044 MAY implement:
+
+- `MandatoryCapabilityPolicyState`;
+- immutable `MandatoryCapabilityPolicy`;
+- policy invariant validation;
+- explicit unconfigured production composition;
+- Composition Root registration and exposure;
+- focused contract and composition tests.
+
+### Non-Goals
+
+RFC-044 SHALL NOT:
+
+- define unapproved real plant mandatory capabilities;
+- permit a configured empty policy;
+- infer policy state from observer membership;
+- make `ConfigurationProvider` the policy owner;
+- modify `CapabilityAvailabilityObserver` responsibility;
+- implement policy-to-availability coverage evaluation;
+- implement operational eligibility;
+- implement `READY` to `OPERATIONAL`;
+- add `Runtime.mark_operational()`, `request_operational()` or equivalent;
+- introduce `DEGRADED`;
+- add `ServiceState.OPERATIONAL`;
+- implement retry, recovery or traffic draining;
+- introduce authentication or authorization.
+
+### TDD Boundary
+
+Before production implementation, focused tests SHALL establish:
+
+- exact policy-state semantics;
+- policy immutability;
+- `UNCONFIGURED` requires empty requirements;
+- `CONFIGURED` requires at least one requirement;
+- non-empty capability identifiers;
+- rejection of leading or trailing identifier whitespace;
+- duplicate capability rejection;
+- deterministic requirement ordering;
+- explicit unconfigured production composition;
+- Composition Root ownership of the same policy instance;
+- no Runtime lifecycle mutation;
+- no request-admission mutation;
+- no availability-observer mutation.
 
 ### Next Exact Action
 
-Review the Source of Truth and select the RFC-044 objective from the RFC-043 baseline before defining any new contract, TDD scope or production implementation.
+Verify and commit the RFC-044 contract before writing focused TDD tests or production Python.
 
 ---
 
