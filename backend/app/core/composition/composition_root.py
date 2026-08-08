@@ -9,6 +9,7 @@ from __future__ import annotations
 from collections.abc import Sequence
 from dataclasses import dataclass
 
+from app.core.availability import CapabilityAvailabilityObserver
 from app.core.bootstrap_manager import BootstrapManager
 from app.core.configuration.configuration_provider import (
     ConfigurationProvider,
@@ -43,6 +44,7 @@ class PlatformComposition:
     plugin_lifecycle: PluginLifecycleManager
     bootstrap: BootstrapManager
     health: HealthCapability
+    availability_observer: CapabilityAvailabilityObserver
     workflow_executor: WorkflowExecutor
     orchestration_service: OrchestrationService
     integration_gateway: IntegrationGateway
@@ -77,6 +79,10 @@ class CompositionRoot:
         health = HealthCapability(
             runtime_instance=runtime,
             registry=registry,
+        )
+
+        availability_observer = CapabilityAvailabilityObserver(
+            sources=(),
         )
 
         bootstrap = BootstrapManager(
@@ -131,6 +137,11 @@ class CompositionRoot:
             HealthCapability,
             health,
         )
+
+        container.register_instance(
+            CapabilityAvailabilityObserver,
+            availability_observer,
+        )
         container.register_instance(
             WorkflowExecutor,
             workflow_executor,
@@ -158,6 +169,7 @@ class CompositionRoot:
             plugin_lifecycle=plugin_lifecycle,
             bootstrap=bootstrap,
             health=health,
+            availability_observer=availability_observer,
             workflow_executor=workflow_executor,
             orchestration_service=orchestration_service,
             integration_gateway=integration_gateway,
