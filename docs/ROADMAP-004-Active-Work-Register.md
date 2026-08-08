@@ -33,35 +33,36 @@ No item may be marked complete until:
 
 # Active Work
 
-## RFC-036 — Managed Shutdown Failure Containment Contract
+## RFC-037 — Runtime Request Admission Control Contract
 
 ### Status
 
-Completed.
+Architecture review complete; contract and TDD scope defined; implementation not started.
 
 ### Objective
 
-Ensure managed platform shutdown continues deterministically after individual component failures, exposes unresolved shutdown state safely, and reports all shutdown failures without introducing automatic recovery or retry behavior.
+Establish Runtime-owned request-admission state and align Bootstrap startup and shutdown orchestration with the request-admission boundaries defined by BOOT-002 and RUNTIME-001.
 
 ### Current Technical Baseline
 
 - Branch: `feature/engineering-platform`
-- Current technical RFC: RFC-036 — Managed Shutdown Failure Containment Contract
-- Technical implementation commit: `438d7e4`
-- Previous documentation baseline commit: `864af34`
+- Last completed RFC: RFC-036 — Managed Shutdown Failure Containment Contract
+- RFC-036 technical commit: `438d7e4`
+- Documentation baseline commit: `2f77dbf`
 - Full regression baseline: 225 passed
 
 ### Architectural Findings
 
-- `PluginLifecycleManager.deactivate_all()` currently stops at the first plugin deactivation exception.
-- A plugin deactivation exception currently prevents remaining plugins from being attempted.
-- A plugin deactivation exception currently prevents registered services from being shut down by Bootstrap.
-- A service shutdown exception currently prevents remaining services from being attempted.
-- A shutdown exception currently leaves Runtime in `STOPPING`.
-- RUNTIME-001 defines `FAILED` as the state for a critical failure preventing safe operation.
-- RFC-035 requires Runtime to reach `STOPPED` only after required shutdown operations complete successfully.
-- No existing shutdown failure aggregation policy exists.
-- Python 3.11 provides native `ExceptionGroup` support for deterministic multi-error propagation.
+- BOOT-002 requires Request Admission Enabled only after Runtime reaches READY.
+- BOOT-002 requires Request Admission Disabled before Runtime enters STOPPING.
+- RUNTIME-001 assigns Request Admission State ownership to Runtime.
+- RUNTIME-001 assigns request-admission enforcement to the API hosting layer.
+- Runtime currently exposes lifecycle readiness but no explicit request-admission state.
+- Bootstrap currently reaches READY without explicitly enabling request admission.
+- Bootstrap currently enters STOPPING without explicitly disabling request admission.
+- RUNTIME-001 defines OPERATIONAL only after operational workloads begin being served.
+- No current API hosting integration exists in the Core lifecycle implementation.
+- BOOT-002 makes health verification an optional Bootstrap interaction rather than a mandatory current lifecycle dependency.
 
 ### Dependencies
 
@@ -69,78 +70,64 @@ Ensure managed platform shutdown continues deterministically after individual co
 - RUNTIME-001 — Platform Lifecycle Architecture
 - RFC-034 — Bootstrap Startup Failure Atomicity Contract
 - RFC-035 — Bootstrap Shutdown Lifecycle Compliance Contract
+- RFC-036 — Managed Shutdown Failure Containment Contract
 - `Runtime`
 - `BootstrapManager`
-- `PluginLifecycleManager`
-- `ServiceRegistry`
 
-### RFC-036 Contract
+### RFC-037 Contract
 
-- Managed shutdown SHALL remain best-effort after an individual component shutdown failure.
-- Runtime SHALL enter `STOPPING` before managed shutdown attempts begin.
-- `PluginLifecycleManager` SHALL attempt all active plugin deactivations in reverse activation order even when one or more plugin deactivations fail.
-- Successfully deactivated plugins SHALL no longer be tracked as active.
-- Plugins whose deactivation fails SHALL remain tracked as active because their final lifecycle state is unresolved.
-- Plugin deactivation ownership SHALL remain exclusively in `PluginLifecycleManager`.
-- Bootstrap SHALL continue to registered-service shutdown even when plugin deactivation reports failure.
-- Bootstrap SHALL attempt all registered service shutdown operations in deterministic reverse registry enumeration order even when one or more service shutdown operations fail.
-- Runtime SHALL transition to `STOPPED` only when all required managed shutdown operations complete successfully.
-- If any managed shutdown operation fails, Runtime SHALL transition to `FAILED` and readiness SHALL remain false.
-- A single shutdown failure SHALL remain the directly propagated original exception after all required shutdown attempts complete.
-- Multiple shutdown failures SHALL be propagated as an `ExceptionGroup`.
-- Failure aggregation SHALL preserve deterministic shutdown encounter order.
-- Successful RFC-035 shutdown behavior SHALL remain backward compatible.
-- RFC-034 startup atomicity behavior SHALL remain unchanged.
-- RFC-036 SHALL NOT introduce automatic retry, automatic recovery, dependency graphs, parallel shutdown, ServiceState redesign, request-admission implementation, logging architecture redesign or process termination policy.
+- Runtime SHALL own request-admission state.
+- Request admission SHALL be disabled when Runtime is created.
+- Runtime SHALL expose a public read interface for request-admission state.
+- Runtime SHALL expose public operations to enable and disable request admission.
+- Bootstrap SHALL enable request admission only after all mandatory startup stages succeed and Runtime has reached READY.
+- Failed startup SHALL never leave request admission enabled.
+- Bootstrap SHALL disable request admission before requesting Runtime transition to STOPPING.
+- Request admission SHALL remain disabled throughout managed shutdown.
+- Failed managed shutdown SHALL leave request admission disabled while Runtime transitions to FAILED.
+- Runtime transitions to FAILED SHALL disable request admission.
+- Runtime transitions to STOPPING SHALL not permit request admission to remain enabled.
+- Existing Runtime readiness semantics SHALL remain unchanged.
+- Existing successful startup, shutdown and RFC-036 failure-containment behavior SHALL remain backward compatible.
+- API hosting layers SHALL remain responsible for enforcing admission according to Runtime state.
+- RFC-037 SHALL NOT implement an API server, middleware, authentication, authorization, health verification, OPERATIONAL transition, DEGRADED transition, workload execution, retry, recovery or traffic-draining policy.
 
 ### TDD Scope
 
-RFC-036 implementation SHALL be driven by focused tests proving:
+RFC-037 implementation SHALL be driven by focused tests proving:
 
-1. Plugin deactivation continues after an individual plugin failure.
-2. Plugin deactivation preserves reverse activation order during failure handling.
-3. Successfully deactivated plugins are removed from the active set.
-4. Plugins whose deactivation fails remain tracked as active.
-5. A single plugin deactivation failure is propagated as the original exception.
-6. Multiple plugin deactivation failures are propagated as an `ExceptionGroup`.
-7. Plugin shutdown failure does not prevent registered-service shutdown.
-8. Service shutdown failure does not prevent remaining service shutdown operations.
-9. Any managed shutdown failure transitions Runtime to `FAILED` and keeps readiness false.
-10. Runtime does not transition to `STOPPED` after failed managed shutdown.
-11. A single Bootstrap-managed shutdown failure remains the original propagated exception.
-12. Multiple Bootstrap-managed shutdown failures are propagated as an `ExceptionGroup` in deterministic encounter order.
-13. Existing successful shutdown behavior remains unchanged.
-14. RFC-034 successful startup and startup failure atomicity behavior remain unchanged.
+1. Request admission is disabled when Runtime is created.
+2. Runtime exposes request-admission state through a public read interface.
+3. Runtime can explicitly enable request admission.
+4. Runtime can explicitly disable request admission.
+5. Runtime failure transition disables request admission.
+6. Runtime STOPPING transition disables request admission.
+7. Successful Bootstrap startup enables request admission only after Runtime reaches READY.
+8. Startup validation failure leaves request admission disabled.
+9. Startup initialization failure leaves request admission disabled.
+10. Startup plugin activation failure leaves request admission disabled.
+11. Bootstrap disables request admission before managed shutdown begins.
+12. Successful shutdown leaves request admission disabled.
+13. Failed managed shutdown leaves request admission disabled.
+14. Existing RFC-034, RFC-035 and RFC-036 lifecycle behavior remains compatible.
 
 ### Implementation Boundary
 
-RFC-036 should modify only the minimum Plugin Lifecycle, Bootstrap orchestration and focused test surfaces required for shutdown failure containment.
+RFC-037 should modify only the minimum Runtime, Bootstrap orchestration and focused test surfaces required to establish request-admission state ownership and lifecycle coordination.
 
-`Runtime` retains exclusive ownership of Runtime state transitions.
+`Runtime` retains exclusive ownership of request-admission state.
 
-`BootstrapManager` retains shutdown orchestration ownership.
+`BootstrapManager` retains startup and shutdown orchestration ownership.
 
-`PluginLifecycleManager` retains plugin deactivation ownership.
+The future API hosting layer will enforce admission by reading Runtime state; RFC-037 SHALL NOT implement that hosting layer.
 
-`ServiceRegistry` ordering semantics remain unchanged.
+Do not introduce a second admission controller, middleware layer, traffic router, health subsystem or operational-workload manager.
 
-Do not introduce a second lifecycle manager, shutdown coordinator, retry engine or recovery subsystem.
-
-Automatic retry, recovery strategy, process termination policy, dependency-aware shutdown and structured shutdown telemetry require separate architecture review.
-
-### Verification
-
-- Compilation: passed
-- Focused RFC-036 lifecycle and shutdown containment tests: 31 passed
-- Impacted runtime, bootstrap, plugin lifecycle and composition tests: 64 passed
-- Full regression: 225 passed
-- `git diff --check`: passed after EOF cleanup
-- Technical commit: `438d7e4`
-- Push: verified
+Health verification, API enforcement, OPERATIONAL and DEGRADED transitions, traffic draining and request rejection response policy require separate architecture review.
 
 ### Next Exact Action
 
-Synchronize the engineering-memory documents with the RFC-036 technical baseline before selecting RFC-037.
+Commit the RFC-037 contract, then write failing focused Runtime request-admission tests before implementation.
 
 
 ---
