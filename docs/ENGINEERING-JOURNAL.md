@@ -794,6 +794,84 @@ Verification:
 - Compilation: passed
 - Remote technical push: verified
 
+
+### RFC-045 — Mandatory Capability Coverage Evaluation Contract
+
+RFC-045 established the deterministic fail-closed mandatory-capability coverage evaluation boundary.
+
+PlantMind now separates:
+
+- mandatory-capability policy;
+- trusted capability-availability observations;
+- mandatory-capability coverage evaluation;
+- Runtime lifecycle authority.
+
+`MandatoryCapabilityCoverageState` defines exactly:
+
+- `SATISFIED`
+- `UNSATISFIED`
+
+`SATISFIED` requires every configured mandatory capability to be supported by exactly one matching trusted `AVAILABLE` observation.
+
+Any missing, `UNAVAILABLE`, `UNKNOWN` or ambiguous required capability produces `UNSATISFIED`.
+
+An `UNCONFIGURED` mandatory-capability policy always evaluates to `UNSATISFIED`.
+
+It does not become satisfied merely because its requirement collection is empty.
+
+`MandatoryCapabilityCoverageResult` is immutable and reports:
+
+- required capabilities;
+- satisfied capabilities;
+- missing capabilities;
+- unavailable capabilities;
+- unknown capabilities;
+- ambiguous capabilities.
+
+Diagnostic capability collections preserve mandatory-policy requirement order.
+
+Each configured required capability receives exactly one diagnostic classification.
+
+Multiple observations matching one required capability are classified as ambiguous and fail closed.
+
+RFC-045 does not introduce multi-source aggregation or source priority.
+
+RFC-045 does not introduce observation freshness, TTL, maximum-age or staleness semantics.
+
+Observations for non-required capabilities do not affect mandatory coverage or mandatory-policy membership.
+
+`CapabilityAvailabilityObserver` remains responsible for collecting trusted availability observations.
+
+`MandatoryCapabilityPolicy` remains responsible for mandatory-capability membership.
+
+`MandatoryCapabilityCoverageEvaluator` performs deterministic read-only comparison of supplied evidence against the composed policy.
+
+Runtime remains the sole authoritative owner of platform lifecycle state.
+
+A `SATISFIED` coverage result is evidence only.
+
+It does not authorize or execute a Runtime lifecycle transition.
+
+`CompositionRoot` owns the production `MandatoryCapabilityCoverageEvaluator`.
+
+The evaluator receives the exact composed `MandatoryCapabilityPolicy` instance.
+
+The same evaluator instance is registered in `ServiceContainer` and exposed through `PlatformComposition`.
+
+RFC-045 introduces no `READY` to `OPERATIONAL` transition behavior.
+
+Verification:
+
+- Contract commit: `9abde19`
+- Technical commit: `0b410ce`
+- Architecture decision: AD-031
+- Focused TDD suite: 16 passed
+- Impacted regression: 71 passed
+- Full regression: 309 passed
+- Compilation: passed
+- `git diff --cached --check`: passed
+- Remote technical push: verified
+
 ---
 
 # Current Status
@@ -821,6 +899,7 @@ PlantMind now possesses:
 - Runtime Operational Transition Evidence Contract
 - Mandatory Capability Availability Observation Contract
 - Mandatory Capability Policy Contract
+- Mandatory Capability Coverage Evaluation Contract
 - Service Lifecycle
 - Composition Root and dependency wiring
 - Structured engineering documentation
@@ -828,15 +907,19 @@ PlantMind now possesses:
 
 Current technical baseline:
 
-- RFC-044 — Mandatory Capability Policy Contract
-- Contract commit: `91c6090`
-- Technical commit: `a709c0d`
-- Full regression baseline: 293 passed
-- Architecture decision: AD-030
+- RFC-045 — Mandatory Capability Coverage Evaluation Contract
+- Contract commit: `9abde19`
+- Technical commit: `0b410ce`
+- Full regression baseline: 309 passed
+- Architecture decision: AD-031
 - Production mandatory-capability policy: `UNCONFIGURED`
-- Fabricated mandatory capabilities: none
-- Policy-to-availability coverage evaluator: not introduced
+- Mandatory capability coverage evaluation: fail closed
+- Multi-source aggregation: not introduced
+- Observation freshness policy: not introduced
+- Runtime lifecycle behavior: unchanged
+- `OPERATIONAL` transition: not introduced
 
-The next engineering step is architecture review for RFC-045.
+The next engineering step is architecture review for RFC-046.
 
 The project remains in long-term enterprise platform development.
+

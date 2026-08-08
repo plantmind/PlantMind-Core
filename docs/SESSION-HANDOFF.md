@@ -2,17 +2,17 @@
 
 ## Current State
 
-| Property | Value |
-|---|---|
-| Project | PlantMind PM-001 |
-| Branch | `feature/engineering-platform` |
-| Last Completed RFC | RFC-044 — Mandatory Capability Policy Contract |
-| Technical Baseline Commit | `a709c0d` |
-| Architecture Baseline Commit | `91c6090` |
-| Test Baseline | 293 passed |
-| Authoritative Environment | `PlantMind-Core/.venv` |
-| Remote State | Up to date with `origin/feature/engineering-platform` |
-| RFC-044 Technical Push | Verified |
+| Property                     | Value                                                        |
+| ---------------------------- | ------------------------------------------------------------ |
+| Project                      | PlantMind PM-001                                             |
+| Branch                       | `feature/engineering-platform`                               |
+| Last Completed RFC           | RFC-045 — Mandatory Capability Coverage Evaluation Contract  |
+| Technical Baseline Commit    | `0b410ce`                                                    |
+| Architecture Baseline Commit | `9abde19`                                                    |
+| Test Baseline                | 309 passed                                                   |
+| Authoritative Environment    | `PlantMind-Core/.venv`                                       |
+| Remote State                 | Up to date with `origin/feature/engineering-platform`        |
+| RFC-045 Technical Push       | Verified                                                     |
 
 ## Recent Engineering Sequence
 
@@ -36,6 +36,7 @@
 - RFC-042 — Runtime Operational Transition Evidence Contract
 - RFC-043 — Mandatory Capability Availability Observation Contract
 - RFC-044 — Mandatory Capability Policy Contract
+- RFC-045 — Mandatory Capability Coverage Evaluation Contract
 
 ## RFC-036 Outcome
 
@@ -423,11 +424,75 @@ RFC-044 introduces no Runtime `READY` to `OPERATIONAL` transition.
 - Runtime lifecycle behavior: unchanged
 - `OPERATIONAL` transition: not introduced
 
+## RFC-045 Outcome
+
+RFC-045 established the deterministic fail-closed mandatory-capability coverage evaluation boundary.
+
+PlantMind now distinguishes:
+
+- mandatory-capability policy;
+- trusted capability-availability observations;
+- mandatory-capability coverage evaluation;
+- Runtime lifecycle authority.
+
+`MandatoryCapabilityCoverageState` defines exactly:
+
+- `SATISFIED`
+- `UNSATISFIED`
+
+`SATISFIED` requires every configured mandatory capability to have exactly one matching trusted `AVAILABLE` observation.
+
+Any missing, `UNAVAILABLE`, `UNKNOWN` or ambiguous required capability produces `UNSATISFIED`.
+
+An `UNCONFIGURED` mandatory-capability policy always fails closed as `UNSATISFIED`.
+
+`MandatoryCapabilityCoverageResult` is immutable and preserves mandatory-policy ordering across its diagnostic classifications.
+
+Multiple observations matching one required capability are classified as ambiguous.
+
+RFC-045 does not perform multi-source aggregation, source prioritization or observation freshness evaluation.
+
+Non-required availability observations do not alter mandatory coverage or policy membership.
+
+`CapabilityAvailabilityObserver` remains responsible for trusted availability observation.
+
+`MandatoryCapabilityPolicy` remains responsible for mandatory-capability membership.
+
+`MandatoryCapabilityCoverageEvaluator` performs deterministic read-only coverage evaluation.
+
+Runtime remains the sole lifecycle-state authority.
+
+A `SATISFIED` coverage result is evidence only and does not authorize or execute a Runtime lifecycle transition.
+
+`CompositionRoot` owns the production evaluator.
+
+The evaluator receives the exact composed `MandatoryCapabilityPolicy` instance.
+
+The same evaluator instance is registered in `ServiceContainer` and exposed through `PlatformComposition`.
+
+RFC-045 introduces no Runtime `READY` to `OPERATIONAL` transition.
+
+## RFC-045 Verification
+
+- Contract commit: `9abde19`
+- Technical commit: `0b410ce`
+- Architecture decision: AD-031
+- Focused TDD suite: 16 passed
+- Impacted regression: 71 passed
+- Full regression: 309 passed
+- Compilation: passed
+- `git diff --cached --check`: passed
+- Remote technical push: verified
+- Multi-source aggregation: not introduced
+- Observation freshness policy: not introduced
+- Runtime lifecycle behavior: unchanged
+- `OPERATIONAL` transition: not introduced
+
 ## Documentation Closure
 
-RFC-044 technical implementation is complete.
+RFC-045 technical implementation is complete.
 
-The engineering-memory layer is being synchronized with the RFC-044 technical baseline.
+The engineering-memory layer is being synchronized with the RFC-045 technical baseline.
 
 Relevant maintained documents:
 
@@ -439,21 +504,23 @@ Relevant maintained documents:
 
 ## Next Exact Action
 
-Begin architecture review for RFC-045 from the RFC-044 mandatory-capability policy baseline.
+Begin architecture review for RFC-046 from the RFC-045 mandatory-capability coverage evaluation baseline.
 
-Before selecting or implementing RFC-045:
+Before selecting or implementing RFC-046:
 
-1. Review the Source of Truth from the RFC-044 baseline.
+1. Review the Source of Truth from the RFC-045 baseline.
 2. Preserve Runtime as the sole lifecycle decision authority.
 3. Preserve `MandatoryCapabilityPolicy` as the mandatory-membership policy owner.
 4. Preserve `CapabilityAvailabilityObserver` as the read-only availability observation coordinator.
-5. Preserve `HealthCapability` as read-only health reporting.
-6. Do not infer mandatory policy from observer membership.
-7. Do not interpret `UNCONFIGURED` policy as operationally satisfied.
-8. Do not interpret `UNKNOWN` or `UNAVAILABLE` availability as acceptable evidence.
-9. Do not implement `READY` to `OPERATIONAL` without a separately approved eligibility contract.
-10. Do not introduce duplicate policy, availability or lifecycle authorities.
-11. Record the RFC-045 objective before TDD or production implementation begins.
+5. Preserve `MandatoryCapabilityCoverageEvaluator` as the deterministic fail-closed coverage evaluation boundary.
+6. Preserve `HealthCapability` as read-only health reporting.
+7. Do not treat `UNCONFIGURED` policy as satisfied.
+8. Do not treat missing, `UNKNOWN`, `UNAVAILABLE` or ambiguous evidence as satisfied.
+9. Do not introduce multi-source aggregation without a separately approved contract.
+10. Do not introduce observation freshness or TTL semantics without a separately approved contract.
+11. Do not implement `READY` to `OPERATIONAL` without a separately approved transition contract.
+12. Do not introduce duplicate policy, availability, coverage or lifecycle authorities.
+13. Record the RFC-046 objective before TDD or production implementation begins.
 
 ## Required Test Command
 

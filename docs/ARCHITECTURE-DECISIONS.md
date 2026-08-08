@@ -1978,3 +1978,189 @@ RFC-044 verification completed with:
 - Compilation: passed
 - `git diff --cached --check`: passed
 - Remote technical push: verified
+
+---
+
+# AD-031 — Mandatory Capability Coverage Evaluation Boundary
+
+## Context
+
+RFC-043 established trusted capability-availability observation.
+
+RFC-044 established explicit immutable mandatory-capability policy.
+
+PlantMind therefore required a deterministic boundary that compares mandatory requirements with supplied trusted availability observations without introducing lifecycle-transition authority.
+
+RFC-045 establishes that coverage-evaluation boundary.
+
+## Decision
+
+PlantMind SHALL use:
+
+`MandatoryCapabilityCoverageEvaluator`
+
+to evaluate one explicit `MandatoryCapabilityPolicy` against supplied immutable `CapabilityAvailabilityObservation` evidence.
+
+The evaluator SHALL remain deterministic, read-only and fail closed.
+
+## Coverage State
+
+Coverage SHALL use:
+
+`MandatoryCapabilityCoverageState`
+
+with exactly:
+
+- `SATISFIED`
+- `UNSATISFIED`
+
+`SATISFIED` means every required capability in a configured policy is proven by exactly one matching `AVAILABLE` observation.
+
+`UNSATISFIED` means mandatory capability coverage cannot be proven.
+
+Coverage state SHALL NOT represent Runtime lifecycle state.
+
+## Immutable Coverage Result
+
+`MandatoryCapabilityCoverageResult` SHALL be immutable.
+
+It SHALL report:
+
+- overall coverage state;
+- required capabilities;
+- satisfied capabilities;
+- missing capabilities;
+- unavailable capabilities;
+- unknown capabilities;
+- ambiguous capabilities.
+
+Diagnostic ordering SHALL preserve mandatory-policy requirement order.
+
+Each required capability in a configured policy SHALL receive exactly one diagnostic classification.
+
+The result SHALL contain evidence only and SHALL NOT carry lifecycle-transition authority.
+
+## Unconfigured Policy Semantics
+
+An `UNCONFIGURED` mandatory-capability policy SHALL always produce `UNSATISFIED`.
+
+It SHALL NOT succeed because the requirement collection is empty.
+
+Supplied availability evidence SHALL NOT convert an unconfigured policy into satisfied coverage.
+
+## Configured Policy Semantics
+
+For each required capability:
+
+No matching observation SHALL classify the capability as missing.
+
+Exactly one `AVAILABLE` observation SHALL classify the capability as satisfied.
+
+Exactly one `UNAVAILABLE` observation SHALL classify the capability as unavailable.
+
+Exactly one `UNKNOWN` observation SHALL classify the capability as unknown.
+
+More than one matching observation SHALL classify the capability as ambiguous.
+
+Any missing, unavailable, unknown or ambiguous required capability SHALL produce overall `UNSATISFIED`.
+
+## Ambiguity Boundary
+
+RFC-045 SHALL NOT perform multi-source aggregation.
+
+When multiple observations match one required capability, the evaluator SHALL NOT:
+
+- select the newest observation;
+- select the oldest observation;
+- prefer `AVAILABLE`;
+- prefer `UNAVAILABLE`;
+- assign source priority;
+- merge source states.
+
+Multiple matching observations SHALL fail closed as ambiguous.
+
+## Freshness Boundary
+
+RFC-045 SHALL NOT define observation freshness.
+
+The evaluator SHALL NOT introduce:
+
+- TTL;
+- maximum observation age;
+- staleness thresholds;
+- current-time comparisons.
+
+Timestamp freshness requires a separately approved architecture contract.
+
+## Non-Required Evidence
+
+Observations for capabilities not present in the mandatory policy SHALL NOT affect mandatory coverage.
+
+Availability evidence SHALL NOT create mandatory-policy membership.
+
+## Availability Boundary
+
+`CapabilityAvailabilityObserver` remains responsible for collecting trusted availability observations.
+
+`MandatoryCapabilityCoverageEvaluator` evaluates supplied observations against mandatory policy.
+
+The evaluator SHALL NOT perform capability-specific probes or modify availability observation infrastructure.
+
+## Policy Boundary
+
+`MandatoryCapabilityPolicy` remains the owner of mandatory-capability membership.
+
+The evaluator SHALL consume the supplied policy and SHALL NOT construct or modify an independent policy.
+
+## Runtime Boundary
+
+Runtime remains the sole authoritative owner of platform lifecycle state.
+
+A `SATISFIED` coverage result is evidence only.
+
+Coverage evaluation SHALL NOT:
+
+- modify Runtime lifecycle state;
+- modify request-admission state;
+- transition Runtime to `OPERATIONAL`.
+
+RFC-045 introduces no Runtime operational-transition behavior.
+
+## Composition Ownership
+
+`CompositionRoot` SHALL own production construction of the single `MandatoryCapabilityCoverageEvaluator`.
+
+The evaluator SHALL receive the exact composed `MandatoryCapabilityPolicy` instance.
+
+The same evaluator SHALL be registered in `ServiceContainer` and exposed through `PlatformComposition`.
+
+Production code SHALL NOT construct competing coverage evaluators backed by independent mandatory policies.
+
+## Consequences
+
+PlantMind now has an explicit fail-closed bridge between mandatory-capability policy and trusted availability evidence.
+
+The architecture distinguishes:
+
+- what capabilities are required;
+- what capability availability is observed;
+- whether mandatory requirements are covered;
+- whether Runtime should transition lifecycle state.
+
+These remain separate responsibilities.
+
+No multi-source aggregation, freshness policy, `OPERATIONAL`, `DEGRADED` or `ServiceState.OPERATIONAL` behavior is introduced.
+
+## Verification
+
+RFC-045 verification completed with:
+
+- Contract commit: `9abde19`
+- Technical commit: `0b410ce`
+- Focused TDD suite: 16 passed
+- Impacted regression: 71 passed
+- Full regression: 309 passed
+- Compilation: passed
+- `git diff --cached --check`: passed
+- Remote technical push: verified
+

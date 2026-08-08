@@ -364,86 +364,101 @@ It must extend, not discard, the accepted Plugin Framework.
 
 14. Immediate Development Direction
 
-RFC-044 — Mandatory Capability Policy Contract is technically complete.
+RFC-045 — Mandatory Capability Coverage Evaluation Contract is technically complete.
 
-RFC-044 established an explicit immutable mandatory-capability policy boundary.
+RFC-045 established a deterministic fail-closed evaluation boundary between mandatory-capability policy and trusted availability evidence.
 
-PlantMind now distinguishes mandatory-capability policy state explicitly through:
+PlantMind now separates:
 
-- `UNCONFIGURED`
-- `CONFIGURED`
+- mandatory-capability membership;
+- capability availability observation;
+- mandatory-capability coverage evaluation;
+- Runtime lifecycle authority.
 
-`UNCONFIGURED` means no approved mandatory-capability requirements have been established for the current platform composition or deployment.
+`MandatoryCapabilityCoverageState` defines exactly:
 
-An `UNCONFIGURED` policy SHALL contain no required capabilities and SHALL NOT be interpreted as successful operational eligibility.
+- `SATISFIED`
+- `UNSATISFIED`
 
-`CONFIGURED` means explicit approved mandatory-capability requirements have been established.
+`SATISFIED` means every required capability in a configured mandatory-capability policy is proven by exactly one matching trusted `AVAILABLE` observation.
 
-A `CONFIGURED` policy SHALL contain at least one required capability.
+`UNSATISFIED` means mandatory capability coverage cannot be proven.
 
-A configured empty policy is invalid.
+`MandatoryCapabilityCoverageResult` is immutable and reports:
 
-`MandatoryCapabilityPolicy` is immutable and owns:
+- required capabilities;
+- satisfied capabilities;
+- missing capabilities;
+- unavailable capabilities;
+- unknown capabilities;
+- ambiguous capabilities.
 
-- mandatory-capability membership representation;
-- policy-state invariants;
-- capability-identifier validation;
-- deterministic requirement ordering.
+Diagnostic capability ordering preserves mandatory-policy requirement order.
 
-Capability identifiers SHALL be strings, non-empty, free of leading or trailing whitespace and unique within the policy.
+An `UNCONFIGURED` mandatory-capability policy always evaluates to `UNSATISFIED`.
 
-Duplicate identifiers are rejected rather than silently collapsed.
+It SHALL NOT succeed because its requirement collection is empty.
 
-`ConfigurationProvider` remains responsible for configuration access and validation and does not become the semantic owner of mandatory-capability policy.
+For configured policy evaluation:
 
-`CapabilityAvailabilityObserver` remains responsible only for trusted read-only capability availability observation.
+- no matching observation is classified as missing;
+- exactly one `AVAILABLE` observation is classified as satisfied;
+- exactly one `UNAVAILABLE` observation is classified as unavailable;
+- exactly one `UNKNOWN` observation is classified as unknown;
+- more than one matching observation is classified as ambiguous.
 
-Observer source membership SHALL NOT imply mandatory-policy membership.
+Any missing, unavailable, unknown or ambiguous required capability causes overall `UNSATISFIED`.
 
-Availability state SHALL NOT modify mandatory-policy membership.
+RFC-045 does not perform multi-source aggregation.
 
-Mandatory-policy membership SHALL NOT fabricate availability evidence.
+Multiple matching observations for one required capability fail closed as ambiguous.
 
-`HealthCapability` remains read-only health reporting.
+RFC-045 does not define freshness, TTL, maximum observation age or staleness policy.
+
+Observations for capabilities not present in the mandatory policy do not affect mandatory coverage.
+
+`CapabilityAvailabilityObserver` remains responsible for collecting trusted availability observations.
+
+`MandatoryCapabilityPolicy` remains responsible for mandatory-capability membership.
+
+`MandatoryCapabilityCoverageEvaluator` evaluates supplied evidence against the composed policy.
 
 Runtime remains the sole authoritative owner of platform lifecycle state.
 
-`CompositionRoot` owns one explicit production `MandatoryCapabilityPolicy`, registers the same instance in `ServiceContainer`, and exposes it through `PlatformComposition`.
+A `SATISFIED` coverage result is evidence only and SHALL NOT itself transition Runtime to `OPERATIONAL`.
 
-The current production mandatory-capability policy is explicitly `UNCONFIGURED`.
+`CompositionRoot` owns the production `MandatoryCapabilityCoverageEvaluator`.
 
-No real mandatory capability names were fabricated.
+The evaluator receives the exact composed `MandatoryCapabilityPolicy` instance, is registered in `ServiceContainer`, and is exposed through `PlatformComposition`.
 
-No policy-to-availability coverage evaluator exists yet.
+RFC-045 verification:
 
-RFC-044 introduces no Runtime `READY` to `OPERATIONAL` transition behavior.
-
-RFC-044 verification:
-
-- Contract commit: `91c6090`
-- Technical commit: `a709c0d`
-- Architecture decision: AD-030
-- Focused TDD suite: 15 passed
-- Impacted regression: 55 passed
-- Full regression: 293 passed
+- Contract commit: `9abde19`
+- Technical commit: `0b410ce`
+- Architecture decision: AD-031
+- Focused TDD suite: 16 passed
+- Impacted regression: 71 passed
+- Full regression: 309 passed
 - Compilation: passed
 - Remote technical push: verified
 
-RFC-045 is now in architecture review.
+RFC-046 is now in architecture review.
 
-Before selecting or implementing RFC-045:
+Before selecting or implementing RFC-046:
 
-Review the Source of Truth from the RFC-044 baseline.
+Review the Source of Truth from the RFC-045 baseline.
 Preserve Runtime as the sole lifecycle decision authority.
 Preserve `MandatoryCapabilityPolicy` as the mandatory-membership policy owner.
 Preserve `CapabilityAvailabilityObserver` as the read-only availability observation coordinator.
+Preserve `MandatoryCapabilityCoverageEvaluator` as the coverage evaluation boundary.
 Preserve `HealthCapability` as read-only health reporting.
-Do not infer mandatory policy from observer membership.
-Do not treat an `UNCONFIGURED` policy as operationally satisfied.
-Do not treat `UNKNOWN` or `UNAVAILABLE` availability as acceptable evidence.
-Do not implement `READY` to `OPERATIONAL` without a separately approved eligibility contract.
-Do not introduce duplicate policy, availability or lifecycle authorities.
-Record the selected RFC-045 objective before TDD or production implementation begins.
+Do not treat `UNCONFIGURED` policy as satisfied.
+Do not treat missing, `UNKNOWN`, `UNAVAILABLE` or ambiguous evidence as satisfied.
+Do not introduce multi-source aggregation without a separate approved contract.
+Do not introduce freshness or TTL semantics without a separate approved contract.
+Do not implement `READY` to `OPERATIONAL` without a separately approved transition contract.
+Do not introduce duplicate policy, availability, coverage or lifecycle authorities.
+Record the selected RFC-046 objective before TDD or production implementation begins.
 
 15. Session Continuation Instruction
 
