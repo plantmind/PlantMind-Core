@@ -33,59 +33,367 @@ No item may be marked complete until:
 
 # Active Work
 
-## RFC-050 — Architecture Review
+## RFC-050 — Operational Transition Coordination Contract
 
 ### Status
 
-Ready for architecture review. No RFC-050 contract has been selected.
+Contract defined. Ready for contract verification and commit.
 
 ### Objective
 
-Select the next architecture-controlled PlantMind increment from the RFC-049 mandatory-capability composition baseline.
+Establish the explicit operational-transition coordination boundary that consumes approved operational-workload evidence, obtains live mandatory-capability availability observations, evaluates mandatory-capability coverage, constructs `OperationalTransitionEvidence`, and delegates the authoritative lifecycle-transition decision to `Runtime.request_operational(...)`, while preserving Runtime as the sole lifecycle-transition authority and avoiding hidden workload-triggered lifecycle side effects.
 
-### Current Technical Baseline
+### Architectural Position
 
-- Branch: `feature/engineering-platform`
-- Last completed RFC: RFC-049 — Mandatory Capability Composition Contract
-- RFC-049 contract commit: `ca5ccbf`
-- RFC-049 technical commit: `496fe42`
-- Architecture decision: AD-035
-- Focused TDD suite: 15 passed
-- Impacted regression: 101 passed
-- Full regression baseline: 377 passed
+RFC-046 established correlated `OperationalWorkloadEvidence`.
 
-### Current Architecture Boundary
+RFC-043 through RFC-045 established:
 
-PlantMind now has:
+- capability availability observation;
+- mandatory-capability policy;
+- mandatory-capability coverage evaluation.
 
-- deployment-neutral mandatory-capability source injection;
-- deployment-neutral mandatory-capability policy injection;
-- preserved source ordering and identity;
-- preserved policy identity across composition, container and evaluator;
-- fail-closed default composition;
-- deterministic mandatory-capability coverage evaluation;
-- immutable operational-transition evidence;
-- guarded Runtime `READY` to `OPERATIONAL` transition authority.
+RFC-047 established immutable `OperationalTransitionEvidence`.
 
-Default composition remains fail-closed:
+RFC-048 established guarded Runtime `READY` to `OPERATIONAL` transition authority.
 
-- no capability availability sources;
-- mandatory-capability policy `UNCONFIGURED`;
-- mandatory-capability coverage `UNSATISFIED`.
+RFC-049 established explicit deployment-neutral composition of capability sources and mandatory-capability policy.
 
-CompositionRoot does not:
+All required transition components now exist.
 
-- invent capability identifiers;
-- observe capability sources during build;
-- evaluate capability coverage;
-- construct `OperationalTransitionEvidence`;
-- call `Runtime.request_operational(...)`.
+The remaining gap is an explicit coordinator that composes these existing responsibilities without becoming a competing lifecycle authority.
 
-Operational-transition coordination remains intentionally unimplemented.
+### Coordinator
+
+RFC-050 SHALL introduce:
+
+`OperationalTransitionCoordinator`
+
+The coordinator SHALL depend on the existing canonical instances of:
+
+- `Runtime`;
+- `CapabilityAvailabilityObserver`;
+- `MandatoryCapabilityCoverageEvaluator`.
+
+The coordinator SHALL NOT own:
+
+- Runtime lifecycle state;
+- request admission;
+- mandatory-capability policy;
+- capability source definitions;
+- workload execution;
+- workload evidence generation.
+
+### Public Operation
+
+The approved coordination operation SHALL be:
+
+`request_operational(workload_evidence: OperationalWorkloadEvidence | None) -> OperationalTransitionEvidence`
+
+The operation SHALL be explicit.
+
+It SHALL NOT be invoked automatically by workload execution, Bootstrap, Health or CompositionRoot construction.
+
+### Workload Evidence Input Boundary
+
+The coordinator SHALL consume `OperationalWorkloadEvidence` directly.
+
+RFC-050 SHALL NOT require or accept `WorkflowExecution` as the authoritative coordination input.
+
+The caller remains responsible for obtaining workload evidence from the approved workload execution path.
+
+The coordinator SHALL NOT:
+
+- create workload identities;
+- recreate workload evidence;
+- validate UUID correlation independently;
+- execute workflows;
+- inspect workflow stages;
+- reinterpret workload provenance.
+
+Those responsibilities remain owned by RFC-046.
+
+A `None` workload evidence input SHALL remain representable as incomplete external transition evidence.
+
+### Observation Snapshot
+
+Each explicit coordination request SHALL obtain one availability observation snapshot by calling:
+
+`CapabilityAvailabilityObserver.observe_all()`
+
+exactly once.
+
+The returned observation tuple SHALL be supplied unchanged to the canonical `MandatoryCapabilityCoverageEvaluator`.
+
+RFC-050 SHALL NOT:
+
+- invoke individual capability sources directly;
+- obtain multiple snapshots for one request;
+- merge snapshots;
+- retry observations;
+- cache observations;
+- reorder observations;
+- apply freshness or TTL rules.
+
+### Capability Coverage
+
+The coordinator SHALL call the existing:
+
+`MandatoryCapabilityCoverageEvaluator.evaluate(...)`
+
+exactly once per coordination request.
+
+The evaluator SHALL receive the exact observation snapshot returned by the observer.
+
+The coordinator SHALL NOT:
+
+- inspect mandatory-capability policy directly;
+- classify observations itself;
+- alter coverage diagnostics;
+- convert `UNSATISFIED` into another state;
+- fabricate satisfied coverage.
+
+Coverage semantics remain owned by RFC-045.
+
+### Transition Evidence Construction
+
+After coverage evaluation, the coordinator SHALL construct one immutable:
+
+`OperationalTransitionEvidence`
+
+using:
+
+- the exact supplied `OperationalWorkloadEvidence` object, including `None`;
+- the exact `MandatoryCapabilityCoverageResult` returned by the evaluator.
+
+The coordinator SHALL preserve object identity.
+
+It SHALL NOT reconstruct, copy, normalize or reinterpret either evidence category.
+
+### Runtime Delegation
+
+The coordinator SHALL delegate the constructed evidence to:
+
+`Runtime.request_operational(...)`
+
+exactly once.
+
+The exact `OperationalTransitionEvidence` instance constructed by the coordinator SHALL be supplied to Runtime.
+
+Runtime remains the sole lifecycle-transition authority.
+
+The coordinator SHALL NOT inspect or duplicate Runtime-owned preconditions before delegation, including:
+
+- lifecycle state;
+- readiness;
+- request admission.
+
+Runtime remains responsible for evaluating those conditions directly.
+
+### Successful Coordination
+
+When Runtime accepts the transition:
+
+- Runtime SHALL enter `RuntimeState.OPERATIONAL` according to RFC-048;
+- the coordinator SHALL return the exact `OperationalTransitionEvidence` instance supplied to Runtime;
+- the coordinator SHALL retain no mutable transition state;
+- no additional lifecycle mutation SHALL occur.
+
+The returned evidence is a coordination result and SHALL NOT become a second lifecycle authority.
+
+### Rejected Coordination
+
+If Runtime rejects the transition:
+
+- Runtime SHALL remain governed by RFC-048 atomic rejection semantics;
+- the coordinator SHALL propagate the Runtime failure;
+- the coordinator SHALL NOT retry;
+- the coordinator SHALL NOT alter Runtime state;
+- the coordinator SHALL NOT enable or disable request admission;
+- the coordinator SHALL NOT mutate evidence;
+- the coordinator SHALL NOT convert the rejection into `FAILED`, `STOPPED` or `DEGRADED`.
+
+### Observer Failure Boundary
+
+Capability-source exceptions remain contained by `CapabilityAvailabilityObserver` according to RFC-043.
+
+The coordinator SHALL consume the observer output normally, including `UNKNOWN` observations.
+
+RFC-050 SHALL NOT bypass observer exception containment.
+
+### Unexpected Coordination Failures
+
+If availability observation or coverage evaluation cannot return normally because of an unexpected coordinator dependency failure:
+
+- Runtime SHALL NOT be called;
+- no lifecycle transition SHALL be attempted;
+- the exception SHALL propagate;
+- RFC-050 SHALL NOT retry automatically.
+
+No partial lifecycle side effect SHALL occur before Runtime delegation.
+
+### No Automatic Lifecycle Side Effects
+
+RFC-050 SHALL NOT modify:
+
+- `ApplicationFacade.analyze(...)`;
+- `IntegrationGateway.execute(...)`;
+- `OrchestrationService.run(...)`;
+- `WorkflowExecutor.execute(...)`.
+
+A successful operational workload SHALL NOT automatically request an operational lifecycle transition.
+
+The explicit coordinator operation remains required.
+
+### Bootstrap Boundary
+
+Bootstrap SHALL NOT invoke `OperationalTransitionCoordinator`.
+
+Startup remains responsible only for the existing readiness and request-admission sequence.
+
+Bootstrap SHALL NOT automatically enter `OPERATIONAL`.
+
+### Health Boundary
+
+`HealthCapability` remains read-only reporting.
+
+Health SHALL NOT invoke the coordinator or Runtime operational transition.
+
+### Composition Boundary
+
+`CompositionRoot` SHALL compose exactly one `OperationalTransitionCoordinator` using the existing canonical instances of:
+
+- Runtime;
+- `CapabilityAvailabilityObserver`;
+- `MandatoryCapabilityCoverageEvaluator`.
+
+The exact coordinator instance SHALL be:
+
+- exposed through `PlatformComposition`;
+- registered in `ServiceContainer`.
+
+CompositionRoot SHALL NOT execute the coordinator during build.
+
+Composition SHALL NOT create duplicate observer, evaluator or Runtime instances for the coordinator.
+
+### Dependency Identity
+
+The coordinator SHALL retain the exact composed dependency instances.
+
+The coordinator Runtime SHALL be the same object as:
+
+`PlatformComposition.runtime`
+
+The coordinator observer SHALL be the same object as:
+
+`PlatformComposition.availability_observer`
+
+The coordinator coverage evaluator SHALL be the same object as:
+
+`PlatformComposition.mandatory_capability_coverage_evaluator`
+
+RFC-050 SHALL preserve one canonical dependency graph.
+
+### No Persistent Evidence Store
+
+RFC-050 SHALL NOT introduce:
+
+- global transition evidence;
+- persistent transition evidence;
+- mutable last-transition state;
+- evidence history;
+- evidence recorder;
+- transition retry queue.
+
+Each coordination request SHALL operate only on its explicit workload evidence and one current capability observation snapshot.
+
+### No Independent Eligibility Authority
+
+RFC-050 SHALL NOT introduce:
+
+- `OperationalEligibilityEvaluator`;
+- operational eligibility state;
+- another operational readiness boolean;
+- another lifecycle controller.
+
+The coordinator coordinates evidence and delegates.
+
+Runtime decides.
+
+### Implementation Scope
+
+RFC-050 MAY implement:
+
+- `OperationalTransitionCoordinator`;
+- explicit `request_operational(...)`;
+- one observation snapshot per request;
+- one mandatory-capability coverage evaluation per request;
+- one `OperationalTransitionEvidence` construction per request;
+- one Runtime transition delegation per request;
+- canonical CompositionRoot wiring;
+- focused coordination tests;
+- impacted regression tests.
+
+### Non-Goals
+
+RFC-050 SHALL NOT:
+
+- modify `Runtime.request_operational(...)`;
+- modify operational workload evidence semantics;
+- modify capability availability semantics;
+- modify mandatory-capability policy semantics;
+- modify mandatory-capability coverage semantics;
+- introduce concrete deployment capability sources;
+- hard-code deployment-specific capability names;
+- automatically execute workflows;
+- automatically transition after workload execution;
+- transition during Bootstrap;
+- transition during CompositionRoot construction;
+- introduce evidence freshness or TTL;
+- introduce retry behavior;
+- introduce operational recovery;
+- introduce `DEGRADED` behavior;
+- introduce traffic draining;
+- persist operational-transition evidence.
+
+### TDD Boundary
+
+Before production implementation, focused tests SHALL establish:
+
+- coordinator accepts `OperationalWorkloadEvidence` directly;
+- coordinator does not require `WorkflowExecution`;
+- one availability snapshot is obtained per coordination request;
+- observer output identity/order is passed unchanged to coverage evaluation;
+- one coverage evaluation occurs per request;
+- exact supplied workload evidence identity is preserved;
+- exact produced coverage-result identity is preserved;
+- constructed `OperationalTransitionEvidence` contains those exact objects;
+- exact constructed transition-evidence instance is supplied to Runtime;
+- Runtime transition delegation occurs exactly once;
+- coordinator does not inspect Runtime lifecycle state before delegation;
+- coordinator does not inspect request admission before delegation;
+- successful coordination returns the exact transition-evidence instance;
+- incomplete workload evidence remains fail-closed through Runtime;
+- unsatisfied coverage remains fail-closed through Runtime;
+- Runtime rejection is propagated without retry;
+- rejected coordination does not alter admission independently;
+- observer source failure continues to become `UNKNOWN`;
+- unexpected observation failure prevents Runtime delegation;
+- unexpected coverage-evaluation failure prevents Runtime delegation;
+- no automatic transition occurs during CompositionRoot build;
+- no automatic transition occurs during Bootstrap startup;
+- no automatic transition occurs during `ApplicationFacade.analyze(...)`;
+- CompositionRoot exposes one coordinator instance;
+- ServiceContainer resolves that same coordinator instance;
+- coordinator uses the exact composed Runtime instance;
+- coordinator uses the exact composed availability observer;
+- coordinator uses the exact composed coverage evaluator;
+- no persistent/global transition evidence state is introduced;
+- no independent lifecycle or eligibility authority is introduced.
 
 ### Next Exact Action
 
-Review the Source of Truth from the RFC-049 baseline and select the RFC-050 objective before defining any new contract, TDD scope or production implementation.
+Verify and commit the RFC-050 contract before writing focused TDD tests or production Python.
 
 ---
 
