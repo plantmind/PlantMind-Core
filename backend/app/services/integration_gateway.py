@@ -7,11 +7,13 @@ from app.services.orchestration.orchestration_service import (
     OrchestrationService,
 )
 from app.services.orchestration.workflow import WorkflowExecution
+from app.services.orchestration.workload_evidence import (
+    ApplicationFacadeEntryEvidence,
+)
 
 
 class IntegrationGateway:
-    """
-    Single entry point for external integrations.
+    """Single entry point for external integrations.
 
     This gateway isolates external interfaces (API, AI agents,
     PI System, DCS, CLI, etc.) from the internal application
@@ -29,10 +31,10 @@ class IntegrationGateway:
     def execute(
         self,
         observations: tuple[Observation, ...],
+        facade_entry_evidence: ApplicationFacadeEntryEvidence | None = None,
     ) -> WorkflowExecution:
-        """
-        Execute one complete PlantMind workflow.
-        """
+        """Execute one complete PlantMind workflow."""
         return self._orchestration_service.run(
-            observations
+            observations,
+            facade_entry_evidence=facade_entry_evidence,
         )

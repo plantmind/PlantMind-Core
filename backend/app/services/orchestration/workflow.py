@@ -5,6 +5,8 @@ from __future__ import annotations
 from dataclasses import dataclass
 from enum import StrEnum
 
+from app.services.orchestration.workload_evidence import OperationalWorkloadEvidence
+
 
 class WorkflowStage(StrEnum):
     """Execution stages for the PlantMind orchestration pipeline."""
@@ -21,6 +23,7 @@ class WorkflowExecution:
 
     result: dict[str, object]
     stages: tuple[WorkflowStage, ...]
+    operational_workload_evidence: OperationalWorkloadEvidence | None = None
 
     @property
     def is_complete(self) -> bool:
