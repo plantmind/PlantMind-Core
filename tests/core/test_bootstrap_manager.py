@@ -1,6 +1,7 @@
 from app.core.bootstrap_manager import BootstrapManager
 from app.core.plugins import Plugin, PluginRegistry
 from app.core.runtime import Runtime
+from app.core.services.base_service import BaseService
 from app.core.services.service_registry import ServiceRegistry
 
 
@@ -22,6 +23,35 @@ class RecordingPlugin(Plugin):
 
     def deactivate(self) -> None:
         self._events.append(f"deactivate:{self.name}")
+
+
+class RecordingRuntime(Runtime):
+    def __init__(self, events: list[str]) -> None:
+        super().__init__()
+        self._events = events
+
+    def mark_stopping(self) -> None:
+        self._events.append("runtime:stopping")
+        super().mark_stopping()
+
+    def mark_not_ready(self) -> None:
+        super().mark_not_ready()
+        self._events.append("runtime:stopped")
+
+
+class RecordingService(BaseService):
+    def __init__(self, name: str, events: list[str]) -> None:
+        super().__init__(name)
+        self._events = events
+
+    def validate(self) -> bool:
+        return True
+
+    def initialize(self) -> None:
+        pass
+
+    def shutdown(self) -> None:
+        self._events.append(f"shutdown:{self.name}")
 
 
 def build_manager(
@@ -92,4 +122,55 @@ def test_shutdown_deactivates_plugins_in_reverse_order() -> None:
         "activate:plugin-b",
         "deactivate:plugin-b",
         "deactivate:plugin-a",
+    ]
+
+def test_shutdown_transitions_runtime_around_component_shutdown() -> None:
+    events: list[str] = []
+    plugins = PluginRegistry()
+    registry = ServiceRegistry()
+
+    plugins.register(
+        "plugin-a",
+        lambda: RecordingPlugin("plugin-a", events),
+    )
+    registry.register(RecordingService("service-a", events))
+
+    runtime = RecordingRuntime(events)
+    manager = BootstrapManager(
+        runtime_instance=runtime,
+        registry=registry,
+        plugin_registry=plugins,
+    )
+
+    manager.startup()
+    events.clear()
+
+    manager.shutdown()
+
+    assert events == [
+        "runtime:stopping",
+        "deactivate:plugin-a",
+        "shutdown:service-a",
+        "runtime:stopped",
+    ]
+
+def test_shutdown_services_follow_reverse_registry_enumeration_order() -> None:
+    events: list[str] = []
+    registry = ServiceRegistry()
+
+    registry.register(RecordingService("service-z", events))
+    registry.register(RecordingService("service-a", events))
+
+    manager = BootstrapManager(
+        runtime_instance=Runtime(),
+        registry=registry,
+        plugin_registry=PluginRegistry(),
+    )
+
+    manager.startup()
+    manager.shutdown()
+
+    assert events == [
+        "shutdown:service-z",
+        "shutdown:service-a",
     ]

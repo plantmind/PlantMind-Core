@@ -50,3 +50,14 @@ def test_mark_failed_sets_failed_state_and_not_ready() -> None:
     assert runtime.state is RuntimeState.FAILED
     assert runtime.is_ready is False
     assert runtime.ready is False
+
+
+def test_mark_stopping_sets_stopping_state_and_not_ready() -> None:
+    runtime = Runtime()
+    runtime.mark_ready()
+
+    runtime.mark_stopping()
+
+    assert runtime.state is RuntimeState.STOPPING
+    assert runtime.is_ready is False
+    assert runtime.ready is False

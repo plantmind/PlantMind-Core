@@ -100,6 +100,8 @@ class BootstrapManager:
     def shutdown(self) -> None:
         """Execute graceful platform shutdown."""
 
+        self.runtime.mark_stopping()
+
         self.plugin_lifecycle.deactivate_all()
 
         for name in reversed(

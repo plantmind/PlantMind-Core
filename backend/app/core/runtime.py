@@ -39,6 +39,11 @@ class Runtime:
         self.state = RuntimeState.STOPPED
         self.ready = False
 
+    def mark_stopping(self) -> None:
+        """Mark the platform runtime as stopping."""
+        self.state = RuntimeState.STOPPING
+        self.ready = False
+
     def mark_failed(self) -> None:
         """
         Mark the platform runtime as failed.
