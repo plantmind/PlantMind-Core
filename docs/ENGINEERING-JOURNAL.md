@@ -620,6 +620,50 @@ Verification:
 
 ---
 
+### RFC-042 — Runtime Operational Transition Evidence Contract
+
+RFC-042 established the evidence and lifecycle-authority boundaries required before PlantMind may implement a future Runtime `READY` to `OPERATIONAL` transition.
+
+Runtime remains the sole authoritative owner of platform lifecycle state.
+
+Runtime-owned preconditions are evaluated directly by Runtime:
+
+- lifecycle state is `READY`;
+- request admission is enabled.
+
+These facts are not duplicated as externally supplied operational evidence.
+
+External operational evidence consists of independently observable facts:
+
+- canonical operational workload entry through the composed `ApplicationFacade`;
+- concrete workflow execution start through the composed `WorkflowExecutor`;
+- trustworthy live availability of mandatory capabilities required for operational execution.
+
+`ApplicationFacade` and `WorkflowExecutor` may provide workload-execution evidence but do not become lifecycle authorities.
+
+The architecture review confirmed that:
+
+- `ServiceRegistry` registration does not prove availability;
+- startup validation does not prove continuing availability;
+- startup readiness evidence does not prove continuing operational availability;
+- current `HealthCapability` does not provide a trustworthy live mandatory-capability availability contract.
+
+The absence of a trusted mandatory-capability availability producer is therefore a blocking architecture dependency for any future Runtime `READY` to `OPERATIONAL` implementation.
+
+RFC-042 introduces no production Python transition behavior.
+
+Verification:
+
+- Contract commit: `3168014`
+- Architecture decision: AD-028
+- Production Python changes: none
+- Technical production baseline remains: `1693a9b`
+- Full regression baseline remains: 263 passed
+- Runtime lifecycle behavior: unchanged
+- `OPERATIONAL` transition: not introduced
+
+---
+
 # Current Status
 
 PlantMind now possesses:
@@ -642,6 +686,7 @@ PlantMind now possesses:
 - API Request Admission Enforcement Contract
 - Platform Operational Semantics Alignment Contract
 - Operational Workload Entry Boundary Contract
+- Runtime Operational Transition Evidence Contract
 - Service Lifecycle
 - Composition Root and dependency wiring
 - Structured engineering documentation
@@ -649,11 +694,13 @@ PlantMind now possesses:
 
 Current technical baseline:
 
-- RFC-041 — Operational Workload Entry Boundary Contract
-- Contract commit: `6a49e92`
-- Technical commit: `1693a9b`
-- Full regression: 263 passed
+- RFC-042 — Runtime Operational Transition Evidence Contract
+- Contract commit: `3168014`
+- Technical production baseline: `1693a9b`
+- Full regression baseline: 263 passed
+- Production Python changes: none
+- Blocking dependency: trusted mandatory-capability availability observation
 
-The next engineering step is architecture review for RFC-042.
+The next engineering step is architecture review for RFC-043.
 
 The project remains in long-term enterprise platform development.

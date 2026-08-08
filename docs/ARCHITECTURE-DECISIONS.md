@@ -1502,3 +1502,118 @@ A future Runtime operational-transition RFC must build on this workload boundary
 Any new production external interface must consume the approved composed application boundary unless a separate architecture decision explicitly authorizes another path.
 
 Authentication, authorization, traffic draining, retry, recovery and degraded-state behavior remain separate architecture concerns.
+
+---
+
+# AD-028 — Operational Transition Evidence and Lifecycle Authority
+
+## Context
+
+RFC-040 established that `READY`, request admission and `OPERATIONAL` are distinct platform concepts.
+
+RFC-041 established `ApplicationFacade` as the canonical production operational workload entry boundary without changing Runtime lifecycle state.
+
+RFC-042 reviewed the evidence required before PlantMind may safely implement a future `READY` to `OPERATIONAL` transition.
+
+The current platform has authoritative Runtime-owned readiness and request-admission state, and it has an approved operational workload path.
+
+However, the committed platform does not currently provide a trustworthy live observation contract proving that mandatory capabilities remain available during operational workload execution.
+
+## Decision
+
+Runtime SHALL remain the sole authoritative owner of platform lifecycle state.
+
+Operational-transition eligibility SHALL be evaluated from two distinct classes of information:
+
+### Runtime-Owned Preconditions
+
+Runtime SHALL evaluate its own state directly.
+
+A future operational transition SHALL require Runtime to verify:
+
+- lifecycle state is `READY`;
+- request admission is enabled.
+
+These facts SHALL NOT be duplicated as externally supplied evidence.
+
+External components SHALL NOT attest Runtime-owned state on Runtime behalf.
+
+### External Operational Evidence
+
+Operational-transition evidence SHALL represent independently observable facts that Runtime does not own directly.
+
+The required evidence categories are:
+
+- canonical operational workload entry through the composed `ApplicationFacade`;
+- concrete workflow execution start through the composed `WorkflowExecutor`;
+- trustworthy live availability of mandatory capabilities required for operational execution.
+
+Evidence SHALL be immutable when passed across architecture boundaries.
+
+Evidence SHALL NOT itself cause a lifecycle transition.
+
+## Evidence Ownership
+
+`ApplicationFacade` MAY provide evidence that the canonical operational workload boundary was entered.
+
+`WorkflowExecutor` MAY provide evidence that concrete workflow execution started.
+
+Neither component SHALL become a lifecycle decision authority.
+
+Mandatory-capability availability SHALL be provided only through an approved read-only availability observation contract.
+
+`ServiceRegistry` registration SHALL NOT be interpreted as availability.
+
+Startup-time service validation SHALL NOT be interpreted as continuing availability.
+
+Startup readiness evidence SHALL NOT be interpreted as continuing operational availability.
+
+Current `HealthCapability` reporting SHALL NOT be treated as a substitute for a dedicated live capability-availability contract.
+
+## Current Architecture Gap
+
+No trustworthy mandatory-capability availability producer currently exists in the committed platform.
+
+This gap SHALL block implementation of the Runtime `READY` to `OPERATIONAL` transition.
+
+PlantMind SHALL NOT satisfy the gap by:
+
+- hard-coded availability values;
+- fabricated evidence;
+- registration counts;
+- startup-only validation results;
+- assumptions derived from request admission;
+- assumptions derived from workload completion.
+
+## Lifecycle Authority
+
+A future Runtime operational-transition operation SHALL evaluate:
+
+- Runtime-owned lifecycle preconditions;
+- trusted canonical workload-entry evidence;
+- trusted workflow-execution-start evidence;
+- trusted mandatory-capability availability evidence.
+
+Only Runtime SHALL decide whether those conditions permit transition to `OPERATIONAL`.
+
+`ApplicationFacade`, `IntegrationGateway`, `OrchestrationService`, `WorkflowExecutor`, API hosting and `HealthCapability` SHALL NOT transition Runtime lifecycle state.
+
+## Consequences
+
+RFC-042 introduces no production transition behavior.
+
+No `mark_operational()`, `request_operational()` or equivalent Runtime operation is approved by this decision.
+
+No `ServiceState.OPERATIONAL` is introduced.
+
+No `DEGRADED` behavior is introduced.
+
+The next architecture-controlled prerequisite is a trustworthy read-only capability-availability observation contract.
+
+## Future Impact
+
+A future RFC SHALL define the capability-availability observation boundary before any Runtime operational-transition implementation is approved.
+
+That capability SHALL provide evidence only and SHALL remain separate from lifecycle decision authority.
+
+A later Runtime operational-transition RFC may consume that evidence together with RFC-041 workload evidence and Runtime-owned preconditions.

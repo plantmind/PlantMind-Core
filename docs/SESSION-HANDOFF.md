@@ -6,12 +6,13 @@
 |---|---|
 | Project | PlantMind PM-001 |
 | Branch | `feature/engineering-platform` |
-| Last Completed RFC | RFC-041 — Operational Workload Entry Boundary Contract |
+| Last Completed RFC | RFC-042 — Runtime Operational Transition Evidence Contract |
 | Technical Baseline Commit | `1693a9b` |
+| Architecture Baseline Commit | `3168014` |
 | Test Baseline | 263 passed |
 | Authoritative Environment | `PlantMind-Core/.venv` |
 | Remote State | Up to date with `origin/feature/engineering-platform` |
-| RFC-041 Technical Push | Verified |
+| RFC-042 Contract Push | Verified |
 
 ## Recent Engineering Sequence
 
@@ -32,6 +33,7 @@
 - RFC-039 — API Request Admission Enforcement Contract
 - RFC-040 — Platform Operational Semantics Alignment Contract
 - RFC-041 — Operational Workload Entry Boundary Contract
+- RFC-042 — Runtime Operational Transition Evidence Contract
 
 ## RFC-036 Outcome
 
@@ -253,11 +255,51 @@ The implementation:
 - `git diff --check`: passed
 - Remote technical push: verified
 
+## RFC-042 Outcome
+
+RFC-042 established the evidence and lifecycle-authority boundaries required before PlantMind may implement a future Runtime `READY` to `OPERATIONAL` transition.
+
+Runtime remains the sole authoritative owner of platform lifecycle state.
+
+Runtime-owned preconditions are evaluated directly by Runtime:
+
+- lifecycle state is `READY`;
+- request admission is enabled.
+
+These Runtime-owned facts SHALL NOT be duplicated as externally supplied operational evidence.
+
+External operational evidence consists of independently observable facts:
+
+- canonical operational workload entry through the composed `ApplicationFacade`;
+- concrete workflow execution start through the composed `WorkflowExecutor`;
+- trustworthy live availability of mandatory capabilities required for operational execution.
+
+`ApplicationFacade` and `WorkflowExecutor` may provide workload-execution evidence but SHALL NOT become lifecycle decision authorities.
+
+Service registration, startup validation, startup readiness evidence and current `HealthCapability` reporting do not prove continuing mandatory-capability availability.
+
+The committed platform currently has no trustworthy live mandatory-capability availability producer.
+
+That architecture gap blocks implementation of the Runtime `READY` to `OPERATIONAL` transition.
+
+RFC-042 introduces no production transition behavior.
+
+## RFC-042 Verification
+
+- Contract commit: `3168014`
+- Architecture decision: AD-028
+- Production Python changes: none
+- Technical production baseline remains: `1693a9b`
+- Full regression baseline remains: 263 passed
+- Runtime lifecycle behavior: unchanged
+- `OPERATIONAL` transition: not introduced
+- Blocking dependency: trusted mandatory-capability availability observation
+
 ## Documentation Closure
 
-RFC-041 technical implementation is complete.
+RFC-042 architecture contract is complete.
 
-The engineering-memory layer is being synchronized with the RFC-041 technical baseline.
+The engineering-memory layer is being synchronized with the RFC-042 architecture baseline.
 
 Relevant maintained documents:
 
@@ -269,22 +311,21 @@ Relevant maintained documents:
 
 ## Next Exact Action
 
-Begin architecture review for RFC-042 from the RFC-041 technical baseline.
+Begin architecture review for RFC-043 from the RFC-042 operational-transition evidence baseline.
 
-Before selecting or implementing RFC-042:
+Before selecting or implementing RFC-043:
 
-1. Review the Active Work Register.
-2. Review current committed code and tests.
-3. Review accepted RFCs, ADRs, architecture documents and deferred work.
-4. Preserve `ApplicationFacade` as the canonical workload entry boundary.
-5. Preserve `IntegrationGateway` as the integration-isolation boundary.
-6. Preserve `OrchestrationService` workflow-coordination ownership.
-7. Preserve `WorkflowExecutor` concrete execution ownership.
-8. Preserve Composition Root ownership of production dependency construction.
-9. Preserve Runtime lifecycle-state ownership.
-10. Do not infer or implement `OPERATIONAL` merely from workload invocation or completion.
-11. Do not introduce duplicate application, integration or orchestration entry boundaries.
-12. Record the selected RFC objective and next exact action before implementation begins.
+1. Review the existing service lifecycle architecture.
+2. Review `HealthCapability` and its read-only observation responsibilities.
+3. Review `ServiceRegistry`, `BaseService` and `ServiceState`.
+4. Review accepted RFCs, ADRs and capability architecture.
+5. Preserve Runtime as the sole lifecycle decision authority.
+6. Preserve `HealthCapability` as read-only.
+7. Do not treat registration as availability.
+8. Do not treat startup validation as continuing operational availability.
+9. Do not implement `READY` to `OPERATIONAL` transition behavior.
+10. Do not introduce `ServiceState.OPERATIONAL` or `DEGRADED`.
+11. Define the trusted mandatory-capability availability observation boundary before production implementation begins.
 
 ## Required Test Command
 
