@@ -33,28 +33,104 @@ No item may be marked complete until:
 
 # Active Work
 
-## RFC-041 — Architecture Review
+## RFC-041 — Operational Workload Entry Boundary Contract
 
 ### Status
 
-Ready for architecture review. No RFC-041 contract has been selected.
+Architecture review complete. Contract definition active.
 
 ### Objective
 
-Select the next architecture-controlled PlantMind increment from the RFC-040 aligned operational-semantics baseline.
+Establish one canonical production entry boundary for PlantMind operational workloads and integrate that boundary into the platform dependency graph before any future `READY` to `OPERATIONAL` transition is implemented.
 
-### Current Technical Baseline
+### Architecture Findings
 
-- Branch: `feature/engineering-platform`
-- Last completed RFC: RFC-040 — Platform Operational Semantics Alignment Contract
-- RFC-040 contract commit: `63d75ec`
-- RFC-040 alignment commit: `376970e`
-- Full regression baseline: 256 passed
-- Production Python changes in RFC-040: none
+- `ApplicationFacade` is the current stable application-level entry point.
+- Current code explicitly directs external interfaces to use `ApplicationFacade` rather than internal orchestration or reasoning services.
+- `IntegrationGateway` isolates external-facing integration concerns from internal application architecture.
+- `OrchestrationService` coordinates the PlantMind workflow.
+- `WorkflowExecutor` performs concrete workflow execution.
+- Enterprise Engines SHALL NOT become workload orchestration owners.
+- Production API hosting currently exposes observation endpoints only and is not the operational workload execution boundary.
+- `ApplicationFacade`, `IntegrationGateway`, `OrchestrationService` and `WorkflowExecutor` are not currently composed by `CompositionRoot`.
+- Current optional constructors allow these components to construct downstream dependencies independently.
+- No approved Runtime `READY` to `OPERATIONAL` transition exists.
+
+### Contract Direction
+
+The canonical workload path SHALL be:
+
+External Interface
+
+↓
+
+`ApplicationFacade`
+
+↓
+
+`IntegrationGateway`
+
+↓
+
+`OrchestrationService`
+
+↓
+
+`WorkflowExecutor`
+
+↓
+
+Approved reasoning and presentation capabilities
+
+`ApplicationFacade` SHALL be the canonical application-level operational workload entry boundary.
+
+`IntegrationGateway` SHALL remain an integration-isolation boundary and SHALL NOT compete with `ApplicationFacade` as the platform application entry authority.
+
+`OrchestrationService` SHALL remain responsible for workflow coordination.
+
+`WorkflowExecutor` SHALL remain responsible for concrete workflow execution.
+
+Enterprise Engines SHALL NOT own orchestration.
+
+Production composition SHALL use one explicitly constructed dependency chain owned by `CompositionRoot`.
+
+External production interfaces SHALL consume the composed `ApplicationFacade` rather than independently constructing internal workload services.
+
+### Lifecycle Boundary
+
+RFC-041 SHALL establish the operational workload entry boundary but SHALL NOT transition Runtime to `OPERATIONAL`.
+
+Admission of a request, invocation of `ApplicationFacade`, workflow execution, or workflow completion SHALL NOT automatically modify Runtime lifecycle state under RFC-041.
+
+A future Runtime operational-transition RFC may use the RFC-041 workload boundary as lifecycle evidence only after transition conditions and authority are separately approved.
+
+### Expected Technical Scope
+
+RFC-041 MAY modify production composition code to:
+
+- construct the workload dependency chain explicitly;
+- expose the composed `ApplicationFacade`;
+- preserve one dependency graph from facade through workflow execution;
+- prevent production composition from relying on independent implicit construction.
+
+Existing backward-compatible constructors MAY remain where required by current tests and compatibility contracts.
+
+### Non-Goals
+
+RFC-041 SHALL NOT:
+
+- add `Runtime.mark_operational()` or equivalent;
+- transition Runtime to `OPERATIONAL`;
+- implement `DEGRADED`;
+- add `ServiceState.OPERATIONAL`;
+- add production business API routes solely for testing;
+- redesign reasoning or Enterprise Engines;
+- duplicate orchestration responsibilities;
+- introduce authentication, authorization, retry, recovery or traffic draining.
 
 ### Next Exact Action
 
-Review the Source of Truth and select the RFC-041 objective before defining any new contract, TDD scope or implementation.
+Define and commit the RFC-041 contract before TDD or production implementation begins.
 
 ---
 
