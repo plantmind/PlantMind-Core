@@ -102,7 +102,14 @@ class BootstrapManager:
 
         self.runtime.mark_stopping()
 
-        self.plugin_lifecycle.deactivate_all()
+        failures: list[Exception] = []
+
+        try:
+            self.plugin_lifecycle.deactivate_all()
+        except ExceptionGroup as exc:
+            failures.extend(exc.exceptions)
+        except Exception as exc:
+            failures.append(exc)
 
         for name in reversed(
             self.registry.registered_services()
@@ -112,7 +119,23 @@ class BootstrapManager:
             if service is None:
                 continue
 
-            service.shutdown()
+            try:
+                service.shutdown()
+            except ExceptionGroup as exc:
+                failures.extend(exc.exceptions)
+            except Exception as exc:
+                failures.append(exc)
+
+        if failures:
+            self.runtime.mark_failed()
+
+            if len(failures) == 1:
+                raise failures[0]
+
+            raise ExceptionGroup(
+                "Managed shutdown failures",
+                failures,
+            )
 
         self.runtime.mark_not_ready()
 
