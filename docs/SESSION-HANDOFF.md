@@ -2,17 +2,17 @@
 
 ## Current State
 
-| Property                     | Value                                                        |
-| ---------------------------- | ------------------------------------------------------------ |
-| Project                      | PlantMind PM-001                                             |
-| Branch                       | `feature/engineering-platform`                               |
-| Last Completed RFC           | RFC-045 — Mandatory Capability Coverage Evaluation Contract  |
-| Technical Baseline Commit    | `0b410ce`                                                    |
-| Architecture Baseline Commit | `9abde19`                                                    |
-| Test Baseline                | 309 passed                                                   |
-| Authoritative Environment    | `PlantMind-Core/.venv`                                       |
-| Remote State                 | Up to date with `origin/feature/engineering-platform`        |
-| RFC-045 Technical Push       | Verified                                                     |
+| Property                     | Value                                              |
+| ---------------------------- | -------------------------------------------------- |
+| Project                      | PlantMind PM-001                                   |
+| Branch                       | `feature/engineering-platform`                     |
+| Last Completed RFC           | RFC-046 — Operational Workload Evidence Contract   |
+| Technical Baseline Commit    | `6aca0a1`                                          |
+| Architecture Baseline Commit | `2365b68`                                          |
+| Test Baseline                | 327 passed                                         |
+| Authoritative Environment    | `PlantMind-Core/.venv`                             |
+| Remote State                 | Up to date with `origin/feature/engineering-platform` |
+| RFC-046 Technical Push       | Verified                                           |
 
 ## Recent Engineering Sequence
 
@@ -37,6 +37,7 @@
 - RFC-043 — Mandatory Capability Availability Observation Contract
 - RFC-044 — Mandatory Capability Policy Contract
 - RFC-045 — Mandatory Capability Coverage Evaluation Contract
+- RFC-046 — Operational Workload Evidence Contract
 
 ## RFC-036 Outcome
 
@@ -488,11 +489,73 @@ RFC-045 introduces no Runtime `READY` to `OPERATIONAL` transition.
 - Runtime lifecycle behavior: unchanged
 - `OPERATIONAL` transition: not introduced
 
+## RFC-046 Outcome
+
+RFC-046 established the trusted correlated operational-workload evidence boundary.
+
+Each canonical `ApplicationFacade.analyze()` invocation originates exactly one UUID workload identity.
+
+The same workload identity propagates unchanged through:
+
+- `ApplicationFacade`;
+- `IntegrationGateway`;
+- `OrchestrationService`;
+- `WorkflowExecutor`.
+
+RFC-046 introduced immutable:
+
+- `ApplicationFacadeEntryEvidence`;
+- `WorkflowExecutionStartEvidence`;
+- `OperationalWorkloadEvidence`.
+
+`ApplicationFacadeEntryEvidence` proves canonical workload entry.
+
+`WorkflowExecutionStartEvidence` proves that the correlated workload reached concrete workflow execution start.
+
+`OperationalWorkloadEvidence` requires matching workload identities between both evidence categories.
+
+Mismatched workload identities are rejected.
+
+`WorkflowExecution` optionally exposes correlated operational-workload evidence.
+
+Existing workflow result, stage and completion semantics remain unchanged.
+
+Direct internal execution without propagated canonical facade-entry evidence remains supported but does not fabricate operational-workload evidence.
+
+No persistent or global evidence recorder was introduced.
+
+Operational workload evidence remains independent from mandatory-capability policy, availability observation and mandatory-capability coverage evaluation.
+
+RFC-046 does not create an operational-eligibility decision.
+
+Runtime remains the sole authoritative lifecycle-state owner.
+
+Operational workload evidence is evidence only and does not authorize or execute a lifecycle transition.
+
+RFC-046 introduces no Runtime `READY` to `OPERATIONAL` transition.
+
+## RFC-046 Verification
+
+- Contract commit: `2365b68`
+- Technical commit: `6aca0a1`
+- Architecture decision: AD-032
+- Focused TDD suite: 18 passed
+- Impacted regression: 32 passed
+- Full regression: 327 passed
+- Compilation: passed
+- `git diff --cached --check`: passed
+- Remote technical push: verified
+- Workload correlation identity: UUID
+- Persistent/global evidence recorder: not introduced
+- Operational eligibility: not introduced
+- Runtime lifecycle behavior: unchanged
+- `OPERATIONAL` transition: not introduced
+
 ## Documentation Closure
 
-RFC-045 technical implementation is complete.
+RFC-046 technical implementation is complete.
 
-The engineering-memory layer is being synchronized with the RFC-045 technical baseline.
+The engineering-memory layer is being synchronized with the RFC-046 technical baseline.
 
 Relevant maintained documents:
 
@@ -504,23 +567,23 @@ Relevant maintained documents:
 
 ## Next Exact Action
 
-Begin architecture review for RFC-046 from the RFC-045 mandatory-capability coverage evaluation baseline.
+Begin architecture review for RFC-047 from the RFC-046 operational-workload evidence baseline.
 
-Before selecting or implementing RFC-046:
+Before selecting or implementing RFC-047:
 
-1. Review the Source of Truth from the RFC-045 baseline.
+1. Review the Source of Truth from the RFC-046 baseline.
 2. Preserve Runtime as the sole lifecycle decision authority.
-3. Preserve `MandatoryCapabilityPolicy` as the mandatory-membership policy owner.
-4. Preserve `CapabilityAvailabilityObserver` as the read-only availability observation coordinator.
-5. Preserve `MandatoryCapabilityCoverageEvaluator` as the deterministic fail-closed coverage evaluation boundary.
-6. Preserve `HealthCapability` as read-only health reporting.
-7. Do not treat `UNCONFIGURED` policy as satisfied.
-8. Do not treat missing, `UNKNOWN`, `UNAVAILABLE` or ambiguous evidence as satisfied.
-9. Do not introduce multi-source aggregation without a separately approved contract.
-10. Do not introduce observation freshness or TTL semantics without a separately approved contract.
+3. Preserve `ApplicationFacade` as the canonical workload-entry boundary.
+4. Preserve UUID correlation across the canonical workload path.
+5. Preserve `OperationalWorkloadEvidence` as evidence without lifecycle authority.
+6. Preserve `MandatoryCapabilityPolicy` as the mandatory-membership policy owner.
+7. Preserve `CapabilityAvailabilityObserver` as the availability observation coordinator.
+8. Preserve `MandatoryCapabilityCoverageEvaluator` as the fail-closed coverage evaluation boundary.
+9. Do not fabricate canonical workload evidence for direct internal execution.
+10. Do not combine independent evidence categories without a separately approved contract.
 11. Do not implement `READY` to `OPERATIONAL` without a separately approved transition contract.
-12. Do not introduce duplicate policy, availability, coverage or lifecycle authorities.
-13. Record the RFC-046 objective before TDD or production implementation begins.
+12. Do not introduce duplicate workload, policy, availability, coverage or lifecycle authorities.
+13. Record the RFC-047 objective before TDD or production implementation begins.
 
 ## Required Test Command
 

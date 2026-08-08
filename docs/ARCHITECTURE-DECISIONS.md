@@ -2164,3 +2164,192 @@ RFC-045 verification completed with:
 - `git diff --cached --check`: passed
 - Remote technical push: verified
 
+---
+
+# AD-032 — Operational Workload Evidence Boundary
+
+## Context
+
+RFC-042 established that trustworthy operational-transition evidence requires proof that a workload:
+
+- entered through the canonical `ApplicationFacade`;
+- reached concrete execution start through `WorkflowExecutor`.
+
+RFC-045 separately established mandatory-capability coverage evidence.
+
+PlantMind therefore required a correlated workload-evidence boundary without introducing operational-eligibility decisions or Runtime lifecycle-transition authority.
+
+RFC-046 establishes that boundary.
+
+## Decision
+
+PlantMind SHALL represent trusted canonical workload provenance through immutable correlated operational-workload evidence.
+
+Each canonical `ApplicationFacade.analyze()` invocation SHALL originate exactly one workload identity.
+
+The same workload identity SHALL propagate unchanged through:
+
+`ApplicationFacade`
+→ `IntegrationGateway`
+→ `OrchestrationService`
+→ `WorkflowExecutor`
+
+## Workload Identity
+
+Canonical workload identity SHALL use `UUID`.
+
+`ApplicationFacade` SHALL generate the identity once for each canonical invocation.
+
+Intermediate layers SHALL NOT replace or regenerate that identity.
+
+Separate canonical facade invocations SHALL use distinct workload identities.
+
+## Facade Entry Evidence
+
+`ApplicationFacadeEntryEvidence` SHALL represent proof that a workload entered through the canonical application facade.
+
+It SHALL be immutable and contain:
+
+`workload_id: UUID`
+
+`ApplicationFacade` owns production creation of this evidence.
+
+## Execution Start Evidence
+
+`WorkflowExecutionStartEvidence` SHALL represent proof that the correlated workload reached concrete workflow execution start.
+
+It SHALL be immutable and contain:
+
+`workload_id: UUID`
+
+`WorkflowExecutor` SHALL create this evidence only when canonical facade-entry evidence has been propagated to it.
+
+The execution-start workload identity SHALL match the propagated facade-entry workload identity.
+
+## Correlated Evidence
+
+`OperationalWorkloadEvidence` SHALL contain:
+
+- `facade_entry: ApplicationFacadeEntryEvidence`
+- `execution_start: WorkflowExecutionStartEvidence`
+
+It SHALL be immutable.
+
+Construction SHALL fail when the two evidence objects contain different workload identities.
+
+Matching workload identity establishes correlation between canonical facade entry and concrete workflow execution start.
+
+## Propagation Boundary
+
+`IntegrationGateway` and `OrchestrationService` SHALL forward supplied facade-entry evidence unchanged.
+
+They SHALL NOT:
+
+- originate canonical facade-entry evidence;
+- replace workload identity;
+- regenerate workload identity;
+- create lifecycle-transition decisions.
+
+## Workflow Execution Exposure
+
+`WorkflowExecution` SHALL optionally expose:
+
+`operational_workload_evidence: OperationalWorkloadEvidence | None`
+
+Existing result, stage and completion semantics SHALL remain unchanged.
+
+Canonical facade execution SHALL return correlated operational-workload evidence when workflow execution completes successfully.
+
+Direct internal execution without canonical facade-entry evidence SHALL NOT fabricate operational-workload evidence.
+
+## Direct Internal Invocation
+
+Direct invocation of:
+
+- `IntegrationGateway.execute()`;
+- `OrchestrationService.run()`;
+- `WorkflowExecutor.execute()`;
+
+without facade-entry evidence remains supported.
+
+Such execution SHALL produce no canonical operational-workload evidence.
+
+Internal workflow execution alone is insufficient proof of canonical application-facade entry.
+
+## Failure Boundary
+
+RFC-046 SHALL NOT introduce a persistent or global evidence recorder.
+
+If workflow execution raises before a `WorkflowExecution` result is returned, completed correlated workload evidence SHALL NOT be fabricated for the caller.
+
+Historical tracing, partial in-flight evidence persistence and failure-event recording remain separate concerns.
+
+## Trust Boundary
+
+RFC-046 establishes trusted in-process architectural provenance through canonical ownership and propagation boundaries.
+
+It does not establish:
+
+- cryptographic attestation;
+- cross-process signing;
+- distributed trace authentication;
+- external identity verification.
+
+## Capability Coverage Boundary
+
+Operational workload evidence remains independent from:
+
+- `CapabilityAvailabilityObserver`;
+- `MandatoryCapabilityPolicy`;
+- `MandatoryCapabilityCoverageEvaluator`;
+- `MandatoryCapabilityCoverageResult`.
+
+RFC-046 SHALL NOT combine workload evidence and mandatory-capability coverage into operational eligibility.
+
+## Runtime Boundary
+
+Runtime remains the sole authoritative owner of platform lifecycle state.
+
+Operational workload evidence is evidence only.
+
+RFC-046 SHALL NOT:
+
+- modify Runtime lifecycle state;
+- modify request admission;
+- add `Runtime.mark_operational()`;
+- add `Runtime.request_operational()`;
+- transition Runtime from `READY` to `OPERATIONAL`;
+- introduce `DEGRADED` behavior.
+
+## Composition Boundary
+
+RFC-046 preserves the canonical production chain owned by `CompositionRoot`.
+
+It SHALL NOT introduce duplicate facade, gateway, orchestration-service or workflow-executor authorities.
+
+No global mutable workload-evidence registry is introduced.
+
+## Consequences
+
+PlantMind now possesses trustworthy correlated evidence proving that the same canonical workload:
+
+- entered through `ApplicationFacade`;
+- reached concrete execution start through `WorkflowExecutor`.
+
+This closes the workload-provenance evidence gap identified by RFC-042 while preserving separation between evidence and lifecycle authority.
+
+Operational eligibility and Runtime transition remain outside RFC-046.
+
+## Verification
+
+RFC-046 verification completed with:
+
+- Contract commit: `2365b68`
+- Technical commit: `6aca0a1`
+- Focused TDD suite: 18 passed
+- Impacted regression: 32 passed
+- Full regression: 327 passed
+- Compilation: passed
+- `git diff --cached --check`: passed
+- Remote technical push: verified
+

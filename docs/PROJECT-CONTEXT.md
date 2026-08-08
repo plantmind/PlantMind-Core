@@ -364,101 +364,92 @@ It must extend, not discard, the accepted Plugin Framework.
 
 14. Immediate Development Direction
 
-RFC-045 — Mandatory Capability Coverage Evaluation Contract is technically complete.
+RFC-046 — Operational Workload Evidence Contract is technically complete.
 
-RFC-045 established a deterministic fail-closed evaluation boundary between mandatory-capability policy and trusted availability evidence.
+RFC-046 established trusted correlated operational-workload evidence proving that one canonical workload:
 
-PlantMind now separates:
+- entered through `ApplicationFacade`;
+- propagated through `IntegrationGateway`;
+- propagated through `OrchestrationService`;
+- reached concrete execution start through `WorkflowExecutor`.
 
-- mandatory-capability membership;
-- capability availability observation;
-- mandatory-capability coverage evaluation;
-- Runtime lifecycle authority.
+Each canonical `ApplicationFacade.analyze()` invocation originates exactly one UUID workload identity.
 
-`MandatoryCapabilityCoverageState` defines exactly:
+The same workload identity propagates unchanged through the canonical workload path.
 
-- `SATISFIED`
-- `UNSATISFIED`
+RFC-046 introduced immutable:
 
-`SATISFIED` means every required capability in a configured mandatory-capability policy is proven by exactly one matching trusted `AVAILABLE` observation.
+- `ApplicationFacadeEntryEvidence`;
+- `WorkflowExecutionStartEvidence`;
+- `OperationalWorkloadEvidence`.
 
-`UNSATISFIED` means mandatory capability coverage cannot be proven.
+`OperationalWorkloadEvidence` requires matching workload identities between facade-entry evidence and execution-start evidence.
 
-`MandatoryCapabilityCoverageResult` is immutable and reports:
+Mismatched identities are rejected.
 
-- required capabilities;
-- satisfied capabilities;
-- missing capabilities;
-- unavailable capabilities;
-- unknown capabilities;
-- ambiguous capabilities.
+`WorkflowExecution` optionally exposes:
 
-Diagnostic capability ordering preserves mandatory-policy requirement order.
+`operational_workload_evidence: OperationalWorkloadEvidence | None`
 
-An `UNCONFIGURED` mandatory-capability policy always evaluates to `UNSATISFIED`.
+Existing workflow result, stage and completion semantics remain unchanged.
 
-It SHALL NOT succeed because its requirement collection is empty.
+Direct invocation of `IntegrationGateway`, `OrchestrationService` or `WorkflowExecutor` without canonical facade-entry evidence remains supported.
 
-For configured policy evaluation:
+Such direct internal execution does not fabricate canonical operational-workload evidence.
 
-- no matching observation is classified as missing;
-- exactly one `AVAILABLE` observation is classified as satisfied;
-- exactly one `UNAVAILABLE` observation is classified as unavailable;
-- exactly one `UNKNOWN` observation is classified as unknown;
-- more than one matching observation is classified as ambiguous.
+No persistent or global workload-evidence recorder was introduced.
 
-Any missing, unavailable, unknown or ambiguous required capability causes overall `UNSATISFIED`.
+RFC-046 establishes trusted in-process architectural provenance only.
 
-RFC-045 does not perform multi-source aggregation.
+It does not introduce cryptographic attestation, cross-process signing or distributed-trace authentication.
 
-Multiple matching observations for one required capability fail closed as ambiguous.
+Operational workload evidence remains independent from:
 
-RFC-045 does not define freshness, TTL, maximum observation age or staleness policy.
+- `CapabilityAvailabilityObserver`;
+- `MandatoryCapabilityPolicy`;
+- `MandatoryCapabilityCoverageEvaluator`;
+- `MandatoryCapabilityCoverageResult`.
 
-Observations for capabilities not present in the mandatory policy do not affect mandatory coverage.
+RFC-046 does not combine operational workload evidence with mandatory-capability coverage.
 
-`CapabilityAvailabilityObserver` remains responsible for collecting trusted availability observations.
-
-`MandatoryCapabilityPolicy` remains responsible for mandatory-capability membership.
-
-`MandatoryCapabilityCoverageEvaluator` evaluates supplied evidence against the composed policy.
+No operational-eligibility evaluator has been introduced.
 
 Runtime remains the sole authoritative owner of platform lifecycle state.
 
-A `SATISFIED` coverage result is evidence only and SHALL NOT itself transition Runtime to `OPERATIONAL`.
+Operational workload evidence is evidence only.
 
-`CompositionRoot` owns the production `MandatoryCapabilityCoverageEvaluator`.
+It does not authorize or execute a Runtime lifecycle transition.
 
-The evaluator receives the exact composed `MandatoryCapabilityPolicy` instance, is registered in `ServiceContainer`, and is exposed through `PlatformComposition`.
+RFC-046 introduces no `READY` to `OPERATIONAL` transition.
 
-RFC-045 verification:
+RFC-046 verification:
 
-- Contract commit: `9abde19`
-- Technical commit: `0b410ce`
-- Architecture decision: AD-031
-- Focused TDD suite: 16 passed
-- Impacted regression: 71 passed
-- Full regression: 309 passed
+- Contract commit: `2365b68`
+- Technical commit: `6aca0a1`
+- Architecture decision: AD-032
+- Focused TDD suite: 18 passed
+- Impacted regression: 32 passed
+- Full regression: 327 passed
 - Compilation: passed
 - Remote technical push: verified
 
-RFC-046 is now in architecture review.
+RFC-047 is now in architecture review.
 
-Before selecting or implementing RFC-046:
+Before selecting or implementing RFC-047:
 
-Review the Source of Truth from the RFC-045 baseline.
+Review the Source of Truth from the RFC-046 baseline.
 Preserve Runtime as the sole lifecycle decision authority.
+Preserve `ApplicationFacade` as the canonical workload-entry boundary.
+Preserve workload UUID correlation across the canonical execution path.
+Preserve `OperationalWorkloadEvidence` as evidence without lifecycle authority.
 Preserve `MandatoryCapabilityPolicy` as the mandatory-membership policy owner.
-Preserve `CapabilityAvailabilityObserver` as the read-only availability observation coordinator.
-Preserve `MandatoryCapabilityCoverageEvaluator` as the coverage evaluation boundary.
-Preserve `HealthCapability` as read-only health reporting.
-Do not treat `UNCONFIGURED` policy as satisfied.
-Do not treat missing, `UNKNOWN`, `UNAVAILABLE` or ambiguous evidence as satisfied.
-Do not introduce multi-source aggregation without a separate approved contract.
-Do not introduce freshness or TTL semantics without a separate approved contract.
+Preserve `CapabilityAvailabilityObserver` as the availability observation coordinator.
+Preserve `MandatoryCapabilityCoverageEvaluator` as the fail-closed coverage evaluation boundary.
+Do not fabricate canonical workload evidence for direct internal execution.
+Do not combine independent evidence categories without a separately approved contract.
 Do not implement `READY` to `OPERATIONAL` without a separately approved transition contract.
-Do not introduce duplicate policy, availability, coverage or lifecycle authorities.
-Record the selected RFC-046 objective before TDD or production implementation begins.
+Do not introduce duplicate workload, policy, availability, coverage or lifecycle authorities.
+Record the selected RFC-047 objective before TDD or production implementation begins.
 
 15. Session Continuation Instruction
 

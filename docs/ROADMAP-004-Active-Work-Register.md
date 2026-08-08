@@ -33,271 +33,51 @@ No item may be marked complete until:
 
 # Active Work
 
-## RFC-046 — Operational Workload Evidence Contract
+## RFC-047 — Architecture Review
 
 ### Status
 
-Contract defined. Ready for contract verification and commit.
+Ready for architecture review. No RFC-047 contract has been selected.
 
 ### Objective
 
-Establish a trusted correlated operational-workload evidence boundary proving that one workload entered through the canonical `ApplicationFacade` and reached concrete execution start through `WorkflowExecutor`, without introducing operational-eligibility decisions or Runtime lifecycle-transition authority.
+Select the next architecture-controlled PlantMind increment from the RFC-046 operational-workload evidence baseline.
 
-### Architectural Position
+### Current Technical Baseline
 
-RFC-042 requires trustworthy evidence that:
+- Branch: `feature/engineering-platform`
+- Last completed RFC: RFC-046 — Operational Workload Evidence Contract
+- RFC-046 contract commit: `2365b68`
+- RFC-046 technical commit: `6aca0a1`
+- Focused TDD suite: 18 passed
+- Impacted regression: 32 passed
+- Full regression baseline: 327 passed
 
-- a workload entered through the canonical `ApplicationFacade`;
-- the same workload reached concrete execution start through `WorkflowExecutor`.
+### Current Architecture Boundary
 
-RFC-045 separately established mandatory-capability coverage evidence.
+PlantMind now has:
 
-RFC-046 SHALL establish the missing correlated workload-evidence boundary.
+- canonical workload entry through `ApplicationFacade`;
+- correlated UUID workload identity;
+- immutable facade-entry evidence;
+- immutable workflow-execution-start evidence;
+- correlated `OperationalWorkloadEvidence`;
+- fail-closed direct internal invocation semantics;
+- mandatory-capability coverage evaluation from RFC-045.
 
-RFC-046 SHALL NOT combine workload evidence with mandatory-capability coverage or decide whether Runtime may become `OPERATIONAL`.
+Operational workload evidence remains evidence only.
 
-### Workload Identity
+Mandatory-capability coverage remains a separate evidence category.
 
-Each canonical `ApplicationFacade.analyze()` invocation SHALL create exactly one workload identity.
+No operational-eligibility evaluator exists yet.
 
-The workload identity SHALL:
+Runtime lifecycle behavior remains unchanged.
 
-- use `UUID`;
-- be generated once at the canonical facade boundary;
-- remain unchanged throughout that workload execution path;
-- correlate facade-entry evidence with workflow-execution-start evidence;
-- not be reused intentionally across separate facade invocations.
-
-`IntegrationGateway`, `OrchestrationService` and `WorkflowExecutor` SHALL NOT replace or regenerate an existing workload identity.
-
-### Application Facade Entry Evidence
-
-RFC-046 SHALL introduce immutable:
-
-`ApplicationFacadeEntryEvidence`
-
-with:
-
-`workload_id: UUID`
-
-The evidence SHALL use `@dataclass(frozen=True, slots=True)`.
-
-`ApplicationFacade` SHALL be the production owner responsible for originating canonical facade-entry evidence.
-
-Creating facade-entry evidence SHALL NOT modify Runtime, request admission, availability, mandatory policy or capability coverage.
-
-### Workflow Execution Start Evidence
-
-RFC-046 SHALL introduce immutable:
-
-`WorkflowExecutionStartEvidence`
-
-with:
-
-`workload_id: UUID`
-
-The evidence SHALL use `@dataclass(frozen=True, slots=True)`.
-
-`WorkflowExecutor` SHALL create workflow-execution-start evidence only when a canonical facade-entry evidence object has been propagated to it.
-
-The execution-start evidence SHALL use the exact same workload identity as the propagated facade-entry evidence.
-
-Execution-start evidence SHALL be established immediately before concrete workflow execution proceeds into the existing reasoning/presentation operation.
-
-### Correlated Operational Workload Evidence
-
-RFC-046 SHALL introduce immutable:
-
-`OperationalWorkloadEvidence`
-
-with:
-
-- `facade_entry: ApplicationFacadeEntryEvidence`
-- `execution_start: WorkflowExecutionStartEvidence`
-
-The evidence SHALL use `@dataclass(frozen=True, slots=True)`.
-
-Construction SHALL fail if the two evidence objects contain different workload identities.
-
-Matching workload identity proves correlation between the two evidence categories.
-
-The evidence SHALL contain no lifecycle state and no operational-eligibility decision.
-
-### Evidence Propagation
-
-The canonical evidence path SHALL be:
-
-`ApplicationFacade`
-→ `IntegrationGateway`
-→ `OrchestrationService`
-→ `WorkflowExecutor`
-
-`ApplicationFacade` SHALL originate the facade-entry evidence.
-
-`IntegrationGateway` SHALL forward supplied facade-entry evidence unchanged.
-
-`OrchestrationService` SHALL forward supplied facade-entry evidence unchanged.
-
-`WorkflowExecutor` SHALL consume the propagated facade-entry evidence and produce correlated execution-start evidence.
-
-Intermediate layers SHALL NOT:
-
-- originate canonical facade-entry evidence;
-- replace the workload identity;
-- regenerate workload identity;
-- create lifecycle-transition decisions.
-
-### Workflow Execution Exposure
-
-`WorkflowExecution` SHALL expose:
-
-`operational_workload_evidence: OperationalWorkloadEvidence | None = None`
-
-The field SHALL remain optional to preserve existing construction and non-canonical internal execution paths.
-
-Existing `WorkflowExecution.result`, `WorkflowExecution.stages` and `WorkflowExecution.is_complete` semantics SHALL remain unchanged.
-
-A workflow reached through the canonical `ApplicationFacade` SHALL return correlated operational-workload evidence when execution completes successfully.
-
-A workflow executed without propagated facade-entry evidence SHALL NOT fabricate canonical operational-workload evidence.
-
-### Direct Internal Invocation Boundary
-
-Direct calls to:
-
-- `IntegrationGateway.execute()`;
-- `OrchestrationService.run()`;
-- `WorkflowExecutor.execute()`;
-
-without facade-entry evidence SHALL remain supported for existing internal and focused-test use.
-
-Such calls SHALL produce no `OperationalWorkloadEvidence`.
-
-Absence of canonical facade-entry evidence SHALL fail closed.
-
-Internal execution alone SHALL NOT be interpreted as proof that the workload entered through `ApplicationFacade`.
-
-### Failure Boundary
-
-RFC-046 SHALL NOT introduce a persistent or global evidence recorder.
-
-If workflow execution raises before a `WorkflowExecution` result is returned, RFC-046 SHALL NOT expose fabricated completed correlated evidence to the caller.
-
-Partial in-flight evidence persistence, failure-event recording and historical workload tracing remain outside RFC-046.
-
-### Trust Boundary
-
-RFC-046 defines trusted in-process architectural provenance.
-
-Production trust derives from the canonical composed call path and ownership boundaries.
-
-RFC-046 SHALL NOT introduce:
-
-- cryptographic attestation;
-- cross-process evidence signing;
-- distributed trace authentication;
-- external identity verification.
-
-Those concerns require separate architecture contracts if needed.
-
-### Capability Coverage Boundary
-
-RFC-046 SHALL NOT modify or duplicate:
-
-- `CapabilityAvailabilityObserver`;
-- `MandatoryCapabilityPolicy`;
-- `MandatoryCapabilityCoverageEvaluator`;
-- `MandatoryCapabilityCoverageResult`.
-
-Operational workload evidence and mandatory-capability coverage remain independent evidence categories.
-
-RFC-046 SHALL NOT combine them into an operational-eligibility result.
-
-### Runtime Boundary
-
-Runtime remains the sole authoritative owner of platform lifecycle state.
-
-RFC-046 SHALL NOT:
-
-- modify Runtime lifecycle state;
-- modify request-admission state;
-- add `Runtime.mark_operational()`;
-- add `Runtime.request_operational()`;
-- transition Runtime from `READY` to `OPERATIONAL`;
-- introduce `DEGRADED` behavior.
-
-Operational workload evidence SHALL be evidence only.
-
-It SHALL NOT authorize or execute a lifecycle transition.
-
-### Composition Boundary
-
-RFC-046 SHALL preserve the canonical production chain owned by `CompositionRoot`:
-
-`ApplicationFacade`
-→ `IntegrationGateway`
-→ `OrchestrationService`
-→ `WorkflowExecutor`
-
-RFC-046 SHALL NOT introduce a second application facade, gateway, orchestration service or workflow executor.
-
-No global mutable workload-evidence registry SHALL be added to `CompositionRoot`.
-
-### Implementation Scope
-
-RFC-046 MAY implement:
-
-- immutable workload evidence types;
-- UUID workload correlation;
-- facade-entry evidence creation;
-- transparent evidence propagation through the existing canonical workload path;
-- workflow-execution-start evidence creation;
-- correlated evidence validation;
-- optional evidence exposure through `WorkflowExecution`;
-- focused contract and regression tests.
-
-### Non-Goals
-
-RFC-046 SHALL NOT:
-
-- implement operational eligibility evaluation;
-- combine workload evidence with mandatory-capability coverage;
-- implement Runtime `READY` to `OPERATIONAL`;
-- add lifecycle-transition authority outside Runtime;
-- modify request admission;
-- introduce workload evidence timestamps or freshness semantics;
-- introduce a global or persistent evidence recorder;
-- introduce multi-process or cryptographic attestation;
-- change workflow completion semantics;
-- require direct internal execution paths to fabricate facade-entry evidence;
-- implement retry, recovery, traffic draining, authentication or authorization.
-
-### TDD Boundary
-
-Before production implementation, focused tests SHALL establish:
-
-- evidence models are immutable;
-- workload identity uses `UUID`;
-- mismatched facade-entry and execution-start identities are rejected;
-- one canonical facade invocation produces correlated workload evidence;
-- facade-entry and execution-start evidence share exactly one workload identity;
-- separate canonical facade invocations receive distinct workload identities;
-- `IntegrationGateway` forwards supplied facade-entry evidence unchanged;
-- `OrchestrationService` forwards supplied facade-entry evidence unchanged;
-- `WorkflowExecutor` creates execution-start evidence from the propagated workload identity;
-- direct gateway execution without facade-entry evidence does not fabricate operational-workload evidence;
-- direct orchestration execution without facade-entry evidence does not fabricate operational-workload evidence;
-- direct workflow execution without facade-entry evidence does not fabricate operational-workload evidence;
-- existing `WorkflowExecution` construction without operational evidence remains valid;
-- existing workflow completion semantics remain unchanged;
-- operational-workload evidence does not modify Runtime lifecycle state;
-- operational-workload evidence does not modify request admission;
-- workload evidence does not modify availability observation, mandatory policy or mandatory-capability coverage;
-- no Runtime operational transition is introduced.
+No `READY` to `OPERATIONAL` transition is implemented.
 
 ### Next Exact Action
 
-Verify and commit the RFC-046 contract before writing focused TDD tests or production Python.
+Review the Source of Truth and select the RFC-047 objective before defining any new contract, TDD scope or production implementation.
 
 ---
 
@@ -330,6 +110,7 @@ Verify and commit the RFC-046 contract before writing focused TDD tests or produ
 | RFC-043 | `ed807f0` | Mandatory capability availability observation contract |
 | RFC-044 | `a709c0d` | Mandatory capability policy contract |
 | RFC-045 | `0b410ce` | Mandatory capability coverage evaluation contract |
+| RFC-046 | `6aca0a1` | Operational workload evidence contract |
 
 RFC-039 verification:
 
@@ -439,6 +220,27 @@ RFC-045 verification:
 - `OPERATIONAL` transition: not introduced
 
 RFC-045 is technically complete.
+
+RFC-046 verification:
+
+- Contract commit: `2365b68`
+- Technical commit: `6aca0a1`
+- Architecture decision: AD-032
+- Focused TDD suite: 18 passed
+- Impacted regression: 32 passed
+- Full regression: 327 passed
+- Compilation: passed
+- `git diff --cached --check`: passed
+- Remote technical push: verified
+- Workload correlation: UUID
+- Canonical facade-entry evidence: introduced
+- Workflow-execution-start evidence: introduced
+- Persistent/global evidence recorder: not introduced
+- Operational eligibility: not introduced
+- Runtime lifecycle behavior: unchanged
+- `OPERATIONAL` transition: not introduced
+
+RFC-046 is technically complete.
 
 ---
 

@@ -872,6 +872,75 @@ Verification:
 - `git diff --cached --check`: passed
 - Remote technical push: verified
 
+
+### RFC-046 — Operational Workload Evidence Contract
+
+RFC-046 established the trusted correlated operational-workload evidence boundary.
+
+Each canonical `ApplicationFacade.analyze()` invocation originates exactly one UUID workload identity.
+
+The same workload identity propagates unchanged through:
+
+- `ApplicationFacade`;
+- `IntegrationGateway`;
+- `OrchestrationService`;
+- `WorkflowExecutor`.
+
+RFC-046 introduced immutable:
+
+- `ApplicationFacadeEntryEvidence`;
+- `WorkflowExecutionStartEvidence`;
+- `OperationalWorkloadEvidence`.
+
+`ApplicationFacadeEntryEvidence` proves canonical application-facade entry.
+
+`WorkflowExecutionStartEvidence` proves that the correlated workload reached concrete workflow execution start.
+
+`OperationalWorkloadEvidence` requires matching workload identities between both evidence categories.
+
+Mismatched workload identities are rejected.
+
+`WorkflowExecution` optionally exposes:
+
+`operational_workload_evidence: OperationalWorkloadEvidence | None`
+
+Existing workflow result, stage and completion semantics remain unchanged.
+
+Direct internal execution without propagated facade-entry evidence remains supported and does not fabricate canonical operational-workload evidence.
+
+No persistent or global workload-evidence recorder was introduced.
+
+RFC-046 establishes trusted in-process architectural provenance only.
+
+Operational workload evidence remains independent from:
+
+- `CapabilityAvailabilityObserver`;
+- `MandatoryCapabilityPolicy`;
+- `MandatoryCapabilityCoverageEvaluator`;
+- `MandatoryCapabilityCoverageResult`.
+
+No operational-eligibility decision was introduced.
+
+Runtime remains the sole authoritative owner of platform lifecycle state.
+
+Operational workload evidence is evidence only.
+
+It does not authorize or execute a lifecycle transition.
+
+RFC-046 introduces no `READY` to `OPERATIONAL` transition behavior.
+
+Verification:
+
+- Contract commit: `2365b68`
+- Technical commit: `6aca0a1`
+- Architecture decision: AD-032
+- Focused TDD suite: 18 passed
+- Impacted regression: 32 passed
+- Full regression: 327 passed
+- Compilation: passed
+- `git diff --cached --check`: passed
+- Remote technical push: verified
+
 ---
 
 # Current Status
@@ -900,6 +969,7 @@ PlantMind now possesses:
 - Mandatory Capability Availability Observation Contract
 - Mandatory Capability Policy Contract
 - Mandatory Capability Coverage Evaluation Contract
+- Operational Workload Evidence Contract
 - Service Lifecycle
 - Composition Root and dependency wiring
 - Structured engineering documentation
@@ -907,19 +977,19 @@ PlantMind now possesses:
 
 Current technical baseline:
 
-- RFC-045 — Mandatory Capability Coverage Evaluation Contract
-- Contract commit: `9abde19`
-- Technical commit: `0b410ce`
-- Full regression baseline: 309 passed
-- Architecture decision: AD-031
-- Production mandatory-capability policy: `UNCONFIGURED`
-- Mandatory capability coverage evaluation: fail closed
-- Multi-source aggregation: not introduced
-- Observation freshness policy: not introduced
+- RFC-046 — Operational Workload Evidence Contract
+- Contract commit: `2365b68`
+- Technical commit: `6aca0a1`
+- Full regression baseline: 327 passed
+- Architecture decision: AD-032
+- Canonical workload identity: UUID
+- Operational workload correlation: established
+- Mandatory-capability coverage: separate evidence category
+- Operational eligibility: not introduced
 - Runtime lifecycle behavior: unchanged
 - `OPERATIONAL` transition: not introduced
 
-The next engineering step is architecture review for RFC-046.
+The next engineering step is architecture review for RFC-047.
 
 The project remains in long-term enterprise platform development.
 
