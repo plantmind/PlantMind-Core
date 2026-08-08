@@ -6,13 +6,13 @@
 |---|---|
 | Project | PlantMind PM-001 |
 | Branch | `feature/engineering-platform` |
-| Last Completed RFC | RFC-043 — Mandatory Capability Availability Observation Contract |
-| Technical Baseline Commit | `ed807f0` |
-| Architecture Baseline Commit | `0d30cfb` |
-| Test Baseline | 278 passed |
+| Last Completed RFC | RFC-044 — Mandatory Capability Policy Contract |
+| Technical Baseline Commit | `a709c0d` |
+| Architecture Baseline Commit | `91c6090` |
+| Test Baseline | 293 passed |
 | Authoritative Environment | `PlantMind-Core/.venv` |
 | Remote State | Up to date with `origin/feature/engineering-platform` |
-| RFC-043 Technical Push | Verified |
+| RFC-044 Technical Push | Verified |
 
 ## Recent Engineering Sequence
 
@@ -35,6 +35,7 @@
 - RFC-041 — Operational Workload Entry Boundary Contract
 - RFC-042 — Runtime Operational Transition Evidence Contract
 - RFC-043 — Mandatory Capability Availability Observation Contract
+- RFC-044 — Mandatory Capability Policy Contract
 
 ## RFC-036 Outcome
 
@@ -368,11 +369,65 @@ RFC-043 introduces no Runtime `READY` to `OPERATIONAL` transition.
 - Runtime lifecycle behavior: unchanged
 - `OPERATIONAL` transition: not introduced
 
+## RFC-044 Outcome
+
+RFC-044 established the explicit immutable mandatory-capability policy boundary.
+
+PlantMind now distinguishes:
+
+- `UNCONFIGURED`
+- `CONFIGURED`
+
+An `UNCONFIGURED` policy contains no required capabilities and does not represent successful operational eligibility.
+
+A `CONFIGURED` policy requires at least one explicitly approved mandatory capability.
+
+A configured empty policy is invalid.
+
+`MandatoryCapabilityPolicy` owns mandatory-capability membership representation, policy-state invariants, capability-identifier validation and deterministic requirement ordering.
+
+`ConfigurationProvider` remains responsible for configuration access and validation.
+
+`CapabilityAvailabilityObserver` remains responsible only for trusted read-only availability observation.
+
+Observer membership does not imply mandatory-policy membership.
+
+`HealthCapability` remains read-only health reporting.
+
+Runtime remains the sole lifecycle-state authority.
+
+`CompositionRoot` owns the production `MandatoryCapabilityPolicy`.
+
+The same policy instance is registered in `ServiceContainer` and exposed through `PlatformComposition`.
+
+The current production policy is explicitly `UNCONFIGURED`.
+
+No real mandatory capability names were fabricated.
+
+No policy-to-availability coverage evaluator was introduced.
+
+RFC-044 introduces no Runtime `READY` to `OPERATIONAL` transition.
+
+## RFC-044 Verification
+
+- Contract commit: `91c6090`
+- Technical commit: `a709c0d`
+- Architecture decision: AD-030
+- Focused TDD suite: 15 passed
+- Impacted regression: 55 passed
+- Full regression: 293 passed
+- Compilation: passed
+- Remote technical push: verified
+- Production mandatory-capability policy: `UNCONFIGURED`
+- Fabricated mandatory capabilities: none
+- Runtime lifecycle behavior: unchanged
+- `OPERATIONAL` transition: not introduced
+
 ## Documentation Closure
 
-RFC-043 technical implementation is complete.
+RFC-044 technical implementation is complete.
 
-The engineering-memory layer is being synchronized with the RFC-043 technical baseline.
+The engineering-memory layer is being synchronized with the RFC-044 technical baseline.
 
 Relevant maintained documents:
 
@@ -384,20 +439,21 @@ Relevant maintained documents:
 
 ## Next Exact Action
 
-Begin architecture review for RFC-044 from the RFC-043 capability-availability observation baseline.
+Begin architecture review for RFC-045 from the RFC-044 mandatory-capability policy baseline.
 
-Before selecting or implementing RFC-044:
+Before selecting or implementing RFC-045:
 
-1. Review the Source of Truth from the RFC-043 baseline.
+1. Review the Source of Truth from the RFC-044 baseline.
 2. Preserve Runtime as the sole lifecycle decision authority.
-3. Preserve `HealthCapability` as read-only health reporting.
+3. Preserve `MandatoryCapabilityPolicy` as the mandatory-membership policy owner.
 4. Preserve `CapabilityAvailabilityObserver` as the read-only availability observation coordinator.
-5. Do not fabricate production capability sources.
-6. Do not infer mandatory-capability policy from observer membership.
-7. Do not interpret `UNKNOWN` as `AVAILABLE`.
-8. Do not introduce duplicate availability observers, registries or lifecycle authorities.
-9. Do not implement `READY` to `OPERATIONAL` until all separately approved prerequisites are satisfied.
-10. Record the RFC-044 objective before TDD or production implementation begins.
+5. Preserve `HealthCapability` as read-only health reporting.
+6. Do not infer mandatory policy from observer membership.
+7. Do not interpret `UNCONFIGURED` policy as operationally satisfied.
+8. Do not interpret `UNKNOWN` or `UNAVAILABLE` availability as acceptable evidence.
+9. Do not implement `READY` to `OPERATIONAL` without a separately approved eligibility contract.
+10. Do not introduce duplicate policy, availability or lifecycle authorities.
+11. Record the RFC-045 objective before TDD or production implementation begins.
 
 ## Required Test Command
 

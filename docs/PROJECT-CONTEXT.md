@@ -364,90 +364,86 @@ It must extend, not discard, the accepted Plugin Framework.
 
 14. Immediate Development Direction
 
-RFC-043 — Mandatory Capability Availability Observation Contract is technically complete.
+RFC-044 — Mandatory Capability Policy Contract is technically complete.
 
-RFC-043 established a dedicated read-only and fail-closed capability-availability observation foundation.
+RFC-044 established an explicit immutable mandatory-capability policy boundary.
 
-The approved architecture is:
+PlantMind now distinguishes mandatory-capability policy state explicitly through:
 
-Capability-Specific Availability Sources
+- `UNCONFIGURED`
+- `CONFIGURED`
 
-↓
+`UNCONFIGURED` means no approved mandatory-capability requirements have been established for the current platform composition or deployment.
 
-`CapabilityAvailabilityObserver`
+An `UNCONFIGURED` policy SHALL contain no required capabilities and SHALL NOT be interpreted as successful operational eligibility.
 
-↓
+`CONFIGURED` means explicit approved mandatory-capability requirements have been established.
 
-Immutable `CapabilityAvailabilityObservation`
+A `CONFIGURED` policy SHALL contain at least one required capability.
 
-↓
+A configured empty policy is invalid.
 
-Approved Consumers
+`MandatoryCapabilityPolicy` is immutable and owns:
 
-`CapabilityAvailabilityState` defines exactly:
+- mandatory-capability membership representation;
+- policy-state invariants;
+- capability-identifier validation;
+- deterministic requirement ordering.
 
-- `AVAILABLE`
-- `UNAVAILABLE`
-- `UNKNOWN`
+Capability identifiers SHALL be strings, non-empty, free of leading or trailing whitespace and unique within the policy.
 
-`UNKNOWN` represents inability to establish trustworthy current availability and SHALL NOT be interpreted as `AVAILABLE`.
+Duplicate identifiers are rejected rather than silently collapsed.
 
-`CapabilityAvailabilityObservation` is immutable and records:
+`ConfigurationProvider` remains responsible for configuration access and validation and does not become the semantic owner of mandatory-capability policy.
 
-- capability identity;
-- observed availability state;
-- timezone-aware UTC-normalized observation time;
-- trusted source identity.
+`CapabilityAvailabilityObserver` remains responsible only for trusted read-only capability availability observation.
 
-`CapabilityAvailabilitySource` defines the abstract trusted-source boundary for one explicitly identified capability.
+Observer source membership SHALL NOT imply mandatory-policy membership.
 
-`CapabilityAvailabilityObserver` coordinates explicitly composed sources in deterministic composition order.
+Availability state SHALL NOT modify mandatory-policy membership.
 
-A source observation failure produces `UNKNOWN` for that source capability without preventing observation of remaining sources.
+Mandatory-policy membership SHALL NOT fabricate availability evidence.
 
-An observer with no sources produces no availability evidence.
+`HealthCapability` remains read-only health reporting.
 
-Capability availability observation remains separate from mandatory-capability policy.
+Runtime remains the sole authoritative owner of platform lifecycle state.
 
-Source membership SHALL NOT imply mandatory status.
+`CompositionRoot` owns one explicit production `MandatoryCapabilityPolicy`, registers the same instance in `ServiceContainer`, and exposes it through `PlatformComposition`.
 
-`HealthCapability` remains the authoritative read-only health reporting interface and does not become the capability-specific probe owner or lifecycle authority.
+The current production mandatory-capability policy is explicitly `UNCONFIGURED`.
 
-Runtime remains the sole authoritative owner of platform lifecycle state and does not perform capability-specific probes.
+No real mandatory capability names were fabricated.
 
-`CompositionRoot` owns the single production `CapabilityAvailabilityObserver`, registers the same instance in `ServiceContainer`, and exposes it through `PlatformComposition`.
+No policy-to-availability coverage evaluator exists yet.
 
-No fabricated production capability sources were introduced.
+RFC-044 introduces no Runtime `READY` to `OPERATIONAL` transition behavior.
 
-The currently composed observer therefore contains no production sources and produces no false availability evidence.
+RFC-044 verification:
 
-RFC-043 introduces no Runtime `READY` to `OPERATIONAL` transition behavior.
-
-RFC-043 verification:
-
-- Contract commit: `0d30cfb`
-- Technical commit: `ed807f0`
-- Architecture decision: AD-029
+- Contract commit: `91c6090`
+- Technical commit: `a709c0d`
+- Architecture decision: AD-030
 - Focused TDD suite: 15 passed
-- Impacted regression: 40 passed
-- Full regression: 278 passed
+- Impacted regression: 55 passed
+- Full regression: 293 passed
 - Compilation: passed
 - Remote technical push: verified
 
-RFC-044 is now in architecture review.
+RFC-045 is now in architecture review.
 
-Before selecting or implementing RFC-044:
+Before selecting or implementing RFC-045:
 
-Review the Source of Truth from the RFC-043 baseline.
+Review the Source of Truth from the RFC-044 baseline.
 Preserve Runtime as the sole lifecycle decision authority.
-Preserve `HealthCapability` as read-only health reporting.
+Preserve `MandatoryCapabilityPolicy` as the mandatory-membership policy owner.
 Preserve `CapabilityAvailabilityObserver` as the read-only availability observation coordinator.
-Do not fabricate production capability sources.
+Preserve `HealthCapability` as read-only health reporting.
 Do not infer mandatory policy from observer membership.
-Do not treat `UNKNOWN` as `AVAILABLE`.
-Do not implement `READY` to `OPERATIONAL` without the separately approved remaining prerequisites.
-Do not introduce duplicate availability observers, registries or lifecycle authorities.
-Record the selected RFC-044 objective before TDD or production implementation begins.
+Do not treat an `UNCONFIGURED` policy as operationally satisfied.
+Do not treat `UNKNOWN` or `UNAVAILABLE` availability as acceptable evidence.
+Do not implement `READY` to `OPERATIONAL` without a separately approved eligibility contract.
+Do not introduce duplicate policy, availability or lifecycle authorities.
+Record the selected RFC-045 objective before TDD or production implementation begins.
 
 15. Session Continuation Instruction
 

@@ -737,6 +737,65 @@ Verification:
 
 ---
 
+### RFC-044 — Mandatory Capability Policy Contract
+
+RFC-044 established the explicit immutable mandatory-capability policy boundary.
+
+PlantMind now distinguishes policy state explicitly through:
+
+- `UNCONFIGURED`
+- `CONFIGURED`
+
+An `UNCONFIGURED` policy contains no required capabilities and SHALL NOT represent successful operational eligibility.
+
+A `CONFIGURED` policy requires at least one explicitly approved mandatory capability.
+
+A configured empty policy is invalid.
+
+`MandatoryCapabilityPolicy` owns:
+
+- mandatory-capability membership representation;
+- policy-state invariants;
+- capability-identifier validation;
+- deterministic requirement ordering.
+
+Required capability identifiers are strings, non-empty, free of leading or trailing whitespace and unique.
+
+`ConfigurationProvider` remains responsible for configuration access and validation and does not become the semantic policy owner.
+
+`CapabilityAvailabilityObserver` remains responsible only for trusted read-only availability observation.
+
+Observer membership does not imply mandatory-policy membership.
+
+`HealthCapability` remains read-only health reporting.
+
+Runtime remains the sole authoritative lifecycle-state owner.
+
+`CompositionRoot` owns the production `MandatoryCapabilityPolicy`.
+
+The same policy instance is registered in `ServiceContainer` and exposed through `PlatformComposition`.
+
+The current production policy is explicitly `UNCONFIGURED`.
+
+No real mandatory capability names were fabricated.
+
+No policy-to-availability coverage evaluator was introduced.
+
+RFC-044 introduces no `READY` to `OPERATIONAL` transition behavior.
+
+Verification:
+
+- Contract commit: `91c6090`
+- Technical commit: `a709c0d`
+- Architecture decision: AD-030
+- Focused TDD suite: 15 passed
+- Impacted regression: 55 passed
+- Full regression: 293 passed
+- Compilation: passed
+- Remote technical push: verified
+
+---
+
 # Current Status
 
 PlantMind now possesses:
@@ -761,6 +820,7 @@ PlantMind now possesses:
 - Operational Workload Entry Boundary Contract
 - Runtime Operational Transition Evidence Contract
 - Mandatory Capability Availability Observation Contract
+- Mandatory Capability Policy Contract
 - Service Lifecycle
 - Composition Root and dependency wiring
 - Structured engineering documentation
@@ -768,13 +828,15 @@ PlantMind now possesses:
 
 Current technical baseline:
 
-- RFC-043 — Mandatory Capability Availability Observation Contract
-- Contract commit: `0d30cfb`
-- Technical commit: `ed807f0`
-- Full regression baseline: 278 passed
-- Architecture decision: AD-029
-- Production capability sources: none
+- RFC-044 — Mandatory Capability Policy Contract
+- Contract commit: `91c6090`
+- Technical commit: `a709c0d`
+- Full regression baseline: 293 passed
+- Architecture decision: AD-030
+- Production mandatory-capability policy: `UNCONFIGURED`
+- Fabricated mandatory capabilities: none
+- Policy-to-availability coverage evaluator: not introduced
 
-The next engineering step is architecture review for RFC-044.
+The next engineering step is architecture review for RFC-045.
 
 The project remains in long-term enterprise platform development.

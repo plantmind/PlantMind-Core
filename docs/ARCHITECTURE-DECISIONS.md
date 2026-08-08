@@ -1816,3 +1816,165 @@ RFC-043 verification completed with:
 - Compilation: passed
 - `git diff --cached --check`: passed
 - Remote technical push: verified
+
+---
+
+# AD-030 — Mandatory Capability Policy Boundary
+
+## Context
+
+RFC-042 established that a future Runtime `READY` to `OPERATIONAL` transition requires trusted operational evidence.
+
+RFC-043 established the read-only capability-availability observation boundary but intentionally separated availability observation from mandatory-capability policy.
+
+PlantMind therefore required an explicit policy contract defining which capabilities are mandatory without assigning that responsibility to configuration access, availability observation, health reporting or Runtime lifecycle ownership.
+
+RFC-044 establishes that policy boundary.
+
+## Decision
+
+PlantMind SHALL use an explicit immutable:
+
+`MandatoryCapabilityPolicy`
+
+with an explicit:
+
+`MandatoryCapabilityPolicyState`
+
+The policy states SHALL be exactly:
+
+- `UNCONFIGURED`
+- `CONFIGURED`
+
+Mandatory-capability policy SHALL remain a distinct responsibility from:
+
+- `ConfigurationProvider`;
+- `CapabilityAvailabilityObserver`;
+- `HealthCapability`;
+- `ServiceRegistry`;
+- Runtime lifecycle state.
+
+## Policy State Semantics
+
+`UNCONFIGURED` means no approved mandatory-capability requirements have been established for the current platform composition or deployment.
+
+An `UNCONFIGURED` policy SHALL contain no required capabilities.
+
+`UNCONFIGURED` SHALL NOT represent successful operational eligibility.
+
+`CONFIGURED` means explicit approved mandatory-capability requirements have been established.
+
+A `CONFIGURED` policy SHALL contain at least one required capability.
+
+A configured empty policy SHALL be invalid.
+
+This distinction prevents future availability evaluation from treating an empty requirement collection as vacuously satisfied.
+
+## Immutable Policy
+
+`MandatoryCapabilityPolicy` SHALL be immutable.
+
+It SHALL contain:
+
+- `state`;
+- `required_capabilities`.
+
+Required capability identifiers SHALL:
+
+- be strings;
+- be non-empty;
+- contain no leading or trailing whitespace;
+- be unique.
+
+Explicit requirement ordering SHALL be preserved.
+
+Duplicate identifiers SHALL be rejected rather than silently collapsed.
+
+## Policy Ownership
+
+`MandatoryCapabilityPolicy` owns:
+
+- mandatory-capability membership representation;
+- policy-state invariants;
+- capability-identifier validation;
+- deterministic requirement ordering.
+
+`ConfigurationProvider` remains responsible for configuration access and validation.
+
+`ConfigurationProvider` SHALL NOT become the semantic owner of mandatory-capability policy.
+
+A future configuration-backed integration MAY provide raw configured capability identifiers to policy construction while policy invariants remain owned by `MandatoryCapabilityPolicy`.
+
+## Availability Boundary
+
+`MandatoryCapabilityPolicy` defines what capabilities are required.
+
+`CapabilityAvailabilityObserver` reports what trusted capability availability evidence currently exists.
+
+Observer source membership SHALL NOT imply mandatory-policy membership.
+
+Availability state SHALL NOT modify mandatory-policy membership.
+
+Mandatory-policy membership SHALL NOT fabricate availability evidence.
+
+## Runtime Boundary
+
+Runtime remains the sole authoritative owner of platform lifecycle state.
+
+Runtime SHALL NOT define mandatory-capability membership.
+
+RFC-044 introduces no Runtime `READY` to `OPERATIONAL` transition behavior.
+
+A future operational-eligibility contract MAY consume the mandatory policy together with trusted availability observations.
+
+## HealthCapability Boundary
+
+`HealthCapability` remains the authoritative read-only platform health reporting interface.
+
+It SHALL NOT:
+
+- define mandatory-capability membership;
+- decide mandatory-policy satisfaction;
+- decide operational eligibility;
+- modify Runtime lifecycle state.
+
+## Composition Ownership
+
+`CompositionRoot` SHALL own construction of the production `MandatoryCapabilityPolicy`.
+
+The same composed policy SHALL be:
+
+- registered in `ServiceContainer`;
+- exposed through `PlatformComposition`.
+
+Production code SHALL NOT independently construct competing mandatory-capability policies.
+
+Until real mandatory requirements are approved, production composition SHALL use one explicit `UNCONFIGURED` policy with no fabricated capability names.
+
+## Consequences
+
+PlantMind now distinguishes explicitly between:
+
+- absence of approved mandatory requirements;
+- configured mandatory requirements.
+
+The platform does not infer mandatory status from availability sources or service registration.
+
+The production policy remains explicitly unconfigured until real requirements are approved.
+
+No availability coverage evaluator is introduced.
+
+No `OPERATIONAL`, `DEGRADED` or `ServiceState.OPERATIONAL` behavior is introduced.
+
+## Verification
+
+RFC-044 verification completed with:
+
+- Contract commit: `91c6090`
+- Technical commit: `a709c0d`
+- Focused TDD suite: 15 passed
+- Impacted regression: 55 passed
+- Full regression: 293 passed
+- Compilation: passed
+- `git diff --cached --check`: passed
+- Remote technical push: verified
