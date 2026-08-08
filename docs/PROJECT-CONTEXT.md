@@ -364,92 +364,97 @@ It must extend, not discard, the accepted Plugin Framework.
 
 14. Immediate Development Direction
 
-RFC-046 — Operational Workload Evidence Contract is technically complete.
+RFC-047 — Operational Transition Evidence Aggregation Contract is technically complete.
 
-RFC-046 established trusted correlated operational-workload evidence proving that one canonical workload:
+RFC-047 established one immutable fail-closed aggregate for approved external operational-transition evidence.
 
-- entered through `ApplicationFacade`;
-- propagated through `IntegrationGateway`;
-- propagated through `OrchestrationService`;
-- reached concrete execution start through `WorkflowExecutor`.
+PlantMind now separates:
 
-Each canonical `ApplicationFacade.analyze()` invocation originates exactly one UUID workload identity.
+- Runtime-owned lifecycle preconditions;
+- correlated operational-workload evidence;
+- mandatory-capability coverage evidence;
+- external operational-transition evidence completeness;
+- final Runtime lifecycle-transition authority.
 
-The same workload identity propagates unchanged through the canonical workload path.
+RFC-047 introduced immutable:
 
-RFC-046 introduced immutable:
+`OperationalTransitionEvidence`
 
-- `ApplicationFacadeEntryEvidence`;
-- `WorkflowExecutionStartEvidence`;
-- `OperationalWorkloadEvidence`.
+containing:
 
-`OperationalWorkloadEvidence` requires matching workload identities between facade-entry evidence and execution-start evidence.
+- `operational_workload: OperationalWorkloadEvidence | None`
+- `mandatory_capability_coverage: MandatoryCapabilityCoverageResult | None`
 
-Mismatched identities are rejected.
+`OperationalTransitionEvidence.is_complete` is derived and read-only.
 
-`WorkflowExecution` optionally exposes:
+External evidence is complete only when:
 
-`operational_workload_evidence: OperationalWorkloadEvidence | None`
+- operational-workload evidence is present;
+- mandatory-capability coverage evidence is present;
+- mandatory-capability coverage state is `SATISFIED`.
 
-Existing workflow result, stage and completion semantics remain unchanged.
+Every incomplete or unsatisfied combination fails closed.
 
-Direct invocation of `IntegrationGateway`, `OrchestrationService` or `WorkflowExecutor` without canonical facade-entry evidence remains supported.
+`is_complete` represents external evidence completeness only.
 
-Such direct internal execution does not fabricate canonical operational-workload evidence.
+It does not represent final operational eligibility.
 
-No persistent or global workload-evidence recorder was introduced.
+The aggregate does not contain or duplicate:
 
-RFC-046 establishes trusted in-process architectural provenance only.
+- Runtime lifecycle state;
+- Runtime readiness;
+- request-admission state;
+- external readiness attestations;
+- external request-admission attestations.
 
-It does not introduce cryptographic attestation, cross-process signing or distributed-trace authentication.
+Runtime continues to evaluate its own lifecycle state and request-admission state directly.
 
-Operational workload evidence remains independent from:
+RFC-047 consumes existing validated `OperationalWorkloadEvidence` without recreating, replacing or rec correlating workload provenance.
 
-- `CapabilityAvailabilityObserver`;
-- `MandatoryCapabilityPolicy`;
-- `MandatoryCapabilityCoverageEvaluator`;
-- `MandatoryCapabilityCoverageResult`.
+RFC-047 consumes existing `MandatoryCapabilityCoverageResult` without collecting availability observations or reevaluating mandatory-capability coverage.
 
-RFC-046 does not combine operational workload evidence with mandatory-capability coverage.
+The exact supplied evidence objects are preserved by identity.
 
-No operational-eligibility evaluator has been introduced.
+RFC-047 introduces no current-time checks, freshness policy, TTL, retry, probing, source priority, external I/O or mutable internal evidence state.
+
+No global mutable evidence collector, recorder or persistent aggregate was introduced.
+
+`CompositionRoot` does not own a global `OperationalTransitionEvidence` instance.
 
 Runtime remains the sole authoritative owner of platform lifecycle state.
 
-Operational workload evidence is evidence only.
+A complete external evidence aggregate remains evidence only.
 
-It does not authorize or execute a Runtime lifecycle transition.
+RFC-047 introduces no `mark_operational()`, `request_operational()` or `READY` to `OPERATIONAL` transition.
 
-RFC-046 introduces no `READY` to `OPERATIONAL` transition.
+RFC-047 verification:
 
-RFC-046 verification:
-
-- Contract commit: `2365b68`
-- Technical commit: `6aca0a1`
-- Architecture decision: AD-032
-- Focused TDD suite: 18 passed
-- Impacted regression: 32 passed
-- Full regression: 327 passed
+- Contract commit: `35004dc`
+- Technical commit: `ebc4769`
+- Architecture decision: AD-033
+- Focused TDD suite: 17 passed
+- Impacted regression: 56 passed
+- Full regression: 344 passed
 - Compilation: passed
 - Remote technical push: verified
 
-RFC-047 is now in architecture review.
+RFC-048 is now in architecture review.
 
-Before selecting or implementing RFC-047:
+Before selecting or implementing RFC-048:
 
-Review the Source of Truth from the RFC-046 baseline.
+Review the Source of Truth from the RFC-047 baseline.
 Preserve Runtime as the sole lifecycle decision authority.
-Preserve `ApplicationFacade` as the canonical workload-entry boundary.
-Preserve workload UUID correlation across the canonical execution path.
-Preserve `OperationalWorkloadEvidence` as evidence without lifecycle authority.
-Preserve `MandatoryCapabilityPolicy` as the mandatory-membership policy owner.
-Preserve `CapabilityAvailabilityObserver` as the availability observation coordinator.
-Preserve `MandatoryCapabilityCoverageEvaluator` as the fail-closed coverage evaluation boundary.
-Do not fabricate canonical workload evidence for direct internal execution.
-Do not combine independent evidence categories without a separately approved contract.
-Do not implement `READY` to `OPERATIONAL` without a separately approved transition contract.
-Do not introduce duplicate workload, policy, availability, coverage or lifecycle authorities.
-Record the selected RFC-047 objective before TDD or production implementation begins.
+Preserve Runtime ownership of lifecycle state, readiness and request admission.
+Preserve `OperationalWorkloadEvidence` as correlated workload provenance evidence.
+Preserve `MandatoryCapabilityCoverageResult` as mandatory-capability coverage evidence.
+Preserve `OperationalTransitionEvidence` as external evidence aggregation only.
+Do not duplicate Runtime-owned preconditions in external evidence.
+Do not treat external evidence completeness as final operational eligibility.
+Do not modify or regenerate supplied evidence objects.
+Do not introduce global mutable operational-transition evidence state.
+Do not implement `READY` to `OPERATIONAL` without a separately approved Runtime transition contract.
+Do not introduce duplicate workload, policy, availability, coverage, evidence or lifecycle authorities.
+Record the selected RFC-048 objective before TDD or production implementation begins.
 
 15. Session Continuation Instruction
 

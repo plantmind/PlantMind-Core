@@ -941,6 +941,79 @@ Verification:
 - `git diff --cached --check`: passed
 - Remote technical push: verified
 
+
+### RFC-047 — Operational Transition Evidence Aggregation Contract
+
+RFC-047 established the immutable fail-closed external operational-transition evidence aggregation boundary.
+
+PlantMind now separates:
+
+- Runtime-owned lifecycle preconditions;
+- correlated operational-workload evidence;
+- mandatory-capability coverage evidence;
+- external operational-transition evidence completeness;
+- final Runtime lifecycle-transition authority.
+
+RFC-047 introduced immutable:
+
+`OperationalTransitionEvidence`
+
+containing:
+
+- `operational_workload: OperationalWorkloadEvidence | None`
+- `mandatory_capability_coverage: MandatoryCapabilityCoverageResult | None`
+
+`OperationalTransitionEvidence.is_complete` is deterministic, derived and read-only.
+
+External evidence is complete only when:
+
+- operational-workload evidence is present;
+- mandatory-capability coverage evidence is present;
+- mandatory-capability coverage state is `SATISFIED`.
+
+Every incomplete or unsatisfied combination fails closed.
+
+External evidence completeness does not represent final operational eligibility.
+
+The aggregate excludes:
+
+- Runtime lifecycle state;
+- Runtime readiness;
+- request-admission state;
+- duplicated Runtime-owned preconditions.
+
+Runtime continues to evaluate its own state directly.
+
+RFC-047 consumes existing validated `OperationalWorkloadEvidence` without recreating workload provenance or workload correlation.
+
+RFC-047 consumes existing `MandatoryCapabilityCoverageResult` without observing capabilities or reevaluating mandatory-capability coverage.
+
+The exact supplied evidence objects are preserved by identity.
+
+RFC-047 introduces no freshness policy, TTL, retry, probing, external I/O or mutable internal evidence state.
+
+No global mutable evidence collector, recorder or persistent aggregate was introduced.
+
+`CompositionRoot` does not own a global `OperationalTransitionEvidence` instance.
+
+Runtime remains the sole authoritative owner of platform lifecycle state.
+
+A complete external evidence aggregate remains evidence only.
+
+RFC-047 introduces no `mark_operational()`, `request_operational()` or `READY` to `OPERATIONAL` transition behavior.
+
+Verification:
+
+- Contract commit: `35004dc`
+- Technical commit: `ebc4769`
+- Architecture decision: AD-033
+- Focused TDD suite: 17 passed
+- Impacted regression: 56 passed
+- Full regression: 344 passed
+- Compilation: passed
+- `git diff --cached --check`: passed
+- Remote technical push: verified
+
 ---
 
 # Current Status
@@ -970,6 +1043,7 @@ PlantMind now possesses:
 - Mandatory Capability Policy Contract
 - Mandatory Capability Coverage Evaluation Contract
 - Operational Workload Evidence Contract
+- Operational Transition Evidence Aggregation Contract
 - Service Lifecycle
 - Composition Root and dependency wiring
 - Structured engineering documentation
@@ -977,19 +1051,20 @@ PlantMind now possesses:
 
 Current technical baseline:
 
-- RFC-046 — Operational Workload Evidence Contract
-- Contract commit: `2365b68`
-- Technical commit: `6aca0a1`
-- Full regression baseline: 327 passed
-- Architecture decision: AD-032
-- Canonical workload identity: UUID
-- Operational workload correlation: established
-- Mandatory-capability coverage: separate evidence category
+- RFC-047 — Operational Transition Evidence Aggregation Contract
+- Contract commit: `35004dc`
+- Technical commit: `ebc4769`
+- Full regression baseline: 344 passed
+- Architecture decision: AD-033
+- Operational-workload evidence: established
+- Mandatory-capability coverage evidence: established
+- External transition evidence aggregation: established
+- Runtime-owned preconditions in external evidence: none
 - Operational eligibility: not introduced
 - Runtime lifecycle behavior: unchanged
 - `OPERATIONAL` transition: not introduced
 
-The next engineering step is architecture review for RFC-047.
+The next engineering step is architecture review for RFC-048.
 
 The project remains in long-term enterprise platform development.
 

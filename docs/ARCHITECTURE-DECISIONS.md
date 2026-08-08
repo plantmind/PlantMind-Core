@@ -2353,3 +2353,178 @@ RFC-046 verification completed with:
 - `git diff --cached --check`: passed
 - Remote technical push: verified
 
+---
+
+# AD-033 — Operational Transition Evidence Aggregation Boundary
+
+## Context
+
+AD-028 established that future Runtime operational-transition evaluation must distinguish Runtime-owned preconditions from externally supplied operational evidence.
+
+RFC-045 established mandatory-capability coverage evidence.
+
+RFC-046 established correlated operational-workload evidence.
+
+PlantMind therefore required one immutable fail-closed aggregate for approved external operational-transition evidence without duplicating Runtime-owned state or introducing lifecycle-transition authority.
+
+RFC-047 establishes that boundary.
+
+## Decision
+
+PlantMind SHALL represent externally supplied operational-transition evidence through immutable:
+
+`OperationalTransitionEvidence`
+
+containing:
+
+- `operational_workload: OperationalWorkloadEvidence | None`
+- `mandatory_capability_coverage: MandatoryCapabilityCoverageResult | None`
+
+The aggregate SHALL use immutable value semantics.
+
+## External Evidence Completeness
+
+`OperationalTransitionEvidence` SHALL expose derived:
+
+`is_complete: bool`
+
+External evidence is complete only when:
+
+- operational-workload evidence is present;
+- mandatory-capability coverage evidence is present;
+- mandatory-capability coverage state is `SATISFIED`.
+
+Every incomplete or unsatisfied combination SHALL fail closed.
+
+`is_complete` represents external evidence completeness only.
+
+It SHALL NOT represent final Runtime operational eligibility.
+
+## Runtime-Owned Preconditions
+
+The aggregate SHALL NOT contain or duplicate:
+
+- Runtime lifecycle state;
+- Runtime readiness;
+- request-admission state;
+- external readiness attestations;
+- external request-admission attestations.
+
+Runtime remains responsible for evaluating its own lifecycle state and request-admission state directly.
+
+## Workload Evidence Boundary
+
+RFC-047 consumes existing validated `OperationalWorkloadEvidence`.
+
+It SHALL NOT:
+
+- recreate canonical facade-entry evidence;
+- recreate workflow-execution-start evidence;
+- generate workload identity;
+- replace workload identity;
+- repeat workload-correlation validation;
+- fabricate canonical workload provenance.
+
+Operational-workload correlation remains owned by RFC-046.
+
+## Mandatory Capability Coverage Boundary
+
+RFC-047 consumes existing `MandatoryCapabilityCoverageResult`.
+
+It SHALL NOT:
+
+- collect availability observations;
+- construct mandatory-capability policy;
+- perform mandatory-capability coverage evaluation;
+- reclassify missing, unavailable, unknown or ambiguous capabilities.
+
+Mandatory-capability coverage semantics remain owned by RFC-045.
+
+Only `SATISFIED` coverage satisfies the capability portion of external transition evidence.
+
+## Evidence Identity
+
+The aggregate SHALL preserve the exact evidence objects supplied to it.
+
+It SHALL NOT copy, normalize, replace or mutate either evidence category.
+
+This preserves explicit provenance and evidence identity.
+
+## Determinism
+
+For the same supplied evidence objects, external evidence completeness SHALL remain deterministic.
+
+RFC-047 introduces no:
+
+- current-time checks;
+- freshness policy;
+- TTL;
+- retry;
+- probing;
+- source priority;
+- external I/O;
+- mutable internal state.
+
+## Evidence Ownership
+
+RFC-047 SHALL NOT introduce a global mutable evidence collector, recorder or persistent aggregate.
+
+`OperationalTransitionEvidence` is per-evaluation evidence constructed explicitly from already produced evidence objects.
+
+`CompositionRoot` SHALL NOT maintain a global operational-transition evidence instance.
+
+## Lifecycle Authority
+
+Runtime remains the sole authoritative owner of platform lifecycle state.
+
+A complete `OperationalTransitionEvidence` aggregate remains evidence only.
+
+RFC-047 SHALL NOT:
+
+- transition Runtime;
+- modify Runtime;
+- modify request admission;
+- add `Runtime.mark_operational()`;
+- add `Runtime.request_operational()`;
+- introduce `DEGRADED`;
+- introduce `ServiceState.OPERATIONAL`.
+
+## Future Runtime Transition Boundary
+
+A future separately approved RFC may allow Runtime to consume:
+
+- `OperationalTransitionEvidence`;
+- Runtime-owned lifecycle state;
+- Runtime-owned request-admission state.
+
+Runtime SHALL independently validate its own preconditions under that future contract.
+
+RFC-047 does not implement that transition.
+
+## Consequences
+
+PlantMind now possesses a single immutable fail-closed aggregate for approved external operational-transition evidence.
+
+The architecture now separates:
+
+- Runtime-owned lifecycle preconditions;
+- correlated operational-workload evidence;
+- mandatory-capability coverage evidence;
+- external evidence completeness;
+- final Runtime lifecycle-transition authority.
+
+No final operational-eligibility decision or `READY` to `OPERATIONAL` transition is introduced.
+
+## Verification
+
+RFC-047 verification completed with:
+
+- Contract commit: `35004dc`
+- Technical commit: `ebc4769`
+- Focused TDD suite: 17 passed
+- Impacted regression: 56 passed
+- Full regression: 344 passed
+- Compilation: passed
+- `git diff --cached --check`: passed
+- Remote technical push: verified
+
