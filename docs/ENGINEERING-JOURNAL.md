@@ -385,6 +385,42 @@ Verification:
 - Remote push: verified
 
 
+---
+
+### RFC-036 — Managed Shutdown Failure Containment Contract
+
+RFC-036 established deterministic best-effort containment for managed shutdown failures while preserving established lifecycle ownership.
+
+The implementation:
+
+- Makes `PluginLifecycleManager` attempt all active plugin deactivations even after individual failures.
+- Preserves reverse activation order during plugin deactivation.
+- Removes successfully deactivated plugins from the active set.
+- Retains plugins whose deactivation fails because their final lifecycle state remains unresolved.
+- Preserves a single plugin deactivation failure as the original propagated exception.
+- Aggregates multiple plugin deactivation failures through `ExceptionGroup` in deterministic encounter order.
+- Makes Bootstrap continue to registered-service shutdown after plugin deactivation failure.
+- Makes Bootstrap attempt all registered service shutdown operations despite individual service failures.
+- Preserves deterministic reverse registry enumeration order for service shutdown.
+- Transitions Runtime to `FAILED` after any managed shutdown failure.
+- Keeps Runtime readiness false after failed shutdown.
+- Prevents Runtime from reaching `STOPPED` after failed managed shutdown.
+- Preserves a single Bootstrap-managed shutdown failure as the original propagated exception.
+- Aggregates multiple managed shutdown failures through `ExceptionGroup` in deterministic encounter order.
+- Preserves RFC-035 successful shutdown behavior and RFC-034 startup atomicity behavior.
+- Introduces no automatic retry, automatic recovery, dependency graph, parallel shutdown, ServiceState redesign, request-admission implementation, logging architecture redesign or process termination policy.
+
+Verification:
+
+- Compilation: passed
+- Focused lifecycle and shutdown-containment tests: 31 passed
+- Impacted runtime, bootstrap, plugin lifecycle and composition tests: 64 passed
+- Full regression: 225 passed
+- `git diff --check`: passed
+- Technical commit: `438d7e4`
+- Remote push: verified
+
+
 # Current Status
 
 PlantMind now possesses:
@@ -401,6 +437,7 @@ PlantMind now possesses:
 - Plugin Version Format Contract
 - Bootstrap Startup Failure Atomicity Contract
 - Bootstrap Shutdown Lifecycle Compliance Contract
+- Managed Shutdown Failure Containment Contract
 - Service Lifecycle
 - Composition Root and dependency wiring
 - Structured engineering documentation
@@ -408,8 +445,8 @@ PlantMind now possesses:
 
 Current technical baseline:
 
-- RFC-035 — Bootstrap Shutdown Lifecycle Compliance Contract
-- Commit: `3e613df`
-- Full regression: 217 passed
+- RFC-036 — Managed Shutdown Failure Containment Contract
+- Commit: `438d7e4`
+- Full regression: 225 passed
 
 The project has successfully moved beyond prototype stage and entered long-term enterprise platform development.

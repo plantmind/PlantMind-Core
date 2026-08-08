@@ -9,9 +9,9 @@
 | Status | Active Development |
 | Deployment Model | On-Premise |
 | Development Branch | `feature/engineering-platform` |
-| Last Completed RFC        | RFC-035 — Bootstrap Shutdown Lifecycle Compliance Contract                             |
-| Test Baseline             | 217 passing tests                                                                      |
-| Technical Baseline Commit | `3e613df`                                                                              |
+| Last Completed RFC        | RFC-036 — Managed Shutdown Failure Containment Contract                                |
+| Test Baseline             | 225 passing tests                                                                      |
+| Technical Baseline Commit | `438d7e4`                                                                              |
 | Purpose | Authoritative context for continuing PlantMind development across engineering sessions |
 
 ---
@@ -364,39 +364,45 @@ It must extend, not discard, the accepted Plugin Framework.
 
 14. Immediate Development Direction
 
-RFC-035 is complete at the technical baseline.
+RFC-036 is complete at the technical baseline.
 
-The Bootstrap Shutdown Lifecycle Compliance Contract aligns implemented shutdown behavior with BOOT-002 and RUNTIME-001.
+The Managed Shutdown Failure Containment Contract makes managed shutdown best-effort while preserving deterministic lifecycle ownership.
 
-Runtime now exposes a public `mark_stopping()` transition.
+`PluginLifecycleManager` now attempts all active plugin deactivations in reverse activation order even when one or more deactivations fail.
 
-The `STOPPING` transition makes Runtime not ready before component shutdown begins.
+Successfully deactivated plugins are removed from the active set, while plugins whose deactivation fails remain tracked as active because their final lifecycle state is unresolved.
 
-Bootstrap requests Runtime transition to `STOPPING` before plugin or service shutdown work begins.
+A single plugin deactivation failure remains the directly propagated original exception.
 
-Plugin deactivation remains owned by `PluginLifecycleManager`.
+Multiple plugin deactivation failures are propagated through `ExceptionGroup` in deterministic encounter order.
 
-Registered services continue to shut down in deterministic reverse registry enumeration order.
+Bootstrap continues to registered-service shutdown even when plugin deactivation reports failure.
 
-Runtime transitions to `STOPPED` only after required shutdown operations complete successfully.
+Bootstrap attempts all registered service shutdown operations in deterministic reverse registry enumeration order even when individual service shutdown operations fail.
 
-Existing `Runtime.mark_not_ready()` behavior remains backward compatible.
+Any managed shutdown failure transitions Runtime to `FAILED` and keeps readiness false.
 
-RFC-034 startup atomicity behavior remains unchanged.
+Runtime transitions to `STOPPED` only when all required managed shutdown operations complete successfully.
 
-RFC-035 introduces no shutdown retry logic, cleanup-failure aggregation, automatic recovery, dependency graphs, parallel shutdown, ServiceState redesign, request-admission implementation, plugin discovery or logging architecture redesign.
+A single Bootstrap-managed shutdown failure remains the directly propagated original exception.
 
-Technical verification completed with 11 focused Runtime and Bootstrap tests, 56 impacted runtime/bootstrap/plugin/composition tests and a full regression baseline of 217 passing tests.
+Multiple Bootstrap-managed shutdown failures are propagated through `ExceptionGroup` in deterministic encounter order.
 
-RFC-036 has not yet been selected.
+RFC-035 successful shutdown behavior and RFC-034 startup atomicity behavior remain backward compatible.
 
-Before selecting or implementing RFC-036:
+RFC-036 introduces no automatic retry, automatic recovery, dependency graph, parallel shutdown, ServiceState redesign, request-admission implementation, logging architecture redesign or process termination policy.
+
+Technical verification completed with 31 focused lifecycle and shutdown-containment tests, 64 impacted runtime/bootstrap/plugin/composition tests and a full regression baseline of 225 passing tests.
+
+RFC-037 has not yet been selected.
+
+Before selecting or implementing RFC-037:
 
 Review the Active Work Register.
 Review current committed code and tests.
 Review accepted RFCs, ADRs, architecture documents and deferred work.
 Preserve established Runtime ownership, Bootstrap orchestration, Service Registry, Plugin Lifecycle, Registry, Metadata, Version Format and Composition responsibilities.
-Do not introduce shutdown recovery, cleanup-failure aggregation, dependency graphs, parallel shutdown, ServiceState redesign or request-admission implementation without dedicated architecture review.
+Do not introduce shutdown retry, automatic recovery, dependency-aware shutdown, parallel shutdown, ServiceState redesign, process termination policy or structured shutdown telemetry without dedicated architecture review.
 Record the selected RFC objective and next exact action before implementation begins.
 
 15. Session Continuation Instruction

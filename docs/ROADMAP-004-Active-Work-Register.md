@@ -37,7 +37,7 @@ No item may be marked complete until:
 
 ### Status
 
-Architecture review complete; contract and TDD scope defined; implementation not started.
+Completed.
 
 ### Objective
 
@@ -46,10 +46,10 @@ Ensure managed platform shutdown continues deterministically after individual co
 ### Current Technical Baseline
 
 - Branch: `feature/engineering-platform`
-- Last completed RFC: RFC-035 — Bootstrap Shutdown Lifecycle Compliance Contract
-- RFC-035 technical commit: `3e613df`
-- Documentation baseline commit: `864af34`
-- Full regression baseline: 217 passed
+- Current technical RFC: RFC-036 — Managed Shutdown Failure Containment Contract
+- Technical implementation commit: `438d7e4`
+- Previous documentation baseline commit: `864af34`
+- Full regression baseline: 225 passed
 
 ### Architectural Findings
 
@@ -128,14 +128,26 @@ Do not introduce a second lifecycle manager, shutdown coordinator, retry engine 
 
 Automatic retry, recovery strategy, process termination policy, dependency-aware shutdown and structured shutdown telemetry require separate architecture review.
 
+### Verification
+
+- Compilation: passed
+- Focused RFC-036 lifecycle and shutdown containment tests: 31 passed
+- Impacted runtime, bootstrap, plugin lifecycle and composition tests: 64 passed
+- Full regression: 225 passed
+- `git diff --check`: passed after EOF cleanup
+- Technical commit: `438d7e4`
+- Push: verified
+
 ### Next Exact Action
 
-Commit the RFC-036 contract, then write failing focused tests before implementation.
+Synchronize the engineering-memory documents with the RFC-036 technical baseline before selecting RFC-037.
 
 
 ---
 
 # Recently Completed Work
+
+| RFC-036 | `438d7e4` | Managed shutdown failure containment contract |
 
 | RFC-035 | `3e613df` | Bootstrap shutdown lifecycle compliance contract |
 

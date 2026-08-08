@@ -887,3 +887,77 @@ RFC-035 does not define shutdown retry logic, cleanup-failure aggregation, autom
 Any future shutdown stage must preserve the Runtime `STOPPING` boundary and established ownership responsibilities.
 
 Shutdown failure semantics, cleanup-failure aggregation, recovery policy and request-admission behavior require separate architecture review.
+
+---
+
+# AD-022 — Managed Shutdown Failures Are Contained and Aggregated
+
+## Context
+
+RFC-035 aligned graceful shutdown with the accepted Runtime lifecycle by entering `STOPPING` before managed component shutdown and reaching `STOPPED` only after successful completion.
+
+Before RFC-036, an exception raised during plugin deactivation or service shutdown immediately interrupted the remaining shutdown sequence.
+
+This could leave later plugins or services unattempted and leave Runtime in `STOPPING` without a complete representation of the shutdown failure.
+
+RUNTIME-001 defines `FAILED` as the state for a critical failure preventing safe operation.
+
+## Decision
+
+Managed shutdown SHALL use deterministic best-effort failure containment.
+
+Runtime SHALL enter `STOPPING` before managed shutdown attempts begin.
+
+`PluginLifecycleManager` SHALL attempt all active plugin deactivations in reverse activation order even when individual deactivations fail.
+
+Successfully deactivated plugins SHALL be removed from the active set.
+
+Plugins whose deactivation fails SHALL remain tracked as active because their final lifecycle state is unresolved.
+
+Plugin deactivation ownership SHALL remain exclusively in `PluginLifecycleManager`.
+
+Bootstrap SHALL continue to registered-service shutdown when plugin deactivation reports failure.
+
+Bootstrap SHALL attempt all registered service shutdown operations in deterministic reverse registry enumeration order even when individual service shutdown operations fail.
+
+If all required managed shutdown operations succeed, Runtime MAY complete the existing transition to `STOPPED`.
+
+If any managed shutdown operation fails, Bootstrap SHALL request the Runtime-owned transition to `FAILED` and Runtime readiness SHALL remain false.
+
+A single managed shutdown failure SHALL remain the directly propagated original exception.
+
+Multiple managed shutdown failures SHALL be propagated through `ExceptionGroup`.
+
+Aggregated failures SHALL preserve deterministic shutdown encounter order.
+
+## Rationale
+
+- Prevents one failing component from blocking cleanup of unrelated managed components.
+- Preserves deterministic shutdown ordering.
+- Avoids falsely reporting `STOPPED` after incomplete or failed shutdown.
+- Keeps Runtime state ownership inside Runtime.
+- Keeps plugin lifecycle ownership inside `PluginLifecycleManager`.
+- Preserves original exception identity for single-failure cases.
+- Provides complete failure visibility for multi-failure shutdown without introducing a parallel error framework.
+
+## Consequences
+
+Managed shutdown becomes best-effort rather than fail-fast.
+
+Failed plugin deactivations remain visible through the active plugin set.
+
+Successful plugin deactivations are removed even when other plugin deactivations fail.
+
+Service shutdown continues after individual service failures.
+
+Runtime transitions to `FAILED` when any managed shutdown operation fails.
+
+Multiple failures may be exposed as `ExceptionGroup` and consumers of the Bootstrap boundary must be prepared for that Python 3.11 behavior.
+
+RFC-036 does not define automatic retry, automatic recovery, dependency-aware shutdown, parallel shutdown, ServiceState redesign, request-admission implementation, logging architecture redesign, structured shutdown telemetry or process termination policy.
+
+## Future Impact
+
+Future shutdown stages must participate in the same deterministic best-effort containment model unless a dedicated architecture decision replaces it.
+
+Retry policy, recovery strategy, dependency-aware shutdown, structured failure telemetry and process termination remain separate architecture concerns.
