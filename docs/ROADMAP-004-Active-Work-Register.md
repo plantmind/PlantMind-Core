@@ -33,48 +33,258 @@ No item may be marked complete until:
 
 # Active Work
 
-## RFC-045 — Architecture Review
+## RFC-045 — Mandatory Capability Coverage Evaluation Contract
 
 ### Status
 
-Ready for architecture review. No RFC-045 contract has been selected.
+Contract defined. Ready for contract verification and commit.
 
 ### Objective
 
-Select the next architecture-controlled PlantMind increment from the RFC-044 mandatory-capability policy baseline.
+Establish a deterministic fail-closed evaluation boundary that compares one approved `MandatoryCapabilityPolicy` with supplied trusted `CapabilityAvailabilityObservation` evidence without introducing Runtime lifecycle-transition authority.
 
-### Current Technical Baseline
+### Coverage State
 
-- Branch: `feature/engineering-platform`
-- Last completed RFC: RFC-044 — Mandatory Capability Policy Contract
-- RFC-044 contract commit: `91c6090`
-- RFC-044 technical commit: `a709c0d`
-- Focused TDD suite: 15 passed
-- Impacted regression: 55 passed
-- Full regression baseline: 293 passed
+RFC-045 SHALL introduce:
 
-### Current Architecture Boundary
+`MandatoryCapabilityCoverageState`
 
-PlantMind now has:
+with exactly:
 
-- a trusted capability-availability observation boundary;
-- an explicit immutable mandatory-capability policy boundary;
-- explicit `UNCONFIGURED` versus `CONFIGURED` policy semantics;
-- fail-closed separation between policy and availability evidence.
+- `SATISFIED`
+- `UNSATISFIED`
 
-The production mandatory-capability policy remains explicitly `UNCONFIGURED`.
+`SATISFIED` means every required capability in a configured mandatory-capability policy is proven by exactly one matching trusted `AVAILABLE` observation.
 
-No real mandatory capability names have been fabricated.
+`UNSATISFIED` means mandatory coverage cannot be proven.
 
-No policy-to-availability coverage evaluator exists yet.
+Coverage state SHALL NOT represent Runtime lifecycle state.
 
-Runtime lifecycle behavior remains unchanged.
+### Immutable Coverage Result
 
-No `READY` to `OPERATIONAL` transition is implemented.
+RFC-045 SHALL introduce an immutable:
+
+`MandatoryCapabilityCoverageResult`
+
+with:
+
+- `state: MandatoryCapabilityCoverageState`
+- `required_capabilities: tuple[str, ...]`
+- `satisfied_capabilities: tuple[str, ...]`
+- `missing_capabilities: tuple[str, ...]`
+- `unavailable_capabilities: tuple[str, ...]`
+- `unknown_capabilities: tuple[str, ...]`
+- `ambiguous_capabilities: tuple[str, ...]`
+
+The result SHALL use `@dataclass(frozen=True)`.
+
+All diagnostic capability collections SHALL preserve mandatory-policy requirement order.
+
+Each required capability SHALL appear in exactly one diagnostic classification when policy state is `CONFIGURED`.
+
+The result SHALL contain diagnostic evidence only.
+
+The result SHALL NOT contain lifecycle-transition authority or a second operational-eligibility state.
+
+### Evaluator Contract
+
+RFC-045 SHALL introduce:
+
+`MandatoryCapabilityCoverageEvaluator`
+
+The evaluator SHALL be constructed with one explicit:
+
+`MandatoryCapabilityPolicy`
+
+The public evaluation operation SHALL be:
+
+`evaluate(observations) -> MandatoryCapabilityCoverageResult`
+
+The supplied observations SHALL be treated as one evaluation snapshot.
+
+The evaluator SHALL be deterministic and read-only.
+
+### Policy Ownership
+
+The evaluator SHALL consume the same policy instance supplied during composition.
+
+It SHALL NOT:
+
+- construct an independent mandatory-capability policy;
+- modify mandatory-policy membership;
+- infer mandatory requirements from observations;
+- convert observer membership into policy membership.
+
+### Unconfigured Policy Semantics
+
+When policy state is `UNCONFIGURED`:
+
+- result state SHALL be `UNSATISFIED`;
+- `required_capabilities` SHALL be empty;
+- all diagnostic capability collections SHALL be empty;
+- supplied observations SHALL NOT cause coverage to become satisfied.
+
+An unconfigured empty policy SHALL therefore fail closed without fabricating requirements.
+
+### Configured Policy Evaluation
+
+For every capability in `required_capabilities`, matching SHALL use exact `capability_name` identity.
+
+No matching observation:
+
+- classify the capability as missing.
+
+Exactly one matching observation with `AVAILABLE`:
+
+- classify the capability as satisfied.
+
+Exactly one matching observation with `UNAVAILABLE`:
+
+- classify the capability as unavailable.
+
+Exactly one matching observation with `UNKNOWN`:
+
+- classify the capability as unknown.
+
+More than one matching observation regardless of availability states:
+
+- classify the capability as ambiguous.
+
+Overall state SHALL be `SATISFIED` only when every required capability is classified as satisfied.
+
+Any missing, unavailable, unknown or ambiguous required capability SHALL produce overall `UNSATISFIED`.
+
+### Ambiguity Boundary
+
+RFC-045 SHALL fail closed when multiple observations match one required capability.
+
+The evaluator SHALL NOT:
+
+- choose the newest observation;
+- choose the oldest observation;
+- prefer `AVAILABLE`;
+- prefer `UNAVAILABLE`;
+- prefer a particular source;
+- combine or merge source states.
+
+Multi-source aggregation remains outside RFC-045.
+
+### Freshness Boundary
+
+RFC-045 SHALL NOT evaluate timestamp freshness.
+
+The evaluator SHALL NOT introduce:
+
+- TTL;
+- maximum observation age;
+- staleness thresholds;
+- current-time comparisons.
+
+`observed_at` remains part of trusted evidence but its freshness semantics require a separately approved architecture contract.
+
+### Non-Required Evidence
+
+Observations whose `capability_name` is not present in the mandatory policy SHALL be ignored for mandatory coverage evaluation.
+
+Non-required observations SHALL NOT:
+
+- become mandatory;
+- alter policy membership;
+- affect overall coverage state.
+
+### Availability Boundary
+
+`CapabilityAvailabilityObserver` remains responsible for collecting availability observations.
+
+`MandatoryCapabilityCoverageEvaluator` evaluates supplied observations against mandatory policy.
+
+The evaluator SHALL NOT perform capability-specific probes.
+
+It SHALL NOT modify `CapabilityAvailabilityObserver`.
+
+### Runtime Boundary
+
+Runtime remains the sole authoritative owner of platform lifecycle state.
+
+Coverage evaluation SHALL NOT:
+
+- modify Runtime lifecycle state;
+- modify request-admission state;
+- transition Runtime to `OPERATIONAL`.
+
+A `SATISFIED` coverage result is evidence only.
+
+It SHALL NOT itself authorize or execute a lifecycle transition.
+
+### Composition Ownership
+
+`CompositionRoot` SHALL construct one production `MandatoryCapabilityCoverageEvaluator`.
+
+The evaluator SHALL receive the exact composed `MandatoryCapabilityPolicy` instance established by RFC-044.
+
+The same evaluator instance SHALL be:
+
+- registered in `ServiceContainer`;
+- exposed through `PlatformComposition`.
+
+Production code SHALL NOT construct competing coverage evaluators backed by independent mandatory policies.
+
+### Implementation Scope
+
+RFC-045 MAY implement:
+
+- `MandatoryCapabilityCoverageState`;
+- immutable `MandatoryCapabilityCoverageResult`;
+- `MandatoryCapabilityCoverageEvaluator`;
+- deterministic configured-policy evaluation;
+- explicit unconfigured-policy fail-closed evaluation;
+- Composition Root construction, registration and exposure;
+- focused contract and composition tests.
+
+### Non-Goals
+
+RFC-045 SHALL NOT:
+
+- implement Runtime `READY` to `OPERATIONAL`;
+- add `Runtime.mark_operational()`, `request_operational()` or equivalent;
+- introduce `DEGRADED`;
+- add `ServiceState.OPERATIONAL`;
+- perform capability probing;
+- modify mandatory policy;
+- implement multi-source aggregation;
+- implement source priority;
+- implement observation freshness or TTL;
+- fabricate missing evidence;
+- treat `UNKNOWN` as `AVAILABLE`;
+- treat `UNAVAILABLE` as acceptable evidence;
+- treat ambiguous evidence as satisfied;
+- treat `UNCONFIGURED` policy as satisfied;
+- introduce retry, recovery, traffic draining, authentication or authorization.
+
+### TDD Boundary
+
+Before production implementation, focused tests SHALL establish:
+
+- exact coverage-state semantics;
+- result immutability;
+- unconfigured policy fails closed;
+- configured policy with all required capabilities `AVAILABLE` is satisfied;
+- missing required capability fails closed;
+- `UNAVAILABLE` required capability fails closed;
+- `UNKNOWN` required capability fails closed;
+- multiple observations for one required capability are ambiguous and fail closed;
+- non-required observations do not affect coverage;
+- policy ordering is preserved in diagnostics;
+- each configured required capability receives exactly one diagnostic classification;
+- evaluator uses the exact composed policy instance;
+- Composition Root exposes and registers the same evaluator instance;
+- evaluation does not mutate Runtime lifecycle state;
+- evaluation does not mutate request admission;
+- evaluation does not mutate the availability observer or mandatory policy.
 
 ### Next Exact Action
 
-Review the Source of Truth and select the RFC-045 objective before defining any new contract, TDD scope or production implementation.
+Verify and commit the RFC-045 contract before writing focused TDD tests or production Python.
 
 ---
 
