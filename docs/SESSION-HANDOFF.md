@@ -6,12 +6,12 @@
 |---|---|
 | Project | PlantMind PM-001 |
 | Branch | `feature/engineering-platform` |
-| Last Completed RFC | RFC-038 — Runtime Readiness Verification Contract |
-| Technical Baseline Commit | `b65cceb` |
-| Test Baseline | 248 passed |
+| Last Completed RFC | RFC-039 — API Request Admission Enforcement Contract |
+| Technical Baseline Commit | `bc26371` |
+| Test Baseline | 256 passed |
 | Authoritative Environment | `PlantMind-Core/.venv` |
 | Remote State | Up to date with `origin/feature/engineering-platform` |
-| Working Tree After RFC-038 Closure | Clean |
+| Working Tree After RFC-039 Closure | Clean |
 
 ## Recent Engineering Sequence
 
@@ -29,6 +29,7 @@
 - RFC-036 — Managed Shutdown Failure Containment Contract
 - RFC-037 — Runtime Request Admission Control Contract
 - RFC-038 — Runtime Readiness Verification Contract
+- RFC-039 — API Request Admission Enforcement Contract
 
 ## RFC-036 Outcome
 
@@ -123,11 +124,43 @@ The implementation:
 - Technical commit: `b65cceb`
 - Remote technical push: verified
 
+## RFC-039 Outcome
+
+RFC-039 established API-hosting enforcement of the Runtime-owned request-admission state.
+
+The implementation:
+
+- Introduces `RequestAdmissionMiddleware`.
+- Makes API hosting observe Runtime request-admission state without modifying it.
+- Rejects operational requests with HTTP `503 Service Unavailable` while admission is disabled.
+- Uses a deterministic platform-owned rejection response.
+- Keeps `/` available as an explicit platform-status observation endpoint.
+- Keeps `/health` available as an explicit platform-health observation endpoint.
+- Keeps observation exemptions explicit and prevents health-path wildcard admission.
+- Wires the production FastAPI application to the same composed `platform.runtime` instance used by the lifecycle.
+- Keeps `HealthCapability` read-only and outside admission decisions.
+- Preserves Bootstrap lifecycle orchestration ownership.
+- Preserves RFC-037 request-admission ownership and lifecycle behavior.
+- Preserves RFC-038 readiness verification and READY-before-admission ordering.
+- Introduces no production business endpoint solely for admission testing.
+- Introduces no OPERATIONAL or DEGRADED transition, authentication, authorization, rate limiting, retry, recovery or traffic draining.
+
+## RFC-039 Verification
+
+- Focused API and lifecycle suite: 39 passed
+- Impacted regression: 88 passed
+- Full regression: 256 passed
+- Compilation: passed
+- `git diff --check`: passed
+- Contract commit: `4b738df`
+- Technical commit: `bc26371`
+- Remote technical push: verified
+
 ## Documentation Closure
 
-The technical implementation of RFC-038 is complete.
+The technical implementation of RFC-039 is complete.
 
-The engineering-memory layer has been synchronized with the RFC-038 technical baseline.
+The engineering-memory layer has been synchronized with the RFC-039 technical baseline.
 
 Relevant maintained documents:
 
@@ -139,19 +172,21 @@ Relevant maintained documents:
 
 ## Next Exact Action
 
-Begin architecture review for RFC-039 from the latest committed Git state.
+Begin architecture review for RFC-040 from the latest committed Git state.
 
-Before selecting or implementing RFC-039:
+Before selecting or implementing RFC-040:
 
 1. Review the Active Work Register.
 2. Review current committed code and tests.
 3. Review accepted RFCs, ADRs, architecture documents and deferred work.
-4. Preserve Runtime ownership of lifecycle and readiness decisions.
-5. Preserve Bootstrap lifecycle orchestration ownership.
-6. Preserve ConfigurationProvider validation ownership and HealthCapability read-only observation.
-7. Preserve Composition Root dependency-construction ownership.
-8. Do not introduce OPERATIONAL or DEGRADED transitions, API admission enforcement, traffic draining, retry or recovery without dedicated architecture review.
-9. Record the selected RFC objective and next exact action before implementation begins.
+4. Preserve Runtime ownership of request-admission state.
+5. Preserve API-hosting ownership of request-admission enforcement.
+6. Preserve Bootstrap lifecycle orchestration ownership.
+7. Preserve Runtime readiness-decision ownership and HealthCapability read-only observation.
+8. Preserve Composition Root dependency-construction ownership.
+9. Keep observation exemptions explicit and narrow.
+10. Do not introduce OPERATIONAL or DEGRADED transitions, traffic draining, authentication, authorization, retry or recovery without dedicated architecture review.
+11. Record the selected RFC objective and next exact action before implementation begins.
 
 ## Required Test Command
 

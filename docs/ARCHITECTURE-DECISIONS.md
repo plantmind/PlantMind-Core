@@ -1110,3 +1110,80 @@ RFC-038 does not define OPERATIONAL or DEGRADED transitions, API admission enfor
 Future lifecycle work must preserve Runtime ownership of readiness decisions and immutable readiness evidence unless replaced by a dedicated architecture decision.
 
 OPERATIONAL and DEGRADED transitions, API request-admission enforcement, traffic draining, retry and recovery require separate architecture review.
+
+---
+
+# AD-025 — API Hosting Enforces Runtime Request Admission
+
+## Context
+
+RFC-037 established Runtime as the exclusive owner of request-admission state.
+
+RUNTIME-001 requires the API hosting layer to enforce request admission according to Runtime.
+
+Before RFC-039, the FastAPI hosting layer did not enforce the Runtime-owned admission state.
+
+RFC-038 requires Runtime to reach `READY` before Bootstrap enables request admission.
+
+Platform status and health observation must remain available even when operational request admission is disabled.
+
+## Decision
+
+Runtime SHALL remain the exclusive owner of request-admission state.
+
+The API hosting layer SHALL enforce Runtime-owned request admission for operational requests.
+
+API enforcement SHALL read Runtime admission state only through the approved public Runtime interface.
+
+API enforcement SHALL NOT modify Runtime lifecycle state or request-admission state.
+
+Operational requests received while admission is disabled SHALL be rejected with HTTP `503 Service Unavailable`.
+
+The rejection response SHALL use a deterministic platform-owned response contract.
+
+The platform-status endpoint `/` SHALL remain explicitly available while request admission is disabled.
+
+The platform-health endpoint `/health` SHALL remain explicitly available while request admission is disabled.
+
+Observation exemptions SHALL be explicit and SHALL NOT use unrestricted health-path matching.
+
+The API hosting layer SHALL use the same composed Runtime instance used by Bootstrap and the platform lifecycle.
+
+`HealthCapability` SHALL remain read-only observation and SHALL NOT participate in admission decisions.
+
+Request admission SHALL be evaluated when a new request enters the API hosting boundary.
+
+RFC-039 SHALL NOT define draining or cancellation semantics for requests already executing.
+
+## Rationale
+
+- Preserves Runtime as the single source of truth for request admission.
+- Places enforcement at the boundary where operational requests enter the platform.
+- Prevents API hosting from becoming a second lifecycle authority.
+- Keeps lifecycle observation available during startup, shutdown and failure.
+- Prevents accidental exemption of arbitrary health-like paths.
+- Preserves RFC-038 readiness-before-admission ordering.
+- Uses the Composition Root dependency graph rather than an independent Runtime instance.
+
+## Consequences
+
+Operational requests are now rejected deterministically when Runtime admission is disabled.
+
+Platform status and health observation remain available independently of operational admission.
+
+The production FastAPI application uses the composed Runtime instance for admission enforcement.
+
+API enforcement remains stateless with respect to lifecycle ownership.
+
+Existing RFC-037 and RFC-038 lifecycle behavior remains compatible.
+
+RFC-039 does not define OPERATIONAL or DEGRADED transitions, authentication, authorization, rate limiting, retry, recovery, traffic draining, request cancellation or business workflow behavior.
+
+## Future Impact
+
+Future production operational API routes must remain behind the Runtime-owned admission boundary unless explicitly classified as approved observation interfaces.
+
+Any new observation exemption must be explicit and architecture-reviewed.
+
+OPERATIONAL and DEGRADED transitions, traffic draining, authentication, authorization, retry and recovery remain separate architecture concerns.
+

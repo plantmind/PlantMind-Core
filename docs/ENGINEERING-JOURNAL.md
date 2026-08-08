@@ -487,6 +487,41 @@ Verification:
 
 ---
 
+### RFC-039 — API Request Admission Enforcement Contract
+
+RFC-039 established API-hosting enforcement of the Runtime-owned request-admission state.
+
+The implementation:
+
+- Introduces `RequestAdmissionMiddleware`.
+- Enforces Runtime-owned request-admission state at the API hosting boundary.
+- Rejects operational requests with HTTP `503 Service Unavailable` when admission is disabled.
+- Uses a deterministic platform-owned rejection response.
+- Keeps `/` available as an explicit platform-status observation endpoint.
+- Keeps `/health` available as an explicit platform-health observation endpoint.
+- Keeps observation exemptions explicit and prevents unrestricted health-path wildcard admission.
+- Reads admission state from the same composed Runtime instance used by the platform lifecycle.
+- Does not modify Runtime lifecycle state or request-admission state.
+- Keeps `HealthCapability` read-only and outside admission decisions.
+- Preserves Bootstrap lifecycle orchestration ownership.
+- Preserves RFC-037 request-admission lifecycle behavior.
+- Preserves RFC-038 readiness verification and READY-before-admission ordering.
+- Introduces no production business endpoint solely for admission testing.
+- Introduces no OPERATIONAL or DEGRADED transition, authentication, authorization, rate limiting, retry, recovery or traffic draining.
+
+Verification:
+
+- Focused API and lifecycle suite: 39 passed
+- Impacted regression: 88 passed
+- Full regression: 256 passed
+- Compilation: passed
+- `git diff --check`: passed
+- Contract commit: `4b738df`
+- Technical commit: `bc26371`
+- Remote technical push: verified
+
+---
+
 # Current Status
 
 PlantMind now possesses:
@@ -506,6 +541,7 @@ PlantMind now possesses:
 - Managed Shutdown Failure Containment Contract
 - Runtime Request Admission Control Contract
 - Runtime Readiness Verification Contract
+- API Request Admission Enforcement Contract
 - Service Lifecycle
 - Composition Root and dependency wiring
 - Structured engineering documentation
@@ -513,11 +549,11 @@ PlantMind now possesses:
 
 Current technical baseline:
 
-- RFC-038 — Runtime Readiness Verification Contract
-- Contract commit: `cc683fc`
-- Technical commit: `b65cceb`
-- Full regression: 248 passed
+- RFC-039 — API Request Admission Enforcement Contract
+- Contract commit: `4b738df`
+- Technical commit: `bc26371`
+- Full regression: 256 passed
 
-The next engineering step is architecture review for RFC-039.
+The next engineering step is architecture review for RFC-040.
 
 The project remains in long-term enterprise platform development.
