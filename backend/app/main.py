@@ -2,6 +2,7 @@ from contextlib import asynccontextmanager
 
 from fastapi import FastAPI
 
+from app.api.request_admission import RequestAdmissionMiddleware
 from app.config import settings
 from app.core.composition import CompositionRoot
 from app.schemas.platform import (
@@ -32,6 +33,12 @@ app = FastAPI(
     description="Enterprise Operational Intelligence Platform",
     version=settings.VERSION,
     lifespan=lifespan,
+)
+
+
+app.add_middleware(
+    RequestAdmissionMiddleware,
+    runtime=platform.runtime,
 )
 
 

@@ -1,6 +1,7 @@
 from fastapi.testclient import TestClient
 
-from app.main import app
+from app.api.request_admission import RequestAdmissionMiddleware
+from app.main import app, platform
 
 
 def test_root_endpoint_returns_platform_status() -> None:
@@ -35,3 +36,13 @@ def test_health_endpoint_returns_platform_health() -> None:
         "registered_services": 0,
         "services": [],
     }
+
+
+def test_main_uses_composed_runtime_for_request_admission() -> None:
+    middleware = next(
+        item
+        for item in app.user_middleware
+        if item.cls is RequestAdmissionMiddleware
+    )
+
+    assert middleware.kwargs["runtime"] is platform.runtime
