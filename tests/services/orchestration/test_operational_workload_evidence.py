@@ -315,8 +315,9 @@ def test_workload_evidence_does_not_modify_capability_boundaries() -> None:
     assert platform.mandatory_capability_coverage_evaluator is evaluator
 
 
-def test_rfc046_introduces_no_runtime_operational_transition_api() -> None:
+def test_operational_workload_boundary_has_no_lifecycle_authority() -> None:
     platform = CompositionRoot.build()
 
     assert not hasattr(platform.runtime, "mark_operational")
-    assert not hasattr(platform.runtime, "request_operational")
+    assert not hasattr(platform.application_facade, "request_operational")
+    assert not hasattr(platform.workflow_executor, "request_operational")

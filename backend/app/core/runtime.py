@@ -8,6 +8,7 @@ of the PlantMind platform.
 from __future__ import annotations
 
 from app.config import settings
+from app.core.operational_transition_evidence import OperationalTransitionEvidence
 from app.core.readiness import ReadinessEvidence
 from app.core.runtime_state import RuntimeState
 
@@ -36,6 +37,28 @@ class Runtime:
             )
 
         self.mark_ready()
+
+    def request_operational(
+        self,
+        evidence: OperationalTransitionEvidence,
+    ) -> None:
+        """Enter OPERATIONAL when all transition requirements are satisfied."""
+        if self.state is not RuntimeState.READY:
+            raise RuntimeError(
+                "Runtime must be READY before entering OPERATIONAL."
+            )
+
+        if not self.is_request_admission_enabled:
+            raise RuntimeError(
+                "Request admission must be enabled before entering OPERATIONAL."
+            )
+
+        if not evidence.is_complete:
+            raise RuntimeError(
+                "Operational transition evidence is incomplete."
+            )
+
+        self.state = RuntimeState.OPERATIONAL
 
     def mark_ready(self) -> None:
         """

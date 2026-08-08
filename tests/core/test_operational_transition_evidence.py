@@ -272,11 +272,12 @@ def test_external_evidence_does_not_modify_request_admission() -> None:
     assert runtime.is_request_admission_enabled is initial_admission
 
 
-def test_rfc047_introduces_no_runtime_operational_transition_api() -> None:
+def test_operational_transition_evidence_has_no_lifecycle_authority() -> None:
     runtime = Runtime()
+    evidence = OperationalTransitionEvidence()
 
     assert not hasattr(runtime, "mark_operational")
-    assert not hasattr(runtime, "request_operational")
+    assert not hasattr(evidence, "request_operational")
 
 
 def test_composition_has_no_global_operational_transition_evidence() -> None:
