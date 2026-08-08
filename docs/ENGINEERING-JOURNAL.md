@@ -320,6 +320,42 @@ Verification:
 - Technical working tree after implementation: clean
 
 
+---
+
+### RFC-034 — Bootstrap Startup Failure Atomicity Contract
+
+RFC-034 established atomic failure behavior for Bootstrap startup while preserving existing lifecycle ownership.
+
+The implementation:
+
+- Completes validation of all registered services before any service initialization begins.
+- Stops startup immediately when service validation fails.
+- Stops subsequent service initialization when initialization fails.
+- Tracks only services whose initialization completed successfully.
+- Rolls back successfully initialized services in reverse initialization order.
+- Reuses `PluginLifecycleManager` to roll back successfully activated plugins.
+- Preserves reverse plugin deactivation order.
+- Rolls back plugins before initialized services when plugin activation fails.
+- Introduces the Runtime-owned public `mark_failed()` transition.
+- Transitions Runtime to `FAILED` after critical startup failure.
+- Keeps Runtime readiness false after failed startup.
+- Prevents transition to READY unless startup completes successfully.
+- Preserves the original startup exception when compensating cleanup succeeds.
+- Preserves existing successful startup and graceful shutdown behavior.
+- Introduces no retry logic, automatic startup recovery, dependency graph, parallel initialization, plugin discovery, ServiceState redesign, logging architecture redesign or version compatibility policy.
+
+Verification:
+
+- Compilation: passed
+- Focused RFC-034 tests: 10 passed
+- Impacted runtime, bootstrap, plugin lifecycle and composition tests: 53 passed
+- Full regression: 214 passed
+- `git diff --check`: passed
+- Technical commit: `a174009`
+- Remote push: verified
+- Technical working tree after implementation: clean
+
+
 # Current Status
 
 PlantMind now possesses:
@@ -334,6 +370,7 @@ PlantMind now possesses:
 - Plugin Identity Consistency Contract
 - Plugin Metadata Contract
 - Plugin Version Format Contract
+- Bootstrap Startup Failure Atomicity Contract
 - Service Lifecycle
 - Composition Root and dependency wiring
 - Structured engineering documentation
@@ -341,8 +378,8 @@ PlantMind now possesses:
 
 Current technical baseline:
 
-- RFC-033 — Plugin Version Format Contract
-- Commit: `569e4fb`
-- Full regression: 204 passed
+- RFC-034 — Bootstrap Startup Failure Atomicity Contract
+- Commit: `a174009`
+- Full regression: 214 passed
 
 The project has successfully moved beyond prototype stage and entered long-term enterprise platform development.

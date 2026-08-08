@@ -6,12 +6,12 @@
 |---|---|
 | Project | PlantMind PM-001 |
 | Branch | `feature/engineering-platform` |
-| Last Completed RFC | RFC-033 — Plugin Version Format Contract |
-| Technical Baseline Commit | `569e4fb` |
-| Test Baseline | 204 passed |
+| Last Completed RFC | RFC-034 — Bootstrap Startup Failure Atomicity Contract |
+| Technical Baseline Commit | `a174009` |
+| Test Baseline | 214 passed |
 | Authoritative Environment | `PlantMind-Core/.venv` |
 | Remote State | Up to date with `origin/feature/engineering-platform` |
-| Technical Working Tree After RFC-033 | Clean |
+| Technical Working Tree After RFC-034 | Clean |
 
 ## Recent Engineering Sequence
 
@@ -24,47 +24,44 @@
 - RFC-031 — Plugin Identity Consistency Contract
 - RFC-032 — Plugin Metadata Contract
 - RFC-033 — Plugin Version Format Contract
+- RFC-034 — Bootstrap Startup Failure Atomicity Contract
 
-## RFC-033 Outcome
+## RFC-034 Outcome
 
-RFC-033 established a canonical version-format invariant for plugin metadata.
+RFC-034 established atomic failure behavior for Bootstrap startup.
 
-The plugin metadata contract now:
+The Bootstrap lifecycle now:
 
-- Requires `plugin_version` to use canonical `MAJOR.MINOR.PATCH` format
-- Requires each version component to be a non-negative decimal integer
-- Rejects leading zeros except for the value `0`
-- Rejects missing and additional version components
-- Rejects `v` prefixes
-- Rejects surrounding whitespace rather than normalizing it
-- Rejects pre-release and build suffixes
-- Rejects invalid separators
-- Validates versions when immutable `PluginMetadata` is constructed
-- Raises plugin-specific `InvalidPluginVersionError` for invalid versions
-- Preserves `ValueError` semantics for invalid plugin versions
-- Preserves `PluginMetadata.contract_version` semantics
-- Preserves valid RFC-032 plugin metadata behavior
-- Preserves Registry, Composition Root, Plugin Lifecycle and Bootstrap responsibilities
-- Introduces no external version-parsing dependency
-- Introduces no version comparison, semantic-version compatibility evaluation, plugin discovery, filesystem scanning, package loading, capability catalog or security approval policy
+- Completes validation of all registered services before any service initialization begins
+- Stops startup immediately when service validation fails
+- Stops subsequent service initialization when initialization fails
+- Tracks only services whose initialization completed successfully
+- Rolls back successfully initialized services in reverse initialization order
+- Reuses `PluginLifecycleManager` to roll back successfully activated plugins in reverse activation order
+- Rolls back plugins before initialized services when plugin activation fails
+- Exposes a Runtime-owned public transition to `FAILED`
+- Leaves Runtime not ready after any critical startup failure
+- Prevents Runtime from transitioning to READY unless startup completes successfully
+- Preserves the original startup exception when compensating cleanup succeeds
+- Preserves successful startup and graceful shutdown behavior
+- Introduces no retry logic, automatic startup recovery, dependency graph, parallel initialization, plugin discovery, ServiceState redesign, logging architecture redesign or version compatibility policy
 
-## RFC-033 Verification
+## RFC-034 Verification
 
 - Compilation: passed
-- Focused RFC-033 tests: 10 passed
-- Impacted plugin, composition and bootstrap tests: 54 passed
-- Full regression: 204 passed
-- Invalid separator verification: passed
+- Focused RFC-034 tests: 10 passed
+- Impacted runtime, bootstrap, plugin lifecycle and composition tests: 53 passed
+- Full regression: 214 passed
 - `git diff --check`: passed
-- Technical commit: `569e4fb`
+- Technical commit: `a174009`
 - Push: verified
 - Technical working tree: clean
 
 ## Documentation Closure
 
-The technical implementation of RFC-033 is complete.
+The technical implementation of RFC-034 is complete.
 
-The engineering-memory layer has been synchronized with the RFC-033 technical baseline.
+The engineering-memory layer has been synchronized with the RFC-034 technical baseline.
 
 Relevant maintained documents:
 
@@ -76,15 +73,15 @@ Relevant maintained documents:
 
 ## Next Exact Action
 
-Begin architecture review for RFC-034 from the latest committed Git state.
+Begin architecture review for RFC-035 from the latest committed Git state.
 
-Before selecting or implementing RFC-034:
+Before selecting or implementing RFC-035:
 
 1. Review the Active Work Register.
 2. Review current committed code and tests.
 3. Review accepted RFCs, ADRs, architecture documents and deferred work.
-4. Preserve the established Registry, Plugin Identity, Plugin Metadata, Plugin Version Format, Plugin Lifecycle, Controlled Registration, Service, Bootstrap and Composition responsibilities.
-5. Do not introduce version compatibility evaluation, plugin discovery, filesystem scanning, package loading, capability catalogs or security approval policy without dedicated architecture review.
+4. Preserve established Runtime ownership, Bootstrap orchestration, Service Registry, Plugin Lifecycle, Registry, Metadata, Version Format and Composition responsibilities.
+5. Do not introduce startup recovery strategies, dependency graphs, plugin discovery, parallel initialization, ServiceState redesign or version compatibility policy without dedicated architecture review.
 6. Record the selected RFC objective and next exact action before implementation begins.
 
 ## Required Test Command

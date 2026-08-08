@@ -747,3 +747,73 @@ RFC-033 does not define version comparison, semantic-version compatibility evalu
 Any future plugin compatibility, catalog, discovery, package-loading or governance mechanism must build on this canonical version-format invariant.
 
 Version comparison or compatibility policy requires a dedicated architecture review and must not be inferred from RFC-033 alone.
+
+---
+
+# AD-020 — Bootstrap Startup Failure Is Atomic
+
+## Context
+
+BOOT-002 requires Bootstrap to stop startup immediately when a critical dependency fails and prohibits partial startup unless explicitly supported.
+
+Before RFC-034, service validation and initialization were interleaved, successfully initialized services were not rolled back after later startup failures, and successful plugin activations could remain active after a later plugin failed.
+
+RUNTIME-001 defines `FAILED` as the runtime state for a critical failure preventing safe operation.
+
+## Decision
+
+Bootstrap startup SHALL behave atomically with respect to components successfully started during the current startup attempt.
+
+All registered services SHALL complete validation before any registered service is initialized.
+
+A service validation failure SHALL stop startup before service initialization or plugin activation begins.
+
+A service initialization failure SHALL stop further initialization.
+
+Only services whose `initialize()` operation completed successfully during the current startup attempt SHALL participate in startup rollback.
+
+Successfully initialized services SHALL be shut down in reverse initialization order when a later startup stage fails.
+
+A plugin activation failure SHALL stop further activation.
+
+Successfully activated plugins SHALL be rolled back through the existing `PluginLifecycleManager`.
+
+Plugin rollback SHALL occur before initialized-service rollback and SHALL preserve reverse activation order.
+
+Runtime SHALL own the public transition into `FAILED`.
+
+A critical startup failure SHALL request the Runtime `FAILED` transition and Runtime readiness SHALL remain false.
+
+Runtime SHALL NOT transition to READY unless all mandatory startup stages complete successfully.
+
+When compensating cleanup succeeds, the original startup exception SHALL remain the primary propagated failure.
+
+## Rationale
+
+- Enforces the existing BOOT-002 prohibition on partial startup.
+- Keeps Bootstrap as the startup and shutdown orchestration authority.
+- Keeps Runtime as the owner of Runtime state.
+- Reuses existing Plugin Lifecycle ownership instead of creating a parallel rollback mechanism.
+- Ensures failed startup cannot intentionally leave previously started components running.
+- Preserves deterministic reverse-order cleanup.
+- Preserves successful startup and shutdown behavior.
+
+## Consequences
+
+Service validation is completed as a distinct phase before service initialization begins.
+
+Bootstrap tracks successfully initialized services for the duration of the startup attempt.
+
+Critical startup failures transition Runtime to `FAILED` through its public interface.
+
+Successful plugin activations are deactivated before initialized services are shut down when plugin activation fails.
+
+RFC-034 does not define retry logic, automatic startup recovery, dependency graphs, parallel initialization, plugin discovery, ServiceState redesign, logging architecture redesign or version compatibility policy.
+
+Secondary failures that occur during compensating cleanup require separate architecture review.
+
+## Future Impact
+
+Future startup stages and infrastructure integrations must preserve atomic failure semantics and must not introduce intentional partial startup without dedicated architecture approval.
+
+Startup recovery, retry policy, rollback-failure aggregation and dependency-aware initialization remain separate future architecture concerns.

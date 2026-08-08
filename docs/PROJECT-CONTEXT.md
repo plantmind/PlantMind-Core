@@ -9,9 +9,9 @@
 | Status | Active Development |
 | Deployment Model | On-Premise |
 | Development Branch | `feature/engineering-platform` |
-| Last Completed RFC        | RFC-033 — Plugin Version Format Contract                                               |
-| Test Baseline             | 204 passing tests                                                                      |
-| Technical Baseline Commit | `569e4fb`                                                                              |
+| Last Completed RFC        | RFC-034 — Bootstrap Startup Failure Atomicity Contract                                 |
+| Test Baseline             | 214 passing tests                                                                      |
+| Technical Baseline Commit | `a174009`                                                                              |
 | Purpose | Authoritative context for continuing PlantMind development across engineering sessions |
 
 ---
@@ -364,36 +364,41 @@ It must extend, not discard, the accepted Plugin Framework.
 
 14. Immediate Development Direction
 
-RFC-033 is complete at the technical baseline.
+RFC-034 is complete at the technical baseline.
 
-The Plugin Version Format Contract now requires `PluginMetadata.plugin_version` to use canonical `MAJOR.MINOR.PATCH` format.
+The Bootstrap Startup Failure Atomicity Contract enforces fail-fast startup behavior and prevents intentional partial startup after a critical failure.
 
-Each version component is a non-negative decimal integer, and leading zeros are rejected except for the value `0`.
+All registered services complete validation before any service initialization begins.
 
-Version validation occurs when immutable `PluginMetadata` is constructed.
+Only services whose `initialize()` operation completed successfully during the current startup attempt participate in rollback.
 
-Invalid plugin versions raise the plugin-specific `InvalidPluginVersionError`, which preserves `ValueError` semantics.
+Successfully initialized services are shut down in reverse initialization order when a later startup stage fails.
 
-The contract rejects missing or additional components, `v` prefixes, surrounding whitespace, pre-release suffixes, build suffixes and invalid separators.
+Plugin activation failure uses the existing `PluginLifecycleManager` rollback path before initialized services are shut down.
 
-Existing valid RFC-032 metadata behavior and `PluginMetadata.contract_version` semantics remain unchanged.
+Runtime now exposes a public failure transition operation and critical startup failures transition Runtime to `FAILED` while readiness remains false.
 
-Version validation remains inside the metadata contract and does not move into `PluginRegistry`, `PluginRegistration`, Composition Root, Plugin Lifecycle Manager or Bootstrap Manager.
+Runtime does not transition to READY unless all mandatory startup stages complete successfully.
 
-RFC-033 introduces no external version-parsing dependency, version comparison, semantic-version compatibility evaluation, plugin discovery, filesystem scanning, package loading, capability catalog or security approval policy.
+The original startup exception remains the primary propagated failure when compensating cleanup succeeds.
 
-Technical verification completed with 10 focused RFC-033 tests, 54 impacted plugin/composition/bootstrap tests and a full regression baseline of 204 passing tests.
+Existing successful startup and graceful shutdown behavior remain backward compatible.
 
-RFC-034 has not yet been selected.
+RFC-034 introduces no retry logic, automatic startup recovery, dependency graph, parallel initialization, plugin discovery, ServiceState redesign, logging architecture redesign or version compatibility policy.
 
-Before selecting or implementing RFC-034:
+Technical verification completed with 10 focused RFC-034 tests, 53 impacted runtime/bootstrap/plugin/composition tests and a full regression baseline of 214 passing tests.
+
+RFC-035 has not yet been selected.
+
+Before selecting or implementing RFC-035:
 
 Review the Active Work Register.
 Review current committed code and tests.
 Review accepted RFCs, ADRs, architecture documents and deferred work.
-Preserve the established Registry, Plugin Identity, Plugin Metadata, Plugin Version Format, Plugin Lifecycle, Controlled Registration, Service, Bootstrap and Composition responsibilities.
-Do not introduce version compatibility evaluation, plugin discovery, filesystem scanning, package loading, capability catalogs or security approval policy without dedicated architecture review.
+Preserve established Runtime ownership, Bootstrap orchestration, Service Registry, Plugin Lifecycle, Registry, Metadata, Version Format and Composition responsibilities.
+Do not introduce startup recovery strategies, dependency graphs, plugin discovery, parallel initialization, ServiceState redesign or version compatibility policy without dedicated architecture review.
 Record the selected RFC objective and next exact action before implementation begins.
+
 15. Session Continuation Instruction
 
 When continuing PlantMind in a new engineering session:
