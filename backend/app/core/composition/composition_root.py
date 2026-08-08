@@ -11,6 +11,10 @@ from dataclasses import dataclass
 
 from app.core.availability import CapabilityAvailabilityObserver
 from app.core.bootstrap_manager import BootstrapManager
+from app.core.capability_policy import (
+    MandatoryCapabilityPolicy,
+    MandatoryCapabilityPolicyState,
+)
 from app.core.configuration.configuration_provider import (
     ConfigurationProvider,
 )
@@ -45,6 +49,7 @@ class PlatformComposition:
     bootstrap: BootstrapManager
     health: HealthCapability
     availability_observer: CapabilityAvailabilityObserver
+    mandatory_capability_policy: MandatoryCapabilityPolicy
     workflow_executor: WorkflowExecutor
     orchestration_service: OrchestrationService
     integration_gateway: IntegrationGateway
@@ -83,6 +88,11 @@ class CompositionRoot:
 
         availability_observer = CapabilityAvailabilityObserver(
             sources=(),
+        )
+
+        mandatory_capability_policy = MandatoryCapabilityPolicy(
+            state=MandatoryCapabilityPolicyState.UNCONFIGURED,
+            required_capabilities=(),
         )
 
         bootstrap = BootstrapManager(
@@ -142,6 +152,11 @@ class CompositionRoot:
             CapabilityAvailabilityObserver,
             availability_observer,
         )
+
+        container.register_instance(
+            MandatoryCapabilityPolicy,
+            mandatory_capability_policy,
+        )
         container.register_instance(
             WorkflowExecutor,
             workflow_executor,
@@ -170,6 +185,7 @@ class CompositionRoot:
             bootstrap=bootstrap,
             health=health,
             availability_observer=availability_observer,
+            mandatory_capability_policy=mandatory_capability_policy,
             workflow_executor=workflow_executor,
             orchestration_service=orchestration_service,
             integration_gateway=integration_gateway,
