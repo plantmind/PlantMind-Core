@@ -33,109 +33,90 @@ No item may be marked complete until:
 
 # Active Work
 
-## RFC-034 — Bootstrap Startup Failure Atomicity Contract
+## RFC-035 — Bootstrap Shutdown Lifecycle Compliance Contract
 
 ### Status
 
-Completed.
+Architecture review complete; contract and TDD scope defined; implementation not started.
 
 ### Objective
 
-Enforce fail-fast and atomic startup behavior at the Bootstrap orchestration boundary so that a failed startup cannot leave successfully started services or plugins intentionally running and Runtime cannot become READY.
+Align the implemented Bootstrap shutdown lifecycle with BOOT-002 and RUNTIME-001 while preserving existing Runtime, Service Registry and Plugin Lifecycle ownership boundaries.
 
 ### Current Technical Baseline
 
 - Branch: `feature/engineering-platform`
-- Last completed RFC: RFC-033 — Plugin Version Format Contract
-- RFC-033 technical commit: `569e4fb`
-- Documentation baseline commit: `e3d3b3a`
-- Full regression baseline: 204 passed
+- Last completed RFC: RFC-034 — Bootstrap Startup Failure Atomicity Contract
+- RFC-034 technical commit: `a174009`
+- Documentation baseline commit: `6e34e7f`
+- Full regression baseline: 214 passed
 
 ### Architectural Findings
 
-- BOOT-002 requires Bootstrap to stop startup immediately when a critical dependency fails.
-- BOOT-002 prohibits partial startup unless explicitly supported.
-- BOOT-002 defines Service Validation before Service Initialization.
-- RUNTIME-001 defines `FAILED` as the state for a critical failure preventing safe operation.
-- Runtime currently exposes no public operation for transitioning to `FAILED`.
-- `BootstrapManager.startup()` currently validates and initializes services one at a time rather than completing the validation phase before initialization.
-- `BootstrapManager.startup()` currently performs no compensating cleanup when service initialization or plugin activation fails.
-- `PluginLifecycleManager` already tracks successfully activated plugins and deactivates active plugins in reverse order.
-- Startup recovery strategies remain a future enhancement and are not part of RFC-034.
+- BOOT-002 requires Runtime transition to `STOPPING` before component shutdown begins.
+- BOOT-002 requires Runtime transition to `STOPPED` only after shutdown completes.
+- Runtime currently exposes no public transition operation for `STOPPING`.
+- `Runtime.mark_not_ready()` currently transitions directly to `STOPPED`.
+- `BootstrapManager.shutdown()` currently performs component shutdown without first requesting Runtime `STOPPING`.
+- Runtime state ownership must remain inside Runtime.
+- Bootstrap must continue to coordinate shutdown through public lifecycle interfaces.
+- Shutdown-failure aggregation and recovery semantics are not defined by the current accepted architecture and remain outside RFC-035.
 
 ### Dependencies
 
 - BOOT-002 — Bootstrap Lifecycle Architecture
-- BOOT-001 — Platform Bootstrap Lifecycle
 - RUNTIME-001 — Platform Lifecycle Architecture
+- RFC-034 — Bootstrap Startup Failure Atomicity Contract
 - `Runtime`
 - `BootstrapManager`
 - `ServiceRegistry`
-- `BaseService`
 - `PluginLifecycleManager`
 
-### RFC-034 Contract
+### RFC-035 Contract
 
-- Bootstrap startup SHALL remain deterministic and fail fast.
-- All registered services SHALL complete validation before any registered service is initialized.
-- A service validation failure SHALL stop startup before service initialization or plugin activation begins.
-- A service initialization failure SHALL stop further initialization.
-- Only services whose `initialize()` operation completed successfully during the current startup attempt SHALL be eligible for startup rollback.
-- Successfully initialized services SHALL be shut down in reverse initialization order when a later startup stage fails.
-- A plugin activation failure SHALL stop further activation.
-- Successfully activated plugins SHALL be deactivated through the existing `PluginLifecycleManager` before initialized services are rolled back.
-- Plugin rollback SHALL preserve the existing reverse activation order.
-- Runtime SHALL expose a public failure transition operation owned by Runtime.
-- A critical startup failure SHALL transition Runtime to `FAILED` through that public Runtime operation.
-- Runtime readiness SHALL remain false after a failed startup.
-- Runtime SHALL NOT transition to READY unless all mandatory startup stages complete successfully.
-- The original startup exception SHALL remain the primary propagated failure when compensating cleanup completes successfully.
-- Successful startup and shutdown behavior SHALL remain backward compatible.
-- RFC-034 SHALL NOT introduce retry logic, automatic startup recovery, dependency graphs, parallel initialization, plugin discovery, service-state redesign, logging architecture redesign, or version compatibility policy.
+- Runtime SHALL expose a public transition operation for `STOPPING`.
+- The `STOPPING` transition SHALL set Runtime readiness to false.
+- Bootstrap shutdown SHALL request Runtime transition to `STOPPING` before component shutdown begins.
+- Runtime SHALL remain not ready throughout shutdown.
+- Registered services SHALL be shut down in deterministic reverse registration order.
+- Existing plugin deactivation SHALL remain owned by `PluginLifecycleManager`.
+- Bootstrap SHALL request Runtime transition to `STOPPED` only after required shutdown operations complete successfully.
+- `Runtime.mark_not_ready()` backward-compatible behavior SHALL remain unchanged unless a failing regression proves an architecture-reviewed change is required.
+- Successful startup behavior established by RFC-034 SHALL remain unchanged.
+- RFC-035 SHALL NOT introduce shutdown retry logic, cleanup-failure aggregation, automatic recovery, dependency graphs, parallel shutdown, ServiceState redesign, request-admission implementation, plugin discovery or logging architecture redesign.
 
 ### TDD Scope
 
-RFC-034 implementation SHALL be driven by focused tests proving:
+RFC-035 implementation SHALL be driven by focused tests proving:
 
-1. Runtime can transition to `FAILED` through its public API while remaining not ready.
-2. A service validation failure prevents all service initialization.
-3. A service validation failure prevents plugin activation.
-4. A service initialization failure prevents subsequent service initialization.
-5. Previously initialized services are shut down in reverse initialization order after initialization failure.
-6. A plugin activation failure rolls back previously activated plugins in reverse activation order.
-7. A plugin activation failure rolls back initialized services after plugin rollback.
-8. Any critical startup failure leaves Runtime in `FAILED` and not ready.
-9. The original startup exception remains the propagated failure when rollback completes successfully.
-10. Existing successful startup and shutdown behavior remains unchanged.
+1. Runtime can transition to `STOPPING` through its public API.
+2. Runtime is not ready while in `STOPPING`.
+3. Bootstrap requests `STOPPING` before plugin or service shutdown work begins.
+4. Registered services shut down in deterministic reverse registration order.
+5. Plugin deactivation remains delegated to `PluginLifecycleManager`.
+6. Runtime transitions to `STOPPED` only after shutdown operations complete.
+7. Runtime remains not ready after successful shutdown.
+8. Existing `mark_not_ready()` behavior remains backward compatible.
+9. RFC-034 successful startup behavior remains unchanged.
+10. Existing graceful shutdown behavior remains compatible except for the newly observable `STOPPING` transition.
 
 ### Implementation Boundary
 
-RFC-034 should modify only the minimum Runtime, Bootstrap orchestration and focused test surfaces required to enforce the contract.
+RFC-035 should modify only the minimum Runtime, Bootstrap orchestration and focused test surfaces required to enforce the shutdown lifecycle contract.
 
-`Runtime` retains ownership of Runtime state transitions.
+`Runtime` retains exclusive ownership of Runtime state transitions.
 
-`BootstrapManager` retains startup and shutdown orchestration ownership.
+`BootstrapManager` retains shutdown orchestration ownership.
 
-`PluginLifecycleManager` retains plugin lifecycle ownership and its existing public deactivation path should be reused unless a failing focused test proves an architecture-reviewed change is required.
+`PluginLifecycleManager` retains plugin deactivation ownership.
 
-Do not redesign `ServiceRegistry`, `BaseService`, `ServiceState`, `PluginRegistry`, `PluginRegistration`, Composition Root, plugin metadata, plugin versioning or existing lifecycle ownership.
+Do not redesign `ServiceRegistry`, `BaseService`, `ServiceState`, `PluginRegistry`, Composition Root or the RFC-034 startup atomicity behavior.
 
-Secondary rollback-failure aggregation and startup recovery strategies require separate architecture review and are outside RFC-034.
-
-### Verification
-
-- Compilation: passed
-- Focused RFC-034 tests: 10 passed
-- Impacted runtime, bootstrap, plugin lifecycle and composition tests: 53 passed
-- Full regression: 214 passed
-- `git diff --check`: passed
-- Technical commit: `a174009`
-- Push: verified
-- Technical working tree: clean
+Shutdown-failure aggregation, retry and recovery require separate architecture review and remain outside RFC-035.
 
 ### Next Exact Action
 
-Begin architecture review for RFC-035 from the RFC-034 technical and documentation baseline.
+Write the RFC-035 failing focused tests before implementation.
 
 
 ---
