@@ -443,23 +443,53 @@ RFC-049 verification:
 - Compilation: passed
 - Remote technical push: verified
 
-RFC-050 is now in architecture review.
+RFC-050 — Operational Transition Coordination Contract is technically complete.
 
-Before selecting or implementing RFC-050:
+RFC-050 established the canonical explicit `OperationalTransitionCoordinator`.
 
-Review the Source of Truth from the RFC-049 baseline.
-Preserve Runtime as the sole lifecycle-transition authority.
-Preserve fail-closed mandatory-capability defaults.
-Preserve availability observation ownership.
-Preserve mandatory-capability policy ownership.
-Preserve mandatory-capability coverage ownership.
-Preserve exact composition identity semantics.
-Do not hard-code deployment-specific capability identifiers.
-Do not evaluate coverage inside CompositionRoot.
-Do not construct operational-transition evidence inside CompositionRoot.
-Do not call `Runtime.request_operational(...)` during composition.
-Do not introduce operational-transition coordination without a separately approved contract.
-Record the selected RFC-050 objective before TDD or production implementation begins.
+The coordinator now:
+
+- consumes approved `OperationalWorkloadEvidence` or `None`;
+- obtains exactly one live capability-availability snapshot per request;
+- delegates mandatory-capability coverage evaluation to the canonical evaluator;
+- constructs one immutable `OperationalTransitionEvidence`;
+- delegates the authoritative transition decision exactly once to `Runtime.request_operational(...)`.
+
+The coordinator preserves exact identity of:
+
+- Runtime;
+- `CapabilityAvailabilityObserver`;
+- `MandatoryCapabilityCoverageEvaluator`;
+- supplied operational-workload evidence;
+- evaluator-produced mandatory-capability coverage.
+
+Runtime remains the sole lifecycle-transition authority.
+
+RFC-050 introduces no automatic operational transition during:
+
+- CompositionRoot construction;
+- Bootstrap startup;
+- workload execution;
+- `ApplicationFacade.analyze(...)`;
+- Health reporting.
+
+The coordinator maintains no persistent evidence history, retry queue or independent lifecycle state.
+
+RFC-050 verification:
+
+- Contract commit: `0001bf0`
+- Technical commit: `995a73b`
+- Architecture decision: AD-036
+- Focused TDD suite: 21 passed
+- Impacted core regression: 261 passed
+- Full regression: 398 passed
+- Compilation: passed
+- `git diff --check`: passed
+- Remote technical push: verified
+
+The next engineering action is a Source-of-Truth architecture review before defining any RFC-051 contract.
+
+No RFC-051 objective has been selected yet.
 
 15. Session Continuation Instruction
 

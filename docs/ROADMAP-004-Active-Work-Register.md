@@ -37,7 +37,7 @@ No item may be marked complete until:
 
 ### Status
 
-Contract defined. Ready for contract verification and commit.
+Complete.
 
 ### Objective
 
@@ -393,7 +393,7 @@ Before production implementation, focused tests SHALL establish:
 
 ### Next Exact Action
 
-Verify and commit the RFC-050 contract before writing focused TDD tests or production Python.
+Perform a Source-of-Truth architecture review before defining any RFC-051 contract.
 
 ---
 
@@ -430,6 +430,7 @@ Verify and commit the RFC-050 contract before writing focused TDD tests or produ
 | RFC-047 | `ebc4769` | Operational transition evidence aggregation contract |
 | RFC-048 | `b714ceb` | Runtime operational transition contract |
 | RFC-049 | `496fe42` | Mandatory capability composition contract |
+| RFC-050 | `995a73b` | Operational transition coordination contract |
 
 RFC-039 verification:
 
@@ -624,6 +625,32 @@ RFC-049 verification:
 - Runtime lifecycle transition during composition: not introduced
 
 RFC-049 is technically complete.
+
+RFC-050 verification:
+
+- Contract commit: `0001bf0`
+- Technical commit: `995a73b`
+- Architecture decision: AD-036
+- Focused TDD suite: 21 passed
+- Impacted core regression: 261 passed
+- Full regression: 398 passed
+- Compilation: passed
+- `git diff --check`: passed
+- Remote technical push: verified
+- Operational transition coordinator: introduced
+- Canonical Runtime, observer and evaluator identity: preserved
+- Capability observation per request: exactly one snapshot
+- Mandatory-capability coverage evaluation per request: exactly once
+- Operational-transition evidence construction: explicit
+- Runtime delegation: exactly once
+- Automatic transition during composition: not introduced
+- Automatic transition during Bootstrap startup: not introduced
+- Automatic transition during workload execution: not introduced
+- Persistent transition evidence state: not introduced
+- Independent lifecycle authority: not introduced
+- Runtime remains sole operational-transition authority
+
+RFC-050 is technically complete.
 
 ---
 

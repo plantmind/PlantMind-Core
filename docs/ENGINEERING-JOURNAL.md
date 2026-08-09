@@ -1152,6 +1152,59 @@ Verification:
 
 ---
 
+### RFC-050 — Operational Transition Coordination Contract
+
+RFC-050 established the canonical explicit operational-transition coordination boundary.
+
+`OperationalTransitionCoordinator` now:
+
+- consumes `OperationalWorkloadEvidence | None`;
+- obtains exactly one capability-availability snapshot per request;
+- delegates coverage evaluation exactly once to `MandatoryCapabilityCoverageEvaluator`;
+- constructs one immutable `OperationalTransitionEvidence`;
+- delegates exactly once to `Runtime.request_operational(...)`;
+- returns the exact transition-evidence instance accepted by Runtime.
+
+The coordinator preserves exact dependency identity across:
+
+- `Runtime`;
+- `CapabilityAvailabilityObserver`;
+- `MandatoryCapabilityCoverageEvaluator`.
+
+CompositionRoot now composes, exposes and registers exactly one canonical coordinator instance.
+
+RFC-050 preserves the existing ownership boundaries:
+
+- Runtime remains the sole lifecycle-transition authority;
+- availability observation remains observer-owned;
+- mandatory-capability policy remains policy-owned;
+- coverage evaluation remains evaluator-owned;
+- workload evidence generation remains workload-path-owned.
+
+RFC-050 introduces no automatic operational transition during:
+
+- CompositionRoot construction;
+- Bootstrap startup;
+- workload execution;
+- `ApplicationFacade.analyze(...)`;
+- Health reporting.
+
+The coordinator introduces no persistent transition evidence, retry queue, independent eligibility state or competing lifecycle controller.
+
+Verification:
+
+- Contract commit: `0001bf0`
+- Technical commit: `995a73b`
+- Architecture decision: AD-036
+- Focused TDD suite: 21 passed
+- Impacted core regression: 261 passed
+- Full regression: 398 passed
+- Compilation: passed
+- `git diff --check`: passed
+- Remote technical push: verified
+
+---
+
 # Current Status
 
 PlantMind now possesses:
@@ -1204,7 +1257,22 @@ Current technical baseline:
 - Operational-transition evidence construction during composition: not introduced
 - Runtime lifecycle transition during composition: not introduced
 
-The next engineering step is architecture review for RFC-050.
+- RFC-050 — Operational Transition Coordination Contract
+- Contract commit: `0001bf0`
+- Technical commit: `995a73b`
+- Full regression baseline: 398 passed
+- Architecture decision: AD-036
+- Explicit operational-transition coordination: established
+- Canonical Runtime, observer and evaluator identity: preserved
+- One availability snapshot per coordination request: established
+- One coverage evaluation per coordination request: established
+- Explicit operational-transition evidence construction: established
+- Runtime delegation exactly once: established
+- Automatic lifecycle transition: not introduced
+- Persistent transition evidence: not introduced
+- Independent lifecycle authority: not introduced
+
+The next engineering step is a Source-of-Truth architecture review before defining any RFC-051 contract.
 
 The project remains in long-term enterprise platform development.
 
