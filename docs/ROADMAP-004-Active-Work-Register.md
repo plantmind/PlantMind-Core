@@ -33,6 +33,354 @@ No item may be marked complete until:
 
 # Active Work
 
+## RFC-051 — Explicit Operational Transition Application Boundary
+
+### Status
+
+Contract defined. Ready for contract verification and commit.
+
+### Objective
+
+Establish a canonical application-level boundary for an explicit operational-transition use case that executes an approved operational workload through `ApplicationFacade`, obtains the trusted `OperationalWorkloadEvidence` produced by that execution, and delegates the explicit transition request to `OperationalTransitionCoordinator`, without moving workload-evidence trust, lifecycle authority, or orchestration responsibility into the API transport layer.
+
+### Architectural Position
+
+RFC-041 established `ApplicationFacade` as the canonical application-level operational workload entry boundary.
+
+RFC-046 established correlated `OperationalWorkloadEvidence` produced by the approved workload execution path.
+
+RFC-048 established Runtime as the sole authoritative `READY` to `OPERATIONAL` lifecycle-transition authority.
+
+RFC-050 established `OperationalTransitionCoordinator` as the canonical evidence coordination boundary.
+
+The remaining application-level gap is an explicit use-case boundary that connects:
+
+`ApplicationFacade`
+
+to:
+
+`OperationalTransitionCoordinator`
+
+without making FastAPI, another external interface, or the client responsible for workload evidence construction or application orchestration.
+
+### Application Service
+
+RFC-051 SHALL introduce:
+
+`OperationalTransitionApplicationService`
+
+The service SHALL depend on the exact canonical instances of:
+
+- `ApplicationFacade`;
+- `OperationalTransitionCoordinator`.
+
+The service SHALL coordinate one explicit application use case.
+
+It SHALL NOT replace `ApplicationFacade` as the canonical workload-entry boundary.
+
+### Public Operation
+
+The approved application operation SHALL be:
+
+`request_operational(observations: tuple[Observation, ...]) -> OperationalTransitionApplicationResult`
+
+The operation SHALL be explicit.
+
+It SHALL execute the workload through:
+
+`ApplicationFacade.analyze(...)`
+
+exactly once.
+
+It SHALL then obtain:
+
+`WorkflowExecution.operational_workload_evidence`
+
+from the returned canonical `WorkflowExecution`.
+
+It SHALL delegate that exact workload-evidence object, including `None`, to:
+
+`OperationalTransitionCoordinator.request_operational(...)`
+
+exactly once.
+
+### Observation Input Boundary
+
+RFC-051 SHALL consume existing immutable `Observation` domain objects.
+
+RFC-051 SHALL NOT introduce a duplicate observation model.
+
+Observation validation remains owned by `Observation`.
+
+The application service SHALL NOT:
+
+- reinterpret observations;
+- normalize observation values;
+- change observation timestamps;
+- fabricate observations;
+- perform transport-layer deserialization.
+
+Transport-specific request schemas remain a separate future interface concern.
+
+### Workload Execution Boundary
+
+`ApplicationFacade` remains the canonical operational workload entry boundary.
+
+`OperationalTransitionApplicationService` SHALL call the composed `ApplicationFacade`.
+
+It SHALL NOT directly call:
+
+- `IntegrationGateway`;
+- `OrchestrationService`;
+- `WorkflowExecutor`;
+- reasoning services;
+- presentation services.
+
+The service SHALL NOT construct an alternate workload execution path.
+
+### Workload Evidence Trust Boundary
+
+The application service SHALL obtain workload evidence only from the `WorkflowExecution` returned by the canonical `ApplicationFacade` path.
+
+It SHALL NOT:
+
+- create workload identifiers;
+- create `ApplicationFacadeEntryEvidence`;
+- create `WorkflowExecutionStartEvidence`;
+- create `OperationalWorkloadEvidence`;
+- reconstruct workload evidence;
+- accept workload evidence from an external client;
+- accept workload evidence as an independent public input;
+- validate UUID correlation independently;
+- infer evidence from workflow stages.
+
+Workload evidence remains owned by RFC-046.
+
+### Evidence Handoff
+
+The exact value of:
+
+`WorkflowExecution.operational_workload_evidence`
+
+SHALL be supplied unchanged to:
+
+`OperationalTransitionCoordinator.request_operational(...)`.
+
+The application service SHALL NOT copy, normalize, reconstruct, replace, or reinterpret the workload evidence.
+
+If the workflow execution contains `None` workload evidence, `None` SHALL be delegated unchanged.
+
+Fail-closed evaluation remains owned by the coordinator and Runtime chain.
+
+### Transition Coordination Boundary
+
+The application service SHALL NOT construct `OperationalTransitionEvidence`.
+
+It SHALL NOT:
+
+- observe mandatory capabilities directly;
+- evaluate mandatory-capability coverage;
+- inspect mandatory-capability policy;
+- inspect Runtime state;
+- inspect Runtime readiness;
+- inspect request admission;
+- call `Runtime.request_operational(...)` directly.
+
+Those responsibilities remain owned by RFC-043 through RFC-050.
+
+### Application Result
+
+RFC-051 SHALL introduce an immutable:
+
+`OperationalTransitionApplicationResult`
+
+The result SHALL contain:
+
+- the exact `WorkflowExecution` returned by `ApplicationFacade`;
+- the exact `OperationalTransitionEvidence` returned by `OperationalTransitionCoordinator`.
+
+The result SHALL preserve object identity.
+
+It SHALL NOT become:
+
+- lifecycle state;
+- transition authority;
+- persistent transition history;
+- eligibility state.
+
+### Successful Request
+
+When workload execution and operational-transition coordination both succeed:
+
+- the exact `WorkflowExecution` returned by `ApplicationFacade` SHALL be preserved;
+- the exact transition evidence returned by the coordinator SHALL be preserved;
+- the application service SHALL return one immutable application result;
+- no additional Runtime mutation SHALL occur.
+
+Runtime remains responsible for the actual lifecycle transition.
+
+### Workload Failure Semantics
+
+If `ApplicationFacade.analyze(...)` raises:
+
+- the exception SHALL propagate;
+- `OperationalTransitionCoordinator` SHALL NOT be called;
+- the application service SHALL NOT retry;
+- no synthetic workload evidence SHALL be created;
+- no operational-transition request SHALL be attempted.
+
+### Transition Failure Semantics
+
+If `OperationalTransitionCoordinator.request_operational(...)` raises:
+
+- the exception SHALL propagate;
+- the application service SHALL NOT retry;
+- workload execution SHALL NOT be repeated;
+- workload evidence SHALL NOT be replaced;
+- Runtime state SHALL NOT be modified independently;
+- request admission SHALL NOT be modified independently.
+
+Existing RFC-048 and RFC-050 failure semantics remain authoritative.
+
+### No Automatic Lifecycle Side Effects
+
+RFC-051 SHALL NOT modify `ApplicationFacade.analyze(...)` to automatically request an operational transition.
+
+Normal calls to:
+
+`ApplicationFacade.analyze(...)`
+
+remain workload-only operations.
+
+The new application service SHALL be invoked only when the caller explicitly requests the combined operational-transition use case.
+
+### Composition Boundary
+
+`CompositionRoot` SHALL compose exactly one `OperationalTransitionApplicationService` using the existing canonical:
+
+- `ApplicationFacade`;
+- `OperationalTransitionCoordinator`.
+
+The exact service instance SHALL be:
+
+- exposed through `PlatformComposition`;
+- registered in `ServiceContainer`.
+
+The service SHALL preserve exact dependency identity.
+
+CompositionRoot SHALL NOT execute the service during build.
+
+### API Boundary
+
+RFC-051 SHALL NOT introduce an HTTP endpoint.
+
+RFC-051 SHALL NOT modify FastAPI routing.
+
+RFC-051 SHALL NOT make the API hosting layer responsible for:
+
+- constructing workload evidence;
+- extracting internal transition evidence;
+- calling Runtime directly;
+- coordinating internal workflow components.
+
+A future external-interface RFC MAY expose the approved application service through HTTP or another transport.
+
+That future interface SHALL remain behind Runtime-owned request-admission enforcement unless separately architecture-approved.
+
+### Bootstrap and Health Boundaries
+
+Bootstrap SHALL NOT invoke `OperationalTransitionApplicationService`.
+
+Health SHALL NOT invoke `OperationalTransitionApplicationService`.
+
+RFC-051 introduces no startup-triggered or health-triggered operational transition.
+
+### State and Persistence Boundary
+
+`OperationalTransitionApplicationService` SHALL remain stateless between calls.
+
+It SHALL NOT maintain:
+
+- last workflow execution;
+- last workload evidence;
+- last transition evidence;
+- transition history;
+- retry queues;
+- lifecycle state;
+- operational eligibility state.
+
+### Dependency Identity
+
+The application service `ApplicationFacade` dependency SHALL be the same object as:
+
+`PlatformComposition.application_facade`
+
+The application service coordinator dependency SHALL be the same object as:
+
+`PlatformComposition.operational_transition_coordinator`
+
+No duplicate workload or transition dependency graph SHALL be introduced.
+
+### Non-Goals
+
+RFC-051 SHALL NOT:
+
+- introduce an HTTP endpoint;
+- introduce API request schemas;
+- modify Runtime transition semantics;
+- modify request-admission semantics;
+- modify `OperationalTransitionCoordinator` evidence semantics;
+- modify workload evidence semantics;
+- modify capability observation semantics;
+- modify mandatory-capability policy semantics;
+- modify mandatory-capability coverage semantics;
+- create workload evidence from client input;
+- automatically transition after every workload execution;
+- introduce retries;
+- introduce recovery;
+- introduce `DEGRADED` behavior;
+- introduce traffic draining;
+- persist transition evidence;
+- introduce another lifecycle authority.
+
+### TDD Boundary
+
+Before production implementation, focused tests SHALL establish:
+
+- the application service accepts canonical `Observation` tuples;
+- `ApplicationFacade.analyze(...)` is called exactly once;
+- the exact observation tuple is passed unchanged to `ApplicationFacade`;
+- the exact `WorkflowExecution` returned by `ApplicationFacade` is preserved;
+- the exact `operational_workload_evidence` from that execution is supplied to the coordinator;
+- `None` workload evidence is supplied unchanged;
+- workload evidence is not reconstructed;
+- coordinator invocation occurs exactly once;
+- the exact transition evidence returned by the coordinator is preserved;
+- successful execution returns an immutable application result;
+- workload failure prevents coordinator invocation;
+- workload failure is propagated without retry;
+- coordinator failure is propagated without retry;
+- coordinator failure does not repeat workload execution;
+- the service does not inspect Runtime lifecycle state;
+- the service does not inspect request admission;
+- the service does not call Runtime directly;
+- normal `ApplicationFacade.analyze(...)` remains free of automatic transition side effects;
+- CompositionRoot exposes exactly one application service;
+- ServiceContainer resolves that same application service;
+- the service uses the exact composed `ApplicationFacade`;
+- the service uses the exact composed `OperationalTransitionCoordinator`;
+- CompositionRoot does not execute the service during build;
+- Bootstrap does not execute the service;
+- Health does not execute the service;
+- no persistent application-transition state is introduced;
+- no independent lifecycle authority is introduced.
+
+### Next Exact Action
+
+Verify and commit the RFC-051 contract before writing focused TDD tests or production Python.
+
+---
+
 ## RFC-050 — Operational Transition Coordination Contract
 
 ### Status
