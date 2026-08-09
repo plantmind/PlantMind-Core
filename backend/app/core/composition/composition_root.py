@@ -35,6 +35,9 @@ from app.core.plugins.plugin_lifecycle_manager import (
 from app.core.runtime import Runtime
 from app.core.services.service_registry import ServiceRegistry
 from app.services.application_facade import ApplicationFacade
+from app.services.operational_transition_application_service import (
+    OperationalTransitionApplicationService,
+)
 from app.services.integration_gateway import IntegrationGateway
 from app.services.orchestration.orchestration_service import (
     OrchestrationService,
@@ -63,6 +66,7 @@ class PlatformComposition:
     orchestration_service: OrchestrationService
     integration_gateway: IntegrationGateway
     application_facade: ApplicationFacade
+    operational_transition_application_service: OperationalTransitionApplicationService
 
 
 class CompositionRoot:
@@ -139,6 +143,13 @@ class CompositionRoot:
             gateway=integration_gateway,
         )
 
+        operational_transition_application_service = (
+            OperationalTransitionApplicationService(
+                application_facade=application_facade,
+                operational_transition_coordinator=operational_transition_coordinator,
+            )
+        )
+
         container.register_instance(
             ConfigurationProvider,
             configuration,
@@ -206,6 +217,10 @@ class CompositionRoot:
             ApplicationFacade,
             application_facade,
         )
+        container.register_instance(
+            OperationalTransitionApplicationService,
+            operational_transition_application_service,
+        )
 
         return PlatformComposition(
             container=container,
@@ -225,6 +240,9 @@ class CompositionRoot:
             orchestration_service=orchestration_service,
             integration_gateway=integration_gateway,
             application_facade=application_facade,
+            operational_transition_application_service=(
+                operational_transition_application_service
+            ),
         )
 
 def build_platform_composition(
