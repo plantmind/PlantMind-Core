@@ -2,6 +2,7 @@ from contextlib import asynccontextmanager
 
 from fastapi import FastAPI
 
+from app.api.operational_transition import create_router as create_operational_transition_router
 from app.api.request_admission import RequestAdmissionMiddleware
 from app.config import settings
 from app.core.composition import CompositionRoot
@@ -39,6 +40,12 @@ app = FastAPI(
 app.add_middleware(
     RequestAdmissionMiddleware,
     runtime=platform.runtime,
+)
+
+app.include_router(
+    create_operational_transition_router(
+        platform.operational_transition_application_service
+    )
 )
 
 
