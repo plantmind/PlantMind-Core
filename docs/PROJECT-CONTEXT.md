@@ -535,9 +535,17 @@ RFC-051 verification:
 - `git diff --check`: passed
 - Remote technical push: verified
 
-The next engineering action is a Source-of-Truth architecture review before defining any RFC-052 contract.
+RFC-052 — Explicit Operational Transition API Boundary is technically complete.
 
-No RFC-052 objective has been selected yet.
+RFC-052 introduced the canonical `POST /operational-transition` HTTP boundary backed by the exact composed `OperationalTransitionApplicationService`.
+
+The API maps transport observations into existing immutable domain `Observation` objects, preserves observation order, rejects client-supplied workload or transition evidence, remains behind Runtime-owned request admission, and returns `204 No Content` on success.
+
+Runtime remains the sole lifecycle-transition authority. Bootstrap and Health do not initiate operational transition.
+
+RFC-052 verification: contract `f9b0816`; technical `62bb854`; architecture decision AD-038; focused suite 16 passed; API regression 25 passed; impacted API/services/core regression 373 passed; full regression 432 passed; compilation and `git diff --check` passed; remote technical push verified.
+
+The next engineering action is a Source-of-Truth architecture review before defining any RFC-053 contract.
 
 15. Session Continuation Instruction
 

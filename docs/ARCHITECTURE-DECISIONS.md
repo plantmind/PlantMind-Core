@@ -3269,3 +3269,182 @@ This keeps workload evidence generated inside the approved application path, pre
 - Compilation: passed
 - `git diff --check`: passed
 - Remote technical push: verified
+
+
+---
+
+# AD-038 — Explicit Operational Transition API Boundary
+
+## Status
+
+Accepted.
+
+## Context
+
+RFC-051 established `OperationalTransitionApplicationService` as the canonical application-level boundary for the explicit combined workload-and-operational-transition use case.
+
+RFC-051 intentionally introduced no HTTP endpoint and reserved transport-specific request schemas for a future external-interface contract.
+
+PlantMind therefore required a canonical HTTP transport boundary that could expose the approved application use case without moving workload orchestration, workload-evidence trust, mandatory-capability evaluation, or Runtime lifecycle authority into FastAPI.
+
+## Decision
+
+PlantMind SHALL expose the explicit operational-transition use case through:
+
+`POST /operational-transition`
+
+The endpoint SHALL delegate to the exact canonical:
+
+`OperationalTransitionApplicationService`
+
+composed by `CompositionRoot`.
+
+A successful request SHALL return:
+
+`204 No Content`
+
+The response SHALL NOT expose internal workflow execution, workload evidence, transition evidence, mandatory-capability observations, or Runtime-internal evidence.
+
+## Transport Observation Boundary
+
+RFC-052 introduces transport-only observation request models.
+
+Each accepted transport observation SHALL contain:
+
+- `source`;
+- `observation_type`;
+- `value`;
+- `observed_at`.
+
+The API SHALL map each accepted transport observation into exactly one existing immutable domain `Observation`.
+
+Client-supplied observation order SHALL be preserved.
+
+The resulting domain observation tuple SHALL be supplied unchanged to:
+
+`OperationalTransitionApplicationService.request_operational(...)`
+
+exactly once.
+
+Domain `Observation` remains authoritative for domain invariants and timestamp normalization.
+
+The transport schema SHALL NOT replace or duplicate the domain model.
+
+## Evidence Trust Boundary
+
+The HTTP client SHALL NOT supply trusted internal workload or transition evidence.
+
+The request schema SHALL reject extra fields, including client attempts to provide workload evidence or transition evidence.
+
+The API SHALL NOT construct, reconstruct, validate, or infer:
+
+- workload identifiers;
+- workload-entry evidence;
+- workflow-execution-start evidence;
+- `OperationalWorkloadEvidence`;
+- `OperationalTransitionEvidence`;
+- mandatory-capability coverage evidence.
+
+Trusted workload evidence continues to originate exclusively from the canonical workload execution path.
+
+## Application Boundary
+
+The API SHALL invoke:
+
+`OperationalTransitionApplicationService.request_operational(...)`
+
+exactly once per accepted request.
+
+The API SHALL NOT directly coordinate:
+
+- `ApplicationFacade`;
+- `OperationalTransitionCoordinator`;
+- `CapabilityAvailabilityObserver`;
+- `MandatoryCapabilityCoverageEvaluator`;
+- Runtime lifecycle transition operations.
+
+The API SHALL NOT construct a second application-service instance or an alternate operational workload path.
+
+
+## Runtime Authority Boundary
+
+The API SHALL NOT call `Runtime.request_operational(...)` directly.
+
+It SHALL NOT inspect Runtime readiness or lifecycle state to reproduce transition eligibility rules.
+
+It SHALL NOT enable or disable request admission, mark Runtime operational, construct transition evidence, or establish independent lifecycle authority.
+
+Runtime remains the sole authoritative lifecycle-transition owner.
+
+## Request Admission Boundary
+
+`POST /operational-transition` SHALL remain subject to the existing `RequestAdmissionMiddleware`.
+
+The endpoint SHALL NOT be added to `DEFAULT_ADMISSION_EXEMPT_PATHS`.
+
+When operational request admission is disabled, middleware SHALL reject the request before the application service executes.
+
+RFC-052 does not modify Runtime-owned request-admission semantics.
+
+## Validation and Failure Semantics
+
+Transport deserialization and structural validation remain API responsibilities.
+
+Domain `Observation` remains responsible for its existing domain invariants.
+
+A domain observation-construction validation failure SHALL produce `422 Unprocessable Entity` without invoking the application service.
+
+Application-service failures SHALL NOT be retried.
+
+The API SHALL NOT repeat workload execution, independently request a Runtime transition, or fabricate a successful response.
+
+
+## Bootstrap and Health Boundaries
+
+Bootstrap SHALL NOT invoke the operational-transition application service automatically.
+
+Health SHALL remain observational and SHALL NOT initiate an operational transition.
+
+RFC-052 introduces no startup-triggered or health-triggered operational transition.
+
+## PI and External Connectivity Boundary
+
+RFC-052 introduces no PI Web API communication, PI authentication, certificate handling, connectivity probes, connector lifecycle changes, production capability-availability sources, or mandatory-capability deployment policy.
+
+The accepted mock-before-production integration architecture remains unchanged.
+
+
+## State and Persistence Boundary
+
+The operational-transition API boundary SHALL remain stateless between requests.
+
+It SHALL NOT persist observations, workflow executions, workload evidence, transition evidence, transition eligibility, Runtime lifecycle state, or retry state.
+
+## Consequences
+
+PlantMind now has a canonical external HTTP path:
+
+`POST /operational-transition`
+→ transport observation mapping
+→ `OperationalTransitionApplicationService`
+→ `ApplicationFacade`
+→ trusted workload evidence
+→ `OperationalTransitionCoordinator`
+→ Runtime authority.
+
+The transport layer remains limited to HTTP concerns and domain-object mapping.
+
+Trusted evidence remains internal, Runtime remains the sole lifecycle-transition authority, and request admission remains Runtime-owned.
+
+
+## Verification
+
+- RFC-052 contract commit: `f9b0816`
+- RFC-052 technical commit: `62bb854`
+- Focused RFC-052 suite: 16 passed
+- API regression: 25 passed
+- Impacted API/services/core regression: 373 passed
+- Full regression: 432 passed
+- Compilation: passed
+- `git diff --check`: passed
+- Remote technical push: verified

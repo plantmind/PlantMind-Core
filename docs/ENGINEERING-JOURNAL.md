@@ -1260,6 +1260,44 @@ Verification:
 
 ---
 
+### RFC-052 — Explicit Operational Transition API Boundary
+
+RFC-052 established the canonical explicit operational-transition HTTP boundary.
+
+The implementation:
+
+- exposes `POST /operational-transition`;
+- maps transport observations into existing immutable domain `Observation` objects;
+- preserves client-supplied observation order;
+- delegates exactly once to the canonical `OperationalTransitionApplicationService`;
+- rejects client-supplied workload and transition evidence;
+- remains behind Runtime-owned request admission;
+- returns `204 No Content` on successful completion.
+
+RFC-052 preserves the existing ownership boundaries:
+
+- `ApplicationFacade` remains the canonical workload-entry boundary;
+- trusted workload evidence remains generated only by the canonical workload path;
+- `OperationalTransitionCoordinator` remains the evidence coordination boundary;
+- Runtime remains the sole lifecycle-transition authority.
+
+RFC-052 introduces no automatic transition, PI Web API communication, production capability source, retry, persistent transition state, Bootstrap-triggered transition, Health-triggered transition or competing lifecycle authority.
+
+Verification:
+
+- Contract commit: `f9b0816`
+- Technical commit: `62bb854`
+- Architecture decision: AD-038
+- Focused RFC-052 suite: 16 passed
+- API regression: 25 passed
+- Impacted API/services/core regression: 373 passed
+- Full regression: 432 passed
+- Compilation: passed
+- `git diff --check`: passed
+- Remote technical push: verified
+
+---
+
 # Current Status
 
 PlantMind now possesses:
@@ -1292,6 +1330,7 @@ PlantMind now possesses:
 - Mandatory Capability Composition Contract
 - Operational Transition Coordination Contract
 - Explicit Operational Transition Application Boundary
+- Explicit Operational Transition API Boundary
 - Service Lifecycle
 - Composition Root and dependency wiring
 - Structured engineering documentation
@@ -1346,7 +1385,41 @@ Current technical baseline:
 - Persistent application-transition state: not introduced
 - Independent lifecycle authority: not introduced
 
-The next engineering step is a Source-of-Truth architecture review before defining any RFC-052 contract.
+- RFC-052 — Explicit Operational Transition API Boundary
+
+- Contract commit: `f9b0816`
+
+- Technical commit: `62bb854`
+
+- Full regression baseline: 432 passed
+
+- Architecture decision: AD-038
+
+- Canonical `POST /operational-transition` HTTP boundary: established
+
+- Transport-to-domain `Observation` mapping: established
+
+- Observation ordering: preserved
+
+- Canonical `OperationalTransitionApplicationService` identity: preserved
+
+- Client-supplied workload and transition evidence: rejected
+
+- Runtime-owned request admission: preserved
+
+- Successful response: `204 No Content`
+
+- Bootstrap-triggered transition: not introduced
+
+- Health-triggered transition: not introduced
+
+- PI production connectivity: not introduced
+
+- Persistent API transition state: not introduced
+
+- Independent lifecycle authority: not introduced
+
+The next engineering step is a Source-of-Truth architecture review before defining any RFC-053 contract.
 
 The project remains in long-term enterprise platform development.
 

@@ -6,13 +6,13 @@
 | ---------------------------- | --------------------------------------------------------- |
 | Project                      | PlantMind PM-001                                          |
 | Branch                       | `feature/engineering-platform`                            |
-| Last Completed RFC           | RFC-051 — Explicit Operational Transition Application Boundary |
-| Technical Baseline Commit    | `866f786` |
-| Architecture Baseline Commit | `ccdd80d` |
-| Test Baseline                | 416 passed |
+| Last Completed RFC           | RFC-052 — Explicit Operational Transition API Boundary |
+| Technical Baseline Commit    | `62bb854` |
+| Architecture Baseline Commit | `f9b0816` |
+| Test Baseline                | 432 passed |
 | Authoritative Environment    | `PlantMind-Core/.venv`                                    |
 | Remote State                 | Up to date with `origin/feature/engineering-platform`     |
-| RFC-051 Technical Push       | Verified |
+| RFC-052 Technical Push       | Verified |
 
 ## Recent Engineering Sequence
 
@@ -43,6 +43,7 @@
 - RFC-049 — Mandatory Capability Composition Contract
 - RFC-050 — Operational Transition Coordination Contract
 - RFC-051 — Explicit Operational Transition Application Boundary
+- RFC-052 — Explicit Operational Transition API Boundary
 
 ## RFC-036 Outcome
 
@@ -826,11 +827,44 @@ Runtime remains the sole operational-transition authority.
 - `git diff --check`: passed
 - Remote technical push: verified
 
+## RFC-052 Outcome
+
+RFC-052 established the canonical explicit operational-transition HTTP boundary.
+
+The API now:
+
+- exposes `POST /operational-transition`;
+- maps transport observations into existing immutable domain `Observation` objects;
+- preserves observation order;
+- delegates exactly once to the canonical `OperationalTransitionApplicationService`;
+- rejects client-supplied workload and transition evidence;
+- remains behind Runtime-owned request admission;
+- returns `204 No Content` on successful completion.
+
+Runtime remains the sole operational-transition authority.
+
+Bootstrap and Health do not initiate operational transition.
+
+RFC-052 introduces no PI Web API communication, connectivity probe, production capability source, retry, persistent transition state or competing lifecycle authority.
+
+## RFC-052 Verification
+
+- Contract commit: `f9b0816`
+- Technical commit: `62bb854`
+- Architecture decision: AD-038
+- Focused RFC-052 suite: 16 passed
+- API regression: 25 passed
+- Impacted API/services/core regression: 373 passed
+- Full regression: 432 passed
+- Compilation: passed
+- `git diff --check`: passed
+- Remote technical push: verified
+
 ## Documentation Closure
 
-RFC-051 technical implementation is complete.
+RFC-052 technical implementation is complete.
 
-The engineering-memory layer is being synchronized with the RFC-051 technical baseline.
+The engineering-memory layer is being synchronized with the RFC-052 technical baseline.
 
 Relevant maintained documents:
 
@@ -842,9 +876,9 @@ Relevant maintained documents:
 
 ## Next Exact Action
 
-Perform a Source-of-Truth architecture review before defining any RFC-052 contract.
+Perform a Source-of-Truth architecture review before defining any RFC-053 contract.
 
-No RFC-052 objective has been selected yet.
+No RFC-053 objective has been selected yet.
 
 Preserve:
 

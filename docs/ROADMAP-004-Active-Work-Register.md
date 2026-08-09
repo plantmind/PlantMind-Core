@@ -37,7 +37,7 @@ No item may be marked complete until:
 
 ### Status
 
-Draft.
+Complete.
 
 ### Objective
 
@@ -339,11 +339,32 @@ Before production implementation, focused tests SHALL establish:
 - existing root and health behavior remains unchanged;
 - existing request-admission behavior remains unchanged.
 
+### Verification
+
+- Contract commit: `f9b0816`
+- Technical commit: `62bb854`
+- Architecture decision: AD-038
+- Focused RFC-052 suite: 16 passed
+- API regression: 25 passed
+- Impacted API/services/core regression: 373 passed
+- Full regression: 432 passed
+- Compilation: passed
+- `git diff --check`: passed
+- Remote technical push: verified
+- Canonical operational-transition HTTP boundary: introduced
+- `POST /operational-transition`: introduced
+- Successful response: `204 No Content`
+- Client-supplied workload and transition evidence: rejected
+- Runtime-owned request admission: preserved
+- Bootstrap-triggered transition: not introduced
+- Health-triggered transition: not introduced
+- Runtime remains sole operational-transition authority
+
 ### Next Exact Action
 
-Commit the RFC-052 contract before creating production implementation.
+RFC-052 is complete.
 
-After the contract commit, begin TDD for the explicit operational-transition API boundary.
+Perform a Source-of-Truth architecture review before defining any RFC-053 contract.
 
 ---
 
@@ -691,7 +712,7 @@ Before production implementation, focused tests SHALL establish:
 
 ### Next Exact Action
 
-Perform a Source-of-Truth architecture review before defining any RFC-052 contract.
+RFC-051 is complete. Subsequent architecture work proceeded through RFC-052.
 
 ---
 
@@ -1094,6 +1115,7 @@ RFC-050 is complete. Subsequent architecture work proceeded through RFC-051.
 | RFC-049 | `496fe42` | Mandatory capability composition contract |
 | RFC-050 | `995a73b` | Operational transition coordination contract |
 | RFC-051 | `866f786` | Explicit operational transition application boundary |
+| RFC-052 | `62bb854` | Explicit operational transition API boundary |
 
 RFC-039 verification:
 
