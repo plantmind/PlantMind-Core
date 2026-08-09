@@ -33,6 +33,320 @@ No item may be marked complete until:
 
 # Active Work
 
+## RFC-052 — Explicit Operational Transition API Boundary
+
+### Status
+
+Draft.
+
+### Objective
+
+Establish the canonical HTTP transport boundary for an explicit operational-transition request by accepting transport-level observation input, mapping that input into existing immutable domain `Observation` objects, and delegating exactly once to the canonical `OperationalTransitionApplicationService`, without moving workload orchestration, workload-evidence trust, capability evaluation, or Runtime lifecycle authority into the API layer.
+
+### Architectural Position
+
+RFC-041 established `ApplicationFacade` as the canonical operational workload entry boundary.
+
+RFC-046 established trusted correlated `OperationalWorkloadEvidence` produced by the approved workload execution path.
+
+RFC-048 established Runtime as the sole authoritative `READY` to `OPERATIONAL` lifecycle-transition authority.
+
+RFC-050 established `OperationalTransitionCoordinator` as the canonical transition-evidence coordination boundary.
+
+RFC-051 established `OperationalTransitionApplicationService` as the canonical explicit application use-case boundary joining workload execution and operational-transition coordination.
+
+RFC-051 intentionally did not introduce an HTTP endpoint and reserved transport-specific request schemas for a future external-interface RFC.
+
+RFC-052 SHALL provide that transport boundary without duplicating or bypassing any established application or lifecycle responsibility.
+
+### HTTP Operation
+
+RFC-052 SHALL introduce:
+
+`POST /operational-transition`
+
+The endpoint SHALL represent one explicit request to execute the approved operational workload and request the resulting operational transition.
+
+A successful request SHALL return:
+
+`204 No Content`
+
+The HTTP response SHALL NOT expose internal `WorkflowExecution`, `OperationalWorkloadEvidence`, `OperationalTransitionEvidence`, mandatory-capability observations, or Runtime-internal evidence structures.
+
+### Request Schema
+
+RFC-052 SHALL introduce a transport-only request schema containing:
+
+`observations`
+
+The observations collection SHALL preserve client-supplied ordering.
+
+Each transport observation SHALL contain the information required to construct the existing domain `Observation`:
+
+- `source`;
+- `observation_type`;
+- `value`;
+- `observed_at`.
+
+The transport schema SHALL NOT replace the domain `Observation`.
+
+The transport schema SHALL NOT become an alternate domain model.
+
+### Observation Mapping Boundary
+
+The API boundary SHALL map each accepted transport observation into exactly one existing immutable domain `Observation`.
+
+Observation ordering SHALL be preserved.
+
+The resulting tuple of domain observations SHALL be supplied unchanged to:
+
+`OperationalTransitionApplicationService.request_operational(...)`
+
+exactly once.
+
+Domain `Observation` remains authoritative for domain validation and normalization.
+
+The API layer SHALL NOT:
+
+- reinterpret observation meaning;
+- normalize observation values independently;
+- fabricate observations;
+- enrich observations from external systems;
+- infer missing observations;
+- create workload evidence.
+
+Transport deserialization and transport-to-domain mapping are the only observation responsibilities introduced by RFC-052.
+
+### Application Service Boundary
+
+The endpoint SHALL depend on the exact canonical:
+
+`OperationalTransitionApplicationService`
+
+composed by `CompositionRoot`.
+
+The API layer SHALL NOT construct a second application service.
+
+It SHALL NOT independently construct or resolve alternate instances of:
+
+- `ApplicationFacade`;
+- `OperationalTransitionCoordinator`;
+- `Runtime`;
+- `CapabilityAvailabilityObserver`;
+- `MandatoryCapabilityCoverageEvaluator`.
+
+The endpoint SHALL invoke:
+
+`OperationalTransitionApplicationService.request_operational(...)`
+
+exactly once per accepted request.
+
+### Workload Evidence Trust Boundary
+
+The API SHALL NOT accept:
+
+- workload identifiers;
+- `ApplicationFacadeEntryEvidence`;
+- `WorkflowExecutionStartEvidence`;
+- `OperationalWorkloadEvidence`;
+- `OperationalTransitionEvidence`;
+- capability-coverage evidence.
+
+The client SHALL have no authority to construct or supply trusted internal operational-transition evidence.
+
+All workload evidence SHALL continue to originate from the canonical workload execution path established by RFC-046 and consumed through RFC-051.
+
+### Runtime Authority Boundary
+
+RFC-052 SHALL NOT call:
+
+`Runtime.request_operational(...)`
+
+directly.
+
+The API SHALL NOT:
+
+- inspect Runtime readiness to decide transition eligibility;
+- inspect Runtime lifecycle state to reproduce transition rules;
+- enable request admission;
+- disable request admission;
+- mark Runtime operational;
+- construct transition evidence;
+- evaluate mandatory capabilities;
+- establish independent lifecycle authority.
+
+Runtime remains the sole authoritative lifecycle-transition owner.
+
+### Request Admission Boundary
+
+`POST /operational-transition`
+
+SHALL remain subject to the existing `RequestAdmissionMiddleware`.
+
+The endpoint SHALL NOT be added to:
+
+`DEFAULT_ADMISSION_EXEMPT_PATHS`
+
+RFC-052 SHALL NOT alter existing Runtime-owned request-admission semantics.
+
+If operational request admission is disabled, the existing middleware SHALL reject the request before the operational-transition endpoint executes.
+
+### Success Semantics
+
+A successful endpoint request SHALL mean that:
+
+- transport input was accepted;
+- domain observations were constructed;
+- the canonical application service completed successfully;
+- the authoritative transition path completed successfully.
+
+The endpoint SHALL then return:
+
+`204 No Content`
+
+The endpoint SHALL NOT independently mutate Runtime after the application service returns.
+
+### Validation Semantics
+
+FastAPI and the approved transport schema SHALL remain responsible for transport deserialization and structural request validation.
+
+Domain `Observation` SHALL remain responsible for its existing domain invariants.
+
+The API layer MAY translate a domain observation-construction validation failure into an appropriate client validation response.
+
+RFC-052 SHALL NOT duplicate domain validation rules inside a second business-validation model.
+
+### Failure Semantics
+
+If observation mapping fails:
+
+- the application service SHALL NOT be invoked;
+- no operational-transition request SHALL occur.
+
+If `OperationalTransitionApplicationService.request_operational(...)` raises:
+
+- the exception SHALL NOT cause an automatic retry;
+- the application service SHALL NOT be invoked a second time;
+- the API SHALL NOT independently repeat workload execution;
+- the API SHALL NOT independently request a Runtime transition;
+- no synthetic success response SHALL be returned.
+
+RFC-052 SHALL NOT introduce a new platform-wide exception taxonomy.
+
+Existing lower-layer failure atomicity and fail-closed semantics remain authoritative.
+
+### Router Composition Boundary
+
+The operational-transition HTTP boundary SHALL be explicitly composed into the FastAPI application using the exact canonical application-service instance supplied by `PlatformComposition`.
+
+Router composition SHALL preserve dependency identity.
+
+The API module SHALL NOT import or build an independent `CompositionRoot`.
+
+The API module SHALL NOT create hidden global platform infrastructure.
+
+### Bootstrap Boundary
+
+Bootstrap SHALL NOT invoke the operational-transition endpoint or its application service automatically.
+
+RFC-052 SHALL NOT introduce startup-triggered transition behavior.
+
+### Health Boundary
+
+Health endpoints SHALL remain observational.
+
+Health SHALL NOT invoke the operational-transition application service.
+
+Health SHALL NOT initiate an operational transition.
+
+### PI and External Connectivity Boundary
+
+RFC-052 SHALL NOT introduce:
+
+- PI Web API network communication;
+- PI authentication;
+- PI certificate handling;
+- PI connectivity probes;
+- connector lifecycle changes;
+- capability availability sources;
+- mandatory-capability deployment policy.
+
+Existing mock-before-production integration architecture remains unchanged.
+
+### State and Persistence Boundary
+
+The API boundary SHALL remain stateless between requests.
+
+It SHALL NOT persist:
+
+- observations;
+- workflow executions;
+- workload evidence;
+- transition evidence;
+- transition eligibility;
+- Runtime lifecycle state;
+- retry state.
+
+### Non-Goals
+
+RFC-052 SHALL NOT:
+
+- redesign `ApplicationFacade`;
+- redesign `OperationalTransitionApplicationService`;
+- redesign `OperationalTransitionCoordinator`;
+- modify Runtime transition semantics;
+- modify request-admission semantics;
+- modify mandatory-capability observation semantics;
+- modify mandatory-capability policy semantics;
+- modify mandatory-capability coverage semantics;
+- introduce trusted PI connectivity;
+- introduce production capability availability sources;
+- introduce automatic operational transition;
+- expose internal transition evidence over HTTP;
+- introduce retries;
+- introduce recovery;
+- introduce traffic draining;
+- introduce `DEGRADED` behavior;
+- introduce persistent transition history;
+- introduce another lifecycle authority.
+
+### TDD Boundary
+
+Before production implementation, focused tests SHALL establish:
+
+- the endpoint is exposed as `POST /operational-transition`;
+- the endpoint remains behind Runtime request admission;
+- the endpoint is not admission-exempt;
+- closed admission prevents application-service invocation;
+- accepted transport observations map into domain `Observation` objects;
+- observation order is preserved;
+- timezone-aware observation timestamps reach the domain boundary correctly;
+- domain observation validation failures do not invoke the application service;
+- the canonical `OperationalTransitionApplicationService` is invoked exactly once;
+- the service receives the exact mapped observation tuple;
+- no workload evidence is accepted from client input;
+- no transition evidence is accepted from client input;
+- successful application execution returns `204 No Content`;
+- internal workflow and transition evidence are not serialized into the response;
+- application-service failure is not retried;
+- application-service failure does not produce synthetic success;
+- the API does not call Runtime directly;
+- the API does not evaluate mandatory capabilities directly;
+- the API does not create a second application-service instance;
+- FastAPI composition uses the exact canonical application-service instance;
+- Bootstrap does not invoke the endpoint use case;
+- Health does not invoke the endpoint use case;
+- existing root and health behavior remains unchanged;
+- existing request-admission behavior remains unchanged.
+
+### Next Exact Action
+
+Commit the RFC-052 contract before creating production implementation.
+
+After the contract commit, begin TDD for the explicit operational-transition API boundary.
+
+---
+
 ## RFC-051 — Explicit Operational Transition Application Boundary
 
 ### Status
