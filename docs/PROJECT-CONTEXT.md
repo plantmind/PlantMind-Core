@@ -487,9 +487,57 @@ RFC-050 verification:
 - `git diff --check`: passed
 - Remote technical push: verified
 
-The next engineering action is a Source-of-Truth architecture review before defining any RFC-051 contract.
+RFC-051 — Explicit Operational Transition Application Boundary is technically complete.
 
-No RFC-051 objective has been selected yet.
+RFC-051 established the canonical explicit `OperationalTransitionApplicationService`.
+
+The application service now:
+
+- accepts canonical `tuple[Observation, ...]`;
+- executes workload exactly once through the composed `ApplicationFacade`;
+- obtains trusted workload evidence only from the returned `WorkflowExecution`;
+- forwards the exact workload-evidence value to `OperationalTransitionCoordinator`;
+- delegates operational-transition coordination exactly once;
+- returns immutable `OperationalTransitionApplicationResult`.
+
+The service preserves exact identity of:
+
+- the supplied observation tuple;
+- the composed `ApplicationFacade`;
+- the composed `OperationalTransitionCoordinator`;
+- the returned `WorkflowExecution`;
+- the workload evidence produced by that execution;
+- the `OperationalTransitionEvidence` returned by the coordinator.
+
+Runtime remains the sole lifecycle-transition authority.
+
+RFC-051 introduces no:
+
+- automatic transition from normal `ApplicationFacade.analyze(...)`;
+- HTTP endpoint;
+- FastAPI routing change;
+- client-provided workload evidence;
+- direct Runtime dependency;
+- Bootstrap-triggered transition;
+- Health-triggered transition;
+- persistent transition state;
+- independent lifecycle authority.
+
+RFC-051 verification:
+
+- Contract commit: `ccdd80d`
+- Technical commit: `866f786`
+- Architecture decision: AD-037
+- Focused TDD suite: 18 passed
+- Impacted services/core regression: 348 passed
+- Full regression: 416 passed
+- Compilation: passed
+- `git diff --check`: passed
+- Remote technical push: verified
+
+The next engineering action is a Source-of-Truth architecture review before defining any RFC-052 contract.
+
+No RFC-052 objective has been selected yet.
 
 15. Session Continuation Instruction
 

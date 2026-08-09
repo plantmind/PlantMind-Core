@@ -37,7 +37,7 @@ No item may be marked complete until:
 
 ### Status
 
-Contract defined. Ready for contract verification and commit.
+Complete.
 
 ### Objective
 
@@ -377,7 +377,7 @@ Before production implementation, focused tests SHALL establish:
 
 ### Next Exact Action
 
-Verify and commit the RFC-051 contract before writing focused TDD tests or production Python.
+Perform a Source-of-Truth architecture review before defining any RFC-052 contract.
 
 ---
 
@@ -741,7 +741,7 @@ Before production implementation, focused tests SHALL establish:
 
 ### Next Exact Action
 
-Perform a Source-of-Truth architecture review before defining any RFC-051 contract.
+RFC-050 is complete. Subsequent architecture work proceeded through RFC-051.
 
 ---
 
@@ -779,6 +779,7 @@ Perform a Source-of-Truth architecture review before defining any RFC-051 contra
 | RFC-048 | `b714ceb` | Runtime operational transition contract |
 | RFC-049 | `496fe42` | Mandatory capability composition contract |
 | RFC-050 | `995a73b` | Operational transition coordination contract |
+| RFC-051 | `866f786` | Explicit operational transition application boundary |
 
 RFC-039 verification:
 
@@ -999,6 +1000,34 @@ RFC-050 verification:
 - Runtime remains sole operational-transition authority
 
 RFC-050 is technically complete.
+
+RFC-051 verification:
+
+- Contract commit: `ccdd80d`
+- Technical commit: `866f786`
+- Architecture decision: AD-037
+- Focused TDD suite: 18 passed
+- Impacted services/core regression: 348 passed
+- Full regression: 416 passed
+- Compilation: passed
+- `git diff --check`: passed
+- Remote technical push: verified
+- Explicit operational-transition application service: introduced
+- Canonical `ApplicationFacade` dependency identity: preserved
+- Canonical `OperationalTransitionCoordinator` dependency identity: preserved
+- Workload execution per request: exactly once
+- Workload evidence identity: preserved
+- Coordinator delegation per request: exactly once
+- Immutable application result: introduced
+- Automatic transition from normal `ApplicationFacade.analyze(...)`: not introduced
+- HTTP endpoint: not introduced
+- Bootstrap-triggered transition: not introduced
+- Health-triggered transition: not introduced
+- Persistent transition state: not introduced
+- Independent lifecycle authority: not introduced
+- Runtime remains sole operational-transition authority
+
+RFC-051 is technically complete.
 
 ---
 

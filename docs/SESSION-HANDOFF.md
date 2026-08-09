@@ -6,13 +6,13 @@
 | ---------------------------- | --------------------------------------------------------- |
 | Project                      | PlantMind PM-001                                          |
 | Branch                       | `feature/engineering-platform`                            |
-| Last Completed RFC           | RFC-050 — Operational Transition Coordination Contract    |
-| Technical Baseline Commit    | `995a73b`                                                 |
-| Architecture Baseline Commit | `0001bf0`                                                 |
-| Test Baseline                | 398 passed                                                |
+| Last Completed RFC           | RFC-051 — Explicit Operational Transition Application Boundary |
+| Technical Baseline Commit    | `866f786` |
+| Architecture Baseline Commit | `ccdd80d` |
+| Test Baseline                | 416 passed |
 | Authoritative Environment    | `PlantMind-Core/.venv`                                    |
 | Remote State                 | Up to date with `origin/feature/engineering-platform`     |
-| RFC-050 Technical Push       | Verified                                                  |
+| RFC-051 Technical Push       | Verified |
 
 ## Recent Engineering Sequence
 
@@ -42,6 +42,7 @@
 - RFC-048 — Runtime Operational Transition Contract
 - RFC-049 — Mandatory Capability Composition Contract
 - RFC-050 — Operational Transition Coordination Contract
+- RFC-051 — Explicit Operational Transition Application Boundary
 
 ## RFC-036 Outcome
 
@@ -786,11 +787,50 @@ The coordinator introduces no persistent evidence history, retry queue, independ
 - `git diff --check`: passed
 - Remote technical push: verified
 
+## RFC-051 Outcome
+
+RFC-051 established the canonical explicit `OperationalTransitionApplicationService`.
+
+The application service:
+
+- accepts canonical `tuple[Observation, ...]`;
+- executes workload exactly once through the composed `ApplicationFacade`;
+- obtains trusted workload evidence only from the returned `WorkflowExecution`;
+- forwards the exact workload-evidence value to `OperationalTransitionCoordinator`;
+- delegates operational-transition coordination exactly once;
+- returns immutable `OperationalTransitionApplicationResult`.
+
+The service preserves exact dependency and result identity across:
+
+- `ApplicationFacade`;
+- `OperationalTransitionCoordinator`;
+- `WorkflowExecution`;
+- operational-workload evidence;
+- `OperationalTransitionEvidence`.
+
+RFC-051 introduces no automatic transition from normal `ApplicationFacade.analyze(...)`.
+
+RFC-051 introduces no HTTP endpoint, FastAPI routing change, client-provided workload evidence, direct Runtime dependency, Bootstrap-triggered transition, Health-triggered transition, persistent transition state or competing lifecycle authority.
+
+Runtime remains the sole operational-transition authority.
+
+## RFC-051 Verification
+
+- Contract commit: `ccdd80d`
+- Technical commit: `866f786`
+- Architecture decision: AD-037
+- Focused TDD suite: 18 passed
+- Impacted services/core regression: 348 passed
+- Full regression: 416 passed
+- Compilation: passed
+- `git diff --check`: passed
+- Remote technical push: verified
+
 ## Documentation Closure
 
-RFC-050 technical implementation is complete.
+RFC-051 technical implementation is complete.
 
-The engineering-memory layer is being synchronized with the RFC-050 technical baseline.
+The engineering-memory layer is being synchronized with the RFC-051 technical baseline.
 
 Relevant maintained documents:
 
@@ -802,21 +842,21 @@ Relevant maintained documents:
 
 ## Next Exact Action
 
-Perform a Source-of-Truth architecture review before defining any RFC-051 contract.
+Perform a Source-of-Truth architecture review before defining any RFC-052 contract.
 
-No RFC-051 objective has been selected yet.
+No RFC-052 objective has been selected yet.
 
 Preserve:
 
 1. Runtime as the sole lifecycle-transition authority.
-2. Explicit operational-transition coordination.
-3. Fail-closed mandatory-capability semantics.
-4. Capability availability observation ownership.
-5. Mandatory-capability policy ownership.
-6. Mandatory-capability coverage ownership.
+2. `ApplicationFacade` as the canonical workload-entry boundary.
+3. Explicit operational-transition application coordination.
+4. Trusted workload evidence generated only by the canonical workload path.
+5. `OperationalTransitionCoordinator` as the evidence coordination boundary.
+6. Fail-closed mandatory-capability semantics.
 7. Canonical composition identity.
 8. No automatic workload-triggered operational transition.
-9. No deployment-specific capability identifiers in core.
+9. No transport-layer ownership of internal evidence construction.
 10. No new lifecycle authority without an approved architecture contract.
 
 ## Required Test Command

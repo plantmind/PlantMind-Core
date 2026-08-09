@@ -3029,3 +3029,243 @@ Runtime remains the sole authority that decides whether the platform may enter `
 - Compilation: passed
 - `git diff --check`: passed
 - Remote technical push: verified
+
+# AD-037 — Explicit Operational Transition Application Boundary
+
+## Status
+
+Accepted.
+
+## Context
+
+RFC-041 established `ApplicationFacade` as the canonical application-level operational workload entry boundary.
+
+RFC-046 established trusted correlated `OperationalWorkloadEvidence` produced by the canonical workload execution path.
+
+RFC-048 established Runtime as the sole authoritative `READY` to `OPERATIONAL` lifecycle-transition authority.
+
+RFC-050 established `OperationalTransitionCoordinator` as the canonical operational-transition evidence coordination boundary.
+
+Before RFC-051, PlantMind had no canonical application-level use-case boundary connecting workload execution through `ApplicationFacade` with an explicit operational-transition request through `OperationalTransitionCoordinator`.
+
+Placing that coordination directly in FastAPI would move application orchestration and workload-evidence trust into the transport layer.
+
+## Decision
+
+PlantMind SHALL provide an:
+
+`OperationalTransitionApplicationService`
+
+as the canonical application-level boundary for the explicit combined workload-and-operational-transition use case.
+
+The approved operation is:
+
+`request_operational(observations: tuple[Observation, ...]) -> OperationalTransitionApplicationResult`
+
+The service SHALL remain an application coordinator.
+
+It SHALL NOT become a lifecycle authority.
+
+## Dependency Boundary
+
+`OperationalTransitionApplicationService` SHALL depend on the exact canonical instances of:
+
+- `ApplicationFacade`;
+- `OperationalTransitionCoordinator`.
+
+It SHALL NOT directly depend on:
+
+- `Runtime`;
+- `IntegrationGateway`;
+- `OrchestrationService`;
+- `WorkflowExecutor`;
+- reasoning services;
+- presentation services.
+
+## Observation Boundary
+
+The service SHALL consume existing immutable:
+
+`Observation`
+
+domain objects.
+
+Observation validation remains owned by `Observation`.
+
+RFC-051 introduces no duplicate observation model and no transport-specific deserialization responsibility.
+
+## Workload Execution Boundary
+
+Each explicit request SHALL invoke:
+
+`ApplicationFacade.analyze(...)`
+
+exactly once.
+
+The exact observation tuple supplied to the application service SHALL be forwarded unchanged to `ApplicationFacade`.
+
+`ApplicationFacade` remains the canonical operational workload-entry boundary.
+
+The application service SHALL NOT construct an alternate workload execution path.
+
+## Workload Evidence Trust Boundary
+
+The application service SHALL obtain workload evidence only from:
+
+`WorkflowExecution.operational_workload_evidence`
+
+returned by the canonical `ApplicationFacade` execution path.
+
+It SHALL NOT:
+
+- create workload identifiers;
+- create workload-entry evidence;
+- create workflow-execution-start evidence;
+- construct `OperationalWorkloadEvidence`;
+- reconstruct workload evidence;
+- accept workload evidence from an external client;
+- validate workload UUID correlation independently;
+- infer workload evidence from workflow stages.
+
+The exact workload-evidence value, including `None`, SHALL be forwarded unchanged to `OperationalTransitionCoordinator`.
+
+## Transition Coordination Boundary
+
+The application service SHALL invoke:
+
+`OperationalTransitionCoordinator.request_operational(...)`
+
+exactly once after successful workload execution.
+
+It SHALL NOT:
+
+- construct `OperationalTransitionEvidence`;
+- observe mandatory capabilities;
+- evaluate mandatory-capability coverage;
+- inspect mandatory-capability policy;
+- inspect Runtime state;
+- inspect Runtime readiness;
+- inspect request admission;
+- call `Runtime.request_operational(...)` directly.
+
+Runtime remains the sole authoritative lifecycle-transition authority.
+
+## Application Result
+
+RFC-051 introduces immutable:
+
+`OperationalTransitionApplicationResult`
+
+containing:
+
+- the exact `WorkflowExecution` returned by `ApplicationFacade`;
+- the exact `OperationalTransitionEvidence` returned by `OperationalTransitionCoordinator`.
+
+The result preserves object identity.
+
+It is not lifecycle state, transition authority, eligibility state or persistent transition history.
+
+## Failure Semantics
+
+If `ApplicationFacade.analyze(...)` fails:
+
+- the exception propagates;
+- the coordinator is not invoked;
+- workload execution is not retried;
+- no synthetic workload evidence is created;
+- no operational-transition request is attempted.
+
+If `OperationalTransitionCoordinator.request_operational(...)` fails:
+
+- the exception propagates;
+- the coordinator is not retried;
+- workload execution is not repeated;
+- Runtime state is not independently modified;
+- request admission is not independently modified.
+
+Existing Runtime and coordinator failure semantics remain authoritative.
+
+## No Automatic Lifecycle Side Effects
+
+Normal calls to:
+
+`ApplicationFacade.analyze(...)`
+
+remain workload-only operations.
+
+RFC-051 SHALL NOT automatically request an operational transition after ordinary workload execution.
+
+The combined use case occurs only through an explicit invocation of `OperationalTransitionApplicationService`.
+
+## Composition Boundary
+
+`CompositionRoot` SHALL compose exactly one `OperationalTransitionApplicationService`.
+
+The exact service instance SHALL be:
+
+- exposed through `PlatformComposition`;
+- registered in `ServiceContainer`.
+
+Its dependencies SHALL be the exact composed:
+
+- `ApplicationFacade`;
+- `OperationalTransitionCoordinator`.
+
+CompositionRoot SHALL NOT execute the service during build.
+
+## Bootstrap and Health Boundaries
+
+Bootstrap SHALL NOT invoke the application service.
+
+Health SHALL NOT invoke the application service.
+
+RFC-051 introduces no startup-triggered or health-triggered operational transition.
+
+## API Boundary
+
+RFC-051 introduces no HTTP endpoint and no FastAPI routing changes.
+
+The API hosting layer SHALL NOT construct workload evidence or directly coordinate internal workload and Runtime-transition components.
+
+A future external-interface contract MAY expose this approved application service through HTTP or another transport.
+
+Any such operational interface remains subject to Runtime-owned request-admission enforcement unless separately architecture-approved.
+
+## State and Persistence Boundary
+
+`OperationalTransitionApplicationService` SHALL remain stateless between requests.
+
+It SHALL NOT maintain:
+
+- last workflow execution;
+- last workload evidence;
+- last transition evidence;
+- transition history;
+- retry queues;
+- lifecycle state;
+- operational eligibility state.
+
+## Consequences
+
+PlantMind now has a canonical application-level path:
+
+External Interface
+→ `OperationalTransitionApplicationService`
+→ `ApplicationFacade`
+→ trusted `WorkflowExecution`
+→ trusted operational-workload evidence
+→ `OperationalTransitionCoordinator`
+→ Runtime authority.
+
+This keeps workload evidence generated inside the approved application path, prevents the transport layer from becoming an application orchestrator, and preserves Runtime as the sole lifecycle-transition authority.
+
+## Verification
+
+- RFC-051 contract commit: `ccdd80d`
+- RFC-051 technical commit: `866f786`
+- Focused RFC-051 suite: 18 passed
+- Impacted services/core regression: 348 passed
+- Full regression: 416 passed
+- Compilation: passed
+- `git diff --check`: passed
+- Remote technical push: verified
