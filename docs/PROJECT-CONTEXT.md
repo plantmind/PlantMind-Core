@@ -562,7 +562,21 @@ RFC-053 verification: contract `37112a2`; technical `ee18bc8`; architecture deci
 
 RFC-053 introduced no production knowledge database adapter, no production knowledge composition or registration, no knowledge HTTP API, no RAG, no vector storage, no semantic search, no LLM integration and no change to Runtime lifecycle authority.
 
-The next exact action is the required post-RFC-053 Source-of-Truth architecture review before defining or implementing the next architecture RFC.
+The required post-RFC-053 Source-of-Truth architecture review is complete.
+
+The review established that the RFC-053 canonical knowledge foundation remains authoritative and must not be redesigned by the next workstream. Existing knowledge graph, RAG, semantic-search, memory and agent components remain prototype, placeholder or intentionally unimplemented.
+
+`backend/app/database.py` is preliminary isolated SQLAlchemy infrastructure and is not the canonical PlantMind database runtime. The authoritative `.venv` does not currently provide SQLAlchemy, the declared backend dependencies do not establish SQLAlchemy, a PostgreSQL driver or Alembic, and no canonical ORM schema, schema metadata ownership, migration lifecycle or database test foundation currently exists.
+
+No production code currently consumes `app.database`. Database readiness is not currently a mandatory Runtime capability, and Knowledge persistence must not be implemented before an approved database runtime and schema-lifecycle boundary exists.
+
+The selected engineering direction is:
+
+`Canonical Database Runtime & Schema Lifecycle Foundation`
+
+This is an engineering direction only. No implementation is authorized until the corresponding architecture contract is drafted, reviewed and accepted.
+
+The next exact action is to draft and review that architecture contract before introducing database dependencies, schema migrations, ORM models, production Knowledge persistence or database composition.
 
 ## 15. Session Continuation Instruction
 
