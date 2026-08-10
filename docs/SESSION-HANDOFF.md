@@ -864,7 +864,7 @@ RFC-052 introduces no PI Web API communication, connectivity probe, production c
 
 RFC-052 technical implementation is complete.
 
-The engineering-memory layer is being synchronized with the RFC-052 technical baseline.
+DOCS-027 synchronized the engineering-memory layer with the RFC-052 technical baseline at documentation closure commit `728559c`.
 
 Relevant maintained documents:
 
@@ -876,9 +876,9 @@ Relevant maintained documents:
 
 ## Next Exact Action
 
-Perform a Source-of-Truth architecture review before defining any RFC-053 contract.
+The required post-RFC-052 Source-of-Truth architecture review is complete. Draft and review the RFC-053 contract for the selected Canonical Enterprise Knowledge Foundation Boundary direction before any implementation.
 
-No RFC-053 objective has been selected yet.
+The RFC-053 engineering direction has been selected, but the RFC-053 contract is not yet accepted.
 
 Preserve:
 

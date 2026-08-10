@@ -1423,3 +1423,66 @@ The next engineering step is a Source-of-Truth architecture review before defini
 
 The project remains in long-term enterprise platform development.
 
+---
+
+## 2026-08-10 — Post-RFC-052 Source-of-Truth Architecture Review
+
+### Purpose
+
+Complete the architecture review required after RFC-052 before defining any RFC-053 contract.
+
+### Review Scope
+
+The review covered:
+
+- current committed architecture through RFC-052;
+- AD-035 through AD-038;
+- the Active Work Register and deferred architecture work;
+- PM-001 Phase 1 objectives and success criteria;
+- production composition and HTTP reachability;
+- existing equipment-domain contracts;
+- existing knowledge, RAG, search, graph, memory and agent foundations;
+- existing PI connector and tag-reader foundations;
+- prototype and empty knowledge components;
+- engineering-memory consistency.
+
+### Findings
+
+The review established that:
+
+- the operational-platform foundation is complete through RFC-052;
+- Runtime remains the sole lifecycle-transition authority;
+- the canonical workload, evidence, transition, application and HTTP boundaries are established;
+- PM-001 Phase 1 still requires production-grade knowledge capabilities;
+- the production `CompositionRoot` does not currently compose an enterprise knowledge subsystem;
+- `app.domain.equipment.Equipment` and `EquipmentSnapshot` are established domain foundations and must be preserved;
+- `app.models.equipment.Equipment` and the existing in-memory `EquipmentService` form a separate prototype/legacy seam and must not become a second canonical equipment domain;
+- `KnowledgeGraphService` is currently an in-memory prototype;
+- `KnowledgeGraphEngine` is currently a placeholder;
+- the current document parser, equipment graph, plant graph, RAG engine, relationship builder, semantic search, knowledge memory, vector memory and knowledge agent files contain no production implementation;
+- real PI Web API integration remains intentionally deferred and must not be represented as trusted production availability or knowledge connectivity;
+- no completed workstream was found that must be resumed before defining the next knowledge-foundation contract;
+- deferred PI package migration, logging consolidation and session-memory naming review remain intentionally deferred.
+
+### Architecture Direction
+
+The selected engineering direction for RFC-053 is:
+
+`Canonical Enterprise Knowledge Foundation Boundary`
+
+This is an engineering direction only.
+
+No RFC-053 architecture contract has been accepted and no RFC-053 implementation is authorized yet.
+
+### Engineering Memory Consistency
+
+The review also identified stale and malformed engineering-memory content, including outdated baselines, malformed Markdown structure, obsolete continuation wording and completed-next-action text still presented as current.
+
+A documentation consistency repair was started before RFC-053 contract definition.
+
+### Next Exact Action
+
+Complete and verify the engineering-memory consistency repair.
+
+After the repair is committed and the working tree is clean, draft and review the RFC-053 architecture contract before any implementation.
+

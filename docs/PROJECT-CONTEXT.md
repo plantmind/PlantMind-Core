@@ -9,9 +9,9 @@
 | Status | Active Development |
 | Deployment Model | On-Premise |
 | Development Branch | `feature/engineering-platform` |
-| Last Completed RFC        | RFC-036 — Managed Shutdown Failure Containment Contract                                |
-| Test Baseline             | 225 passing tests                                                                      |
-| Technical Baseline Commit | `438d7e4`                                                                              |
+| Last Completed RFC | RFC-052 — Explicit Operational Transition API Boundary |
+| Test Baseline | 432 passing tests |
+| Technical Baseline Commit | `62bb854` |
 | Purpose | Authoritative context for continuing PlantMind development across engineering sessions |
 
 ---
@@ -63,6 +63,7 @@ Phase 1 is anchored around:
 
 ```text
 COMP-H-001 — Ethane Booster Compressor
+```
 
 The first operational use cases include:
 
@@ -74,7 +75,7 @@ Operational reasoning
 Risk assessment
 Root-cause analysis
 Recommendation generation
-4. Enterprise Knowledge Sources
+## 4. Enterprise Knowledge Sources
 
 PlantMind is intended to integrate and reason across multiple source classes.
 
@@ -113,7 +114,7 @@ SAP PM
 Work orders
 Maintenance records
 Lessons learned
-5. Core Architectural Direction
+## 5. Core Architectural Direction
 
 The authoritative architectural layers are:
 
@@ -134,7 +135,7 @@ Recommendation Engine
 Compliance Engine
 Workflow Intelligence
 Learning Engine
-6. Current Core Platform Capabilities
+## 6. Current Core Platform Capabilities
 
 The following foundations have been implemented and tested:
 
@@ -161,7 +162,7 @@ Registry Public API
 Core Plugin Framework
 Plugin Lifecycle Manager
 Plugin Infrastructure Composition
-7. Current PI Integration Foundation
+## 7. Current PI Integration Foundation
 
 The PI integration structure currently includes:
 
@@ -186,7 +187,7 @@ Real PI Web API network integration has not yet been implemented.
 
 Mock implementations are intentionally used to develop and verify the internal platform architecture before introducing network, authentication, certificates and production-system dependencies.
 
-8. Engineering Principles
+## 8. Engineering Principles
 
 All future work SHALL follow these principles.
 
@@ -245,7 +246,7 @@ Component dependencies
 Technical debt
 Release readiness
 Engineering governance state
-9. Required RFC Completion Gate
+## 9. Required RFC Completion Gate
 
 No RFC is complete until all relevant checks pass:
 
@@ -261,7 +262,7 @@ Commit verification
 Remote push verification
 Clean working tree
 Active Work Register update when required
-10. Development Environment
+## 10. Development Environment
 
 The authoritative local Python environment is:
 
@@ -275,22 +276,30 @@ The alternate environment below must not be used as the authoritative environmen
 
 PlantMind-Core/backend/.venv
 
-The last verified baseline is:
+The last verified full regression baseline is:
 
-184 passed
-11. Git State at This Context Version
+432 passed
+
+## 11. Git State at This Context Version
 Branch:
 feature/engineering-platform
 
-Last completed technical RFC commit:
-defc1fe RFC-031: enforce plugin identity consistency
+Last completed technical RFC:
+RFC-052 — Explicit Operational Transition API Boundary
+
+Technical baseline commit:
+`62bb854`
+
+Previous documentation closure commit:
+`728559c`
 
 Remote:
 origin/feature/engineering-platform
 
-Technical working tree after RFC-031:
+Working tree at the verified RFC-052 documentation baseline:
 clean
-12. Current Architectural Review
+
+## 12. Current Architectural Review
 
 An existing service lifecycle framework already exists:
 
@@ -318,7 +327,7 @@ ServiceRegistry         Runtime service instances and service lifecycle
 BootstrapManager        Platform startup and shutdown orchestration
 CompositionRoot         Platform dependency construction and wiring
 ServiceContainer        Resolution of composed platform dependencies
-13. Deferred Architectural Work
+## 13. Deferred Architectural Work
 PI Connector Package Migration
 
 Current compatibility structure:
@@ -362,7 +371,7 @@ Enterprise modules
 
 It must extend, not discard, the accepted Plugin Framework.
 
-14. Immediate Development Direction
+## 14. Immediate Development Direction
 
 RFC-049 — Mandatory Capability Composition Contract is technically complete.
 
@@ -545,9 +554,9 @@ Runtime remains the sole lifecycle-transition authority. Bootstrap and Health do
 
 RFC-052 verification: contract `f9b0816`; technical `62bb854`; architecture decision AD-038; focused suite 16 passed; API regression 25 passed; impacted API/services/core regression 373 passed; full regression 432 passed; compilation and `git diff --check` passed; remote technical push verified.
 
-The next engineering action is a Source-of-Truth architecture review before defining any RFC-053 contract.
+The required post-RFC-052 Source-of-Truth architecture review is complete. The selected engineering direction for RFC-053 is the Canonical Enterprise Knowledge Foundation Boundary. The RFC-053 contract is not yet accepted. The next exact action is to draft and review that contract before any implementation.
 
-15. Session Continuation Instruction
+## 15. Session Continuation Instruction
 
 When continuing PlantMind in a new engineering session:
 
@@ -555,6 +564,7 @@ Continue PlantMind PM-001 as Chief Software Architect.
 
 Read and follow:
 - docs/PROJECT-CONTEXT.md
+- docs/SESSION-HANDOFF.md
 - docs/ENGINEERING-JOURNAL.md
 - docs/ARCHITECTURE-DECISIONS.md
 - docs/ROADMAP-004-Active-Work-Register.md
@@ -564,7 +574,8 @@ Do not redesign completed components without dependency review.
 Use the authoritative root .venv environment.
 Follow the RFC Completion Gate.
 Provide concise executable steps unless explanation is requested.
-16. Source of Truth Order
+
+## 16. Source of Truth Order
 
 When information conflicts, use this priority:
 
@@ -572,13 +583,8 @@ Current committed code and tests
 Accepted ADR, ARCH, CORE and RFC documents
 Active Work Register
 Project Context
+Session Handoff
 Engineering Journal
 Conversation history
 
 The conversation is supporting context, not the authoritative engineering record.
-
-
-```bash
-python -m py_compile backend/app/core/plugins/__init__.py
-wc -l docs/PROJECT-CONTEXT.md
-git status --short

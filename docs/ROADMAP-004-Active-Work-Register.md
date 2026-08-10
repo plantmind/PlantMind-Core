@@ -3,7 +3,7 @@
 | Property | Value |
 |----------|-------|
 | Status | Active |
-| Version | 1.1 |
+| Version | 1.2 |
 | Owner | Platform Architecture |
 | Purpose | Prevent unfinished work from being lost |
 
@@ -32,6 +32,85 @@ No item may be marked complete until:
 ---
 
 # Active Work
+
+## RFC-053 — Canonical Enterprise Knowledge Foundation Boundary
+
+### Status
+
+Contract Definition In Progress.
+
+The engineering direction has been selected, but no RFC-053 architecture contract has been accepted and no RFC-053 implementation is authorized yet.
+
+### Objective
+
+Define the canonical enterprise knowledge foundation boundary required to advance PM-001 Phase 1 from the completed operational-platform foundation toward production-grade knowledge capabilities.
+
+The contract SHALL define responsibilities and integration boundaries before implementation.
+
+It SHALL build on accepted PlantMind architecture and existing valid domain contracts rather than create duplicate platform paths or promote prototype components directly into production.
+
+### Source-of-Truth Review Findings
+
+The post-RFC-052 Source-of-Truth architecture review is complete.
+
+The review established that:
+
+- the Runtime, request-admission, workload, operational-transition, application and HTTP foundations are complete through RFC-052;
+- PM-001 Phase 1 requires an AI Knowledge Engine, Document Library, Asset Library and Search Engine;
+- the canonical production `CompositionRoot` does not currently compose enterprise knowledge services;
+- the existing `Equipment` domain entity and `EquipmentSnapshot` provide an established domain foundation that must be preserved;
+- the separate legacy/prototype equipment model and in-memory equipment service must not become a second canonical equipment domain;
+- the existing `KnowledgeGraphService` is an in-memory prototype;
+- the existing `KnowledgeGraphEngine` is a placeholder;
+- the current knowledge parser, graph, RAG, semantic-search, knowledge-memory, vector-memory and knowledge-agent files contain no production implementation;
+- the empty or prototype knowledge components must not be treated as completed Phase 1 capabilities;
+- real PI Web API integration remains intentionally separate from this knowledge-foundation contract unless a later accepted dependency requires it.
+
+### Architectural Constraints
+
+RFC-053 SHALL preserve:
+
+- accepted Source-of-Truth precedence;
+- existing domain ownership and invariants;
+- CompositionRoot as the canonical production dependency-construction boundary;
+- ServiceContainer identity for composed platform dependencies;
+- the established Plugin Framework and Runtime architecture;
+- Runtime as the sole lifecycle-transition authority;
+- the existing canonical workload and operational-transition paths;
+- reuse-before-rebuild and no-duplicate-responsibility principles.
+
+RFC-053 SHALL NOT introduce a third equipment model, duplicate an accepted service responsibility, or treat prototype in-memory state as enterprise persistence.
+
+### Remaining Work
+
+Define and review the RFC-053 contract, including:
+
+- knowledge-domain responsibility boundaries;
+- application-service boundaries;
+- persistence and external-storage ports where required;
+- composition ownership;
+- relationship to existing equipment domain contracts;
+- relationship to existing reasoning services;
+- migration or containment rules for prototype knowledge components;
+- explicit non-goals and deferred integrations;
+- testable acceptance criteria.
+
+### Dependencies
+
+- RFC-052 and AD-038 complete.
+- Post-RFC-052 Source-of-Truth architecture review complete.
+- Engineering-memory consistency repair in progress.
+- No RFC-053 implementation may begin until the contract is reviewed and accepted.
+
+### Resume Condition
+
+Engineering-memory consistency repair is verified and committed.
+
+### Next Exact Action
+
+Complete and verify the engineering-memory consistency repair, then draft and review the RFC-053 architecture contract before any implementation.
+
+---
 
 ## RFC-052 — Explicit Operational Transition API Boundary
 
@@ -364,7 +443,7 @@ Before production implementation, focused tests SHALL establish:
 
 RFC-052 is complete.
 
-Perform a Source-of-Truth architecture review before defining any RFC-053 contract.
+The required post-RFC-052 Source-of-Truth architecture review is complete. Subsequent active architecture work proceeds through RFC-053 contract definition.
 
 ---
 
