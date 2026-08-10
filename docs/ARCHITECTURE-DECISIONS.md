@@ -3448,3 +3448,337 @@ Trusted evidence remains internal, Runtime remains the sole lifecycle-transition
 - Compilation: passed
 - `git diff --check`: passed
 - Remote technical push: verified
+
+---
+
+# AD-039 — Canonical Enterprise Knowledge Foundation Boundary
+
+## Status
+
+Accepted.
+
+## Context
+
+The post-RFC-052 Source-of-Truth architecture review established that PlantMind has a mature operational runtime and transition foundation but does not yet have a canonical enterprise knowledge foundation.
+
+Existing knowledge-oriented components are either prototype, placeholder or intentionally unimplemented.
+
+The accepted equipment domain already provides canonical equipment identity through `app.domain.equipment.Equipment` and the shared `DomainEntity[EntityId]` model.
+
+The existing reasoning subsystem consumes `Observation` and does not define an accepted enterprise-knowledge input boundary.
+
+`backend/app/database.py` provides concrete SQLAlchemy infrastructure but does not define a persistence-neutral enterprise knowledge repository.
+
+PlantMind therefore requires a canonical knowledge-domain boundary before Document Library, Asset Library, Search Engine, Knowledge Graph, semantic retrieval, vector storage or RAG capabilities are introduced.
+
+## Decision
+
+PlantMind SHALL establish an immutable, traceable and persistence-neutral enterprise knowledge foundation centered on:
+
+- `KnowledgeRecord`;
+- `KnowledgeKind`;
+- `KnowledgeProvenance`;
+- `KnowledgeSourceType`;
+- `KnowledgeSubject`;
+- `KnowledgeSubjectType`;
+- `KnowledgeRecordRepository`.
+
+The canonical knowledge model SHALL remain independent of database, graph, vector, LLM, API and industrial-connectivity technologies.
+
+## Canonical Knowledge Record
+
+`KnowledgeRecord`
+
+SHALL be the canonical domain representation of one addressable enterprise knowledge item.
+
+It SHALL inherit canonical PlantMind identity through:
+
+`DomainEntity[EntityId]`
+
+A knowledge record SHALL contain:
+
+- canonical `EntityId` identity;
+- `kind: KnowledgeKind`;
+- `title: str`;
+- `content: str`;
+- `provenance: KnowledgeProvenance`;
+- `subject: KnowledgeSubject | None`.
+
+A knowledge record SHALL remain immutable after construction.
+
+It SHALL NOT become a database row model, graph node model, vector point, embedding, prompt, generated answer, operational observation or reasoning result.
+
+## Knowledge Type Value Objects
+
+`KnowledgeKind`, `KnowledgeSourceType` and `KnowledgeSubjectType`
+
+SHALL be open immutable value objects rather than closed enums.
+
+Each SHALL contain one string value.
+
+Normalization SHALL:
+
+- remove leading and trailing whitespace;
+- normalize alphabetic characters to lowercase;
+- preserve internal whitespace and characters.
+
+The resulting value SHALL be non-empty.
+
+PlantMind SHALL NOT establish a closed global vocabulary or type registry through RFC-053.
+
+## Content Normalization
+
+`KnowledgeRecord.title` and `KnowledgeRecord.content`
+
+SHALL remove leading and trailing whitespace only.
+
+Internal characters, whitespace and line breaks SHALL otherwise be preserved.
+
+Both values SHALL remain non-empty after normalization.
+
+## Domain Validation
+
+Knowledge-domain invariants SHALL be enforced by the canonical domain types.
+
+Validation failures SHALL raise the existing PlantMind:
+
+`DomainException`
+
+or an appropriate domain-specific subtype.
+
+Domain validation SHALL NOT require repository, database, graph, vector, API or application-service access.
+
+Repository conflicts SHALL remain separate from domain validation.
+
+## Provenance Boundary
+
+Each `KnowledgeRecord` SHALL contain exactly one immutable:
+
+`KnowledgeProvenance`
+
+containing:
+
+- `source_type: KnowledgeSourceType`;
+- `source_reference: str`;
+- `captured_at: datetime`.
+
+`source_reference` SHALL be non-empty after removing leading and trailing whitespace.
+
+`captured_at` SHALL be timezone-aware and SHALL normalize to UTC while preserving the represented instant.
+
+Provenance records origin.
+
+Provenance SHALL NOT by itself establish correctness, authorization, operational trust, reasoning eligibility, safety approval or lifecycle readiness.
+
+Cross-record corroboration, derivation and multi-source provenance relationships require a future explicit contract.
+
+## Knowledge Subject Boundary
+
+`KnowledgeSubject`
+
+SHALL contain:
+
+- `subject_type: KnowledgeSubjectType`;
+- `subject_id: EntityId`.
+
+It SHALL represent an optional typed primary contextual reference to an existing PlantMind domain entity.
+
+It SHALL NOT embed the referenced entity.
+
+It SHALL NOT be treated as an exhaustive knowledge relationship model.
+
+Construction of a `KnowledgeSubject` SHALL NOT load, resolve or verify the referenced entity.
+
+RFC-053 SHALL NOT establish referential-integrity verification between `subject_type` and `subject_id`.
+
+Entity existence, accessibility and subject-type correspondence require a future explicit application or integration contract.
+
+## Equipment Ownership Boundary
+
+`app.domain.equipment.Equipment`
+
+remains the canonical equipment entity.
+
+`EquipmentSnapshot`
+
+remains the immutable point-in-time equipment operational view.
+
+Knowledge MAY reference canonical equipment identity through `KnowledgeSubject`.
+
+The knowledge foundation SHALL NOT duplicate equipment state, criticality, alarms or lifecycle responsibility.
+
+`app.models.equipment.Equipment` SHALL NOT become a second canonical equipment domain.
+
+RFC-053 SHALL NOT create a third equipment model.
+
+## Repository Port
+
+PlantMind SHALL introduce a persistence-neutral:
+
+`KnowledgeRecordRepository`
+
+port with the minimum operations:
+
+`add(record: KnowledgeRecord) -> None`
+
+and:
+
+`get(record_id: EntityId) -> KnowledgeRecord | None`
+
+`add(...)` SHALL NOT silently overwrite a record with an existing canonical identity.
+
+Duplicate canonical identity SHALL raise:
+
+`KnowledgeRecordAlreadyExistsError`
+
+`get(...)` SHALL return `None` when the canonical identity is absent.
+
+Repository implementations SHALL NOT mutate supplied immutable records.
+
+Repository reads MAY reconstruct immutable records.
+
+Python object identity SHALL NOT be required across repository operations.
+
+A successful add/get round trip SHALL preserve complete canonical domain-value equivalence.
+
+## Repository Failure Boundary
+
+`KnowledgeRecordAlreadyExistsError`
+
+SHALL remain a repository-boundary conflict and SHALL NOT become an alternate domain-invariant authority.
+
+Unexpected persistence failures SHALL NOT become synthetic success.
+
+RFC-053 introduces no automatic repository retry and no platform-wide exception taxonomy.
+
+## Dependency Direction
+
+The canonical knowledge domain SHALL NOT depend on `KnowledgeRecordRepository`.
+
+`KnowledgeRecordRepository` MAY depend on the canonical knowledge-domain types required by its contract.
+
+Future application services MAY depend on the repository port.
+
+Future infrastructure adapters MAY implement the repository port and depend on approved persistence technologies.
+
+The canonical knowledge domain SHALL NOT depend on:
+
+- SQLAlchemy;
+- PostgreSQL;
+- Neo4j;
+- Qdrant;
+- API transport;
+- application orchestration;
+- `CompositionRoot`;
+- `ServiceContainer`.
+
+## Persistence Technology Boundary
+
+RFC-053 introduces no production persistence adapter.
+
+`backend/app/database.py`
+
+remains concrete SQLAlchemy infrastructure and SHALL NOT become the canonical enterprise knowledge repository contract.
+
+A test-only in-memory repository MAY be used to verify repository semantics but SHALL NOT be composed, registered or represented as production infrastructure.
+
+## Search, Graph, Vector and RAG Boundaries
+
+Identity lookup through `KnowledgeRecordRepository.get(...)` is not the PlantMind Search Engine.
+
+RFC-053 introduces no:
+
+- keyword or full-text search;
+- semantic or similarity search;
+- ranking;
+- Knowledge Graph persistence or traversal;
+- embeddings;
+- vector indexing;
+- Qdrant integration;
+- RAG behavior;
+- LLM invocation.
+
+Future search, graph, vector and RAG capabilities SHALL build on canonical knowledge identity rather than replace it.
+
+## Reasoning Boundary
+
+RFC-053 SHALL NOT modify:
+
+- `ReasoningEngine`;
+- `ReasoningPipeline`;
+- reasoning builders;
+- `Observation`;
+- `ReasoningResult`;
+- operational workload execution.
+
+The accepted reasoning path remains observation-based.
+
+Knowledge-to-reasoning integration requires a future explicit contract.
+
+## PI and Operational Data Boundary
+
+PI operational data and enterprise knowledge remain distinct architectural concepts.
+
+RFC-053 SHALL NOT introduce PI production connectivity or automatic conversion between PI values, `Observation` and `KnowledgeRecord`.
+
+Any such transformation requires a future accepted boundary.
+
+Stored enterprise knowledge SHALL NOT automatically become trusted operational evidence.
+
+## Application, Composition and API Boundaries
+
+RFC-053 introduces no production knowledge application service.
+
+RFC-053 introduces no production knowledge repository adapter.
+
+RFC-053 SHALL NOT modify production `CompositionRoot`.
+
+RFC-053 SHALL NOT register a production knowledge repository or application service in `ServiceContainer`.
+
+RFC-053 introduces no HTTP endpoint and no transport schema.
+
+Future application, composition and API contracts SHALL consume the canonical knowledge foundation rather than bypass it.
+
+## Prototype and Legacy Containment
+
+Existing prototype, placeholder and empty knowledge-oriented components SHALL NOT be treated as canonical production infrastructure merely because they exist.
+
+RFC-053 does not authorize broad migration, deletion or production promotion of:
+
+- `app.models.equipment.Equipment`;
+- `EquipmentService`;
+- `KnowledgeGraphService`;
+- `KnowledgeGraphEngine`;
+- existing empty parser, graph, RAG, semantic-search, knowledge-memory, vector-memory or knowledge-agent modules.
+
+Preserve-before-delete remains authoritative.
+
+## Lifecycle Boundary
+
+The knowledge foundation SHALL NOT modify Runtime state, readiness, request admission, mandatory-capability policy, availability, transition evidence, Bootstrap or Health behavior.
+
+The existence of canonical knowledge-domain contracts SHALL NOT automatically make knowledge a mandatory operational capability.
+
+Runtime remains the sole lifecycle-transition authority.
+
+## Consequences
+
+PlantMind gains one canonical, immutable and traceable enterprise knowledge foundation before higher-level knowledge capabilities are introduced.
+
+Knowledge identity is separated from persistence identifiers.
+
+Knowledge provenance is separated from operational trust.
+
+Knowledge subjects reference existing canonical domain identity without duplicating domain ownership.
+
+Repository semantics are defined independently of persistence technology.
+
+Search, Knowledge Graph, vector retrieval, RAG, application orchestration and external APIs can now evolve as explicit future boundaries without redefining what canonical enterprise knowledge is.
+
+## Verification
+
+- RFC-053 Contract Acceptance Review: passed
+- Architecture decision: AD-039
+- Production implementation: not started
+- TDD: not started
+- Pre-RFC-053 full regression baseline: 432 passed
