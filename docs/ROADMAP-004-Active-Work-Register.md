@@ -99,16 +99,16 @@ Define and review the RFC-053 contract, including:
 
 - RFC-052 and AD-038 complete.
 - Post-RFC-052 Source-of-Truth architecture review complete.
-- Engineering-memory consistency repair in progress.
+- Engineering-memory consistency repair completed and verified in DOCS-028 (`272c22d`).
 - No RFC-053 implementation may begin until the contract is reviewed and accepted.
 
 ### Resume Condition
 
-Engineering-memory consistency repair is verified and committed.
+Satisfied by DOCS-028 (`272c22d`).
 
 ### Next Exact Action
 
-Complete and verify the engineering-memory consistency repair, then draft and review the RFC-053 architecture contract before any implementation.
+Draft and review the RFC-053 architecture contract for the Canonical Enterprise Knowledge Foundation Boundary before any implementation.
 
 ---
 

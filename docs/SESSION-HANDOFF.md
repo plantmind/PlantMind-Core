@@ -866,6 +866,8 @@ RFC-052 technical implementation is complete.
 
 DOCS-027 synchronized the engineering-memory layer with the RFC-052 technical baseline at documentation closure commit `728559c`.
 
+DOCS-028 (`272c22d`) repaired the post-RFC-052 engineering-memory consistency issues identified by the Source-of-Truth architecture review, including stale current-state baselines, malformed Project Context Markdown structure, obsolete continuation state and Active Work alignment.
+
 Relevant maintained documents:
 
 - `docs/PROJECT-CONTEXT.md`
