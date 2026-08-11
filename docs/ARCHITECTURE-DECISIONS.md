@@ -3787,3 +3787,434 @@ Search, Knowledge Graph, vector retrieval, RAG, application orchestration and ex
 - Compilation: passed
 - `git diff --check`: passed
 - Remote technical push: verified
+
+---
+
+# AD-040 — Canonical Database Runtime & Schema Lifecycle Foundation
+
+## Status
+
+Accepted.
+
+## Context
+
+RFC-053 established the canonical enterprise knowledge domain and the persistence-neutral `KnowledgeRecordRepository` port.
+
+The required post-RFC-053 Source-of-Truth architecture review established that production Knowledge persistence cannot safely be introduced yet.
+
+The review found that:
+
+- `backend/app/database.py` is preliminary isolated SQLAlchemy infrastructure;
+- `app.database` has no current production consumer;
+- the authoritative root `.venv` does not currently provide SQLAlchemy;
+- backend dependency declarations do not currently establish SQLAlchemy, a PostgreSQL driver or Alembic;
+- no canonical ORM schema or metadata ownership boundary exists;
+- no database migration lifecycle exists;
+- no database-focused test foundation exists;
+- `ConfigurationProvider.validate()` participates in Bootstrap startup, but database readiness is not currently a mandatory platform capability.
+
+PlantMind therefore requires an explicit database runtime and schema-lifecycle foundation before any production repository adapter or persistent enterprise knowledge model is introduced.
+
+## Decision
+
+PlantMind SHALL establish one canonical database infrastructure boundary responsible for:
+
+- database dependency ownership;
+- explicit database runtime construction;
+- SQLAlchemy engine ownership;
+- SQLAlchemy session-factory ownership;
+- canonical relational schema metadata ownership;
+- Alembic migration ownership;
+- deterministic database-resource disposal;
+- explicit database-specific failure behavior.
+
+This foundation SHALL remain infrastructure.
+
+It SHALL NOT become domain knowledge, application orchestration, Runtime lifecycle authority or a repository implementation.
+
+## Technology Boundary
+
+PostgreSQL remains the approved relational database target for the PlantMind enterprise platform.
+
+SQLAlchemy SHALL be the canonical Python relational database runtime and mapping toolkit.
+
+RFC-054 SHALL use the synchronous SQLAlchemy `Engine` and `Session` model.
+
+RFC-054 SHALL NOT introduce SQLAlchemy `AsyncEngine` or `AsyncSession`.
+
+Any future asynchronous relational-persistence runtime requires a separate accepted architecture contract.
+
+Psycopg 3, distributed through the `psycopg` package, SHALL be the canonical PostgreSQL DBAPI driver.
+
+PostgreSQL SQLAlchemy URLs used by the canonical runtime SHALL identify the approved Psycopg driver explicitly rather than relying on environment-dependent driver selection.
+
+Alembic SHALL be the sole canonical relational schema-migration authority.
+
+The canonical PostgreSQL DBAPI driver SHALL be explicitly declared as a backend dependency.
+
+Database technologies SHALL NOT leak into PlantMind domain contracts.
+
+## Dependency Ownership
+
+All dependencies required by the canonical database foundation SHALL be explicitly declared in the maintained backend dependency manifest.
+
+The implementation SHALL NOT depend on packages that happen to exist only in a developer environment.
+
+The authoritative PlantMind Python environment remains the root:
+
+`.venv`
+
+RFC-054 SHALL NOT establish or depend upon `backend/.venv`.
+
+The database foundation SHALL explicitly declare the dependencies required for:
+
+- SQLAlchemy;
+- Alembic;
+- PostgreSQL connectivity.
+
+Exact dependency versions SHALL be maintained through the existing backend dependency-management mechanism.
+
+## Canonical Database Runtime
+
+PlantMind SHALL introduce one canonical infrastructure-owned database runtime.
+
+The canonical database runtime SHALL own:
+
+- one SQLAlchemy `Engine` per canonical database-runtime instance;
+- the session factory bound to that engine;
+- deterministic disposal of engine-owned resources.
+
+The database runtime SHALL be constructed explicitly.
+
+Importing a PlantMind module SHALL NOT create the canonical database engine.
+
+Importing a PlantMind module SHALL NOT open a database connection.
+
+A process-wide hidden database session SHALL NOT be introduced.
+
+A mutable global SQLAlchemy `Session` SHALL NOT be introduced.
+
+Database sessions SHALL be created explicitly from the canonical session factory and SHALL possess deterministic close behavior.
+
+The database runtime SHALL NOT perform engineering reasoning or own enterprise knowledge.
+
+## Configuration Boundary
+
+The canonical database runtime SHALL receive resolved database configuration explicitly.
+
+The infrastructure implementation SHALL NOT read the global `settings` object as a hidden dependency during module import.
+
+Database configuration SHALL remain environment-driven.
+
+Database credentials SHALL NOT be embedded as production secrets in source code.
+
+RFC-054 implementation SHALL retire the committed credential-bearing default value currently associated with `DATABASE_URL`.
+
+The absence of configured database capability MAY be represented by an unset or optional database URL while no accepted production capability requires relational persistence.
+
+Development or test database credentials SHALL be supplied through explicit local environment configuration or test fixtures rather than committed production configuration defaults.
+
+Database credentials SHALL NOT be written to logs or exposed through exception formatting controlled by PlantMind.
+
+RFC-054 SHALL NOT make `DATABASE_URL` a mandatory condition of the existing general `ConfigurationProvider.validate()` contract.
+
+Database-specific configuration SHALL be validated when the database capability is explicitly constructed or invoked.
+
+The absence of database configuration SHALL NOT by itself prevent PlantMind core Bootstrap from operating while no accepted production capability requires the database.
+
+## Engine Boundary
+
+SQLAlchemy engine creation SHALL occur only through the canonical database runtime or its approved construction boundary.
+
+No second module SHALL independently own another canonical engine for the same PlantMind relational persistence responsibility.
+
+Engine construction SHALL NOT itself be treated as proof of database availability.
+
+RFC-054 introduces no production connectivity probe.
+
+RFC-054 introduces no automatic connection retry.
+
+Database connection failures SHALL NOT become synthetic success.
+
+Engine resources SHALL support explicit deterministic disposal.
+
+## Session Boundary
+
+The canonical database runtime SHALL provide one approved session-factory boundary.
+
+Each requested session SHALL be an independent SQLAlchemy session instance.
+
+Sessions SHALL NOT be shared as mutable global state.
+
+Session lifecycle SHALL support deterministic close behavior.
+
+Session creation SHALL NOT imply application or repository transaction ownership.
+
+The canonical database runtime SHALL NOT automatically commit application or repository work.
+
+RFC-054 SHALL NOT define repository-specific transaction semantics or introduce a Unit of Work abstraction.
+
+Future repository and application contracts SHALL define transaction ownership appropriate to their use cases rather than embedding application or domain transaction semantics into the database runtime.
+
+## Canonical Schema Metadata
+
+PlantMind SHALL establish one canonical relational schema metadata authority.
+
+All future production SQLAlchemy persistence models SHALL participate in that approved metadata authority unless a future accepted architecture decision explicitly establishes another database boundary.
+
+PlantMind domain entities SHALL NOT inherit from the SQLAlchemy declarative base.
+
+SQLAlchemy mapped models SHALL remain infrastructure representations.
+
+A database row SHALL NOT replace a canonical PlantMind domain entity.
+
+RFC-054 SHALL NOT introduce a `KnowledgeRecord` ORM model.
+
+## Migration Authority
+
+Alembic SHALL be the sole canonical mechanism for production relational schema evolution.
+
+PlantMind application startup SHALL NOT automatically run schema migrations.
+
+Runtime Bootstrap SHALL NOT automatically upgrade or downgrade the database schema.
+
+`MetaData.create_all()` SHALL NOT become the production schema deployment mechanism.
+
+Production schema changes SHALL be expressed through explicit ordered Alembic revisions.
+
+Applied migration history SHALL be treated as append-only engineering history.
+
+An existing accepted migration revision SHALL NOT be silently rewritten to represent a different schema state.
+
+Breaking or destructive schema evolution requires an explicit future architecture decision and migration review.
+
+The migration graph SHALL maintain one canonical head unless an explicit future architecture decision authorizes branching.
+
+## Migration Configuration
+
+Migration configuration SHALL reference the canonical PlantMind schema metadata authority.
+
+Migration configuration SHALL NOT contain production database credentials.
+
+The database URL required for migration execution SHALL be supplied through an approved environment-driven configuration boundary.
+
+RFC-054 MAY establish an intentionally schema-neutral initial migration revision to create the canonical revision lineage before application persistence tables exist.
+
+RFC-054 SHALL NOT create enterprise knowledge tables.
+
+## Failure Boundary
+
+Invalid database-specific configuration SHALL fail explicitly when the database capability is constructed or invoked.
+
+Missing database dependencies SHALL remain an environment or build defect and SHALL NOT be converted into synthetic database availability.
+
+Unexpected engine, session or migration failures SHALL propagate as explicit infrastructure failures.
+
+RFC-054 introduces no automatic database retry policy.
+
+RFC-054 introduces no platform-wide database exception taxonomy.
+
+Database failures SHALL NOT independently modify PlantMind Runtime lifecycle state.
+
+Any future coupling between database availability and mandatory-capability readiness requires a separate accepted architecture contract.
+
+## Bootstrap and Runtime Boundary
+
+RFC-054 SHALL NOT modify:
+
+- Runtime states;
+- Runtime transition authority;
+- Runtime readiness semantics;
+- request admission;
+- operational-transition evidence;
+- mandatory-capability policy;
+- Health behavior.
+
+Database readiness SHALL NOT automatically become a mandatory Runtime capability.
+
+Bootstrap SHALL NOT automatically connect to PostgreSQL merely because the database foundation exists.
+
+Runtime remains the sole lifecycle-transition authority.
+
+## Composition Boundary
+
+RFC-054 establishes infrastructure that future persistence adapters may consume.
+
+RFC-054 SHALL NOT introduce a production Knowledge repository adapter.
+
+RFC-054 SHALL NOT register `KnowledgeRecordRepository` in `ServiceContainer`.
+
+RFC-054 SHALL NOT wire production Knowledge persistence into `CompositionRoot`.
+
+RFC-054 SHALL NOT create a database-backed application service.
+
+A future accepted persistence contract SHALL decide how the canonical database runtime is composed with production repository adapters.
+
+## Legacy Database Module
+
+`backend/app/database.py`
+
+is preliminary isolated infrastructure and SHALL NOT remain a competing owner of canonical engine or session-factory construction after RFC-054 implementation.
+
+Preserve-before-delete remains authoritative.
+
+Before changing or removing that module, implementation SHALL re-verify repository dependencies and compatibility impact.
+
+If no dependency requires the legacy module, its duplicate database-runtime responsibility SHALL be retired.
+
+If a compatibility dependency is discovered, RFC-054 SHALL NOT preserve duplicate engine ownership merely to retain the old implementation.
+
+Any required compatibility path SHALL delegate to the canonical database foundation or be separately documented before implementation proceeds.
+
+## Security Boundary
+
+RFC-054 SHALL preserve the on-premise enterprise deployment model.
+
+RFC-054 SHALL NOT introduce external database services.
+
+Database secrets SHALL remain outside committed source code.
+
+PlantMind-controlled diagnostics SHALL NOT expose database passwords or complete credential-bearing connection URLs.
+
+Authentication, certificate policy, network segmentation and production PostgreSQL hardening remain deployment and Cybersecurity concerns and SHALL NOT be falsely represented as completed merely by introducing the database runtime foundation.
+
+## Knowledge Boundary
+
+RFC-053 remains authoritative.
+
+RFC-054 SHALL NOT redesign:
+
+- `KnowledgeRecord`;
+- `KnowledgeKind`;
+- `KnowledgeSourceType`;
+- `KnowledgeSubjectType`;
+- `KnowledgeProvenance`;
+- `KnowledgeSubject`;
+- `KnowledgeRecordRepository`;
+- `KnowledgeRecordAlreadyExistsError`.
+
+RFC-054 SHALL NOT implement `KnowledgeRecordRepository`.
+
+RFC-054 SHALL NOT create relational persistence tables for canonical enterprise knowledge.
+
+The first production Knowledge persistence adapter requires a future explicit accepted architecture contract.
+
+## Prototype and Advanced Capability Boundary
+
+RFC-054 SHALL NOT promote existing prototype or placeholder knowledge components into production.
+
+RFC-054 SHALL NOT introduce:
+
+- Document Library behavior;
+- Asset Library behavior;
+- Search Engine behavior;
+- Knowledge Graph persistence;
+- Neo4j persistence;
+- semantic retrieval;
+- vector storage;
+- Qdrant integration;
+- RAG;
+- LLM invocation;
+- PI production connectivity.
+
+## Non-Goals
+
+RFC-054 SHALL NOT:
+
+- implement production Knowledge persistence;
+- introduce a Knowledge ORM model;
+- add a knowledge HTTP API;
+- implement document ingestion;
+- implement search;
+- implement graph persistence;
+- implement vector persistence;
+- implement RAG;
+- modify the reasoning subsystem;
+- redesign the equipment domain;
+- add automatic database retry;
+- add automatic schema migration during application startup;
+- make PostgreSQL availability a mandatory Runtime capability;
+- perform a broad application-configuration refactor;
+- introduce another lifecycle authority.
+
+## TDD Boundary
+
+Before production implementation, focused tests SHALL establish:
+
+- database infrastructure dependencies are explicitly declared;
+- the authoritative root `.venv` can import the approved database dependencies after installation;
+- canonical database infrastructure can be imported without creating a database connection;
+- importing PlantMind core modules does not construct the canonical database engine as a hidden side effect;
+- database runtime construction is explicit;
+- the database runtime owns its engine and session factory;
+- independent session requests return independent session instances;
+- sessions support deterministic close behavior;
+- database runtime disposal releases engine-owned resources;
+- canonical relational metadata has one approved ownership boundary;
+- PlantMind domain modules do not depend on SQLAlchemy;
+- PlantMind domain entities do not inherit SQLAlchemy mapped classes;
+- Alembic configuration uses the canonical metadata authority;
+- Alembic configuration contains no committed production credential;
+- the migration graph has one canonical head;
+- an initial migration lineage can be resolved deterministically;
+- application startup does not automatically execute Alembic migrations;
+- application startup does not automatically call `MetaData.create_all()`;
+- Bootstrap behavior remains unchanged;
+- Runtime lifecycle behavior remains unchanged;
+- no production Knowledge repository is introduced;
+- no production Knowledge persistence is composed or registered;
+- `backend/app/database.py` no longer owns a competing canonical engine or session factory after the accepted migration path is applied.
+
+## Verification Boundary
+
+RFC-054 implementation SHALL pass:
+
+- focused database-foundation tests;
+- relevant configuration and Bootstrap regression tests;
+- architecture dependency tests;
+- full PlantMind regression;
+- Python compilation checks;
+- `git diff --check`;
+- Git review;
+- remote push verification;
+- clean working-tree verification.
+
+A real production PostgreSQL connection is not required merely to accept the RFC-054 architecture contract.
+
+RFC-054 SHALL NOT claim production database connectivity until separately verified against an approved deployment environment.
+
+## Consequences
+
+PlantMind gains one explicit relational database infrastructure foundation before production persistence adapters are introduced.
+
+Database dependency ownership becomes reproducible.
+
+Engine and session ownership become explicit instead of import-time global infrastructure.
+
+Relational schema metadata receives one canonical owner.
+
+Schema evolution becomes versioned and auditable through Alembic.
+
+Application startup remains independent from automatic database migration.
+
+The canonical knowledge domain remains persistence-neutral.
+
+Future Knowledge persistence can depend on this foundation without redefining database lifecycle responsibility.
+
+## Contract Acceptance
+
+RFC-054 Contract Acceptance Review: passed.
+
+Architecture decision: AD-040.
+
+The Canonical Database Runtime & Schema Lifecycle Foundation contract is accepted.
+
+Technical implementation has not started.
+
+Production Knowledge persistence remains outside RFC-054 scope.
+
+## Next Exact Action
+
+Commit and remotely verify the RFC-054 contract acceptance.
+
+After verified contract acceptance, begin RFC-054 technical implementation through the required TDD workflow.
