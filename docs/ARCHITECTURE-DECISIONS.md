@@ -4251,8 +4251,33 @@ The legacy `backend/app/database.py` duplicate engine and session-factory respon
 
 The schema-neutral initial Alembic revision `0001` establishes the canonical migration lineage without introducing application or enterprise Knowledge tables.
 
+## Post-RFC-054 Source-of-Truth Architecture Review
+
+The required post-RFC-054 Source-of-Truth architecture review is complete.
+
+The review confirmed that AD-039 / RFC-053 and AD-040 / RFC-054 remain authoritative and SHALL NOT be redesigned by the next workstream.
+
+The review established that:
+
+- no production relational implementation of `KnowledgeRecordRepository` currently exists;
+- no production Knowledge relational mapping or relational table currently exists;
+- no production Unit of Work abstraction currently exists;
+- `DatabaseRuntime` owns engine and session-factory lifecycle but does not own repository transaction semantics;
+- Alembic revision `0001` remains intentionally schema-neutral and SHALL NOT be rewritten;
+- future Knowledge schema evolution requires a new append-only migration revision;
+- default `CompositionRoot` does not register or expose Knowledge persistence;
+- application startup remains independent from database configuration.
+
+The selected engineering direction is:
+
+`Canonical Knowledge Relational Persistence Adapter Boundary`
+
+This is an engineering direction only.
+
+It is not yet an accepted architecture contract and implementation is not authorized.
+
 ## Next Exact Action
 
-Perform the required post-RFC-054 Source-of-Truth architecture review before defining or implementing the next architecture RFC.
+Draft and review the architecture contract for the Canonical Knowledge Relational Persistence Adapter Boundary before any implementation.
 
-No next RFC implementation direction is authorized until that review is complete.
+Do not assign production composition responsibility or begin persistence implementation before contract acceptance.
