@@ -530,11 +530,67 @@ The schema-neutral Alembic revision `0001` is the single canonical migration hea
 
 RFC-054 introduced no production Knowledge repository adapter, Knowledge ORM mapping, Knowledge persistence composition, automatic startup migration, automatic database retry, production connectivity probe, mandatory database Runtime capability or additional lifecycle authority.
 
+### Post-RFC-054 Source-of-Truth Architecture Review
+
+The required post-RFC-054 Source-of-Truth architecture review is complete.
+
+The review confirmed that RFC-053 and RFC-054 remain authoritative and SHALL NOT be redesigned by the next workstream.
+
+The review established that:
+
+- `KnowledgeRecordRepository` remains the canonical persistence-neutral Knowledge repository port;
+- no production relational implementation of `KnowledgeRecordRepository` currently exists;
+- no production Knowledge relational mapping currently exists;
+- no production Knowledge relational table currently exists;
+- no production Unit of Work abstraction currently exists;
+- `DatabaseRuntime` owns engine and session-factory lifecycle but does not own repository transaction semantics;
+- Alembic revision `0001` remains intentionally schema-neutral and SHALL NOT be rewritten;
+- future Knowledge schema evolution requires a new append-only migration revision;
+- default `CompositionRoot` does not register or expose Knowledge persistence;
+- application startup remains independent from database configuration;
+- existing Knowledge Graph, RAG, semantic-search, memory and agent seams remain prototype, placeholder or intentionally unimplemented.
+
+The selected engineering direction is:
+
+`Canonical Knowledge Relational Persistence Adapter Boundary`
+
+This is an engineering direction only.
+
+It is not yet an accepted architecture contract and implementation is not yet authorized.
+
+A future architecture contract should define:
+
+- infrastructure-owned SQLAlchemy representation of canonical `KnowledgeRecord`;
+- explicit Domain-to-Relational and Relational-to-Domain mapping;
+- a new append-only Alembic migration;
+- production relational implementation of `KnowledgeRecordRepository`;
+- preservation of canonical identity and duplicate-identity semantics;
+- preservation of provenance, UTC timestamp semantics and optional typed subject references;
+- explicit repository-operation transaction ownership;
+- deterministic session lifetime;
+- infrastructure failure and duplicate-conflict behavior.
+
+The next contract SHALL NOT automatically introduce:
+
+- a Unit of Work abstraction;
+- shared mutable database sessions;
+- mandatory PostgreSQL startup;
+- default `CompositionRoot` Knowledge persistence wiring;
+- Runtime lifecycle changes;
+- Bootstrap lifecycle changes;
+- Knowledge HTTP APIs;
+- document ingestion;
+- semantic or vector retrieval;
+- Knowledge Graph persistence;
+- RAG;
+- LLM invocation;
+- production PI connectivity.
+
 ### Next Exact Action
 
-Perform the required post-RFC-054 Source-of-Truth architecture review.
+Draft and review the architecture contract for the Canonical Knowledge Relational Persistence Adapter Boundary before any implementation.
 
-Do not define or implement the next architecture RFC until that review is complete.
+Do not assign production composition responsibility or begin persistence implementation before contract acceptance.
 
 ---
 
