@@ -578,6 +578,39 @@ This is an engineering direction only. No implementation is authorized until the
 
 The next exact action is to draft and review that architecture contract before introducing database dependencies, schema migrations, ORM models, production Knowledge persistence or database composition.
 
+### RFC-054 — Canonical Database Runtime & Schema Lifecycle Foundation
+
+RFC-054 is technically complete within the accepted AD-040 architecture boundary.
+
+RFC-054 established the canonical infrastructure-owned synchronous SQLAlchemy database runtime, explicit PostgreSQL Psycopg URL validation, one canonical relational schema metadata authority, and Alembic as the sole relational schema-migration authority.
+
+The legacy `backend/app/database.py` competing engine and session-factory owner was retired after repository and import dependency review confirmed that no production consumer required it.
+
+Database configuration remains optional at general PlantMind Bootstrap. `DATABASE_URL` no longer contains a committed credential-bearing default and is validated only when database capability is explicitly constructed or invoked.
+
+The initial Alembic revision `0001` establishes schema-neutral canonical migration lineage and is the single migration head.
+
+RFC-054 introduced no production Knowledge persistence, Knowledge ORM model, Knowledge repository adapter, database-backed Knowledge application service, CompositionRoot database wiring, automatic migration at application startup, automatic database retry, production connectivity probe, or additional Runtime lifecycle authority.
+
+RFC-054 verification:
+
+- Architecture decision: AD-040
+- Contract commit: `8659acd`
+- Contract verification documentation commit: `c15ef48`
+- Technical commit: `0e483d5`
+- Focused RFC-054 verification: 32 passed
+- Full PlantMind regression: 506 passed
+- Python compilation: passed
+- `git diff --check`: passed
+- Alembic canonical head: `0001`
+- Remote technical push: verified
+- Local and remote technical commit identity: verified
+- Working tree after technical push: clean
+
+Production PostgreSQL connectivity, authentication policy, certificate policy, network segmentation, database hardening and Cybersecurity deployment approval remain intentionally unclaimed and require approved deployment-environment verification.
+
+The next exact action is the required post-RFC-054 Source-of-Truth architecture review before defining or implementing the next architecture RFC.
+
 ## 15. Session Continuation Instruction
 
 When continuing PlantMind in a new engineering session:
