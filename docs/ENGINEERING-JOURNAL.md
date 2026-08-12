@@ -1948,3 +1948,59 @@ The next contract SHALL NOT automatically introduce:
 ### Next Exact Action
 
 Draft and review the architecture contract for the Canonical Knowledge Application Service Boundary before any implementation.
+
+---
+
+## 2026-08-12 — Post-RFC-055 Architecture Direction Refinement
+
+### Trigger
+
+Before drafting the next architecture contract, the proposed `Canonical Knowledge Application Service Boundary` was reviewed more deeply against AD-039 / RFC-053, the canonical Knowledge domain, the repository port, the existing specialized Application Service pattern and the project charter.
+
+### Finding
+
+The accepted `KnowledgeRecordRepository` already owns the minimum canonical identity-based `add()` and `get()` persistence operations.
+
+No additional application policy currently justifies a generic Knowledge application service whose implementation would merely delegate those same operations.
+
+Introducing such a service would create an abstraction without a distinct application responsibility.
+
+### Evidence-Based Refinement
+
+The project charter explicitly requires company Knowledge capture.
+
+RFC-053 intentionally left document-to-Knowledge transformation to future boundaries and explicitly permits a future document-ingestion boundary to construct canonical `KnowledgeRecord` instances according to the accepted Knowledge contract.
+
+The next engineering direction is therefore refined to:
+
+`Canonical Knowledge Capture Application Boundary`
+
+The future boundary is expected to own the explicit application use case that converts approved capture inputs into one canonical immutable `KnowledgeRecord` and submits it through `KnowledgeRecordRepository`.
+
+Canonical domain invariants remain owned by the Knowledge domain.
+
+Repository Session and transaction semantics remain owned by RFC-055 infrastructure.
+
+Subject existence/type verification remains deferred because no accepted canonical subject resolver currently exists.
+
+No document ingestion, API, search, graph, vector, RAG, LLM, update/delete/upsert behavior or default PostgreSQL composition is authorized by this refinement.
+
+### Identity and Capture-Time Direction
+
+`EntityId.new()` remains the existing canonical PlantMind entity-identity creation mechanism.
+
+No general Clock or identity-generator infrastructure currently exists and none shall be introduced merely to support this workstream.
+
+RFC-056 shall resolve deterministic capture identity and UTC capture-time sourcing narrowly within the application boundary contract.
+
+### Decision State
+
+This refinement is an engineering direction only.
+
+AD-042 has not been created.
+
+RFC-056 implementation is not authorized.
+
+### Next Exact Action
+
+Draft and review the architecture contract for the Canonical Knowledge Capture Application Boundary before any implementation.

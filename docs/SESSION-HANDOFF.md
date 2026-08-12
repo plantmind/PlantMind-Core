@@ -1109,19 +1109,29 @@ Current committed architecture now contains:
 - no mandatory PostgreSQL startup dependency;
 - no production Knowledge HTTP, ingestion, search, graph, RAG or LLM capability.
 
-The selected engineering direction is:
+A deeper evidence-based review refined the selected engineering direction before contract drafting.
 
-`Canonical Knowledge Application Service Boundary`
+The generic `Canonical Knowledge Application Service Boundary` would currently collapse to direct `KnowledgeRecordRepository.add()` / `get()` delegation and therefore does not yet justify an independent application abstraction.
 
-The future application service should depend upon the persistence-neutral `KnowledgeRecordRepository` and coordinate only approved Knowledge application use cases.
+The refined engineering direction is:
 
-`ApplicationFacade` SHALL remain the existing analysis/orchestration workload-entry boundary and SHALL NOT automatically acquire Knowledge persistence responsibilities.
+`Canonical Knowledge Capture Application Boundary`
+
+RFC-056 is expected to define an explicit Knowledge capture use case that constructs one canonical immutable `KnowledgeRecord` from approved capture inputs and persists it through the persistence-neutral `KnowledgeRecordRepository`.
+
+Canonical domain validation remains owned by the Knowledge domain.
+
+Repository transaction semantics remain owned by RFC-055 infrastructure.
+
+`ApplicationFacade` SHALL remain the existing analysis/orchestration workload-entry boundary and SHALL NOT automatically acquire Knowledge capture or persistence responsibilities.
+
+Subject existence/type verification, document ingestion, search, graph, vector, RAG, LLM and production PostgreSQL composition remain outside this direction.
 
 This direction is not yet an accepted architecture contract and implementation is not authorized.
 
 ## Next Exact Action
 
-Draft and review the architecture contract for the Canonical Knowledge Application Service Boundary before any implementation.
+Draft and review the architecture contract for the Canonical Knowledge Capture Application Boundary before any implementation.
 
 ## Required Test Command
 

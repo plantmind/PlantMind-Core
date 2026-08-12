@@ -694,19 +694,27 @@ The review established that:
 - existing document parser, semantic search, RAG and Knowledge Graph files remain empty, prototype or intentionally unimplemented capability seams and SHALL NOT be promoted by the next workstream;
 - default `CompositionRoot` remains free of Knowledge repository registration and PostgreSQL dependency.
 
-The selected engineering direction is:
+A deeper evidence-based review refined the selected engineering direction before RFC-056 contract drafting.
 
-`Canonical Knowledge Application Service Boundary`
+The generic `Canonical Knowledge Application Service Boundary` direction was determined to be too broad because the currently accepted repository operations already own canonical identity-based `add()` and `get()` semantics. A service that merely delegated those operations would introduce an application abstraction without an independent application responsibility.
 
-This is an engineering direction only. It is not yet an accepted architecture contract and implementation is not authorized.
+The refined engineering direction is:
 
-The future contract is expected to define a specialized Knowledge application service that coordinates canonical Knowledge write and read use cases through the persistence-neutral `KnowledgeRecordRepository` dependency.
+`Canonical Knowledge Capture Application Boundary`
 
-The future contract SHALL preserve repository transaction ownership under RFC-055 and SHALL NOT make the application service responsible for SQLAlchemy Session lifecycle, database engine lifecycle, schema migration or database configuration.
+This refinement does not invalidate RFC-053, RFC-054 or RFC-055.
 
-The next workstream SHALL NOT automatically introduce default PostgreSQL composition, Knowledge HTTP APIs, document ingestion, semantic search, vector persistence, Knowledge Graph persistence, RAG, LLM invocation, update/delete/upsert Knowledge operations or production PI connectivity.
+The future RFC-056 contract is expected to define the explicit application use case that converts an approved Knowledge capture request into one canonical immutable `KnowledgeRecord` and submits that record through the persistence-neutral `KnowledgeRecordRepository`.
 
-The next exact action is to draft and review the architecture contract for the Canonical Knowledge Application Service Boundary before any implementation.
+The Capture boundary may own application-level creation of canonical record identity and provenance capture time while canonical domain invariants remain owned by the Knowledge domain.
+
+Repository persistence, Session lifetime and transaction semantics remain owned by RFC-055 infrastructure.
+
+RFC-056 SHALL NOT automatically introduce subject existence verification, default PostgreSQL composition, Knowledge HTTP APIs, document ingestion, semantic search, vector persistence, Knowledge Graph persistence, RAG, LLM invocation, update/delete/upsert Knowledge operations or production PI connectivity.
+
+This remains an engineering direction only. No implementation is authorized.
+
+The next exact action is to draft and review the architecture contract for the Canonical Knowledge Capture Application Boundary before any implementation.
 
 ## 15. Session Continuation Instruction
 

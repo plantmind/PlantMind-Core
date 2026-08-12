@@ -737,22 +737,31 @@ The required post-RFC-055 Source-of-Truth architecture review is complete.
 
 The review confirmed that RFC-053 / AD-039, RFC-054 / AD-040 and RFC-055 / AD-041 remain authoritative.
 
-The review established that the next missing canonical boundary is application-level coordination of Knowledge persistence use cases, not a new persistence engine, transport API, retrieval stack or AI capability.
+The initial post-RFC-055 review identified an application-level Knowledge boundary as the next architecture area.
 
-The selected engineering direction is:
+A deeper contract review against AD-039 / RFC-053 established that a generic application service exposing only repository-equivalent `add()` and `get()` behavior would not yet own a distinct application responsibility and would introduce an unnecessary delegation layer.
 
-`Canonical Knowledge Application Service Boundary`
+The refined selected engineering direction is:
 
-The future contract is expected to define a specialized Knowledge application service that:
+`Canonical Knowledge Capture Application Boundary`
 
-- receives `KnowledgeRecordRepository` explicitly;
-- coordinates approved canonical Knowledge write and read use cases;
+The future RFC-056 contract is expected to define an explicit Knowledge capture use case that:
+
+- receives approved capture inputs rather than a preconstructed `KnowledgeRecord`;
+- constructs one canonical immutable `KnowledgeRecord`;
+- establishes canonical record identity at the application capture boundary;
+- establishes the provenance capture timestamp at the application capture boundary;
+- delegates canonical domain validation to the accepted Knowledge domain types;
+- persists the resulting record through `KnowledgeRecordRepository`;
 - remains persistence-implementation neutral;
 - does not own repository transaction semantics;
 - does not own SQLAlchemy Session or engine lifecycle;
 - does not make PostgreSQL mandatory during default application startup;
 - does not automatically modify `ApplicationFacade`;
-- does not introduce update, delete, upsert, search, ingestion, graph, RAG or LLM responsibilities.
+- does not introduce subject existence/type verification;
+- does not introduce update, delete, upsert, search, document ingestion, graph, vector, RAG or LLM responsibilities.
+
+No general Clock framework or identity-generation framework is authorized merely by this direction. Deterministic identity/time sourcing for the capture use case SHALL be resolved narrowly by the RFC-056 contract.
 
 This is an engineering direction only.
 
@@ -760,7 +769,7 @@ No implementation is authorized until the corresponding architecture contract is
 
 ### Next Exact Action
 
-Draft and review the architecture contract for the `Canonical Knowledge Application Service Boundary` before any implementation.
+Draft and review the architecture contract for the `Canonical Knowledge Capture Application Boundary` before any implementation.
 
 ---
 
