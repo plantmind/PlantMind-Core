@@ -4281,3 +4281,244 @@ It is not yet an accepted architecture contract and implementation is not author
 Draft and review the architecture contract for the Canonical Knowledge Relational Persistence Adapter Boundary before any implementation.
 
 Do not assign production composition responsibility or begin persistence implementation before contract acceptance.
+
+# AD-041 — Canonical Knowledge Relational Persistence Adapter Boundary
+
+## Status
+
+Accepted.
+
+## Context
+
+AD-039 / RFC-053 established the canonical persistence-neutral enterprise Knowledge domain and the `KnowledgeRecordRepository` port.
+
+AD-040 / RFC-054 established the canonical synchronous relational database runtime, SQLAlchemy engine and session-factory ownership, `DatabaseBase.metadata` authority, PostgreSQL Psycopg boundary and Alembic schema lifecycle.
+
+The required post-RFC-054 Source-of-Truth architecture review confirmed that:
+
+- no production relational implementation of `KnowledgeRecordRepository` exists;
+- no canonical relational representation of `KnowledgeRecord` exists;
+- Alembic revision `0001` remains intentionally schema-neutral;
+- `DatabaseRuntime` owns engine and session-factory lifecycle but not repository transaction semantics;
+- default `CompositionRoot` does not register or expose Knowledge persistence;
+- application startup remains independent from database availability.
+
+PlantMind therefore requires one explicit persistence-adapter boundary before canonical Knowledge can be stored relationally.
+
+## Decision
+
+PlantMind SHALL introduce one canonical infrastructure-owned relational implementation of:
+
+`KnowledgeRecordRepository`
+
+The implementation SHALL reside under:
+
+`app.infrastructure.knowledge`
+
+The canonical domain and persistence-neutral repository contract SHALL remain unchanged.
+
+The adapter SHALL implement only the existing repository operations:
+
+- `add(record: KnowledgeRecord) -> None`;
+- `get(record_id: EntityId) -> KnowledgeRecord | None`.
+
+RFC-055 SHALL NOT introduce update, delete, upsert, merge-based overwrite or a Unit of Work abstraction.
+
+## Relational Representation
+
+The canonical relational table SHALL be:
+
+`knowledge_records`
+
+The SQLAlchemy mapped representation SHALL remain distinct from `KnowledgeRecord`.
+
+The relational database SHALL NOT generate or replace canonical Knowledge record identity or canonical provenance capture time.
+
+The relational representation SHALL preserve:
+
+- canonical UUID identity;
+- Knowledge kind;
+- title;
+- content;
+- provenance source type;
+- provenance source reference;
+- timezone-aware provenance timestamp;
+- optional Knowledge subject type;
+- optional Knowledge subject UUID identity.
+
+The canonical primary-key constraint SHALL be:
+
+`pk_knowledge_records`
+
+The subject-pair constraint SHALL be:
+
+`ck_knowledge_records_subject_pair`
+
+Subject type and subject identity SHALL either both be absent or both be present.
+
+No relational foreign key SHALL incorrectly constrain the polymorphic Knowledge subject reference to one specific aggregate.
+
+## Domain and Infrastructure Boundary
+
+`app.domain` and `app.knowledge` SHALL remain SQLAlchemy-free.
+
+`app.knowledge` SHALL remain the persistence-neutral Knowledge contract boundary.
+
+`app.infrastructure.database` SHALL remain the generic relational runtime, metadata and schema-lifecycle foundation.
+
+The generic database package SHALL NOT become the owner of Knowledge repository semantics.
+
+The Knowledge relational adapter MAY depend upon canonical Knowledge contracts, the repository port, canonical database metadata and session-factory boundaries, and SQLAlchemy.
+
+The generic database infrastructure SHALL NOT acquire a reverse dependency upon the Knowledge adapter.
+
+## Session and Transaction Ownership
+
+The relational Knowledge adapter SHALL receive the canonical session-factory boundary explicitly.
+
+It SHALL NOT construct an independent engine, competing session factory, hidden database configuration dependency or process-global mutable Session.
+
+Each repository operation SHALL use an independent deterministic session lifetime.
+
+`DatabaseRuntime` remains the owner of engine and session-factory lifecycle.
+
+The Knowledge adapter SHALL own repository-operation transaction semantics only.
+
+A successful `add()` SHALL complete one atomic transaction.
+
+A failed `add()` SHALL roll back without partially persisting the record.
+
+`get()` SHALL remain read-only and SHALL NOT perform an application-data commit.
+
+RFC-055 SHALL NOT introduce cross-repository transaction coordination.
+
+Any future multi-repository or application-workflow transaction boundary requires a separate accepted architecture decision.
+
+## Duplicate Identity Boundary
+
+The relational primary-key constraint SHALL remain the concurrency-safe authority for canonical Knowledge identity.
+
+The adapter SHALL NOT use a pre-insert existence query as authoritative duplicate prevention.
+
+Only a failure positively identified through structured database or driver diagnostics as a violation of the canonical Knowledge identity constraint SHALL be translated to:
+
+`KnowledgeRecordAlreadyExistsError`
+
+Human-readable database error-message parsing SHALL NOT be used to classify canonical duplicate identity.
+
+Unrelated integrity, mapping, connection, driver and transaction failures SHALL preserve their infrastructure failure semantics.
+
+A duplicate attempt SHALL NOT overwrite or modify the original canonical record.
+
+## Schema and Migration Boundary
+
+Alembic remains the sole canonical production relational schema-evolution authority.
+
+RFC-055 SHALL introduce one linear append-only migration successor to `0001`:
+
+`0002`
+
+Revision `0001` SHALL NOT be modified, rewritten or repurposed.
+
+Migration `0002` SHALL establish the canonical `knowledge_records` schema.
+
+The mapped relational representation SHALL register with `DatabaseBase.metadata`.
+
+Alembic metadata discovery SHALL load canonical mapped-table registration without creating an engine, Session, database connection or hidden configuration dependency.
+
+The mapped schema and migration `0002` SHALL remain aligned.
+
+The migration graph SHALL retain exactly one canonical head.
+
+Application startup SHALL NOT automatically execute migrations.
+
+`MetaData.create_all()` SHALL NOT become the production schema-deployment mechanism.
+
+Migration `0002` MAY define reversal of schema introduced by `0002`, but destructive downgrade against a data-bearing environment requires separate explicit migration and deployment review.
+
+Runtime and Bootstrap SHALL NOT automatically execute schema downgrade.
+
+## Composition and Runtime Boundary
+
+RFC-055 SHALL NOT automatically:
+
+- construct `DatabaseRuntime` from default `CompositionRoot.build()`;
+- register `KnowledgeRecordRepository` in the default `ServiceContainer`;
+- expose Knowledge persistence from default `PlatformComposition`;
+- require `DATABASE_URL` during default application startup;
+- make PostgreSQL a mandatory Runtime capability.
+
+Existing zero-argument `CompositionRoot.build()` behavior SHALL remain compatible.
+
+RFC-055 SHALL NOT modify Runtime lifecycle states, readiness semantics, request admission, operational-transition evidence, mandatory-capability policy, Bootstrap startup or Bootstrap shutdown responsibilities.
+
+A repository operation failure SHALL NOT independently become Runtime transition authority.
+
+Production Knowledge persistence composition remains deferred until an accepted application capability explicitly requires it.
+
+## Application Boundary
+
+RFC-055 establishes persistence infrastructure only.
+
+It SHALL NOT introduce:
+
+- a production Knowledge application service;
+- a Knowledge HTTP API;
+- semantic search;
+- vector persistence;
+- Qdrant integration;
+- Knowledge Graph persistence;
+- Neo4j integration;
+- RAG;
+- LLM invocation;
+- production PI connectivity.
+
+Application, orchestration, reasoning and operational-transition responsibilities remain unchanged.
+
+## Security and Deployment Readiness
+
+RFC-055 preserves the accepted on-premise enterprise deployment model.
+
+Database credentials SHALL remain outside committed source code.
+
+Code-level implementation acceptance SHALL NOT mean production-deployment readiness.
+
+A live production PostgreSQL environment is not required merely to accept the RFC-055 architecture contract or complete code-level implementation verification.
+
+Before relational Knowledge persistence is declared production-deployment ready, a separate approved PostgreSQL integration verification SHALL demonstrate migration, schema alignment, repository behavior, UUID and timestamp semantics, structured duplicate classification, rollback behavior and deterministic session ownership.
+
+Successful RFC-055 unit, architecture, migration-definition and regression testing SHALL NOT be represented as evidence of production PostgreSQL connectivity, deployment configuration or Cybersecurity approval.
+
+Production deployment readiness remains subject to separately verified integration, deployment and Cybersecurity gates.
+
+## Consequences
+
+PlantMind gains its first canonical relational persistence boundary for enterprise Knowledge without making persistence a domain responsibility.
+
+Canonical Knowledge remains immutable and persistence-neutral.
+
+Database engine and session-factory ownership remain centralized under AD-040.
+
+Repository transaction semantics become explicit without prematurely introducing a Unit of Work.
+
+Schema evolution remains ordered, auditable and append-only.
+
+Default application startup remains independent from relational Knowledge persistence and PostgreSQL availability.
+
+Production composition remains deferred until an application capability explicitly requires it.
+
+Existing RFC-053 and RFC-054 architecture guardrails SHALL evolve narrowly where RFC-055 intentionally introduces accepted infrastructure, but SHALL NOT be deleted or weakened merely to make implementation tests pass.
+
+## Contract Acceptance
+
+RFC-055 Contract Acceptance Review: passed.
+
+Architecture decision: AD-041.
+
+The Canonical Knowledge Relational Persistence Adapter Boundary contract is accepted.
+
+Technical implementation has not started.
+
+Technical implementation is authorized only after the accepted contract is committed, pushed and local/remote contract identity is verified.
+
+Production PostgreSQL connectivity, production schema deployment and Cybersecurity approval remain intentionally unclaimed.

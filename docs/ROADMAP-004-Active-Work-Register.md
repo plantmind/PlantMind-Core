@@ -33,6 +33,707 @@ No item may be marked complete until:
 
 # Active Work
 
+## RFC-055 — Canonical Knowledge Relational Persistence Adapter Boundary
+
+### Status
+
+Contract Accepted.
+
+AD-041 is accepted.
+
+Technical implementation has not started.
+
+Technical implementation is authorized only after the accepted contract is committed, pushed and local/remote contract identity is verified.
+
+### Objective
+
+Establish the first canonical production relational persistence adapter for RFC-053 enterprise Knowledge while preserving the persistence-neutral Knowledge domain and the RFC-054 database runtime and schema-lifecycle boundaries.
+
+RFC-055 SHALL implement the existing `KnowledgeRecordRepository` port through the canonical relational database foundation.
+
+RFC-055 SHALL NOT redesign the Knowledge domain or the canonical database runtime.
+
+### Architecture Dependencies
+
+RFC-055 depends upon and SHALL preserve:
+
+- AD-039 / RFC-053 — Canonical Enterprise Knowledge Foundation Boundary;
+- AD-040 / RFC-054 — Canonical Database Runtime & Schema Lifecycle Foundation.
+
+`KnowledgeRecord` remains the canonical domain representation.
+
+`KnowledgeRecordRepository` remains the canonical persistence-neutral repository port.
+
+`DatabaseRuntime` remains the canonical owner of relational engine and session-factory lifecycle.
+
+`DatabaseBase.metadata` remains the canonical relational schema metadata authority.
+
+Alembic remains the sole canonical relational schema-migration authority.
+
+### Canonical Repository Adapter Responsibility
+
+RFC-055 SHALL introduce one infrastructure-owned relational implementation of:
+
+`KnowledgeRecordRepository`
+
+The adapter SHALL implement the existing repository contract exactly:
+
+- `add(record: KnowledgeRecord) -> None`;
+- `get(record_id: EntityId) -> KnowledgeRecord | None`.
+
+RFC-055 SHALL NOT add relational or SQLAlchemy-specific methods to the canonical repository port merely for persistence convenience.
+
+The relational adapter SHALL NOT become the owner of canonical Knowledge semantics.
+
+### Relational Representation Boundary
+
+RFC-055 SHALL introduce an infrastructure-owned SQLAlchemy mapped representation distinct from the canonical `KnowledgeRecord` domain entity.
+
+The mapped representation SHALL NOT replace, subclass or become the canonical Knowledge domain entity.
+
+The canonical relational table SHALL be:
+
+`knowledge_records`
+
+The relational representation SHALL preserve:
+
+- canonical record UUID identity;
+- Knowledge kind;
+- title;
+- content;
+- provenance source type;
+- provenance source reference;
+- timezone-aware provenance capture timestamp;
+- optional Knowledge subject type;
+- optional Knowledge subject UUID identity.
+
+Canonical record identity SHALL be protected by the table primary key.
+
+Canonical record and subject identities SHALL preserve UUID semantics.
+
+The provenance timestamp SHALL preserve timezone-aware semantics.
+
+Subject type and subject identity SHALL either both be absent or both be present.
+
+The relational schema SHALL enforce that subject-pair invariant.
+
+RFC-055 SHALL NOT add persistence fields for:
+
+- embeddings;
+- vectors;
+- graph identifiers;
+- search ranking;
+- LLM metadata;
+- PI values;
+- reasoning results;
+- document-ingestion workflow state.
+
+Those capabilities remain outside the RFC-055 persistence boundary.
+
+### Persistence Identity and Mutation Boundary
+
+Canonical Knowledge identity and provenance values SHALL originate from the canonical domain record.
+
+The relational database SHALL NOT generate or replace the canonical `KnowledgeRecord` identity.
+
+The relational database SHALL NOT generate or replace the canonical provenance capture timestamp.
+
+RFC-055 SHALL implement persistence only through the existing `add()` and `get()` repository operations.
+
+RFC-055 SHALL NOT introduce:
+
+- update;
+- delete;
+- upsert;
+- merge-based overwrite;
+- database-generated canonical Knowledge identity.
+
+Any future Knowledge mutation or retention semantics require a separate accepted architecture contract.
+
+### Duplicate Conflict Identification Boundary
+
+The canonical primary-key constraint for `knowledge_records` SHALL have an explicit stable constraint identity shared by the mapped schema and Alembic migration.
+
+Duplicate translation SHALL rely upon structured database or driver failure information sufficient to identify the canonical record-identity constraint.
+
+RFC-055 SHALL NOT identify duplicate canonical identity by parsing human-readable database error-message text.
+
+Only a failure positively identified as a violation of the canonical `knowledge_records` identity constraint SHALL become `KnowledgeRecordAlreadyExistsError`.
+
+Other integrity failures SHALL preserve their infrastructure failure semantics.
+
+### Domain Mapping Boundary
+
+RFC-055 SHALL define explicit mapping between:
+
+- canonical `KnowledgeRecord`;
+- infrastructure-owned relational representation.
+
+Domain-to-relational mapping SHALL persist canonical normalized domain values.
+
+Relational-to-domain mapping SHALL reconstruct canonical domain objects through their approved domain constructors.
+
+Relational persistence SHALL NOT bypass canonical Knowledge domain validation.
+
+The mapping SHALL preserve:
+
+- `EntityId`;
+- `KnowledgeKind`;
+- `KnowledgeSourceType`;
+- `KnowledgeProvenance`;
+- optional `KnowledgeSubjectType`;
+- optional subject `EntityId`;
+- title;
+- content;
+- provenance timestamp semantics.
+
+A relational row SHALL NOT become or replace the canonical domain entity.
+
+SQLAlchemy SHALL NOT leak into:
+
+- `app.domain`;
+- `KnowledgeRecordRepository`;
+- other persistence-neutral Knowledge contracts.
+
+### Session Ownership Boundary
+
+The relational repository adapter SHALL receive the approved canonical session-factory boundary explicitly.
+
+The adapter SHALL NOT:
+
+- construct an independent SQLAlchemy engine;
+- construct a competing canonical session factory;
+- read global database settings as a hidden dependency;
+- own a mutable process-global Session;
+- share mutable Session instances between repository operations.
+
+Each repository operation SHALL use an independent deterministic session lifetime.
+
+Every session opened by the repository SHALL be closed after the operation completes or fails.
+
+`DatabaseRuntime` SHALL remain the owner of engine and session-factory lifecycle.
+
+The Knowledge repository SHALL NOT assume ownership of `DatabaseRuntime` disposal.
+
+### Transaction Ownership Boundary
+
+RFC-054 intentionally did not assign repository transaction semantics to `DatabaseRuntime`.
+
+RFC-055 SHALL establish repository-operation transaction ownership for the relational Knowledge adapter.
+
+`add()` SHALL execute as one atomic repository transaction.
+
+A successful `add()` SHALL complete one transaction commit.
+
+A failed `add()` SHALL NOT leave a partially persisted Knowledge record.
+
+Failure during `add()` SHALL cause rollback through the approved SQLAlchemy transaction boundary before the repository operation terminates.
+
+`get()` SHALL be a read operation and SHALL NOT perform an application-data commit.
+
+Transaction handling SHALL NOT silently discard or misclassify the original operation failure. If rollback or cleanup itself fails, that secondary infrastructure failure SHALL remain observable while preserving the original operation failure as exception context where supported. Repository-boundary exception translation is permitted only where RFC-055 explicitly authorizes it.
+
+RFC-055 SHALL NOT introduce a Unit of Work abstraction.
+
+RFC-055 SHALL NOT introduce cross-repository transaction coordination.
+
+Any future transaction spanning:
+
+- multiple repositories;
+- multiple aggregate operations;
+- application workflow boundaries;
+
+requires a separate accepted architecture contract.
+
+### Duplicate Identity Boundary
+
+Canonical Knowledge record identity SHALL be protected by the relational primary key of `knowledge_records`.
+
+`add()` SHALL NOT silently overwrite an existing canonical identity.
+
+The repository SHALL NOT use an application-side pre-insert existence check as the authoritative duplicate-prevention mechanism.
+
+The relational uniqueness constraint SHALL remain the concurrency-safe authority for canonical identity.
+
+Only an integrity failure that can be positively identified as a canonical identity conflict for `knowledge_records` SHALL be translated to:
+
+`KnowledgeRecordAlreadyExistsError`
+
+The adapter SHALL NOT translate every SQLAlchemy `IntegrityError` into `KnowledgeRecordAlreadyExistsError`.
+
+Failures involving:
+
+- subject-pair constraints;
+- malformed relational state;
+- unrelated integrity constraints;
+- mapping defects;
+- connection failures;
+- driver failures;
+- transaction failures;
+
+SHALL preserve their infrastructure failure semantics and SHALL NOT be misclassified as duplicate canonical identity.
+
+After a duplicate-identity attempt:
+
+- the original persisted Knowledge record SHALL remain unchanged;
+- the duplicate record SHALL NOT replace or partially modify it;
+- the failed repository transaction SHALL be rolled back before the operation terminates.
+
+Duplicate-conflict diagnostics SHALL identify the canonical record identity without exposing full Knowledge content or database credentials.
+
+### Subject Reference Boundary
+
+`KnowledgeSubject` is an open typed domain reference.
+
+RFC-055 SHALL persist the subject as:
+
+- optional subject type;
+- optional subject UUID identity.
+
+RFC-055 SHALL NOT introduce a relational foreign key from `knowledge_records` to one specific subject table.
+
+The subject reference is polymorphic at the domain boundary and SHALL NOT be incorrectly constrained to one relational aggregate.
+
+Subject type and subject identity SHALL satisfy the invariant:
+
+- both absent; or
+- both present.
+
+Any future cross-domain relational referential-integrity mechanism requires a separate architecture review.
+
+### Migration Boundary
+
+RFC-055 SHALL introduce one new append-only Alembic migration after revision:
+
+`0001`
+
+The new revision SHALL establish the canonical `knowledge_records` relational schema.
+
+RFC-055 SHALL NOT modify, rewrite or repurpose migration revision `0001`.
+
+The infrastructure-owned mapped representation SHALL register `knowledge_records` with the canonical `DatabaseBase.metadata` schema authority.
+
+The Alembic migration SHALL remain schema-aligned with that canonical metadata.
+
+The migration SHALL establish at minimum:
+
+- canonical UUID primary-key identity;
+- Knowledge kind storage;
+- title storage;
+- Knowledge content storage;
+- provenance source-type storage;
+- provenance source-reference storage;
+- timezone-aware provenance timestamp storage;
+- nullable subject-type storage;
+- nullable subject-UUID storage;
+- enforcement of the subject-pair invariant.
+
+The migration SHALL NOT introduce:
+
+- Knowledge Graph tables;
+- vector tables;
+- embedding columns;
+- search indexes unrelated to canonical identity;
+- document-ingestion tables;
+- LLM persistence;
+- PI persistence.
+
+The migration graph SHALL retain exactly one canonical head after RFC-055.
+
+Applied migration history SHALL remain append-only.
+
+Application startup SHALL NOT automatically execute Alembic migrations.
+
+`MetaData.create_all()` SHALL NOT become the production schema-deployment mechanism.
+
+RFC-055 SHALL NOT claim successful production schema deployment merely because the migration definition exists or migration tests pass.
+
+Production schema application requires a separately approved deployment environment.
+
+### Downgrade Safety Boundary
+
+Migration `0002` MAY define reversal of only the relational schema introduced by `0002`.
+
+Reversal MAY include removal of the `knowledge_records` table.
+
+Such removal SHALL be treated as destructive once canonical Knowledge data exists.
+
+The presence of a destructive `downgrade()` definition SHALL NOT constitute authorization to execute that downgrade against a data-bearing environment.
+
+Execution of a destructive RFC-055 downgrade against a data-bearing environment requires a separate explicit migration and deployment review.
+
+The RFC-055 downgrade SHALL NOT modify revision `0001` or unrelated relational schema.
+
+Runtime and Bootstrap SHALL NOT automatically execute the downgrade.
+
+RFC-055 tests MAY exercise downgrade behavior only in isolated disposable test environments.
+
+Successful downgrade testing SHALL NOT be represented as production rollback approval.
+
+### Metadata Registration and Schema Alignment Boundary
+
+The canonical `knowledge_records` mapped table SHALL be registered with `DatabaseBase.metadata`.
+
+Mapped-table registration SHALL NOT:
+
+- create a database engine;
+- create a Session;
+- open a database connection;
+- read hidden database configuration;
+- execute schema migration.
+
+The Alembic environment SHALL load the canonical mapped-table registration before using `DatabaseBase.metadata` for schema comparison or migration tooling.
+
+RFC-055 SHALL establish one linear migration successor to `0001`:
+
+`0002`
+
+The mapped schema and migration `0002` SHALL remain aligned for:
+
+- table identity;
+- column semantics;
+- UUID identity semantics;
+- timezone-aware provenance timestamp semantics;
+- nullability;
+- primary-key identity;
+- subject-pair enforcement.
+
+Canonical record identity, Knowledge kind, title, content, provenance source type, provenance source reference and provenance capture timestamp SHALL be non-null relational values.
+
+Subject type and subject identity SHALL remain nullable only as the approved both-absent or both-present pair.
+
+The canonical record primary-key constraint SHALL have the stable explicit identity:
+
+`pk_knowledge_records`
+
+The subject-pair constraint SHALL have the stable explicit identity:
+
+`ck_knowledge_records_subject_pair`
+
+Schema metadata registration SHALL NOT make database availability mandatory during application import or startup.
+
+### Composition Boundary
+
+RFC-055 SHALL implement the canonical relational Knowledge adapter without automatically making relational Knowledge persistence part of default platform composition.
+
+The adapter MAY be constructed explicitly with the approved canonical session-factory boundary for focused verification and future production composition.
+
+RFC-055 SHALL NOT automatically:
+
+- construct `DatabaseRuntime` from `CompositionRoot.build()`;
+- register `KnowledgeRecordRepository` in the default `ServiceContainer`;
+- expose a Knowledge repository from default `PlatformComposition`;
+- require `DATABASE_URL` during default application startup;
+- make PostgreSQL availability a mandatory platform dependency.
+
+Default `CompositionRoot.build()` SHALL remain usable without relational database configuration.
+
+Existing zero-argument CompositionRoot construction behavior SHALL remain compatible.
+
+Production composition of the relational Knowledge adapter SHALL be deferred until an accepted production application capability requires Knowledge persistence and explicitly defines ownership of that composition.
+
+### Bootstrap and Runtime Boundary
+
+RFC-055 SHALL NOT modify:
+
+- Runtime states;
+- Runtime transition authority;
+- Runtime readiness semantics;
+- request admission;
+- operational-transition evidence;
+- mandatory-capability policy;
+- capability availability semantics;
+- Health behavior;
+- Bootstrap startup semantics;
+- Bootstrap shutdown semantics.
+
+Database persistence availability SHALL NOT automatically become a mandatory Runtime capability.
+
+A repository operation failure SHALL NOT independently transition Runtime state.
+
+Bootstrap SHALL NOT automatically connect to PostgreSQL merely because the relational Knowledge adapter exists.
+
+Runtime remains the sole lifecycle-transition authority.
+
+### Application Boundary
+
+RFC-055 establishes persistence infrastructure only.
+
+RFC-055 SHALL NOT introduce a production Knowledge application service.
+
+RFC-055 SHALL NOT introduce a Knowledge HTTP transport boundary.
+
+RFC-055 SHALL NOT change `ApplicationFacade`, orchestration, reasoning or operational-transition responsibilities.
+
+A future application capability SHALL explicitly define when Knowledge is written or read and how production repository composition is owned.
+
+### Failure Boundary
+
+Unexpected relational infrastructure failures SHALL propagate explicitly.
+
+RFC-055 SHALL NOT introduce:
+
+- automatic database retry;
+- hidden retry loops;
+- synthetic persistence success;
+- silent data loss;
+- silent overwrite;
+- fallback to in-memory persistence;
+- broad platform-wide database exception translation.
+
+Only a positively identified canonical record identity conflict SHALL be translated to `KnowledgeRecordAlreadyExistsError`.
+
+All other unexpected infrastructure failures SHALL retain their actual failure semantics.
+
+Rollback and session cleanup SHALL be deterministic. A secondary rollback or cleanup failure SHALL remain observable and SHALL NOT silently erase the original operation failure context where exception chaining is supported.
+
+RFC-055 SHALL NOT modify Runtime lifecycle state in response to repository failure.
+
+### Observability Boundary
+
+RFC-055 MAY provide diagnostics required to identify repository operation failure classes.
+
+Diagnostics SHALL NOT expose:
+
+- database passwords;
+- credential-bearing database URLs;
+- full canonical Knowledge content;
+- secrets contained in Knowledge content.
+
+Repository diagnostics MAY identify safe operational metadata such as operation type, canonical record identity, repository boundary and failure class.
+
+Logging consolidation remains outside RFC-055 scope.
+
+### Security Boundary
+
+RFC-055 SHALL preserve the accepted on-premise enterprise deployment model.
+
+RFC-055 SHALL NOT introduce external hosted persistence or new outbound data transfer.
+
+Database credentials SHALL remain outside committed source code.
+
+RFC-055 SHALL NOT claim completion of production PostgreSQL authentication, certificate policy, network segmentation, database encryption policy, backup policy, database hardening or Cybersecurity deployment approval.
+
+Those remain deployment and Cybersecurity responsibilities until separately reviewed and verified.
+
+### Prototype and Advanced Capability Boundary
+
+RFC-055 SHALL NOT promote existing prototype or placeholder Knowledge components into production.
+
+RFC-055 SHALL NOT introduce:
+
+- Document Library behavior;
+- Asset Library behavior;
+- document ingestion;
+- semantic search;
+- vector persistence;
+- Qdrant integration;
+- Knowledge Graph persistence;
+- Neo4j integration;
+- RAG;
+- LLM invocation;
+- Knowledge HTTP APIs;
+- production PI connectivity.
+
+The purpose of RFC-055 is canonical relational persistence of RFC-053 Knowledge only.
+
+### Infrastructure Namespace and Guardrail Evolution Boundary
+
+The canonical RFC-055 relational Knowledge implementation SHALL be owned by:
+
+`app.infrastructure.knowledge`
+
+RFC-055 SHALL NOT place SQLAlchemy relational implementation inside:
+
+- `app.domain`;
+- `app.knowledge`.
+
+`app.knowledge` SHALL remain the persistence-neutral Knowledge contract boundary.
+
+`app.infrastructure.database` SHALL remain the canonical generic relational runtime, metadata and database-lifecycle foundation and SHALL NOT become the owner of Knowledge repository semantics.
+
+The infrastructure-owned Knowledge persistence package MAY depend upon:
+
+- canonical Knowledge domain contracts;
+- `KnowledgeRecordRepository`;
+- canonical database metadata and session-factory boundaries;
+- SQLAlchemy.
+
+The generic database infrastructure SHALL NOT acquire a reverse dependency upon the Knowledge persistence adapter.
+
+Alembic migration tooling MAY explicitly load infrastructure-owned Knowledge mapped-table registration for canonical metadata discovery without transferring Knowledge ownership to the database runtime package.
+
+Existing RFC-054 regression guardrails SHALL evolve narrowly where RFC-055 intentionally introduces Knowledge persistence.
+
+RFC-055 SHALL NOT delete or weaken an RFC-054 architecture guardrail merely because the new adapter would otherwise fail it.
+
+The existing RFC-054 containment test that prohibits Knowledge persistence across all infrastructure SHALL be refined so that it continues to prove:
+
+- `app.infrastructure.database` remains Knowledge-neutral;
+- default `CompositionRoot` remains free of Knowledge persistence registration;
+- default `PlatformComposition` remains free of Knowledge repository exposure;
+
+while permitting the accepted RFC-055 adapter under `app.infrastructure.knowledge`.
+
+Existing tests requiring `app.domain` and `app.knowledge` to remain SQLAlchemy-free SHALL remain enforced.
+
+Database startup-containment regression coverage SHALL include the authoritative:
+
+`app.core.bootstrap_manager`
+
+in addition to compatibility and application startup boundaries.
+
+### TDD Boundary
+
+Before production implementation, focused tests SHALL establish:
+
+- the canonical Knowledge domain remains free of SQLAlchemy dependencies;
+- `KnowledgeRecordRepository` remains persistence-neutral;
+- the relational mapped representation remains infrastructure-owned;
+- domain-to-relational mapping preserves canonical values;
+- relational-to-domain mapping reconstructs canonical domain objects;
+- canonical record UUID identity round-trips without change;
+- Knowledge kind round-trips without change;
+- title and content round-trip without change;
+- provenance source type and source reference round-trip without change;
+- timezone-aware provenance timestamps preserve canonical UTC semantics;
+- absent Knowledge subject round-trips as `None`;
+- present Knowledge subject type and identity round-trip correctly;
+- partially populated subject references are rejected by the relational schema;
+- `add()` persists one canonical Knowledge record;
+- `get()` returns the canonical domain value;
+- `get()` returns `None` for missing identity;
+- duplicate canonical identity raises `KnowledgeRecordAlreadyExistsError`;
+- duplicate insertion does not overwrite the original record;
+- unrelated integrity failures are not misclassified as duplicate identity;
+- repository operations use deterministic independent session lifetimes;
+- successful `add()` completes one repository-operation transaction;
+- failed `add()` rolls back;
+- `get()` performs no application-data commit;
+- no Unit of Work abstraction is introduced;
+- no independent database engine or competing session factory is introduced;
+- Alembic revision `0001` remains unchanged;
+- a new append-only migration follows `0001`;
+- the migration graph retains exactly one canonical head;
+- application startup does not automatically execute schema migration;
+- default `CompositionRoot.build()` remains database-independent;
+- default `CompositionRoot` does not register or expose Knowledge persistence;
+- Bootstrap behavior remains unchanged;
+- Runtime lifecycle behavior remains unchanged.
+
+### Persistence Hardening Test Boundary
+
+Focused tests SHALL additionally establish:
+
+- the database does not generate or replace canonical `KnowledgeRecord` identity;
+- the database does not generate or replace canonical provenance capture timestamp;
+- RFC-055 introduces no update, delete, upsert or overwrite persistence path;
+- duplicate classification does not parse human-readable database error text;
+- duplicate translation requires structured identification of the canonical record-identity constraint;
+- the canonical primary-key constraint is `pk_knowledge_records`;
+- the subject-pair constraint is `ck_knowledge_records_subject_pair`;
+- the mapped `knowledge_records` table is registered with `DatabaseBase.metadata`;
+- mapped-table registration creates no Engine, Session or database connection;
+- mapped-table registration does not execute migration or require database configuration;
+- Alembic migration `0002` follows `0001`;
+- migration `0002` and canonical mapped metadata remain schema-aligned;
+- required canonical Knowledge fields are relationally non-null;
+- subject type and subject identity remain nullable only as an invariant-preserving pair;
+- `0001` remains unchanged;
+- exactly one canonical Alembic head remains after `0002`.
+
+### Implementation Acceptance and Deployment Readiness Boundary
+
+RFC-055 technical implementation acceptance SHALL establish conformity with the accepted production-grade persistence architecture.
+
+Technical implementation acceptance SHALL NOT by itself mean that relational Knowledge persistence is approved for production deployment.
+
+A live production PostgreSQL environment SHALL NOT be required merely to accept the RFC-055 architecture contract or complete code-level implementation verification.
+
+Before relational Knowledge persistence is declared production-deployment ready, a separate approved PostgreSQL integration verification SHALL demonstrate at minimum:
+
+- migration `0002` applies correctly from canonical revision `0001`;
+- the deployed relational schema is aligned with canonical mapped metadata;
+- canonical Knowledge `add()` and `get()` behavior operates correctly through PostgreSQL;
+- canonical UUID identity semantics are preserved;
+- timezone-aware provenance timestamp semantics are preserved;
+- canonical duplicate identity is classified through structured database or driver diagnostics;
+- unrelated integrity failures are not misclassified as duplicate canonical identity;
+- failed writes preserve atomic rollback semantics;
+- repository session lifetime remains deterministic;
+- application startup remains independent from automatic database migration and mandatory PostgreSQL availability.
+
+Production integration verification SHALL occur in an approved controlled environment.
+
+Successful RFC-055 unit, architecture, migration-definition and regression testing SHALL NOT be represented as evidence that production PostgreSQL connectivity, deployment configuration or Cybersecurity approval is complete.
+
+Production deployment readiness remains subject to separately verified integration, deployment and Cybersecurity gates.
+
+### Verification Boundary
+
+RFC-055 technical implementation SHALL pass:
+
+- focused Knowledge relational persistence tests;
+- domain-relational mapping tests;
+- repository transaction tests;
+- duplicate-conflict tests;
+- migration architecture tests;
+- RFC-053 Knowledge regression tests;
+- RFC-054 database-foundation regression tests;
+- relevant CompositionRoot and Bootstrap regression tests;
+- full PlantMind regression;
+- Python compilation checks;
+- `git diff --check`;
+- Git review;
+- remote push verification;
+- local and remote commit identity verification;
+- clean working-tree verification.
+
+A real production PostgreSQL deployment SHALL NOT be required to validate the RFC-055 implementation boundary.
+
+RFC-055 SHALL NOT claim production PostgreSQL deployment, production schema application or Cybersecurity approval unless separately verified in an approved deployment environment.
+
+### Contract Review State
+
+RFC-055 Architecture Contract Review: passed.
+
+Architecture decision: AD-041.
+
+AD-041 is accepted.
+
+Technical implementation has not started.
+
+Technical implementation remains gated until contract commit, remote push and local/remote contract identity verification are complete.
+
+The contract SHALL be reviewed against:
+
+- current committed code and tests;
+- AD-039 / RFC-053;
+- AD-040 / RFC-054;
+- current Active Work Register;
+- Project Context;
+- Session Handoff;
+- Engineering Journal;
+- the completed post-RFC-054 Source-of-Truth architecture review.
+
+Contract acceptance requires confirmation that RFC-055 introduces no conflicting ownership, duplicated database responsibility, domain persistence leakage, unintended Runtime coupling or premature production composition.
+
+### Next Exact Action
+
+Review the accepted RFC-055 / AD-041 contract diff.
+
+If the contract diff passes:
+
+1. commit the accepted RFC-055 / AD-041 architecture contract;
+2. push the contract commit to the authoritative remote branch;
+3. verify local and remote contract commit identity;
+4. verify a clean working tree;
+5. only then begin RFC-055 TDD technical implementation.
+
+Do not create the Knowledge relational schema, mapped model, repository adapter or migration before contract commit and remote verification are complete.
+
+---
+
 ## RFC-054 — Canonical Database Runtime & Schema Lifecycle Foundation
 
 ### Status
