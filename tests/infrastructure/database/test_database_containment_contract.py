@@ -37,7 +37,11 @@ def test_platform_startup_has_no_database_lifecycle_coupling() -> None:
     startup_files = (
         BACKEND_APP / "main.py",
         BACKEND_APP / "core" / "bootstrap.py",
-        BACKEND_APP / "core" / "composition" / "composition_root.py",
+        BACKEND_APP / "core" / "bootstrap_manager.py",
+        BACKEND_APP
+        / "core"
+        / "composition"
+        / "composition_root.py",
         BACKEND_APP / "core" / "runtime.py",
     )
 
@@ -63,8 +67,10 @@ def test_platform_startup_has_no_database_lifecycle_coupling() -> None:
     assert violations == []
 
 
-def test_rfc054_does_not_add_knowledge_persistence() -> None:
-    infrastructure = BACKEND_APP / "infrastructure"
+def test_rfc054_database_foundation_remains_knowledge_neutral() -> None:
+    database_infrastructure = (
+        BACKEND_APP / "infrastructure" / "database"
+    )
     composition_root = (
         BACKEND_APP
         / "core"
@@ -74,7 +80,7 @@ def test_rfc054_does_not_add_knowledge_persistence() -> None:
 
     sources = [
         path.read_text()
-        for path in infrastructure.rglob("*.py")
+        for path in database_infrastructure.rglob("*.py")
     ]
     sources.append(composition_root.read_text())
 

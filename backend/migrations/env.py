@@ -10,6 +10,9 @@ from app.infrastructure.database.configuration import (
     validate_database_url,
 )
 from app.infrastructure.database.metadata import DatabaseBase
+from app.infrastructure.knowledge.models import (
+    KnowledgeRecordRow as _KnowledgeRecordRow,
+)
 
 
 target_metadata = DatabaseBase.metadata
