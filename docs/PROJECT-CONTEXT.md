@@ -676,7 +676,37 @@ RFC-055 does not claim production PostgreSQL deployment, production schema appli
 
 Those remain subject to separately approved PostgreSQL integration, deployment and Cybersecurity verification.
 
-The next exact action is the required post-RFC-055 Source-of-Truth architecture review before defining or implementing the next architecture workstream.
+### Post-RFC-055 Source-of-Truth Architecture Review
+
+The required post-RFC-055 Source-of-Truth architecture review is complete.
+
+The review confirmed that RFC-053, RFC-054 and RFC-055 remain authoritative and SHALL NOT be redesigned by the next workstream.
+
+The review established that:
+
+- canonical Knowledge remains persistence-neutral at the domain and repository-port boundaries;
+- RFC-055 provides the canonical relational adapter but does not make Knowledge persistence part of default platform composition;
+- no production Knowledge application service currently owns Knowledge write or read use-case coordination;
+- `ApplicationFacade` remains the canonical entry boundary for the existing analysis/orchestration workload and SHALL NOT automatically absorb Knowledge persistence operations;
+- PlantMind already uses specialized application services for distinct application use cases;
+- specialized application services receive dependencies explicitly and do not own Runtime lifecycle authority;
+- the existing Knowledge repository contract currently exposes only `add()` and `get()`;
+- existing document parser, semantic search, RAG and Knowledge Graph files remain empty, prototype or intentionally unimplemented capability seams and SHALL NOT be promoted by the next workstream;
+- default `CompositionRoot` remains free of Knowledge repository registration and PostgreSQL dependency.
+
+The selected engineering direction is:
+
+`Canonical Knowledge Application Service Boundary`
+
+This is an engineering direction only. It is not yet an accepted architecture contract and implementation is not authorized.
+
+The future contract is expected to define a specialized Knowledge application service that coordinates canonical Knowledge write and read use cases through the persistence-neutral `KnowledgeRecordRepository` dependency.
+
+The future contract SHALL preserve repository transaction ownership under RFC-055 and SHALL NOT make the application service responsible for SQLAlchemy Session lifecycle, database engine lifecycle, schema migration or database configuration.
+
+The next workstream SHALL NOT automatically introduce default PostgreSQL composition, Knowledge HTTP APIs, document ingestion, semantic search, vector persistence, Knowledge Graph persistence, RAG, LLM invocation, update/delete/upsert Knowledge operations or production PI connectivity.
+
+The next exact action is to draft and review the architecture contract for the Canonical Knowledge Application Service Boundary before any implementation.
 
 ## 15. Session Continuation Instruction
 

@@ -731,13 +731,36 @@ The accepted RFC-055 / AD-041 contract was reviewed against:
 
 Contract acceptance confirmed that RFC-055 introduced no conflicting ownership, duplicated database responsibility, domain persistence leakage, unintended Runtime coupling or premature production composition.
 
+### Post-RFC-055 Architecture Review Outcome
+
+The required post-RFC-055 Source-of-Truth architecture review is complete.
+
+The review confirmed that RFC-053 / AD-039, RFC-054 / AD-040 and RFC-055 / AD-041 remain authoritative.
+
+The review established that the next missing canonical boundary is application-level coordination of Knowledge persistence use cases, not a new persistence engine, transport API, retrieval stack or AI capability.
+
+The selected engineering direction is:
+
+`Canonical Knowledge Application Service Boundary`
+
+The future contract is expected to define a specialized Knowledge application service that:
+
+- receives `KnowledgeRecordRepository` explicitly;
+- coordinates approved canonical Knowledge write and read use cases;
+- remains persistence-implementation neutral;
+- does not own repository transaction semantics;
+- does not own SQLAlchemy Session or engine lifecycle;
+- does not make PostgreSQL mandatory during default application startup;
+- does not automatically modify `ApplicationFacade`;
+- does not introduce update, delete, upsert, search, ingestion, graph, RAG or LLM responsibilities.
+
+This is an engineering direction only.
+
+No implementation is authorized until the corresponding architecture contract is drafted, reviewed, accepted, committed and remotely verified.
+
 ### Next Exact Action
 
-Complete the required post-RFC-055 Source-of-Truth architecture review.
-
-The review SHALL evaluate the current committed implementation and tests together with RFC-053 / AD-039, RFC-054 / AD-040 and RFC-055 / AD-041 before selecting the next engineering direction.
-
-No next architecture RFC or production capability implementation is authorized until that review is complete.
+Draft and review the architecture contract for the `Canonical Knowledge Application Service Boundary` before any implementation.
 
 ---
 
