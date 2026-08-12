@@ -637,6 +637,47 @@ The next workstream SHALL NOT automatically introduce a Unit of Work, default Co
 
 The next exact action is to draft and review the architecture contract for the Canonical Knowledge Relational Persistence Adapter Boundary before any implementation.
 
+
+### RFC-055 — Canonical Knowledge Relational Persistence Adapter Boundary
+
+RFC-055 is technically complete within the accepted AD-041 architecture boundary.
+
+RFC-055 established the first canonical relational persistence adapter for RFC-053 Knowledge while preserving the persistence-neutral domain boundary.
+
+The implementation established:
+
+- infrastructure-owned `KnowledgeRecordRow` mapping under `app.infrastructure.knowledge`;
+- explicit Domain-to-Relational and Relational-to-Domain mapping;
+- canonical SQLAlchemy implementation of `KnowledgeRecordRepository`;
+- explicit independent repository-operation session lifetime;
+- explicit `add()` transaction commit and rollback semantics;
+- read-only `get()` behavior without application-data commit;
+- structured canonical duplicate-identity classification using PostgreSQL SQLSTATE and the stable `pk_knowledge_records` constraint identity;
+- canonical `knowledge_records` relational schema registration with `DatabaseBase.metadata`;
+- append-only Alembic revision `0002` following `0001`;
+- one canonical Alembic migration head at `0002`;
+- preservation of default CompositionRoot, Bootstrap and Runtime database independence.
+
+RFC-055 verification:
+
+- Architecture decision: AD-041
+- Contract commit: `ea046bd`
+- Technical commit: `9fc34c7`
+- Focused RFC-055 verification: 137 passed
+- Full PlantMind regression: 543 passed
+- Python compilation: passed
+- `git diff --check`: passed
+- Alembic canonical head: `0002`
+- Remote technical push: verified
+- Local and remote technical commit identity: verified
+- Working tree after technical push: clean
+
+RFC-055 does not claim production PostgreSQL deployment, production schema application, deployment configuration or Cybersecurity approval.
+
+Those remain subject to separately approved PostgreSQL integration, deployment and Cybersecurity verification.
+
+The next exact action is the required post-RFC-055 Source-of-Truth architecture review before defining or implementing the next architecture workstream.
+
 ## 15. Session Continuation Instruction
 
 When continuing PlantMind in a new engineering session:
