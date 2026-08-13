@@ -739,7 +739,39 @@ RFC-056 does not claim production Knowledge Capture composition, production HTTP
 
 Those capabilities remain separately governed.
 
-The next exact action is to perform the required post-RFC-056 Source-of-Truth architecture review before selecting, defining or implementing another architecture RFC.
+## Post-RFC-056 Source-of-Truth Architecture Review
+
+The required post-RFC-056 Source-of-Truth architecture review is complete.
+
+The review confirmed that RFC-053 / AD-039 through RFC-056 / AD-042 remain authoritative and SHALL NOT be redesigned by the next workstream.
+
+The review established that:
+
+- PM-001 requires company-Knowledge capture, a Document Library and an AI Knowledge Engine;
+- PM-002 places Engineering Documents and Procedures among enterprise knowledge sources and defines a Knowledge Center containing procedures, manuals, P&ID, Cause & Effect, Operating Philosophy and Lessons Learned;
+- the canonical Knowledge domain, repository port, relational adapter and Capture application boundary now provide the accepted downstream foundation for document-derived Knowledge;
+- `backend/app/knowledge/document_parser.py`, semantic-search, RAG, graph, Knowledge-memory and vector-memory seams remain empty or intentionally unimplemented;
+- the existing `KnowledgeGraphService` remains an isolated in-memory prototype and SHALL NOT be promoted by the next workstream;
+- default Knowledge persistence and Capture composition remain intentionally absent;
+- `backend/app/core/security.py` is only a minimal boolean-gate prototype and does not establish accepted authentication, authorization, RBAC, principal, actor-audit, Active Directory, LDAP or MFA semantics;
+- absence of a production security boundary prohibits external or production Knowledge-ingestion exposure, but does not require an isolated application-level ingestion contract to be deferred;
+- future document ingestion SHALL consume the accepted `KnowledgeCaptureApplicationService` boundary rather than bypassing it and writing directly through `KnowledgeRecordRepository`.
+
+The evidence-based next architecture direction is:
+
+`RFC-057 — Canonical Document Knowledge Ingestion Application Boundary`
+
+RFC-057 is a selected engineering direction only.
+
+Its architecture contract has not yet been accepted.
+
+AD-043 has not been created.
+
+RFC-057 implementation is not authorized.
+
+The RFC-057 contract SHALL preserve explicit separation from file upload/storage, PDF parsing, OCR, chunking, search, embeddings, vector persistence, Knowledge Graph persistence, RAG, LLM invocation, external transport exposure, production composition and production security claims unless a later accepted contract explicitly and narrowly authorizes such responsibilities.
+
+The next exact action is to draft and review the architecture contract for RFC-057 — Canonical Document Knowledge Ingestion Application Boundary before any implementation.
 
 ## 15. Session Continuation Instruction
 

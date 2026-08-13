@@ -33,6 +33,72 @@ No item may be marked complete until:
 
 # Active Work
 
+## RFC-057 — Canonical Document Knowledge Ingestion Application Boundary
+
+### Status
+
+Architecture Direction Selected.
+
+Post-RFC-056 Source-of-Truth architecture review: complete.
+
+RFC-057 architecture contract: not yet accepted.
+
+AD-043: not created.
+
+Technical implementation: not authorized.
+
+### Objective
+
+Define the canonical application boundary by which approved document-derived knowledge inputs may be transformed into one or more accepted Knowledge Capture requests and delegated through `KnowledgeCaptureApplicationService`.
+
+RFC-057 SHALL NOT bypass `KnowledgeCaptureApplicationService` and SHALL NOT write directly through `KnowledgeRecordRepository`.
+
+### Architecture Basis
+
+The post-RFC-056 review established that:
+
+- PM-001 explicitly requires company-Knowledge capture, Document Library capability and an AI Knowledge Engine;
+- PM-002 identifies Engineering Documents and Procedures as enterprise knowledge sources and defines a Knowledge Center;
+- RFC-053 explicitly reserved document ingestion for a future architecture boundary;
+- RFC-056 established the stable Capture application boundary that future ingestion capabilities SHALL consume;
+- current document parser, semantic-search, graph, RAG, Knowledge-memory and vector-memory seams are empty or non-production;
+- the existing `KnowledgeGraphService` is an in-memory prototype;
+- current `SecurityManager` behavior is not a production authentication, authorization, RBAC or actor-audit capability;
+- external and production ingestion exposure therefore remains separately gated.
+
+### Initial Scope Guardrails
+
+The RFC-057 contract SHALL NOT automatically authorize:
+
+- file upload;
+- file storage;
+- PDF parsing;
+- OCR;
+- chunking;
+- document versioning;
+- semantic or vector retrieval;
+- embeddings;
+- Qdrant integration;
+- Knowledge Graph persistence;
+- Neo4j integration;
+- RAG;
+- LLM invocation;
+- Knowledge HTTP APIs;
+- default production Knowledge composition;
+- production PostgreSQL deployment;
+- production authentication or authorization;
+- actor-audit readiness;
+- Cybersecurity approval;
+- production deployment readiness.
+
+Those responsibilities require separate evidence and explicit accepted architecture boundaries.
+
+### Next Exact Action
+
+Draft and review the RFC-057 architecture contract before any implementation.
+
+---
+
 ## RFC-056 — Canonical Knowledge Capture Application Boundary
 
 ### Status
@@ -47,7 +113,9 @@ Technical commit: `66c24f0`.
 
 Remote technical push and exact local/remote commit identity are verified.
 
-The required post-RFC-056 Source-of-Truth architecture review remains pending.
+The required post-RFC-056 Source-of-Truth architecture review is complete.
+
+The evidence-based next architecture direction is RFC-057 — Canonical Document Knowledge Ingestion Application Boundary.
 
 ### Objective
 
@@ -650,7 +718,7 @@ Production Knowledge Capture composition, external transport exposure, authentic
 
 ### Next Exact Action
 
-Perform the required post-RFC-056 Source-of-Truth architecture review before selecting, defining or implementing another architecture RFC.
+Draft and review the architecture contract for RFC-057 — Canonical Document Knowledge Ingestion Application Boundary before any implementation.
 
 ---
 
@@ -1415,7 +1483,7 @@ Verification:
 
 ### Next Exact Action
 
-Perform the required post-RFC-056 Source-of-Truth architecture review before selecting, defining or implementing another architecture RFC.
+Draft and review the architecture contract for RFC-057 — Canonical Document Knowledge Ingestion Application Boundary before any implementation.
 
 ---
 
