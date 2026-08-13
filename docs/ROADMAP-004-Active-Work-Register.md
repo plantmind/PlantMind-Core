@@ -33,69 +33,764 @@ No item may be marked complete until:
 
 # Active Work
 
-## RFC-057 — Canonical Document Knowledge Ingestion Application Boundary
+## RFC-057 — Canonical Enterprise Document Foundation Boundary
 
 ### Status
 
-Architecture Direction Selected.
+Contract Accepted — Implementation Gate Pending.
 
 Post-RFC-056 Source-of-Truth architecture review: complete.
 
-RFC-057 architecture contract: not yet accepted.
+The initial post-review working direction:
 
-AD-043: not created.
+`Canonical Document Knowledge Ingestion Application Boundary`
 
-Technical implementation: not authorized.
+was refined before contract acceptance.
+
+Repository evidence showed that PlantMind does not yet possess a canonical enterprise Document identity or Document domain contract.
+
+A document-ingestion application service introduced before that foundation would either:
+
+- invent document identity and lifecycle semantics inside an application service; or
+- become a thin translation wrapper over `KnowledgeCaptureApplicationService`.
+
+Neither outcome is accepted.
+
+Architecture decision:
+
+`AD-043 — Canonical Enterprise Document Foundation Boundary`
+
+AD-043 status: Accepted.
+
+RFC-057 technical implementation is not authorized.
 
 ### Objective
 
-Define the canonical application boundary by which approved document-derived knowledge inputs may be transformed into one or more accepted Knowledge Capture requests and delegated through `KnowledgeCaptureApplicationService`.
+Establish the minimum canonical enterprise Document domain required before PlantMind introduces Document Library persistence, document revision lifecycle, parsing, ingestion, search, Knowledge transformation or AI-assisted document capabilities.
 
-RFC-057 SHALL NOT bypass `KnowledgeCaptureApplicationService` and SHALL NOT write directly through `KnowledgeRecordRepository`.
+RFC-057 SHALL define what one enterprise Document is inside PlantMind.
 
-### Architecture Basis
+RFC-057 SHALL establish:
 
-The post-RFC-056 review established that:
+- canonical PlantMind identity for a Document;
+- open document classification;
+- open source-system classification;
+- traceable source reference;
+- immutable canonical document title;
+- explicit separation between canonical Document-record identity and future revision-lineage, binary, storage and ingestion semantics.
 
-- PM-001 explicitly requires company-Knowledge capture, Document Library capability and an AI Knowledge Engine;
-- PM-002 identifies Engineering Documents and Procedures as enterprise knowledge sources and defines a Knowledge Center;
-- RFC-053 explicitly reserved document ingestion for a future architecture boundary;
-- RFC-056 established the stable Capture application boundary that future ingestion capabilities SHALL consume;
-- current document parser, semantic-search, graph, RAG, Knowledge-memory and vector-memory seams are empty or non-production;
-- the existing `KnowledgeGraphService` is an in-memory prototype;
-- current `SecurityManager` behavior is not a production authentication, authorization, RBAC or actor-audit capability;
-- external and production ingestion exposure therefore remains separately gated.
+RFC-057 SHALL NOT implement a Document Library.
 
-### Initial Scope Guardrails
+RFC-057 SHALL NOT implement document ingestion.
 
-The RFC-057 contract SHALL NOT automatically authorize:
+### Architecture Dependencies
 
-- file upload;
-- file storage;
-- PDF parsing;
+RFC-057 depends upon and SHALL preserve:
+
+- shared `EntityId` and `DomainEntity` primitives from `app.domain.base`;
+- AD-039 / RFC-053 — Canonical Enterprise Knowledge Foundation Boundary;
+- AD-040 / RFC-054 — Canonical Database Runtime & Schema Lifecycle Foundation;
+- AD-041 / RFC-055 — Canonical Knowledge Relational Persistence Adapter Boundary;
+- AD-042 / RFC-056 — Canonical Knowledge Capture Application Boundary;
+- AD-009 — PI Is One Knowledge Source.
+
+RFC-057 SHALL NOT redesign any accepted Knowledge, persistence, Capture, Runtime or industrial-integration boundary.
+
+### Canonical Document Domain Module
+
+RFC-057 SHALL introduce:
+
+`app.domain.document`
+
+as the canonical enterprise Document domain module.
+
+The canonical contracts SHALL be:
+
+- `DocumentType`;
+- `DocumentSourceType`;
+- `DocumentSource`;
+- `EnterpriseDocument`.
+
+The empty or prototype Procedure components SHALL NOT become the canonical Document domain.
+
+RFC-057 SHALL NOT establish a competing domain hierarchy under `app.models`.
+
+### Shared Identity Boundary
+
+`EnterpriseDocument` SHALL use the existing canonical PlantMind:
+
+`EntityId`
+
+as its identity.
+
+RFC-057 SHALL NOT introduce:
+
+- `DocumentId`;
+- document-specific UUID infrastructure;
+- database-generated Document identity;
+- source-reference-as-primary-identity semantics.
+
+Canonical PlantMind identity and external/source-system document references SHALL remain distinct concepts.
+
+`EntityId` SHALL remain the canonical PlantMind identity of the document entity.
+
+### Enterprise Document Entity
+
+RFC-057 SHALL introduce the immutable canonical entity:
+
+`EnterpriseDocument`
+
+derived from:
+
+`DomainEntity[EntityId]`
+
+The minimum fields SHALL be:
+
+- `id: EntityId`;
+- `document_type: DocumentType`;
+- `title: str`;
+- `source: DocumentSource`.
+
+`EnterpriseDocument` SHALL represent one immutable canonical enterprise Document record inside PlantMind.
+
+It SHALL NOT represent:
+
+- document binary content;
+- a filesystem file object;
+- a parsed document;
+- an OCR result;
+- a Knowledge record;
+- a document revision object;
+- a document approval event;
+- a search result;
+- a graph node;
+- an embedding;
+- an LLM context window.
+
+### Document Type Boundary
+
+RFC-057 SHALL introduce:
+
+`DocumentType`
+
+as an immutable open classification value object.
+
+`DocumentType.value` SHALL be a string.
+
+Canonical normalization SHALL:
+
+- require a string;
+- trim surrounding whitespace;
+- normalize the trimmed classification value to lowercase;
+- reject an empty normalized value.
+
+`DocumentType` SHALL remain open rather than a closed enum.
+
+Examples of future valid classifications MAY include:
+
+- procedure;
+- manual;
+- pid;
+- cause_effect;
+- operating_philosophy;
+- lesson_learned;
+- incident_report;
+- rca_report;
+- engineering_drawing.
+
+These examples SHALL NOT become an exhaustive or hard-coded whitelist in RFC-057.
+
+Open classification is required because PlantMind must support multiple enterprise document families without redesigning the canonical domain for every new source class.
+
+### Document Source Type Boundary
+
+RFC-057 SHALL introduce:
+
+`DocumentSourceType`
+
+as an immutable open classification of the originating or registered source system/context of one canonical Document.
+
+`DocumentSourceType.value` SHALL be a string.
+
+Canonical normalization SHALL:
+
+- require a string;
+- trim surrounding whitespace;
+- normalize the trimmed classification value to lowercase;
+- reject an empty normalized value.
+
+The type SHALL remain open.
+
+Examples MAY include future values such as:
+
+- file_server;
+- document_control;
+- cmms;
+- sap;
+- manual_registration.
+
+These examples SHALL NOT become an exhaustive whitelist.
+
+RFC-057 SHALL NOT make PI System the universal Document source.
+
+RFC-057 SHALL preserve AD-009 source-neutral architecture.
+
+### Document Source Boundary
+
+RFC-057 SHALL introduce the immutable value object:
+
+`DocumentSource`
+
+with:
+
+- `source_type: DocumentSourceType`;
+- `source_reference: str`.
+
+`source_reference` SHALL be:
+
+- caller/source supplied;
+- treated as an opaque source-system reference;
+- whitespace-trimmed;
+- non-empty;
+- case-preserving.
+
+RFC-057 SHALL NOT prescribe that `source_reference` must be:
+
+- a filesystem path;
+- URL;
+- document number;
+- SAP identifier;
+- SharePoint identifier;
+- database key;
+- network path.
+
+Those are source-specific concerns.
+
+`DocumentSource` SHALL provide traceability to an origin/reference without coupling the canonical domain to one storage technology.
+
+### Source Reference Is Not Canonical Identity
+
+`DocumentSource.source_reference` SHALL NOT become canonical PlantMind Document identity.
+
+The canonical identity remains:
+
+`EnterpriseDocument.id`
+
+A source reference SHALL NOT automatically be interpreted as:
+
+- globally unique;
+- immutable across enterprise systems;
+- authoritative;
+- verified;
+- approved;
+- resolvable;
+- accessible;
+- current.
+
+RFC-057 SHALL NOT define source-reference uniqueness constraints.
+
+Any future source-level deduplication, aliasing, reconciliation or uniqueness contract requires explicit architecture.
+
+### Title Boundary
+
+`EnterpriseDocument.title` SHALL:
+
+- require a string;
+- trim surrounding whitespace;
+- reject an empty normalized value;
+- preserve meaningful casing and content.
+
+RFC-057 SHALL NOT derive the title automatically from:
+
+- filename;
+- file path;
 - OCR;
+- parser output;
+- LLM output;
+- document number.
+
+Such derivation belongs to future ingestion/parser/application contracts.
+
+### Immutability Boundary
+
+The RFC-057 canonical Document contracts SHALL be immutable.
+
+They SHALL follow the accepted domain style:
+
+`dataclass(frozen=True, slots=True, kw_only=True)`
+
+where compatible with the existing shared domain primitives.
+
+RFC-057 SHALL NOT introduce mutable document state.
+
+Mutation, lifecycle transitions and revision replacement require separate explicit contracts.
+
+### Validation Ownership Boundary
+
+Canonical Document validation SHALL be owned by:
+
+`app.domain.document`
+
+Domain rule violations SHALL use the existing:
+
+`DomainException`
+
+RFC-057 SHALL NOT introduce:
+
+- Pydantic validation as canonical domain validation;
+- FastAPI transport validation as canonical domain validation;
+- SQLAlchemy model validation as canonical domain validation;
+- document-specific application exception framework.
+
+Canonical domain construction SHALL reject structurally invalid Document contracts before any future persistence boundary receives them.
+
+### Knowledge Independence Boundary
+
+`app.domain.document`
+
+SHALL NOT depend upon:
+
+`app.domain.knowledge`
+
+RFC-057 SHALL NOT make `EnterpriseDocument` a subtype of `KnowledgeRecord`.
+
+A Document and a Knowledge record are distinct canonical concepts.
+
+A future accepted document-to-Knowledge transformation boundary MAY connect them.
+
+RFC-057 SHALL NOT perform that transformation.
+
+### Procedure Boundary
+
+A document classified as:
+
+`document_type="procedure"`
+
+SHALL NOT automatically become an operational Procedure aggregate.
+
+The existing empty:
+
+`app.domain.procedure`
+
+is not promoted or completed by RFC-057.
+
+Document identity and future executable/operational Procedure semantics SHALL remain separate concepts.
+
+A future Procedure domain MAY reference canonical `EnterpriseDocument` identity if explicitly accepted.
+
+RFC-057 SHALL NOT invent operational procedure-step, execution, permit, approval or workflow semantics.
+
+### Revision and Version Boundary
+
+RFC-057 SHALL NOT introduce:
+
+- `DocumentRevision`;
+- revision number;
+- version number;
+- effective date;
+- issue date;
+- superseded-by relationships;
+- revision chain;
+- current-revision pointer;
+- revision comparison;
+- revision approval;
+- revision rollback.
+
+`EnterpriseDocument` SHALL establish one immutable canonical Document record and its PlantMind identity.
+
+RFC-057 SHALL remain neutral about future revision representation.
+
+It SHALL NOT decide whether future revisions:
+
+- retain the same canonical Document identity;
+- receive independent canonical identity;
+- are represented as separate immutable Document records;
+- are represented through a dedicated revision entity or aggregate.
+
+Those semantics require a dedicated future architecture contract.
+
+### Binary and Representation Boundary
+
+RFC-057 SHALL NOT introduce:
+
+- file bytes;
+- blobs;
+- MIME type;
+- binary storage;
+- object storage;
+- filesystem storage;
+- file checksum;
+- file hash;
+- file size;
+- page count;
+- extracted text;
+- rendered pages;
+- thumbnails.
+
+A canonical `EnterpriseDocument` record is not equivalent to one physical or digital file representation.
+
+Future representation/binary contracts require separate architecture.
+
+### Repository Boundary
+
+RFC-057 SHALL NOT introduce a production or persistence-neutral Document repository.
+
+It SHALL NOT introduce:
+
+- `EnterpriseDocumentRepository`;
+- Document add/get/update/delete ports;
+- document persistence adapter;
+- source-reference query API;
+- document listing API.
+
+Repository semantics are intentionally deferred because Document persistence, lifecycle and uniqueness requirements have not yet been accepted.
+
+A future Document persistence boundary SHALL depend on the accepted canonical Document domain rather than creating a competing document model.
+
+### Database Boundary
+
+RFC-057 SHALL NOT introduce:
+
+- SQLAlchemy Document models;
+- Document tables;
+- Alembic Document migrations;
+- PostgreSQL Document persistence;
+- database indexes;
+- foreign keys;
+- uniqueness constraints;
+- `DatabaseRuntime` changes.
+
+AD-040 / RFC-054 database runtime ownership remains unchanged.
+
+### Document Library Boundary
+
+RFC-057 SHALL NOT implement a production Document Library.
+
+It SHALL NOT introduce:
+
+- document catalogue service;
+- browse/list behavior;
+- document binary storage;
+- document retrieval service;
+- document upload;
+- source synchronization;
+- document permissions;
+- document ownership;
+- approval workflow;
+- retention;
+- archival;
+- deletion;
+- revision management.
+
+RFC-057 establishes the canonical Document domain that a future Document Library SHALL consume.
+
+### Parsing and Extraction Boundary
+
+RFC-057 SHALL NOT implement:
+
+- PDF parsing;
+- Word parsing;
+- spreadsheet parsing;
+- image extraction;
+- OCR;
+- text extraction;
+- table extraction;
+- section detection;
 - chunking;
-- document versioning;
-- semantic or vector retrieval;
+- automatic classification;
+- metadata extraction.
+
+The existing empty:
+
+`backend/app/knowledge/document_parser.py`
+
+SHALL remain unpromoted.
+
+A future parsing boundary SHALL depend on accepted Document contracts where appropriate.
+
+### Document Ingestion Boundary
+
+RFC-057 SHALL NOT introduce:
+
+- Document ingestion application service;
+- file-upload workflow;
+- bulk ingestion;
+- document-registration workflow;
+- document-to-Knowledge ingestion;
+- automatic source synchronization.
+
+The previously considered:
+
+`DocumentKnowledgeIngestionApplicationService`
+
+is explicitly not introduced by RFC-057.
+
+A future document-ingestion contract SHALL build on accepted canonical Document identity rather than inventing document semantics inside a translation service.
+
+### Knowledge Capture Boundary
+
+RFC-057 SHALL NOT modify:
+
+`KnowledgeCaptureApplicationService`
+
+RFC-057 SHALL NOT:
+
+- call Capture;
+- modify `KnowledgeCaptureRequest`;
+- construct Knowledge records;
+- write to `KnowledgeRecordRepository`;
+- alter Knowledge provenance semantics.
+
+AD-042 / RFC-056 remains authoritative.
+
+A future document-to-Knowledge boundary SHALL consume accepted Document and Knowledge Capture contracts without bypassing either architecture.
+
+### Search Boundary
+
+RFC-057 SHALL NOT introduce:
+
+- document search;
+- keyword search;
+- full-text search;
+- semantic search;
+- similarity search;
+- ranking;
+- indexes.
+
+Document identity establishment SHALL NOT be represented as Search capability.
+
+### Vector, Graph and AI Boundary
+
+RFC-057 SHALL NOT introduce:
+
 - embeddings;
-- Qdrant integration;
+- vector persistence;
+- Qdrant;
 - Knowledge Graph persistence;
-- Neo4j integration;
+- Neo4j;
 - RAG;
+- prompts;
 - LLM invocation;
-- Knowledge HTTP APIs;
-- default production Knowledge composition;
-- production PostgreSQL deployment;
-- production authentication or authorization;
-- actor-audit readiness;
+- automatic summarization;
+- automatic Knowledge extraction;
+- autonomous document agents.
+
+Canonical Document identity does not imply AI-readiness or semantic retrieval readiness.
+
+### Security and Trust Boundary
+
+RFC-057 SHALL preserve the accepted on-premise enterprise deployment model.
+
+RFC-057 does not establish:
+
+- document authentication;
+- user authentication;
+- document authorization;
+- RBAC;
+- actor identity;
+- document permissions;
+- source authenticity;
+- document approval;
+- document correctness;
+- document integrity verification;
+- safety approval;
+- compliance approval.
+
+`DocumentSource` records origin/reference information only.
+
+It SHALL NOT be interpreted as proof of trust or correctness.
+
+The current prototype `SecurityManager` SHALL NOT be treated as accepted production security capability.
+
+RFC-057 contract or implementation acceptance SHALL NOT be represented as Cybersecurity approval or production deployment readiness.
+
+### Composition Boundary
+
+RFC-057 SHALL NOT modify:
+
+- `CompositionRoot`;
+- `ServiceContainer`;
+- `PlatformComposition`;
+- `ApplicationFacade`.
+
+Canonical Document domain types SHALL not cause automatic production composition.
+
+Default startup SHALL remain independent from document storage or document-source availability.
+
+### Runtime and Bootstrap Boundary
+
+RFC-057 SHALL NOT modify:
+
+- Runtime lifecycle states;
+- Runtime readiness;
+- request admission;
+- mandatory-capability policy;
+- Bootstrap startup;
+- Bootstrap shutdown;
+- Health semantics.
+
+Canonical Document domain availability SHALL NOT become Runtime transition authority.
+
+### Industrial Integration Boundary
+
+RFC-057 SHALL NOT introduce production connectivity to:
+
+- PI System;
+- DCS;
+- OPC UA;
+- CMMS;
+- SAP;
+- File Server;
+- document-control systems.
+
+AD-009 source-neutral architecture remains authoritative.
+
+Source-specific connectors require separate contracts.
+
+### TDD Boundary
+
+RFC-057 technical implementation SHALL be test-driven against the accepted contract.
+
+Tests SHALL demonstrate at minimum:
+
+- `DocumentType` is immutable;
+- `DocumentSourceType` is immutable;
+- `DocumentSource` is immutable;
+- `EnterpriseDocument` is immutable;
+- `EnterpriseDocument` uses canonical `EntityId`;
+- no `DocumentId` type is introduced;
+- valid `DocumentType` values are normalized consistently;
+- empty `DocumentType` is rejected;
+- non-string `DocumentType` is rejected;
+- valid `DocumentSourceType` values are normalized consistently;
+- empty `DocumentSourceType` is rejected;
+- non-string `DocumentSourceType` is rejected;
+- `DocumentSource` requires `DocumentSourceType`;
+- `source_reference` whitespace is trimmed;
+- `source_reference` meaningful casing is preserved;
+- empty source reference is rejected;
+- non-string source reference is rejected;
+- `EnterpriseDocument` requires canonical `EntityId`;
+- `EnterpriseDocument` requires canonical `DocumentType`;
+- `EnterpriseDocument` requires canonical `DocumentSource`;
+- title whitespace is trimmed;
+- title meaningful casing is preserved;
+- empty title is rejected;
+- non-string title is rejected;
+- domain failures use `DomainException`;
+- domain types require no database;
+- domain types perform no file I/O;
+- document domain imports no SQLAlchemy;
+- document domain imports no FastAPI;
+- document domain imports no Pydantic;
+- document domain does not depend on `app.domain.knowledge`;
+- no Document repository is introduced;
+- no Document database model is introduced;
+- no Document migration is introduced;
+- no document ingestion service is introduced;
+- default CompositionRoot remains unchanged;
+- existing full regression remains green.
+
+Tests SHALL NOT require:
+
+- PostgreSQL;
+- file server;
+- PDF;
+- OCR;
+- parser;
+- Qdrant;
+- Neo4j;
+- LLM;
+- PI System;
+- DCS;
+- OPC UA.
+
+### Architecture Guardrail Boundary
+
+Existing architecture guardrails protecting RFC-053 through RFC-056 SHALL remain authoritative.
+
+RFC-057 SHALL NOT weaken existing tests to introduce the Document domain.
+
+New architecture tests SHALL prove at minimum:
+
+- canonical Document identity uses shared `EntityId`;
+- document domain is independent from Knowledge domain;
+- document domain has no relational-infrastructure dependency;
+- document domain performs no file I/O;
+- document domain introduces no repository;
+- default platform composition remains unchanged;
+- existing placeholder Document/Procedure components are not promoted.
+
+### Implementation Acceptance Boundary
+
+Contract acceptance SHALL NOT authorize technical implementation until the accepted RFC-057 / AD-043 contract is:
+
+- committed;
+- pushed to the remote branch;
+- verified for exact local/remote commit identity;
+- verified with a clean working tree.
+
+Technical implementation SHALL remain strictly inside the accepted canonical Document foundation.
+
+Technical completion SHALL NOT imply:
+
+- Document Library readiness;
+- Document persistence;
+- document ingestion;
+- document parsing;
+- revision/version support;
+- search readiness;
+- Knowledge transformation;
+- authentication or authorization readiness;
 - Cybersecurity approval;
 - production deployment readiness.
 
-Those responsibilities require separate evidence and explicit accepted architecture boundaries.
+### Verification Boundary
+
+Before RFC-057 may be marked technically complete, verification SHALL include:
+
+- focused canonical Document domain tests;
+- architecture-boundary tests;
+- impacted domain regression;
+- full PlantMind regression;
+- Python compilation;
+- `git diff --check`;
+- Git commit verification;
+- remote push verification;
+- exact local/remote commit identity;
+- clean working tree;
+- required Source-of-Truth engineering-memory closure.
+
+No external infrastructure is required to verify this domain foundation.
+
+### Contract Review State
+
+RFC-057 Contract Acceptance Review: passed.
+
+Architecture decision:
+
+`AD-043 — Canonical Enterprise Document Foundation Boundary`
+
+AD-043 status: Accepted.
+
+The Canonical Enterprise Document Foundation Boundary contract is accepted.
+
+Contract review confirmed:
+
+- canonical Document identity uses shared `EntityId`;
+- no competing `DocumentId` is introduced;
+- Document and Knowledge remain separate canonical domains;
+- `EnterpriseDocument` remains neutral about future revision representation;
+- source reference remains distinct from canonical PlantMind identity;
+- persistence, Document Library, revision lifecycle, parsing and ingestion remain deferred;
+- default composition and Runtime remain unchanged;
+- no unsupported production-security or Cybersecurity claim is introduced.
+
+Technical implementation remains not authorized until the accepted contract passes the RFC implementation-entry Git gate.
 
 ### Next Exact Action
 
-Draft and review the RFC-057 architecture contract before any implementation.
+Commit and push the accepted RFC-057 / AD-043 architecture contract, verify exact local/remote commit identity and verify a clean working tree before authorizing technical implementation.
 
 ---
 
