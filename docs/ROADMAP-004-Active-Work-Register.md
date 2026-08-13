@@ -33,6 +33,76 @@ No item may be marked complete until:
 
 # Active Work
 
+## RFC-058 — Canonical Enterprise Document Repository Foundation Boundary
+
+### Status
+
+Architecture Direction Selected — Contract Not Accepted.
+
+Post-RFC-057 Source-of-Truth architecture review: complete.
+
+AD-044: not created.
+
+Technical implementation: not authorized.
+
+### Objective
+
+Define the persistence-neutral repository foundation for canonical `EnterpriseDocument` records without introducing relational infrastructure, Document Library behavior, ingestion, revision lifecycle or search.
+
+### Preliminary Repository Direction
+
+The RFC-058 contract review SHALL evaluate and, if supported, formalize:
+
+`EnterpriseDocumentRepository`
+
+with:
+
+- `add(document: EnterpriseDocument) -> None`;
+- `get(document_id: EntityId) -> EnterpriseDocument | None`.
+
+The expected duplicate conflict is:
+
+`EnterpriseDocumentAlreadyExistsError`
+
+Duplicate semantics SHALL concern canonical `EntityId` only.
+
+Absent identity lookup SHALL return `None`.
+
+### Namespace Direction
+
+The persistence-neutral repository port is expected under:
+
+`app.document.repository`
+
+This preserves the established separation between canonical domain contracts and repository ports.
+
+### Initial Guardrails
+
+RFC-058 SHALL NOT automatically authorize:
+
+- `DocumentId`;
+- source-reference uniqueness;
+- `find_by_source_reference`;
+- list or search;
+- update;
+- delete;
+- upsert;
+- revision/version semantics;
+- SQLAlchemy Document models;
+- relational Document repository adapter;
+- Document schema or Alembic migration;
+- Document Library;
+- document ingestion;
+- parsing or OCR;
+- default production composition;
+- production security or Cybersecurity claims.
+
+### Next Exact Action
+
+Draft and review the RFC-058 architecture contract before any implementation.
+
+---
+
 ## RFC-057 — Canonical Enterprise Document Foundation Boundary
 
 ### Status
@@ -804,9 +874,13 @@ RFC-057 technical implementation is complete and verified within the accepted AD
 
 Technical completion preserves all accepted deferred-capability, composition, Runtime, security and production-readiness guardrails.
 
-### Next Exact Action
+### Post-Completion Architecture Review
 
-Perform the required post-RFC-057 Source-of-Truth architecture review before selecting, defining or implementing another architecture RFC.
+The required post-RFC-057 Source-of-Truth architecture review is complete.
+
+The evidence-based next architecture direction is RFC-058 — Canonical Enterprise Document Repository Foundation Boundary.
+
+RFC-058 remains contract-not-accepted and implementation-not-authorized.
 
 ---
 

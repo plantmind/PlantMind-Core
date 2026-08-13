@@ -5091,4 +5091,41 @@ Technical verification:
 
 The implementation introduces no Document repository, persistence, revision lifecycle, Document Library, parsing, ingestion, search, vector, graph, RAG, LLM, default-composition or production-security capability.
 
-The next required architecture action is the post-RFC-057 Source-of-Truth architecture review before selection or authorization of another architecture workstream.
+## Post-RFC-057 Source-of-Truth Architecture Review Outcome
+
+The required post-RFC-057 Source-of-Truth architecture review is complete.
+
+The review confirmed that AD-043 / RFC-057 established canonical enterprise Document identity and source traceability while intentionally deferring repository, persistence, revision, Document Library and ingestion responsibilities.
+
+The next missing prerequisite is a persistence-neutral canonical Document repository port.
+
+The evidence-based next architecture direction is:
+
+`RFC-058 — Canonical Enterprise Document Repository Foundation Boundary`
+
+The preliminary repository contract direction is:
+
+- `EnterpriseDocumentRepository`;
+- `EnterpriseDocumentAlreadyExistsError`;
+- `add(document: EnterpriseDocument) -> None`;
+- `get(document_id: EntityId) -> EnterpriseDocument | None`.
+
+Duplicate conflict SHALL concern canonical Document `EntityId` only.
+
+`DocumentSource.source_reference` remains external/source-system traceability and SHALL NOT become canonical identity, globally unique repository key or implicit search contract.
+
+RFC-058 SHALL NOT automatically introduce source-reference lookup, list, search, update, delete, upsert, revision semantics, relational persistence, SQLAlchemy, migrations, Document Library behavior, ingestion or production composition.
+
+The persistence-neutral repository namespace direction is:
+
+`app.document.repository`
+
+RFC-058 is a selected architecture direction only.
+
+Its contract is not yet accepted.
+
+AD-044 has not been created.
+
+Technical implementation is not authorized.
+
+The next required action is to draft and review the RFC-058 architecture contract before any technical implementation.

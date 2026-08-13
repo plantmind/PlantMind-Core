@@ -817,7 +817,45 @@ RFC-057 does not introduce or claim:
 
 Those capabilities remain separately governed.
 
-The next exact action is to perform the required post-RFC-057 Source-of-Truth architecture review before selecting, defining or implementing another architecture RFC.
+## Post-RFC-057 Source-of-Truth Architecture Review
+
+The required post-RFC-057 Source-of-Truth architecture review is complete.
+
+The review confirmed that RFC-057 / AD-043 established the canonical enterprise Document domain but intentionally introduced no Document repository, persistence adapter, relational schema, Document Library, revision lifecycle, ingestion or search capability.
+
+Repository evidence confirmed that the next missing prerequisite is a persistence-neutral Document repository contract rather than Document ingestion or a production Document Library.
+
+The review established the following preliminary repository direction:
+
+- repository port: `EnterpriseDocumentRepository`;
+- duplicate conflict: `EnterpriseDocumentAlreadyExistsError`;
+- canonical operations: `add(document) -> None` and `get(document_id) -> EnterpriseDocument | None`;
+- duplicate semantics apply only to canonical `EntityId`;
+- absent identity lookup returns `None`;
+- `DocumentSource.source_reference` remains traceability only and SHALL NOT become canonical identity or globally unique repository key;
+- no `find_by_source_reference`, list, search, update, delete or upsert operation is authorized;
+- no document revision semantics are introduced;
+- no SQLAlchemy adapter, database schema, migration or production composition is authorized.
+
+The persistence-neutral repository namespace direction is:
+
+`app.document.repository`
+
+This mirrors the accepted separation between `app.domain.knowledge` and `app.knowledge.repository` without placing repository responsibility inside the canonical domain or infrastructure layers.
+
+The evidence-based next architecture direction is:
+
+`RFC-058 — Canonical Enterprise Document Repository Foundation Boundary`
+
+RFC-058 is a selected engineering direction only.
+
+Its architecture contract has not yet been accepted.
+
+AD-044 has not been created.
+
+RFC-058 technical implementation is not authorized.
+
+The next exact action is to draft and review the RFC-058 architecture contract before any implementation.
 
 ## 15. Session Continuation Instruction
 

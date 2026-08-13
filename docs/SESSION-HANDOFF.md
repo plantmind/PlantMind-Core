@@ -1198,9 +1198,40 @@ RFC-057 verification:
 - Exact local/remote technical commit identity: verified
 - Working tree after technical push: clean
 
+## Post-RFC-057 Architecture Review Outcome
+
+The required post-RFC-057 Source-of-Truth architecture review is complete.
+
+The review confirmed that the canonical Document foundation is now established while persistence, revision lifecycle, Document Library behavior and ingestion remain intentionally absent.
+
+The selected next architecture direction is:
+
+`RFC-058 — Canonical Enterprise Document Repository Foundation Boundary`
+
+Preliminary direction:
+
+- `EnterpriseDocumentRepository`;
+- `EnterpriseDocumentAlreadyExistsError`;
+- `add(document) -> None`;
+- `get(document_id) -> EnterpriseDocument | None`;
+- canonical `EntityId` duplicate semantics only;
+- no source-reference uniqueness or lookup contract;
+- no list/search/update/delete/upsert;
+- no SQLAlchemy, migration, schema or production composition.
+
+The repository port is expected to reside under:
+
+`app.document.repository`
+
+RFC-058 is not yet an accepted architecture contract.
+
+AD-044 has not been created.
+
+Technical implementation is not authorized.
+
 ## Next Exact Action
 
-Perform the required post-RFC-057 Source-of-Truth architecture review before selecting, defining or implementing another architecture RFC.
+Draft and review the RFC-058 architecture contract before any implementation.
 
 ## Required Test Command
 

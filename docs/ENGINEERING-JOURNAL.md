@@ -2263,3 +2263,87 @@ RFC-057 did not introduce:
 ### Next Exact Action
 
 Perform the required post-RFC-057 Source-of-Truth architecture review before selecting, defining or implementing another architecture RFC.
+
+---
+
+## 2026-08-13 — Post-RFC-057 Source-of-Truth Architecture Review Closure
+
+### Purpose
+
+Perform the required architecture review after RFC-057 technical completion before selecting another architecture workstream.
+
+### Evidence Reviewed
+
+The review considered:
+
+- RFC-057 / AD-043 canonical Enterprise Document foundation;
+- current `app.domain.document` implementation;
+- RFC-053 through RFC-056 Knowledge architecture;
+- existing persistence-neutral `KnowledgeRecordRepository` pattern;
+- existing relational Knowledge repository adapter;
+- current Document and Procedure code surface;
+- Document Library and ingestion requirements in PM-001 / PM-002;
+- source-reference and identity semantics established by AD-043;
+- current repository namespace conventions.
+
+### Findings
+
+The review established that:
+
+- canonical enterprise Document identity and source traceability now exist;
+- no Document repository currently exists;
+- no canonical Document persistence semantics currently exist;
+- AD-043 explicitly deferred Document persistence and repository behavior;
+- `DocumentSource.source_reference` is not canonical identity and has no accepted global uniqueness semantics;
+- source-reference lookup therefore must not be invented as a repository requirement;
+- Document ingestion remains a later capability and should not precede an accepted Document repository foundation;
+- a full Document Library would prematurely combine persistence, lifecycle, revision, retrieval, security and other responsibilities;
+- the existing Knowledge repository establishes a proven persistence-neutral `add/get` precedent without requiring relational infrastructure.
+
+### Selected Architecture Direction
+
+The evidence-based next workstream is:
+
+`RFC-058 — Canonical Enterprise Document Repository Foundation Boundary`
+
+Preliminary contract direction:
+
+- `EnterpriseDocumentRepository`;
+- `EnterpriseDocumentAlreadyExistsError`;
+- `add(document) -> None`;
+- `get(document_id) -> EnterpriseDocument | None`;
+- duplicate conflict based only on canonical `EntityId`;
+- absent identity lookup returns `None`.
+
+The expected persistence-neutral namespace is:
+
+`app.document.repository`
+
+### Explicit Non-Decisions
+
+The review does not authorize:
+
+- source-reference uniqueness;
+- `find_by_source_reference`;
+- list or search;
+- update, delete or upsert;
+- revision/version semantics;
+- SQLAlchemy Document adapter;
+- Document tables or Alembic migrations;
+- Document Library;
+- document ingestion;
+- default production composition.
+
+### Architecture State
+
+RFC-058 is a selected engineering direction only.
+
+AD-044 has not been created.
+
+The RFC-058 architecture contract is not yet accepted.
+
+Technical implementation is not authorized.
+
+### Next Exact Action
+
+Draft and review the RFC-058 architecture contract before any implementation.
