@@ -33,6 +33,608 @@ No item may be marked complete until:
 
 # Active Work
 
+## RFC-056 — Canonical Knowledge Capture Application Boundary
+
+### Status
+
+Contract Accepted.
+
+AD-042 is accepted.
+
+Technical implementation has not started.
+
+Technical implementation is authorized only after the accepted contract is committed, pushed and local/remote contract identity is verified.
+
+### Objective
+
+Establish the first explicit application-level use case for canonical enterprise Knowledge capture without introducing a generic delegation service over `KnowledgeRecordRepository`.
+
+RFC-056 SHALL define the application boundary that accepts one Knowledge capture request, constructs one canonical immutable `KnowledgeRecord`, persists that record through the persistence-neutral `KnowledgeRecordRepository`, and returns the captured canonical record.
+
+RFC-056 SHALL NOT redesign the canonical Knowledge domain, relational persistence adapter or database runtime.
+
+### Architecture Dependencies
+
+RFC-056 depends upon and SHALL preserve:
+
+- AD-039 / RFC-053 — Canonical Enterprise Knowledge Foundation Boundary;
+- AD-040 / RFC-054 — Canonical Database Runtime & Schema Lifecycle Foundation;
+- AD-041 / RFC-055 — Canonical Knowledge Relational Persistence Adapter Boundary.
+
+`KnowledgeRecord` remains the canonical representation of one enterprise Knowledge item.
+
+`KnowledgeRecordRepository` remains the canonical persistence-neutral repository port.
+
+Canonical domain invariants remain owned by `app.domain.knowledge`.
+
+Repository Session and transaction semantics remain owned by the RFC-055 infrastructure adapter.
+
+`DatabaseRuntime` remains the owner of relational engine and session-factory lifecycle.
+
+### Canonical Capture Application Responsibility
+
+RFC-056 SHALL introduce one specialized application-level Knowledge capture use case.
+
+The canonical application service SHALL be:
+
+`KnowledgeCaptureApplicationService`
+
+under:
+
+`app.services.knowledge_capture_application_service`
+
+The RFC-056 application contracts:
+
+- `KnowledgeCaptureApplicationService`;
+- `KnowledgeCaptureRequest`;
+- `KnowledgeCaptureSubject`;
+
+SHALL reside in that same module.
+
+This follows the existing specialized Application Service namespace and keeps the first Capture use case cohesive without introducing a competing `app.application` hierarchy or a premature Knowledge application package.
+
+The application boundary SHALL NOT expose generic repository-equivalent application methods such as:
+
+- `add(...)`;
+- `get(...)`;
+- `update(...)`;
+- `delete(...)`;
+- `upsert(...)`.
+
+The canonical application operation SHALL represent the business action:
+
+`capture(request: KnowledgeCaptureRequest) -> KnowledgeRecord`
+
+The Capture boundary SHALL:
+
+1. receive one immutable Knowledge capture request;
+2. construct canonical Knowledge value objects required by that request;
+3. establish one canonical `EntityId` for the new record;
+4. establish one provenance capture timestamp;
+5. construct one canonical immutable `KnowledgeRecord`;
+6. submit that record through `KnowledgeRecordRepository.add(...)`;
+7. return the captured `KnowledgeRecord` only after repository add succeeds.
+
+The Capture boundary SHALL NOT call `KnowledgeRecordRepository.get(...)` merely to confirm the write.
+
+### Knowledge Capture Request Boundary
+
+RFC-056 SHALL introduce immutable application input contracts:
+
+- `KnowledgeCaptureRequest`;
+- `KnowledgeCaptureSubject`.
+
+`KnowledgeCaptureSubject` SHALL contain:
+
+- `subject_type: str`;
+- `subject_id: EntityId`.
+
+`KnowledgeCaptureSubject` is an application input contract and SHALL NOT become a second canonical Knowledge subject domain model.
+
+`KnowledgeCaptureRequest` SHALL contain the minimum caller-supplied inputs required to construct canonical Knowledge:
+
+- `kind: str`;
+- `title: str`;
+- `content: str`;
+- `source_type: str`;
+- `source_reference: str`;
+- `subject: KnowledgeCaptureSubject | None`.
+
+The caller SHALL NOT provide:
+
+- canonical `KnowledgeRecord.id`;
+- canonical provenance `captured_at`;
+- a preconstructed `KnowledgeRecord`;
+- a preconstructed `KnowledgeProvenance`;
+- a preconstructed canonical `KnowledgeSubject`.
+
+Canonical domain construction belongs to the Capture application boundary.
+
+The Capture request and Capture subject input SHALL NOT become:
+
+- HTTP transport schemas;
+- database row models;
+- document-ingestion models;
+- vector payloads;
+- graph nodes;
+- prompts;
+- reasoning results.
+
+Future transport or ingestion boundaries MAY translate their own inputs into `KnowledgeCaptureRequest` only after their own architecture contracts are accepted.
+
+### Canonical Domain Construction Boundary
+
+The Capture application boundary SHALL construct the canonical domain representation using the accepted RFC-053 types.
+
+It SHALL use the canonical Knowledge domain to construct:
+
+- `KnowledgeKind`;
+- `KnowledgeSourceType`;
+- `KnowledgeProvenance`;
+- `KnowledgeSubjectType` when a subject is supplied;
+- `KnowledgeSubject` when a subject is supplied;
+- `KnowledgeRecord`.
+
+Canonical Knowledge domain validation SHALL remain authoritative.
+
+RFC-056 SHALL NOT duplicate domain normalization or invariant rules inside the application service.
+
+Invalid canonical Knowledge input SHALL continue to fail through the accepted domain exception semantics.
+
+RFC-056 SHALL NOT introduce a competing application-level Knowledge validation framework.
+
+### Application Dependency Injection Boundary
+
+`KnowledgeCaptureApplicationService` SHALL receive the persistence-neutral:
+
+`KnowledgeRecordRepository`
+
+explicitly during construction.
+
+The service SHALL also support narrow per-instance injection of:
+
+- an identity source compatible with `() -> EntityId`;
+- a capture-time source compatible with `() -> datetime`.
+
+The default identity source SHALL use `EntityId.new()`.
+
+The default capture-time source SHALL obtain the current timezone-aware UTC time when the Capture operation requires it.
+
+Identity and capture-time sources SHALL NOT:
+
+- be evaluated during module import;
+- be evaluated merely because the service is constructed;
+- require process-global mutable state;
+- require database availability;
+- require Runtime or Bootstrap availability.
+
+Injected deterministic sources SHALL belong to the constructed service instance and SHALL NOT require global monkey-patching or global mutation.
+
+RFC-056 SHALL NOT introduce a general Clock service, identity service, provider registry or dependency-injection framework merely to satisfy this boundary.
+
+### Canonical Identity Boundary
+
+The Capture boundary SHALL create exactly one canonical `EntityId` for each attempted canonical record construction that reaches identity creation.
+
+The default canonical identity source SHALL remain:
+
+`EntityId.new()`
+
+RFC-056 SHALL NOT introduce a platform-wide identity-generation framework.
+
+For deterministic testing, the Capture implementation SHALL permit narrow injection of an identity-producing callable compatible with:
+
+`() -> EntityId`
+
+For one Capture invocation that reaches canonical identity creation, the configured identity source SHALL be invoked exactly once.
+
+The identity source SHALL NOT:
+
+- depend on SQLAlchemy;
+- depend on PostgreSQL;
+- read repository state to select an identity;
+- retry with a new identity after repository duplicate conflict;
+- replace canonical `EntityId` with a persistence-generated identifier.
+
+A duplicate repository conflict SHALL NOT cause silent identity regeneration.
+
+### Provenance Capture-Time Boundary
+
+`KnowledgeProvenance.captured_at` SHALL represent the time PlantMind executes the canonical capture use case.
+
+The caller SHALL NOT set canonical `captured_at` through `KnowledgeCaptureRequest`.
+
+The default capture-time source SHALL produce a timezone-aware UTC `datetime`.
+
+RFC-056 SHALL NOT introduce a platform-wide Clock framework merely for this use case.
+
+For deterministic testing, the Capture implementation SHALL permit narrow injection of a time-producing callable compatible with:
+
+`() -> datetime`
+
+For one Capture invocation that successfully obtains canonical identity and reaches provenance construction, the configured capture-time source SHALL be invoked exactly once.
+
+If identity creation fails, the capture-time source SHALL NOT be invoked.
+
+Repository failure SHALL NOT cause either identity or capture-time source to be invoked again.
+
+The returned time remains subject to canonical RFC-053 domain validation and UTC normalization.
+
+RFC-056 SHALL NOT interpret `captured_at` as:
+
+- document creation time;
+- document effective date;
+- equipment-event time;
+- PI observation time;
+- approval time;
+- source-system modification time.
+
+Any future source-event or document-effective timestamp requires its own explicit provenance contract.
+
+### Knowledge Subject Boundary
+
+`KnowledgeCaptureRequest.subject` MAY contain one immutable application input:
+
+`KnowledgeCaptureSubject`
+
+or `None`.
+
+When present, the Capture application boundary SHALL construct one canonical `KnowledgeSubject` using:
+
+- canonical `KnowledgeSubjectType` constructed from `subject_type`;
+- the supplied canonical `EntityId` from `subject_id`.
+
+The caller SHALL NOT be required to construct canonical `KnowledgeSubject` merely to invoke the Capture use case.
+
+RFC-056 SHALL preserve the accepted RFC-053 semantics that canonical `KnowledgeSubject` is a typed contextual reference rather than an exhaustive relationship model.
+
+RFC-056 SHALL NOT:
+
+- load the referenced entity;
+- verify referenced entity existence;
+- verify caller access to the referenced entity;
+- verify subject-type correspondence;
+- introduce an Asset Library;
+- introduce a subject resolver;
+- create a relational foreign-key dependency to a specific subject aggregate.
+
+Subject existence, accessibility and type verification remain deferred to a future explicit application or integration contract.
+
+### Repository Interaction Boundary
+
+The Capture application boundary SHALL receive:
+
+`KnowledgeRecordRepository`
+
+explicitly.
+
+It SHALL remain persistence-implementation neutral.
+
+For one capture invocation that reaches persistence, the application boundary SHALL call:
+
+`KnowledgeRecordRepository.add(record)`
+
+exactly once.
+
+The exact canonical record supplied to `add(...)` SHALL be the record returned after successful persistence.
+
+The application boundary SHALL NOT:
+
+- construct SQLAlchemy Session objects;
+- construct a database engine;
+- construct `DatabaseRuntime`;
+- commit or roll back transactions;
+- execute Alembic migrations;
+- call `MetaData.create_all()`;
+- query the repository before add to prevent duplicates;
+- perform hidden repository retries.
+
+Repository-operation transaction semantics remain owned by RFC-055.
+
+### Duplicate Identity Boundary
+
+`KnowledgeRecordAlreadyExistsError` remains the accepted repository-boundary duplicate-identity conflict.
+
+RFC-056 SHALL NOT translate a duplicate identity conflict into success.
+
+RFC-056 SHALL NOT:
+
+- regenerate identity automatically;
+- overwrite the existing canonical record;
+- retry the capture with another identity;
+- perform a pre-add existence query as authoritative duplicate prevention.
+
+Unless a future application contract requires explicit translation, the accepted repository duplicate conflict SHALL propagate unchanged through the Capture boundary.
+
+### Failure Boundary
+
+Canonical domain validation failures SHALL preserve canonical domain failure semantics.
+
+`KnowledgeRecordAlreadyExistsError` SHALL preserve repository conflict semantics.
+
+Unexpected repository failures SHALL propagate and SHALL NOT become synthetic success.
+
+Identity-source failures SHALL propagate.
+
+Capture-time-source failures SHALL propagate.
+
+RFC-056 SHALL introduce no automatic retry.
+
+RFC-056 SHALL introduce no platform-wide application exception taxonomy.
+
+A failed persistence operation SHALL NOT return a successfully captured `KnowledgeRecord`.
+
+### ApplicationFacade Boundary
+
+RFC-056 SHALL NOT modify:
+
+`ApplicationFacade`
+
+The existing `ApplicationFacade` remains the stable entry boundary for the existing analysis/orchestration workload.
+
+Knowledge capture SHALL remain a distinct specialized application use case.
+
+RFC-056 SHALL NOT route Knowledge capture through the reasoning workflow merely to reuse an existing facade.
+
+Future unification of product-facing application entry points requires a separate explicit architecture decision.
+
+### Composition Boundary
+
+RFC-056 SHALL NOT automatically:
+
+- construct `DatabaseRuntime` from default `CompositionRoot.build()`;
+- construct the relational Knowledge repository in default platform composition;
+- register `KnowledgeRecordRepository` in the default `ServiceContainer`;
+- register the Knowledge Capture application service in default `ServiceContainer`;
+- expose Knowledge capture from default `PlatformComposition`;
+- require `DATABASE_URL` during default application startup.
+
+Existing zero-argument `CompositionRoot.build()` behavior SHALL remain compatible.
+
+Production Knowledge persistence and Capture composition require a separately accepted composition boundary.
+
+### Runtime and Bootstrap Boundary
+
+RFC-056 SHALL NOT modify:
+
+- Runtime lifecycle states;
+- readiness semantics;
+- request admission;
+- mandatory-capability policy;
+- operational-transition evidence;
+- Bootstrap startup;
+- Bootstrap shutdown;
+- Health semantics.
+
+Knowledge capture failure SHALL NOT independently become Runtime transition authority.
+
+The existence of a Knowledge Capture application service SHALL NOT make relational Knowledge persistence a mandatory Runtime capability.
+
+### API and Transport Boundary
+
+RFC-056 SHALL introduce no:
+
+- Knowledge HTTP endpoint;
+- REST schema;
+- GraphQL schema;
+- CLI command;
+- message-bus contract;
+- file-upload contract.
+
+Transport boundaries SHALL NOT be implied merely because the Capture application contract exists.
+
+A future API SHALL depend upon the Capture application boundary rather than bypassing it and calling the repository directly.
+
+### Document and Ingestion Boundary
+
+RFC-056 SHALL NOT implement:
+
+- Document Library behavior;
+- file upload;
+- PDF parsing;
+- OCR;
+- chunking;
+- document versioning;
+- document storage;
+- document-to-Knowledge transformation;
+- bulk ingestion.
+
+A future document-ingestion boundary MAY construct one or more `KnowledgeCaptureRequest` values and invoke the accepted Capture application boundary.
+
+RFC-056 SHALL NOT promote the existing empty `document_parser.py` into production capability.
+
+### Search, Graph, Vector and RAG Boundary
+
+RFC-056 SHALL NOT introduce:
+
+- keyword search;
+- full-text search;
+- semantic search;
+- similarity search;
+- ranking;
+- embeddings;
+- vector persistence;
+- Qdrant integration;
+- Knowledge Graph persistence;
+- Neo4j integration;
+- graph traversal;
+- RAG;
+- LLM invocation.
+
+Identity-based repository lookup remains distinct from Search.
+
+Knowledge capture SHALL establish canonical records for future capabilities without implementing those capabilities.
+
+### PI and Operational Data Boundary
+
+RFC-056 SHALL NOT introduce:
+
+- production PI connectivity;
+- DCS connectivity;
+- OPC UA connectivity;
+- automatic PI-to-Knowledge conversion;
+- automatic Observation-to-Knowledge conversion;
+- automatic Knowledge-to-Observation conversion.
+
+Captured Knowledge SHALL NOT automatically become trusted operational evidence.
+
+Any such integration requires a future accepted contract.
+
+### Security and Trust Boundary
+
+RFC-056 SHALL preserve the accepted on-premise enterprise deployment model.
+
+RFC-056 does not by itself establish:
+
+- user authentication;
+- authorization to capture Knowledge;
+- source authenticity;
+- source approval;
+- correctness of captured content;
+- operational trust;
+- safety approval;
+- compliance approval.
+
+`KnowledgeProvenance` records origin information but SHALL NOT be interpreted as proof of trust or correctness.
+
+Authentication, authorization and trust policy require separately accepted security/application contracts.
+
+Because RFC-056 does not establish authentication, capture authorization or actor-audit semantics, RFC-056 SHALL NOT authorize external or production transport exposure of the Capture use case.
+
+Database credentials SHALL remain outside committed source code.
+
+Code-level RFC-056 acceptance SHALL NOT be represented as Cybersecurity approval or production deployment readiness.
+
+### Observability Boundary
+
+RFC-056 SHALL NOT introduce a new platform-wide logging, metrics or tracing framework merely to support Knowledge capture.
+
+The application service SHALL NOT retain mutable capture history as process-global state.
+
+Future audit, capture-history, event-publication or observability behavior requires an explicit contract.
+
+### TDD Boundary
+
+RFC-056 technical implementation SHALL be test-driven against the accepted contract.
+
+Tests SHALL demonstrate at minimum:
+
+- `KnowledgeCaptureRequest` is immutable;
+- `KnowledgeCaptureSubject` is immutable;
+- Capture application service receives `KnowledgeRecordRepository` explicitly;
+- identity and capture-time sources are not invoked during module import or service construction;
+- configured identity source is invoked exactly once when canonical identity creation is reached;
+- configured capture-time source is invoked exactly once when provenance construction is reached;
+- identity-source failure prevents capture-time-source invocation;
+- repository failure does not re-invoke identity or capture-time sources;
+- deterministic injected sources require no global mutation;
+- canonical `KnowledgeKind` is constructed from request input;
+- canonical `KnowledgeSourceType` is constructed from request input;
+- canonical provenance source reference is preserved according to domain rules;
+- canonical record title and content preserve RFC-053 normalization semantics;
+- one canonical `EntityId` is created through the configured identity source;
+- one capture timestamp is created through the configured time source;
+- capture timestamp is preserved through canonical UTC normalization;
+- supplied Capture subject type constructs canonical `KnowledgeSubjectType`;
+- supplied Capture subject identity is preserved in canonical `KnowledgeSubject`;
+- callers do not need to preconstruct canonical `KnowledgeSubject`;
+- absent subject remains `None`;
+- repository `add(...)` is called exactly once for a persistence-reaching capture;
+- repository `get(...)` is not called by the Capture use case;
+- the exact record passed to `add(...)` is returned on success;
+- duplicate conflict propagates without retry or identity regeneration;
+- unexpected repository failure propagates;
+- domain validation failure is not converted into success;
+- default identity/time behavior requires no database;
+- injected deterministic identity/time sources can be tested without global mutation;
+- Capture implementation imports no SQLAlchemy;
+- Capture implementation constructs no engine or Session;
+- default `CompositionRoot` remains unchanged and database-independent;
+- existing ApplicationFacade behavior remains unchanged;
+- existing full regression remains green.
+
+Tests SHALL NOT require live PostgreSQL merely to verify the RFC-056 application contract.
+
+### Architecture Guardrail Boundary
+
+Existing architecture tests protecting RFC-053, RFC-054 and RFC-055 SHALL remain authoritative unless RFC-056 explicitly and narrowly evolves one accepted boundary.
+
+Guardrails SHALL NOT be deleted or weakened merely to make RFC-056 implementation tests pass.
+
+The default-composition guardrails SHALL continue to prove that Knowledge persistence and Capture are not automatically registered or exposed.
+
+### Implementation Acceptance Boundary
+
+Contract acceptance SHALL NOT authorize implementation until the accepted contract is:
+
+- committed;
+- pushed to the remote branch;
+- verified for exact local/remote commit identity;
+- verified with a clean working tree.
+
+Technical implementation SHALL remain inside the accepted RFC-056 boundary.
+
+Technical completion SHALL NOT imply:
+
+- production PostgreSQL integration;
+- production Capture composition;
+- production API exposure;
+- Cybersecurity approval;
+- production deployment readiness.
+
+Those remain separate gates.
+
+### Verification Boundary
+
+Before RFC-056 may be marked technically complete, verification SHALL include:
+
+- focused RFC-056 unit tests;
+- architecture-boundary tests;
+- full regression suite;
+- Python compilation;
+- `git diff --check`;
+- Git commit verification;
+- remote push verification;
+- exact local/remote commit identity;
+- clean working tree;
+- required Source-of-Truth documentation closure.
+
+No live PostgreSQL verification is required merely for application-boundary code acceptance because RFC-056 does not authorize production relational composition.
+
+### Contract Review State
+
+RFC-056 Contract Acceptance Review: passed.
+
+Architecture decision: AD-042.
+
+The Canonical Knowledge Capture Application Boundary contract is accepted.
+
+The accepted contract was reviewed against:
+
+- RFC-053 / AD-039;
+- RFC-054 / AD-040;
+- RFC-055 / AD-041;
+- canonical Knowledge domain implementation;
+- canonical `KnowledgeRecordRepository` port;
+- RFC-055 relational repository implementation;
+- existing specialized Application Service pattern;
+- CompositionRoot and ServiceContainer guardrails;
+- current regression tests;
+- Project Context;
+- Session Handoff;
+- Engineering Journal;
+- Active Work Register.
+
+Contract review found no conflicting ownership, duplicated repository responsibility, hidden relational coupling, premature production composition or unsupported production-security claim.
+
+Technical implementation has not started.
+
+### Next Exact Action
+
+Commit and push the accepted RFC-056 / AD-042 architecture contract and verify exact local/remote contract identity with a clean working tree before technical implementation begins.
+
+---
+
 ## RFC-055 — Canonical Knowledge Relational Persistence Adapter Boundary
 
 ### Status
@@ -753,7 +1355,11 @@ The refined selected engineering direction is:
 
 `Canonical Knowledge Capture Application Boundary`
 
-The future RFC-056 contract is expected to define an explicit Knowledge capture use case that:
+This refined direction was subsequently formalized as:
+
+`RFC-056 — Canonical Knowledge Capture Application Boundary`
+
+The RFC-056 contract defines an explicit Knowledge capture use case that:
 
 - receives approved capture inputs rather than a preconstructed `KnowledgeRecord`;
 - constructs one canonical immutable `KnowledgeRecord`;
@@ -769,15 +1375,17 @@ The future RFC-056 contract is expected to define an explicit Knowledge capture 
 - does not introduce subject existence/type verification;
 - does not introduce update, delete, upsert, search, document ingestion, graph, vector, RAG or LLM responsibilities.
 
-No general Clock framework or identity-generation framework is authorized merely by this direction. Deterministic identity/time sourcing for the capture use case SHALL be resolved narrowly by the RFC-056 contract.
+The RFC-056 architecture contract has completed acceptance review and AD-042 is accepted.
 
-This is an engineering direction only.
+No general Clock framework or identity-generation framework is introduced by RFC-056. Deterministic identity/time sourcing is governed narrowly by the accepted Capture application boundary.
 
-No implementation is authorized until the corresponding architecture contract is drafted, reviewed, accepted, committed and remotely verified.
+Technical implementation has not started.
+
+Technical implementation is authorized only after the accepted RFC-056 / AD-042 contract is committed, pushed and exact local/remote contract identity is verified with a clean working tree.
 
 ### Next Exact Action
 
-Draft and review the architecture contract for the `Canonical Knowledge Capture Application Boundary` before any implementation.
+Commit and push the accepted RFC-056 / AD-042 architecture contract and verify exact local/remote contract identity before technical implementation begins.
 
 ---
 

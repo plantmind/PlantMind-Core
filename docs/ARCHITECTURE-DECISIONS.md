@@ -4535,3 +4535,172 @@ RFC-055 technical verification:
 The next required architecture action is the post-RFC-055 Source-of-Truth review before selection or authorization of another architecture workstream.
 
 Production PostgreSQL connectivity, production schema deployment and Cybersecurity approval remain intentionally unclaimed.
+
+# AD-042 — Canonical Knowledge Capture Application Boundary
+
+## Status
+
+Accepted.
+
+## Context
+
+AD-039 / RFC-053 established the canonical immutable enterprise Knowledge domain and persistence-neutral `KnowledgeRecordRepository`.
+
+AD-040 / RFC-054 established the canonical relational database runtime and schema-lifecycle foundation.
+
+AD-041 / RFC-055 established the canonical relational implementation of `KnowledgeRecordRepository` without introducing a production Knowledge application service or default relational Knowledge composition.
+
+The post-RFC-055 Source-of-Truth review initially identified an application-level Knowledge boundary as the next architecture area.
+
+A deeper evidence-based review determined that a generic application service exposing repository-equivalent `add()` and `get()` behavior would introduce an unnecessary delegation layer without owning an independent application responsibility.
+
+PlantMind nevertheless requires an explicit application use case for its chartered company-Knowledge capture objective.
+
+## Decision
+
+PlantMind SHALL introduce one specialized application boundary:
+
+`KnowledgeCaptureApplicationService`
+
+under:
+
+`app.services.knowledge_capture_application_service`
+
+The same module SHALL contain the immutable application input contracts:
+
+- `KnowledgeCaptureRequest`;
+- `KnowledgeCaptureSubject`.
+
+The canonical operation SHALL be:
+
+`capture(request: KnowledgeCaptureRequest) -> KnowledgeRecord`
+
+The Capture application boundary SHALL convert approved capture inputs into one canonical immutable `KnowledgeRecord`, persist that record through `KnowledgeRecordRepository.add(...)`, and return the exact captured canonical record only after persistence succeeds.
+
+## Application and Domain Ownership
+
+Canonical Knowledge invariants, normalization and validation remain owned by `app.domain.knowledge`.
+
+The Capture boundary SHALL construct accepted canonical Knowledge domain types and SHALL NOT duplicate domain validation rules.
+
+The Capture boundary SHALL own application-level creation of:
+
+- canonical record `EntityId`;
+- canonical provenance `captured_at`.
+
+The default identity source SHALL remain `EntityId.new()`.
+
+The default capture-time source SHALL produce the current timezone-aware UTC time when required by the Capture operation.
+
+Narrow deterministic identity and time callables MAY be injected per service instance for testing.
+
+RFC-056 SHALL NOT create a platform-wide Clock framework, identity service, provider registry or new dependency-injection framework.
+
+## Subject Boundary
+
+Caller-supplied subject input SHALL use `KnowledgeCaptureSubject` containing:
+
+- `subject_type: str`;
+- `subject_id: EntityId`.
+
+The Capture boundary SHALL construct the canonical `KnowledgeSubjectType` and `KnowledgeSubject`.
+
+RFC-056 SHALL NOT verify subject existence, accessibility or subject-type correspondence and SHALL NOT introduce an Asset Library or canonical subject resolver.
+
+## Repository and Persistence Boundary
+
+`KnowledgeCaptureApplicationService` SHALL receive the persistence-neutral `KnowledgeRecordRepository` explicitly.
+
+For a Capture invocation that reaches persistence, `KnowledgeRecordRepository.add(...)` SHALL be invoked exactly once.
+
+The Capture boundary SHALL NOT perform repository `get(...)` merely to confirm the write or prevent duplicates.
+
+Repository Session lifetime and transaction semantics remain owned by AD-041 / RFC-055 infrastructure.
+
+The Capture boundary SHALL NOT construct or own:
+
+- SQLAlchemy Session;
+- database engine;
+- `DatabaseRuntime`;
+- database configuration;
+- schema migration;
+- commit or rollback behavior.
+
+`KnowledgeRecordAlreadyExistsError` remains the repository-boundary duplicate conflict and SHALL propagate without automatic identity regeneration, overwrite or retry.
+
+Unexpected repository failures SHALL propagate and SHALL NOT become synthetic success.
+
+## Composition and Runtime Boundary
+
+AD-042 / RFC-056 SHALL NOT automatically register or expose Knowledge Capture or relational Knowledge persistence through default `CompositionRoot`, `ServiceContainer` or `PlatformComposition`.
+
+Default application startup SHALL remain independent from `DATABASE_URL` and PostgreSQL availability.
+
+Knowledge Capture SHALL NOT become a mandatory Runtime capability merely because the application boundary exists.
+
+Runtime lifecycle, Bootstrap, Health, request-admission and operational-transition responsibilities remain unchanged.
+
+Production Knowledge Capture composition requires a separate accepted architecture boundary.
+
+## ApplicationFacade Boundary
+
+`ApplicationFacade` remains the stable application entry boundary for the existing analysis/orchestration workload.
+
+Knowledge Capture SHALL remain a distinct specialized application use case.
+
+AD-042 SHALL NOT route Capture through the reasoning workflow or modify `ApplicationFacade`.
+
+## Deferred Capability Boundary
+
+AD-042 / RFC-056 SHALL NOT introduce:
+
+- Knowledge HTTP or other external transport exposure;
+- Document Library or document ingestion;
+- file upload, parsing, OCR or chunking;
+- update, delete or upsert Knowledge operations;
+- keyword, full-text, semantic or similarity search;
+- embeddings or vector persistence;
+- Knowledge Graph persistence or traversal;
+- RAG;
+- LLM invocation;
+- production PI, DCS or OPC UA connectivity.
+
+Future transport and ingestion boundaries SHALL consume the accepted Capture application boundary rather than bypass it and call the repository directly.
+
+## Security and Trust Boundary
+
+Knowledge provenance records origin information but does not establish correctness, authentication, authorization, trust, safety or compliance approval.
+
+Because AD-042 / RFC-056 does not establish authentication, capture authorization or actor-audit semantics, it SHALL NOT authorize external or production transport exposure of Knowledge Capture.
+
+Code-level contract or implementation acceptance SHALL NOT be represented as Cybersecurity approval or production deployment readiness.
+
+## Consequences
+
+PlantMind gains its first explicit Knowledge application use case without adding a generic repository-delegation service.
+
+Knowledge Capture receives a stable application boundary that future API and ingestion capabilities can consume.
+
+Canonical Knowledge domain ownership remains unchanged.
+
+Repository and database lifecycle ownership remain unchanged.
+
+Default platform composition remains independent from relational Knowledge persistence.
+
+Identity and capture-time generation become deterministic and testable without introducing platform-wide provider infrastructure.
+
+Future Capture authorization, subject verification, ingestion, retrieval and reasoning capabilities remain explicit separately governed architecture work.
+
+## Contract Acceptance
+
+RFC-056 Contract Acceptance Review: passed.
+
+Architecture decision: AD-042.
+
+The Canonical Knowledge Capture Application Boundary contract is accepted.
+
+Technical implementation has not started.
+
+Technical implementation is authorized only after the accepted RFC-056 / AD-042 contract is committed, pushed and exact local/remote contract identity is verified with a clean working tree.
+
+Production Knowledge Capture composition, production transport exposure, PostgreSQL deployment verification and Cybersecurity approval remain intentionally unclaimed.
