@@ -162,6 +162,10 @@ Registry Public API
 Core Plugin Framework
 Plugin Lifecycle Manager
 Plugin Infrastructure Composition
+Canonical Enterprise Knowledge Foundation
+Canonical Database Runtime & Schema Lifecycle Foundation
+Canonical Knowledge Relational Persistence Adapter
+Canonical Knowledge Capture Application Boundary
 ## 7. Current PI Integration Foundation
 
 The PI integration structure currently includes:
@@ -694,27 +698,48 @@ The review established that:
 - existing document parser, semantic search, RAG and Knowledge Graph files remain empty, prototype or intentionally unimplemented capability seams and SHALL NOT be promoted by the next workstream;
 - default `CompositionRoot` remains free of Knowledge repository registration and PostgreSQL dependency.
 
-A deeper evidence-based review refined the selected engineering direction before RFC-056 contract drafting.
+The evidence-based post-RFC-055 direction was formalized as:
 
-The generic `Canonical Knowledge Application Service Boundary` direction was determined to be too broad because the currently accepted repository operations already own canonical identity-based `add()` and `get()` semantics. A service that merely delegated those operations would introduce an application abstraction without an independent application responsibility.
+`RFC-056 — Canonical Knowledge Capture Application Boundary`
 
-The refined engineering direction is:
+under accepted architecture decision AD-042.
 
-`Canonical Knowledge Capture Application Boundary`
+RFC-056 is technically complete.
 
-This refinement does not invalidate RFC-053, RFC-054 or RFC-055.
+The implementation established:
 
-The future RFC-056 contract is expected to define the explicit application use case that converts an approved Knowledge capture request into one canonical immutable `KnowledgeRecord` and submits that record through the persistence-neutral `KnowledgeRecordRepository`.
+- immutable `KnowledgeCaptureRequest`;
+- immutable optional `KnowledgeCaptureSubject`;
+- specialized `KnowledgeCaptureApplicationService`;
+- application-owned canonical `EntityId` creation;
+- application-owned provenance capture-time sourcing;
+- construction of canonical Knowledge domain objects through accepted domain constructors;
+- persistence through the persistence-neutral `KnowledgeRecordRepository`;
+- exactly one repository `add()` call for a capture reaching persistence;
+- no repository pre-read, retry, overwrite or duplicate-identity regeneration;
+- explicit propagation of canonical duplicate conflicts and unexpected repository failures;
+- no SQLAlchemy, Session, engine, `DatabaseRuntime`, migration or transaction ownership in the Capture application boundary;
+- no default CompositionRoot, ServiceContainer or PlatformComposition registration or exposure.
 
-The Capture boundary may own application-level creation of canonical record identity and provenance capture time while canonical domain invariants remain owned by the Knowledge domain.
+RFC-056 verification:
 
-Repository persistence, Session lifetime and transaction semantics remain owned by RFC-055 infrastructure.
+- Architecture decision: AD-042
+- Contract commit: `6998f32`
+- Technical commit: `66c24f0`
+- Focused RFC-056 and architecture verification: 19 passed
+- Broader Knowledge verification: 96 passed
+- Full PlantMind regression: 558 passed
+- Python compilation: passed
+- `git diff --check`: passed
+- Remote technical push: verified
+- Local and remote technical commit identity: verified
+- Working tree after technical push: clean
 
-RFC-056 SHALL NOT automatically introduce subject existence verification, default PostgreSQL composition, Knowledge HTTP APIs, document ingestion, semantic search, vector persistence, Knowledge Graph persistence, RAG, LLM invocation, update/delete/upsert Knowledge operations or production PI connectivity.
+RFC-056 does not claim production Knowledge Capture composition, production HTTP or other transport exposure, PostgreSQL deployment verification, authentication or authorization readiness, actor-audit semantics, Cybersecurity approval or production deployment readiness.
 
-This remains an engineering direction only. No implementation is authorized.
+Those capabilities remain separately governed.
 
-The next exact action is to draft and review the architecture contract for the Canonical Knowledge Capture Application Boundary before any implementation.
+The next exact action is to perform the required post-RFC-056 Source-of-Truth architecture review before selecting, defining or implementing another architecture RFC.
 
 ## 15. Session Continuation Instruction
 

@@ -1109,29 +1109,45 @@ Current committed architecture now contains:
 - no mandatory PostgreSQL startup dependency;
 - no production Knowledge HTTP, ingestion, search, graph, RAG or LLM capability.
 
-A deeper evidence-based review refined the selected engineering direction before contract drafting.
+The post-RFC-055 architecture direction was formalized as RFC-056 — Canonical Knowledge Capture Application Boundary under accepted AD-042.
 
-The generic `Canonical Knowledge Application Service Boundary` would currently collapse to direct `KnowledgeRecordRepository.add()` / `get()` delegation and therefore does not yet justify an independent application abstraction.
+RFC-056 technical implementation is complete.
 
-The refined engineering direction is:
+Current canonical Knowledge stack:
 
-`Canonical Knowledge Capture Application Boundary`
+- RFC-053 / AD-039 — canonical persistence-neutral enterprise Knowledge domain;
+- RFC-054 / AD-040 — canonical relational database runtime and schema lifecycle;
+- RFC-055 / AD-041 — canonical relational Knowledge persistence adapter;
+- RFC-056 / AD-042 — canonical Knowledge Capture application boundary.
 
-RFC-056 is expected to define an explicit Knowledge capture use case that constructs one canonical immutable `KnowledgeRecord` from approved capture inputs and persists it through the persistence-neutral `KnowledgeRecordRepository`.
+RFC-056 established `KnowledgeCaptureApplicationService`, immutable capture input contracts, narrow deterministic identity/time sourcing, canonical domain construction and persistence through `KnowledgeRecordRepository.add()`.
 
 Canonical domain validation remains owned by the Knowledge domain.
 
-Repository transaction semantics remain owned by RFC-055 infrastructure.
+Repository Session lifetime, transaction semantics and relational infrastructure remain owned by RFC-055.
 
-`ApplicationFacade` SHALL remain the existing analysis/orchestration workload-entry boundary and SHALL NOT automatically acquire Knowledge capture or persistence responsibilities.
+`ApplicationFacade` remains unchanged and does not own Knowledge Capture.
 
-Subject existence/type verification, document ingestion, search, graph, vector, RAG, LLM and production PostgreSQL composition remain outside this direction.
+Default `CompositionRoot`, `ServiceContainer` and `PlatformComposition` do not automatically register or expose Knowledge Capture or relational Knowledge persistence.
 
-This direction is not yet an accepted architecture contract and implementation is not authorized.
+RFC-056 verification:
+
+- Contract commit: `6998f32`
+- Technical commit: `66c24f0`
+- Focused RFC-056 and architecture verification: 19 passed
+- Broader Knowledge verification: 96 passed
+- Full regression: 558 passed
+- Compilation: passed
+- `git diff --check`: passed
+- Remote push: verified
+- Exact local/remote technical commit identity: verified
+- Working tree after technical push: clean
+
+Production Knowledge Capture composition, external transport exposure, authentication, authorization, actor-audit semantics, PostgreSQL deployment verification and Cybersecurity approval remain separately gated and intentionally unclaimed.
 
 ## Next Exact Action
 
-Draft and review the architecture contract for the Canonical Knowledge Capture Application Boundary before any implementation.
+Perform the required post-RFC-056 Source-of-Truth architecture review before selecting, defining or implementing another architecture RFC.
 
 ## Required Test Command
 
