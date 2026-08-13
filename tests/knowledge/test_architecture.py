@@ -1,4 +1,4 @@
-"""Architecture guardrails for the RFC-053 knowledge foundation."""
+"""Architecture guardrails for the canonical Knowledge boundaries."""
 
 from __future__ import annotations
 
@@ -8,11 +8,17 @@ from pathlib import Path
 
 from app.core.composition import CompositionRoot
 from app.knowledge.repository import KnowledgeRecordRepository
-
+from app.services.knowledge_capture_application_service import (
+    KnowledgeCaptureApplicationService,
+)
 
 PROJECT_ROOT = Path(__file__).resolve().parents[2]
 KNOWLEDGE_DOMAIN = PROJECT_ROOT / "backend/app/domain/knowledge.py"
 KNOWLEDGE_REPOSITORY = PROJECT_ROOT / "backend/app/knowledge/repository.py"
+KNOWLEDGE_CAPTURE_APPLICATION_SERVICE = (
+    PROJECT_ROOT
+    / "backend/app/services/knowledge_capture_application_service.py"
+)
 
 
 def imported_modules(path: Path) -> set[str]:
@@ -50,6 +56,16 @@ def test_repository_port_depends_only_on_canonical_knowledge_domain() -> None:
     }
 
 
+def test_capture_application_boundary_depends_only_on_canonical_contracts() -> None:
+    assert non_stdlib_modules(
+        KNOWLEDGE_CAPTURE_APPLICATION_SERVICE
+    ) == {
+        "app.domain.base",
+        "app.domain.knowledge",
+        "app.knowledge.repository",
+    }
+
+
 def test_composition_root_does_not_register_knowledge_repository() -> None:
     platform = CompositionRoot.build()
 
@@ -58,7 +74,24 @@ def test_composition_root_does_not_register_knowledge_repository() -> None:
     )
 
 
+def test_composition_root_does_not_register_knowledge_capture_service() -> None:
+    platform = CompositionRoot.build()
+
+    assert not platform.container.is_registered(
+        KnowledgeCaptureApplicationService
+    )
+
+
 def test_platform_composition_exposes_no_knowledge_repository() -> None:
     platform = CompositionRoot.build()
 
     assert not hasattr(platform, "knowledge_repository")
+
+
+def test_platform_composition_exposes_no_knowledge_capture_service() -> None:
+    platform = CompositionRoot.build()
+
+    assert not hasattr(
+        platform,
+        "knowledge_capture_application_service",
+    )
