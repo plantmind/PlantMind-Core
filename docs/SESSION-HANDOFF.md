@@ -1223,15 +1223,34 @@ The repository port is expected to reside under:
 
 `app.document.repository`
 
-RFC-058 is not yet an accepted architecture contract.
+RFC-058 / AD-044 Contract Acceptance Review has passed.
 
-AD-044 has not been created.
+`AD-044 — Canonical Enterprise Document Repository Foundation Boundary`
 
-Technical implementation is not authorized.
+is accepted.
+
+RFC-058 status:
+
+Contract Accepted — Implementation Gate Pending.
+
+The accepted persistence-neutral repository contract contains exactly:
+
+- `EnterpriseDocumentRepository`;
+- `EnterpriseDocumentAlreadyExistsError`;
+- `add(document: EnterpriseDocument) -> None`;
+- `get(document_id: EntityId) -> EnterpriseDocument | None`.
+
+Canonical duplicate identity is `EntityId` only.
+
+`DocumentSource.source_reference` remains traceability rather than repository identity or uniqueness.
+
+No search, CRUD expansion, revision semantics, SQLAlchemy, migration, Document Library, ingestion or default production composition is accepted by RFC-058.
+
+Technical implementation is not authorized until the accepted contract passes the Git implementation-entry gate.
 
 ## Next Exact Action
 
-Draft and review the RFC-058 architecture contract before any implementation.
+Commit and push the accepted RFC-058 / AD-044 architecture contract, verify exact local/remote commit identity and verify a clean working tree before technical implementation.
 
 ## Required Test Command
 

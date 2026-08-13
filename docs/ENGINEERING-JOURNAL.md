@@ -2347,3 +2347,165 @@ Technical implementation is not authorized.
 ### Next Exact Action
 
 Draft and review the RFC-058 architecture contract before any implementation.
+
+---
+
+## 2026-08-13 — RFC-058 / AD-044 Contract Draft
+
+### Purpose
+
+Draft the architecture contract selected by the post-RFC-057 Source-of-Truth architecture review without authorizing technical implementation.
+
+### Drafted Workstream
+
+`RFC-058 — Canonical Enterprise Document Repository Foundation Boundary`
+
+### Proposed Architecture Decision
+
+`AD-044 — Canonical Enterprise Document Repository Foundation Boundary`
+
+Status:
+
+Proposed.
+
+### Core Draft Direction
+
+The draft defines a persistence-neutral:
+
+`EnterpriseDocumentRepository`
+
+with exactly:
+
+- `add(document: EnterpriseDocument) -> None`;
+- `get(document_id: EntityId) -> EnterpriseDocument | None`.
+
+The draft introduces the repository-level duplicate conflict:
+
+`EnterpriseDocumentAlreadyExistsError`
+
+for canonical `EntityId` conflicts only.
+
+### Preserved Guardrails
+
+The draft does not authorize:
+
+- source-reference uniqueness;
+- source-reference lookup;
+- list/search;
+- update/delete/upsert;
+- revision semantics;
+- SQLAlchemy;
+- relational persistence;
+- schema migration;
+- Document Library;
+- ingestion;
+- parsing;
+- AI capability;
+- default production composition;
+- production-security claims.
+
+### Current State
+
+RFC-058: Contract Draft — Under Architecture Review.
+
+AD-044: Proposed.
+
+Technical implementation: not authorized.
+
+### Next Exact Action
+
+Perform the RFC-058 / AD-044 Contract Acceptance Review before any implementation.
+
+---
+
+## 2026-08-13 — RFC-058 / AD-044 Contract Acceptance Review
+
+### Outcome
+
+Passed.
+
+### Accepted Workstream
+
+`RFC-058 — Canonical Enterprise Document Repository Foundation Boundary`
+
+### Accepted Architecture Decision
+
+`AD-044 — Canonical Enterprise Document Repository Foundation Boundary`
+
+### Accepted Repository Contract
+
+The accepted persistence-neutral repository contract is:
+
+`EnterpriseDocumentRepository`
+
+with exactly:
+
+- `add(document: EnterpriseDocument) -> None`;
+- `get(document_id: EntityId) -> EnterpriseDocument | None`.
+
+The accepted duplicate conflict is:
+
+`EnterpriseDocumentAlreadyExistsError`
+
+Canonical duplicate identity is based only on:
+
+`EnterpriseDocument.id`
+
+using shared:
+
+`EntityId`.
+
+Absent identity lookup returns `None`.
+
+### Acceptance Findings
+
+The review found no:
+
+- competing Document identity;
+- source-reference identity leakage;
+- source-reference uniqueness assumption;
+- hidden Search capability;
+- unjustified CRUD expansion;
+- revision/lifecycle ownership;
+- relational-infrastructure ownership;
+- Document Library ownership;
+- ingestion ownership;
+- default-composition coupling;
+- unsupported production-security claim.
+
+### Acceptance Refinements
+
+Before acceptance:
+
+- `app.document.__init__.py` was explicitly constrained to remain empty within RFC-058;
+- the future ingestion dependency shape was left undecided rather than forcing direct dependence on `EnterpriseDocumentRepository`.
+
+### Preserved Boundaries
+
+RFC-058 still does not authorize:
+
+- source-reference lookup;
+- list/search;
+- update/delete/upsert;
+- revisions;
+- SQLAlchemy;
+- Document tables;
+- Alembic migration;
+- Document Library;
+- ingestion;
+- parsing;
+- AI capability;
+- production composition;
+- production-security claims.
+
+### Current State
+
+RFC-058: Contract Accepted — Implementation Gate Pending.
+
+AD-044: Accepted.
+
+Technical implementation: not authorized.
+
+### Next Exact Action
+
+Commit and push the accepted RFC-058 / AD-044 architecture contract, verify exact local/remote commit identity and verify a clean working tree before authorizing technical implementation.

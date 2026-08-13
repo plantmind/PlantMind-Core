@@ -847,15 +847,32 @@ The evidence-based next architecture direction is:
 
 `RFC-058 — Canonical Enterprise Document Repository Foundation Boundary`
 
-RFC-058 is a selected engineering direction only.
+RFC-058 / AD-044 Contract Acceptance Review is complete and passed.
 
-Its architecture contract has not yet been accepted.
+`AD-044 — Canonical Enterprise Document Repository Foundation Boundary`
 
-AD-044 has not been created.
+is accepted.
 
-RFC-058 technical implementation is not authorized.
+RFC-058 status:
 
-The next exact action is to draft and review the RFC-058 architecture contract before any implementation.
+Contract Accepted — Implementation Gate Pending.
+
+The accepted repository contract establishes:
+
+- `EnterpriseDocumentRepository`;
+- `EnterpriseDocumentAlreadyExistsError`;
+- exactly `add(document: EnterpriseDocument) -> None`;
+- exactly `get(document_id: EntityId) -> EnterpriseDocument | None`;
+- duplicate semantics based only on canonical `EntityId`;
+- absent identity lookup returning `None`;
+- no source-reference identity or uniqueness;
+- no search, listing or CRUD expansion;
+- no revision semantics;
+- no relational persistence or production composition.
+
+Technical implementation remains not authorized until the accepted contract is committed, pushed, exact local/remote commit identity is verified and the working tree is clean.
+
+The next exact action is to commit and push the accepted RFC-058 / AD-044 architecture contract and satisfy the implementation-entry Git gate.
 
 ## 15. Session Continuation Instruction
 

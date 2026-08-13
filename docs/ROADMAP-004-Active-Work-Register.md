@@ -37,70 +37,636 @@ No item may be marked complete until:
 
 ### Status
 
-Architecture Direction Selected — Contract Not Accepted.
+Contract Accepted — Implementation Gate Pending.
 
 Post-RFC-057 Source-of-Truth architecture review: complete.
 
-AD-044: not created.
+RFC-058 / AD-044 Contract Acceptance Review: passed.
 
-Technical implementation: not authorized.
+Architecture decision:
+
+`AD-044 — Canonical Enterprise Document Repository Foundation Boundary`
+
+AD-044 status: Accepted.
+
+RFC-058 contract acceptance: passed.
+
+Technical implementation: not authorized until the implementation-entry Git gate is satisfied.
 
 ### Objective
 
-Define the persistence-neutral repository foundation for canonical `EnterpriseDocument` records without introducing relational infrastructure, Document Library behavior, ingestion, revision lifecycle or search.
+Establish the minimum persistence-neutral repository contract required to store and retrieve canonical `EnterpriseDocument` records without introducing relational infrastructure, document lifecycle semantics, Document Library behavior, ingestion, search or production composition.
 
-### Preliminary Repository Direction
+RFC-058 SHALL define the canonical persistence port for Document identity persistence.
 
-The RFC-058 contract review SHALL evaluate and, if supported, formalize:
+RFC-058 SHALL NOT implement persistence technology.
 
-`EnterpriseDocumentRepository`
+### Architecture Dependencies
 
-with:
+RFC-058 depends upon and SHALL preserve:
 
-- `add(document: EnterpriseDocument) -> None`;
-- `get(document_id: EntityId) -> EnterpriseDocument | None`.
+- AD-043 / RFC-057 — Canonical Enterprise Document Foundation Boundary;
+- shared `EntityId` from `app.domain.base`;
+- canonical `EnterpriseDocument` from `app.domain.document`;
+- AD-040 / RFC-054 database-runtime ownership;
+- AD-039 through AD-042 Knowledge architecture;
+- AD-009 source-neutral architecture;
+- existing Runtime, Bootstrap, Composition and Security boundaries.
 
-The expected duplicate conflict is:
+RFC-058 SHALL NOT redesign any accepted canonical Document or Knowledge contract.
 
-`EnterpriseDocumentAlreadyExistsError`
+### Persistence-Neutral Namespace Boundary
 
-Duplicate semantics SHALL concern canonical `EntityId` only.
+RFC-058 SHALL introduce the persistence-neutral package:
 
-Absent identity lookup SHALL return `None`.
+`app.document`
 
-### Namespace Direction
-
-The persistence-neutral repository port is expected under:
+and repository module:
 
 `app.document.repository`
 
-This preserves the established separation between canonical domain contracts and repository ports.
+The canonical Document domain SHALL remain:
 
-### Initial Guardrails
+`app.domain.document`
 
-RFC-058 SHALL NOT automatically authorize:
+Repository responsibility SHALL NOT be placed inside:
 
-- `DocumentId`;
+- `app.domain.document`;
+- `app.infrastructure`;
+- `app.services`;
+- `app.models`.
+
+The package boundary SHALL preserve the existing architectural pattern in which canonical domain contracts and persistence-neutral repository ports remain separate.
+
+`app.document.__init__.py` SHALL remain empty within RFC-058.
+
+RFC-058 SHALL NOT introduce a new Document-package public re-export API.
+
+### Canonical Repository Port
+
+RFC-058 SHALL introduce:
+
+`EnterpriseDocumentRepository`
+
+as an abstract persistence-neutral repository port.
+
+The canonical contract SHALL expose exactly:
+
+`add(document: EnterpriseDocument) -> None`
+
+and:
+
+`get(document_id: EntityId) -> EnterpriseDocument | None`
+
+No additional repository operation is authorized by RFC-058.
+
+### Add Boundary
+
+`EnterpriseDocumentRepository.add()` SHALL accept one canonical:
+
+`EnterpriseDocument`
+
+The repository contract SHALL represent additive persistence without silent overwrite.
+
+If canonical Document identity already exists, the repository SHALL NOT:
+
+- overwrite the existing Document;
+- merge Documents;
+- regenerate identity;
+- convert the operation into update;
+- silently ignore the conflict.
+
+A duplicate canonical identity SHALL be represented by the repository-level conflict:
+
+`EnterpriseDocumentAlreadyExistsError`
+
+### Duplicate Identity Boundary
+
+RFC-058 duplicate semantics SHALL concern only:
+
+`EnterpriseDocument.id`
+
+using canonical:
+
+`EntityId`
+
+A duplicate conflict means that the canonical Document identity already exists in the repository.
+
+RFC-058 SHALL NOT define duplicate semantics using:
+
+- `DocumentSource.source_reference`;
+- `DocumentSourceType`;
+- title;
+- document type;
+- filename;
+- path;
+- URL;
+- document number;
+- source-system identifier;
+- content equality;
+- hash;
+- checksum.
+
+Two Documents MAY have equal source references without RFC-058 declaring them duplicates.
+
+Two Documents MAY have equal titles without RFC-058 declaring them duplicates.
+
+Two Documents MAY have equal classification values without RFC-058 declaring them duplicates.
+
+Only canonical `EntityId` collision is governed by RFC-058 duplicate semantics.
+
+### Duplicate Exception Boundary
+
+RFC-058 SHALL introduce:
+
+`EnterpriseDocumentAlreadyExistsError`
+
+as a repository-level exception.
+
+It SHALL derive from:
+
+`Exception`
+
+It SHALL NOT derive from:
+
+`DomainException`
+
+because duplicate persistence identity is a repository conflict rather than canonical Document-domain validation failure.
+
+RFC-058 SHALL NOT introduce a general Document exception hierarchy.
+
+### Get Boundary
+
+`EnterpriseDocumentRepository.get()` SHALL perform identity lookup only.
+
+It SHALL accept:
+
+`document_id: EntityId`
+
+and return:
+
+`EnterpriseDocument | None`
+
+If the canonical identity is absent, `get()` SHALL return:
+
+`None`
+
+Absence SHALL NOT be represented by:
+
+- `DomainException`;
+- a repository-not-found exception;
+- a fabricated empty Document;
+- a placeholder Document.
+
+Identity lookup SHALL NOT be represented as document search.
+
+### Source Reference Boundary
+
+AD-043 remains authoritative.
+
+`DocumentSource.source_reference` is external/source-system traceability only.
+
+RFC-058 SHALL NOT establish that a source reference is:
+
+- globally unique;
+- a canonical identifier;
+- a repository primary key;
+- verified;
+- authoritative;
+- resolvable;
+- immutable across source systems;
+- guaranteed to identify one Document.
+
+RFC-058 SHALL NOT introduce:
+
+`find_by_source_reference()`
+
+or an equivalent source-reference lookup API.
+
+Any future source-level uniqueness, reconciliation, aliasing, deduplication or lookup contract requires separate architecture evidence and acceptance.
+
+### Search and Listing Boundary
+
+RFC-058 SHALL NOT introduce:
+
+- `list()`;
+- `find()`;
+- `search()`;
+- `filter()`;
+- `query()`;
+- keyword search;
+- full-text search;
+- semantic search;
+- similarity search;
+- browse/catalogue behavior;
+- pagination;
+- ranking;
+- source-reference search.
+
+Repository identity lookup is not Search capability.
+
+### Mutation Boundary
+
+RFC-058 SHALL NOT introduce:
+
+- `update()`;
+- `delete()`;
+- `remove()`;
+- `upsert()`;
+- `replace()`;
+- `save()` with implicit update semantics;
+- patch semantics;
+- mutable repository state transitions.
+
+Canonical `EnterpriseDocument` remains immutable under AD-043.
+
+Future mutable lifecycle behavior requires an explicit architecture contract.
+
+### Revision and Version Boundary
+
+RFC-058 SHALL remain revision-neutral.
+
+It SHALL NOT introduce:
+
+- `DocumentRevision`;
+- revision number;
+- version number;
+- revision chain;
+- current revision;
+- supersession;
+- effective dates;
+- approval state;
+- revision replacement;
+- revision rollback.
+
+RFC-058 SHALL NOT decide whether future revisions reuse or replace canonical Document identity.
+
+That question remains separately governed.
+
+### Relational Persistence Boundary
+
+RFC-058 SHALL NOT introduce:
+
+- SQLAlchemy;
+- SQLAlchemy Document model;
+- SQLAlchemy Document repository;
+- Session;
+- engine;
+- transaction manager;
+- commit;
+- rollback;
+- PostgreSQL-specific behavior;
+- database-generated identity.
+
+A future relational Document persistence adapter MAY implement the accepted repository port only under a separate architecture contract.
+
+### Schema Lifecycle Boundary
+
+RFC-058 SHALL NOT introduce:
+
+- Document table;
+- Alembic migration;
+- database index;
+- foreign key;
+- uniqueness constraint;
+- PostgreSQL schema change;
+- `DatabaseRuntime` change.
+
+AD-040 / RFC-054 remains the sole accepted relational database runtime and migration foundation.
+
+### Transaction Ownership Boundary
+
+RFC-058 SHALL NOT define:
+
+- Session lifetime;
+- connection lifetime;
+- transaction ownership;
+- commit ownership;
+- rollback ownership;
+- Unit of Work;
+- retry policy.
+
+Those are persistence-adapter responsibilities, not persistence-neutral repository-port responsibilities.
+
+### Document Library Boundary
+
+RFC-058 SHALL NOT implement a Document Library.
+
+It SHALL NOT introduce:
+
+- catalogue service;
+- browse behavior;
+- document upload;
+- binary retrieval;
+- storage management;
+- file synchronization;
+- document permissions;
+- retention;
+- archival;
+- deletion workflow;
+- revision management;
+- Document Library API.
+
+A repository port is not a production Document Library.
+
+### Binary and File Boundary
+
+RFC-058 SHALL NOT introduce:
+
+- binary content;
+- file bytes;
+- blobs;
+- MIME type;
+- filesystem storage;
+- object storage;
+- file hash;
+- checksum;
+- file size;
+- network-path behavior.
+
+`EnterpriseDocument` remains a canonical record rather than a file-storage object.
+
+### Ingestion Boundary
+
+RFC-058 SHALL NOT introduce:
+
+- Document ingestion application service;
+- document registration workflow;
+- file upload workflow;
+- bulk ingestion;
+- automatic source synchronization;
+- document-to-Knowledge transformation.
+
+The previously deferred ingestion boundary remains deferred.
+
+Future ingestion SHALL consume accepted canonical Document boundaries and SHALL NOT invent competing Document persistence semantics.
+
+Whether a future ingestion application boundary depends directly on `EnterpriseDocumentRepository`, another accepted application service, or both remains a future architecture decision.
+
+### Parsing and AI Boundary
+
+RFC-058 SHALL NOT introduce:
+
+- PDF parsing;
+- OCR;
+- chunking;
+- metadata extraction;
+- automatic classification;
+- embeddings;
+- vector persistence;
+- Qdrant;
+- Knowledge Graph persistence;
+- Neo4j;
+- RAG;
+- prompts;
+- LLM invocation;
+- AI document agents.
+
+Persistence identity does not imply AI-readiness.
+
+### Knowledge Boundary
+
+RFC-058 SHALL NOT modify:
+
+- `KnowledgeRecord`;
+- `KnowledgeRecordRepository`;
+- relational Knowledge persistence;
+- `KnowledgeCaptureApplicationService`;
+- Knowledge provenance;
+- document-to-Knowledge transformation semantics.
+
+Document and Knowledge remain separately governed canonical concepts.
+
+### Domain Validation Boundary
+
+RFC-058 SHALL NOT move canonical Document validation out of:
+
+`app.domain.document`
+
+`DocumentType`, `DocumentSourceType`, `DocumentSource` and `EnterpriseDocument` validation remain owned by AD-043 / RFC-057.
+
+The repository port SHALL consume already-canonical Document objects.
+
+Repository duplicate conflicts SHALL remain distinct from `DomainException`.
+
+### Composition Boundary
+
+RFC-058 SHALL NOT modify:
+
+- `CompositionRoot`;
+- `ServiceContainer`;
+- `PlatformComposition`;
+- `ApplicationFacade`.
+
+The repository port SHALL NOT be automatically registered or exposed through default production composition.
+
+### Runtime and Bootstrap Boundary
+
+RFC-058 SHALL NOT modify:
+
+- Runtime lifecycle states;
+- Runtime readiness;
+- mandatory-capability policy;
+- request admission;
+- Bootstrap startup;
+- Bootstrap shutdown;
+- Health semantics.
+
+Availability of a repository interface SHALL NOT become Runtime transition authority.
+
+### Security and Trust Boundary
+
+RFC-058 does not establish:
+
+- authentication;
+- authorization;
+- RBAC;
+- actor identity;
+- document permissions;
+- source authenticity;
+- document approval;
+- document integrity verification;
+- Cybersecurity approval.
+
+The current prototype security implementation SHALL NOT be represented as production security.
+
+RFC-058 acceptance SHALL NOT be represented as production deployment readiness.
+
+### Industrial Integration Boundary
+
+RFC-058 SHALL NOT introduce production integration with:
+
+- PI System;
+- DCS;
+- OPC UA;
+- CMMS;
+- SAP;
+- File Server;
+- SharePoint;
+- document-control systems.
+
+AD-009 source-neutral architecture remains authoritative.
+
+### Async and Transport Boundary
+
+RFC-058 SHALL NOT introduce:
+
+- HTTP endpoints;
+- FastAPI routes;
+- transport DTOs;
+- asynchronous repository variants;
+- message-bus integration;
+- event publication.
+
+The contract remains an internal persistence-neutral repository boundary.
+
+### TDD Boundary
+
+If the RFC-058 contract is accepted and its implementation gate is later satisfied, implementation SHALL be test-driven.
+
+Tests SHALL demonstrate at minimum:
+
+- `EnterpriseDocumentRepository` is abstract;
+- the exact abstract operation set is `add` and `get`;
+- `add()` accepts canonical `EnterpriseDocument`;
+- `get()` accepts canonical `EntityId`;
+- `get()` returns canonical `EnterpriseDocument` when identity exists;
+- `get()` returns `None` when identity does not exist;
+- duplicate canonical identity raises `EnterpriseDocumentAlreadyExistsError`;
+- duplicate identity does not silently overwrite;
+- `EnterpriseDocumentAlreadyExistsError` derives from `Exception`;
+- `EnterpriseDocumentAlreadyExistsError` does not derive from `DomainException`;
+- source-reference equality does not define canonical duplicate identity;
+- the repository contract imports no SQLAlchemy;
+- the repository contract imports no FastAPI;
+- the repository contract imports no Pydantic;
+- the repository contract does not depend on infrastructure;
+- no SQLAlchemy Document adapter is introduced;
+- no Document database model is introduced;
+- no migration is introduced;
+- no source-reference lookup API is introduced;
+- no list/search/update/delete/upsert API is introduced;
+- default composition remains unchanged;
+- existing full regression remains green.
+
+Tests SHALL NOT require:
+
+- PostgreSQL;
+- network access;
+- File Server;
+- SAP;
+- SharePoint;
+- PI System;
+- DCS;
+- OPC UA;
+- PDF;
+- OCR;
+- Qdrant;
+- Neo4j;
+- LLM.
+
+### Architecture Guardrail Boundary
+
+Existing architecture guardrails remain authoritative.
+
+RFC-058 SHALL NOT weaken or remove accepted RFC-053 through RFC-057 tests.
+
+Architecture tests SHALL prove that the persistence-neutral Document repository contract:
+
+- depends on canonical Document/domain primitives only;
+- contains no relational persistence dependency;
+- contains no source-specific integration dependency;
+- exposes no search or mutation expansion;
+- does not alter default platform composition.
+
+### Implementation Acceptance Gate
+
+RFC-058 technical implementation SHALL NOT be authorized merely because this draft exists.
+
+Implementation requires all of the following:
+
+- RFC-058 Contract Acceptance Review passes;
+- AD-044 is accepted;
+- accepted RFC-058 / AD-044 documentation is committed;
+- the contract commit is pushed to the remote branch;
+- exact local/remote commit identity is verified;
+- working tree is clean.
+
+Only after that gate may technical implementation begin.
+
+### Contract Acceptance Review
+
+RFC-058 / AD-044 Contract Acceptance Review: passed.
+
+The review confirmed:
+
+- exact repository operation set remains `add` and `get`;
+- canonical duplicate identity is `EntityId` only;
+- absence returns `None`;
+- source reference remains traceability rather than identity or uniqueness;
+- no source-reference lookup is introduced;
+- no Search or CRUD expansion is introduced;
+- no revision semantics are introduced;
+- no relational persistence ownership is introduced;
+- no Document Library or ingestion responsibility is introduced;
+- no default production composition is introduced;
+- no unsupported production-security claim is introduced.
+
+Two refinements were accepted before contract approval:
+
+- `app.document.__init__.py` remains empty and introduces no public re-export API;
+- future ingestion dependency shape remains a future architecture decision.
+
+### Current Contract State
+
+RFC-058 contract: Accepted — Implementation Gate Pending.
+
+AD-044: Accepted.
+
+Technical implementation: not authorized.
+
+No implementation file SHALL be created until the implementation-entry Git gate is satisfied.
+
+### Contract Acceptance Review Requirements
+
+Before acceptance, RFC-058 SHALL be reviewed against:
+
+- AD-043 / RFC-057;
+- `app.domain.document`;
+- shared `EntityId`;
+- existing `KnowledgeRecordRepository` precedent;
+- AD-040 / RFC-054;
+- existing repository namespace patterns;
+- current composition;
+- Runtime and Bootstrap boundaries;
+- Security boundaries;
+- current regression tests;
+- Project Context;
+- Session Handoff;
+- Engineering Journal;
+- Architecture Decisions;
+- Active Work Register.
+
+Acceptance SHALL specifically verify that the contract does not accidentally introduce:
+
+- source-reference identity;
 - source-reference uniqueness;
-- `find_by_source_reference`;
-- list or search;
-- update;
-- delete;
-- upsert;
-- revision/version semantics;
-- SQLAlchemy Document models;
-- relational Document repository adapter;
-- Document schema or Alembic migration;
-- Document Library;
-- document ingestion;
-- parsing or OCR;
+- hidden search capability;
+- CRUD expansion;
+- lifecycle/revision semantics;
+- relational persistence ownership;
+- Document Library behavior;
+- ingestion behavior;
 - default production composition;
-- production security or Cybersecurity claims.
+- unsupported security or production-readiness claims.
 
 ### Next Exact Action
 
-Draft and review the RFC-058 architecture contract before any implementation.
+Commit and push the accepted RFC-058 / AD-044 architecture contract.
 
+Verify exact local/remote commit identity and verify a clean working tree.
+
+Do not implement RFC-058 until that implementation-entry Git gate is satisfied.
 ---
 
 ## RFC-057 — Canonical Enterprise Document Foundation Boundary

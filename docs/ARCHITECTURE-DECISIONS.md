@@ -5120,12 +5120,295 @@ The persistence-neutral repository namespace direction is:
 
 `app.document.repository`
 
-RFC-058 is a selected architecture direction only.
+RFC-058 / AD-044 Contract Acceptance Review is complete and passed.
 
-Its contract is not yet accepted.
+AD-044 is accepted.
 
-AD-044 has not been created.
+RFC-058 status is Contract Accepted — Implementation Gate Pending.
 
-Technical implementation is not authorized.
+Technical implementation remains not authorized until the accepted contract documentation is committed, pushed, exact local/remote commit identity is verified and the working tree is clean.
 
-The next required action is to draft and review the RFC-058 architecture contract before any technical implementation.
+The next required action is to satisfy that implementation-entry Git gate.
+
+---
+
+# AD-044 — Canonical Enterprise Document Repository Foundation Boundary
+
+## Status
+
+Accepted.
+
+RFC-058 Contract Acceptance Review: passed.
+
+RFC-058 status: Contract Accepted — Implementation Gate Pending.
+
+Technical implementation is not authorized until the accepted contract passes the implementation-entry Git gate.
+
+## Context
+
+AD-043 / RFC-057 established the canonical immutable enterprise Document domain:
+
+- `DocumentType`;
+- `DocumentSourceType`;
+- `DocumentSource`;
+- `EnterpriseDocument`;
+- shared canonical `EntityId`.
+
+AD-043 intentionally deferred persistence semantics.
+
+PlantMind therefore has a canonical Document entity but no accepted persistence-neutral Document repository port.
+
+The post-RFC-057 Source-of-Truth architecture review identified this missing repository contract as the next prerequisite before relational persistence, Document Library behavior or document ingestion.
+
+## Problem
+
+Without an accepted persistence-neutral repository contract, future Document capabilities could independently invent:
+
+- competing repository interfaces;
+- source-reference identity;
+- source-reference uniqueness assumptions;
+- implicit CRUD behavior;
+- relational coupling;
+- lifecycle semantics;
+- persistence behavior inside application services.
+
+That would weaken the separation established by AD-043.
+
+## Proposed Decision
+
+If accepted, AD-044 / RFC-058 will introduce the persistence-neutral repository port:
+
+`EnterpriseDocumentRepository`
+
+under:
+
+`app.document.repository`
+
+The package initializer:
+
+`app.document.__init__.py`
+
+will remain empty within RFC-058 and will not establish a new public re-export API.
+
+The repository port will expose exactly two canonical operations:
+
+`add(document: EnterpriseDocument) -> None`
+
+and:
+
+`get(document_id: EntityId) -> EnterpriseDocument | None`
+
+The repository will persist and retrieve canonical Document identity without owning relational technology, search, lifecycle or ingestion behavior.
+
+## Repository Conflict
+
+If `add()` encounters an already-existing canonical Document identity, the repository contract will represent the conflict using:
+
+`EnterpriseDocumentAlreadyExistsError`
+
+The conflict concerns only canonical:
+
+`EnterpriseDocument.id`
+
+using shared:
+
+`EntityId`
+
+The repository must not silently overwrite an existing canonical Document.
+
+## Exception Ownership
+
+`EnterpriseDocumentAlreadyExistsError` is a repository-level persistence conflict.
+
+It will derive from:
+
+`Exception`
+
+and not:
+
+`DomainException`
+
+Canonical Document validation remains owned by `app.domain.document`.
+
+## Identity Lookup
+
+`get()` performs canonical identity lookup only.
+
+If identity exists, it returns the canonical `EnterpriseDocument`.
+
+If identity is absent, it returns:
+
+`None`
+
+No not-found exception is required.
+
+Identity lookup is not Search capability.
+
+## Source Reference Separation
+
+AD-043 remains authoritative.
+
+`DocumentSource.source_reference` is source traceability and is not canonical PlantMind identity.
+
+AD-044 / RFC-058 will not establish source-reference uniqueness.
+
+It will not introduce:
+
+`find_by_source_reference()`
+
+or equivalent source-reference lookup behavior.
+
+Future source reconciliation, aliasing, deduplication or uniqueness semantics require separate explicit architecture.
+
+## Mutation Boundary
+
+AD-044 / RFC-058 will not introduce:
+
+- update;
+- delete;
+- upsert;
+- replace;
+- mutable lifecycle state.
+
+The accepted Document entity remains immutable.
+
+## Revision Boundary
+
+AD-044 / RFC-058 remains revision-neutral.
+
+No decision is made about future Document revisions, version identity, supersession or current-revision behavior.
+
+## Persistence Technology Boundary
+
+AD-044 / RFC-058 is persistence-neutral.
+
+It will not introduce:
+
+- SQLAlchemy;
+- relational Document models;
+- PostgreSQL Document persistence;
+- Session ownership;
+- transaction ownership;
+- Alembic migration;
+- Document tables;
+- indexes;
+- constraints.
+
+A future relational adapter will require separate architecture authorization.
+
+## Document Library Boundary
+
+A persistence-neutral repository port is not a production Document Library.
+
+AD-044 / RFC-058 will not introduce catalogue, browse, upload, retrieval, storage, retention, permissions, revision management or synchronization behavior.
+
+## Ingestion Boundary
+
+AD-044 / RFC-058 will not introduce document ingestion or document-to-Knowledge transformation.
+
+Those remain future application/integration concerns.
+
+AD-044 does not decide whether a future ingestion boundary depends directly on `EnterpriseDocumentRepository`, another accepted application service, or both.
+
+A future ingestion boundary must not invent competing canonical Document persistence semantics.
+
+## Search Boundary
+
+AD-044 / RFC-058 will not introduce list, find, search, filter, query, ranking or semantic retrieval operations.
+
+Search requires separate architecture.
+
+## Knowledge Boundary
+
+AD-039 through AD-042 remain unchanged.
+
+AD-044 / RFC-058 will not modify Knowledge domain, Knowledge repository, relational Knowledge persistence or Knowledge Capture.
+
+## Composition and Runtime Boundary
+
+AD-044 / RFC-058 will not modify:
+
+- `CompositionRoot`;
+- `ServiceContainer`;
+- `PlatformComposition`;
+- `ApplicationFacade`;
+- Runtime;
+- Bootstrap;
+- Health;
+- mandatory-capability policy.
+
+The repository interface will not automatically become a default production dependency.
+
+## Security Boundary
+
+AD-044 / RFC-058 does not establish authentication, authorization, RBAC, actor audit, source authenticity, Document approval or Cybersecurity approval.
+
+No production-security readiness is implied.
+
+## Source-Neutral Boundary
+
+AD-009 remains authoritative.
+
+The repository contract will not depend directly on PI System, DCS, OPC UA, SAP, CMMS, File Server, SharePoint or any document-management technology.
+
+## Alternatives Rejected
+
+### Direct relational persistence first
+
+Rejected because SQLAlchemy/database ownership should not define the canonical repository contract.
+
+### Document ingestion first
+
+Rejected because ingestion should consume accepted Document persistence/application boundaries rather than invent them.
+
+### Full Document Library first
+
+Rejected because it would prematurely combine repository, storage, lifecycle, search, permissions and ingestion responsibilities.
+
+### Source-reference repository identity
+
+Rejected because AD-043 explicitly separates external source references from canonical PlantMind identity.
+
+### Generic CRUD repository
+
+Rejected because update/delete/upsert/list/search semantics have not been justified by current requirements and would expand the architecture without evidence.
+
+## Consequences
+
+If accepted:
+
+- PlantMind gains one canonical persistence-neutral Document repository port;
+- canonical Document identity remains based on shared `EntityId`;
+- source references remain traceability rather than identity;
+- future relational adapters can implement a stable canonical port;
+- future application services can depend on a persistence-neutral abstraction;
+- relational persistence, Document Library, revision lifecycle, ingestion and search remain separately governed.
+
+## Contract Review Gate
+
+RFC-058 Contract Acceptance Review has passed and AD-044 is accepted.
+
+Contract acceptance does not itself permit code implementation until the accepted RFC-058 / AD-044 documentation is committed, pushed, exact local/remote commit identity is verified and the working tree is clean.
+
+## Contract Acceptance
+
+RFC-058 Contract Acceptance Review: passed.
+
+The review found no conflicting ownership, source-reference identity leakage, source-reference uniqueness assumption, hidden Search capability, unjustified CRUD expansion, premature revision semantics, relational-infrastructure ownership, Document Library behavior, ingestion ownership, default-composition coupling or unsupported production-security claim.
+
+The two acceptance refinements were incorporated before acceptance:
+
+- `app.document.__init__.py` remains empty and does not establish a new public re-export API;
+- future ingestion dependency shape remains undecided and RFC-058 does not force direct repository dependency.
+
+## Current Decision State
+
+AD-044: Accepted.
+
+RFC-058: Contract Accepted — Implementation Gate Pending.
+
+Technical implementation: not authorized.
+
+## Next Exact Action
+
+Commit and push the accepted RFC-058 / AD-044 contract, verify exact local/remote commit identity and verify a clean working tree before authorizing technical implementation.
