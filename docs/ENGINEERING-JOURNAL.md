@@ -2143,3 +2143,123 @@ The forthcoming RFC-057 contract shall remain narrowly application-level and sha
 ### Next Exact Action
 
 Draft and review the RFC-057 architecture contract before any implementation.
+
+---
+
+## 2026-08-13 — RFC-057 Canonical Enterprise Document Foundation Technical Completion
+
+### Context
+
+The post-RFC-056 architecture review initially selected a Canonical Document Knowledge Ingestion Application Boundary.
+
+Before contract acceptance, deeper repository review found no canonical enterprise Document identity, Document reference contract, Document revision model or Document repository.
+
+`app.domain.procedure` was empty, while the existing Procedure model and service were prototype-level components rather than canonical enterprise architecture.
+
+The working direction was therefore refined before acceptance to:
+
+`RFC-057 — Canonical Enterprise Document Foundation Boundary`
+
+under accepted:
+
+`AD-043 — Canonical Enterprise Document Foundation Boundary`
+
+The earlier post-RFC-056 review entry remains preserved as historical evidence of the initial engineering direction at that time.
+
+### Contract Outcome
+
+RFC-057 established the minimum canonical enterprise Document domain required before Document Library, persistence, revision lifecycle, ingestion, parsing, search or Knowledge transformation.
+
+The accepted canonical contracts are:
+
+- `DocumentType`;
+- `DocumentSourceType`;
+- `DocumentSource`;
+- `EnterpriseDocument`.
+
+Canonical Document identity uses the existing shared `EntityId`.
+
+No competing `DocumentId` was introduced.
+
+External/source-system references remain distinct from canonical PlantMind identity.
+
+`EnterpriseDocument` remains neutral about future revision representation.
+
+### Technical Implementation
+
+Technical implementation introduced:
+
+`backend/app/domain/document.py`
+
+The implementation provides:
+
+- immutable open Document classification;
+- immutable open Document source classification;
+- immutable source traceability;
+- immutable canonical enterprise Document record;
+- canonical `EntityId` validation;
+- lowercase open-classification normalization;
+- whitespace-normalized, case-preserving source references;
+- canonical title normalization;
+- domain failures through existing `DomainException`.
+
+### TDD and Guardrails
+
+RFC-057 was implemented test-first.
+
+Red phase confirmed that `app.domain.document` did not exist.
+
+Green phase established the accepted canonical domain behavior.
+
+Architecture guardrails verify:
+
+- no `DocumentId`;
+- no direct Knowledge-domain dependency;
+- no SQLAlchemy dependency;
+- no FastAPI dependency;
+- no Pydantic dependency;
+- no infrastructure/service dependency;
+- no Document repository;
+- no file I/O.
+
+### Preserved Boundaries
+
+RFC-057 did not introduce:
+
+- Document repository;
+- relational Document persistence;
+- Alembic migration;
+- Document Library;
+- revision/version lifecycle;
+- parsing;
+- OCR;
+- chunking;
+- document ingestion;
+- document-to-Knowledge transformation;
+- search;
+- embeddings;
+- vector persistence;
+- Knowledge Graph persistence;
+- RAG;
+- LLM invocation;
+- default composition changes;
+- Runtime or Bootstrap changes;
+- production authentication/authorization;
+- Cybersecurity or production-readiness claims.
+
+### Verification
+
+- Architecture decision: AD-043
+- Contract commit: `63d9119`
+- Technical commit: `a134c7a`
+- Focused RFC-057 plus Knowledge architecture verification: 70 passed
+- Full PlantMind regression: 586 passed
+- Python compilation: passed
+- `git diff --check`: passed
+- Remote technical push: verified
+- Exact local and remote technical commit identity: verified
+- Working tree after technical push: clean
+
+### Next Exact Action
+
+Perform the required post-RFC-057 Source-of-Truth architecture review before selecting, defining or implementing another architecture RFC.

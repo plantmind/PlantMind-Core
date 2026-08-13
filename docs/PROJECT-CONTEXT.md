@@ -757,21 +757,67 @@ The review established that:
 - absence of a production security boundary prohibits external or production Knowledge-ingestion exposure, but does not require an isolated application-level ingestion contract to be deferred;
 - future document ingestion SHALL consume the accepted `KnowledgeCaptureApplicationService` boundary rather than bypassing it and writing directly through `KnowledgeRecordRepository`.
 
-The evidence-based next architecture direction is:
+The initial post-RFC-056 working direction was a Canonical Document Knowledge Ingestion Application Boundary.
 
-`RFC-057 — Canonical Document Knowledge Ingestion Application Boundary`
+Deeper repository and contract review established that PlantMind did not yet possess a canonical enterprise Document identity or Document domain contract.
 
-RFC-057 is a selected engineering direction only.
+Introducing ingestion before that foundation would either have forced document identity/lifecycle responsibility into an application service or created a thin translation wrapper over `KnowledgeCaptureApplicationService`.
 
-Its architecture contract has not yet been accepted.
+The direction was therefore refined before contract acceptance to:
 
-AD-043 has not been created.
+`RFC-057 — Canonical Enterprise Document Foundation Boundary`
 
-RFC-057 implementation is not authorized.
+under accepted:
 
-The RFC-057 contract SHALL preserve explicit separation from file upload/storage, PDF parsing, OCR, chunking, search, embeddings, vector persistence, Knowledge Graph persistence, RAG, LLM invocation, external transport exposure, production composition and production security claims unless a later accepted contract explicitly and narrowly authorizes such responsibilities.
+`AD-043 — Canonical Enterprise Document Foundation Boundary`
 
-The next exact action is to draft and review the architecture contract for RFC-057 — Canonical Document Knowledge Ingestion Application Boundary before any implementation.
+RFC-057 is technically complete.
+
+The implementation established:
+
+- canonical `app.domain.document`;
+- immutable open `DocumentType`;
+- immutable open `DocumentSourceType`;
+- immutable `DocumentSource`;
+- immutable canonical `EnterpriseDocument`;
+- shared canonical `EntityId` as Document identity;
+- explicit separation between canonical PlantMind identity and opaque source-system reference;
+- lowercase normalized open classifications;
+- trimmed, case-preserving source references;
+- revision-neutral canonical Document-record semantics;
+- canonical Document validation through existing `DomainException`.
+
+RFC-057 verification:
+
+- Architecture decision: AD-043
+- Contract commit: `63d9119`
+- Technical commit: `a134c7a`
+- Focused RFC-057 plus Knowledge architecture verification: 70 passed
+- Full PlantMind regression: 586 passed
+- Python compilation: passed
+- `git diff --check`: passed
+- Remote technical push: verified
+- Exact local/remote technical commit identity: verified
+- Working tree after technical push: clean
+
+RFC-057 does not introduce or claim:
+
+- Document repository or persistence;
+- Document Library production behavior;
+- document revision/version lifecycle;
+- document ingestion;
+- parsing, OCR or chunking;
+- document-to-Knowledge transformation;
+- search, embeddings, vector or graph persistence;
+- RAG or LLM behavior;
+- default production composition;
+- production authentication/authorization;
+- Cybersecurity approval;
+- production deployment readiness.
+
+Those capabilities remain separately governed.
+
+The next exact action is to perform the required post-RFC-057 Source-of-Truth architecture review before selecting, defining or implementing another architecture RFC.
 
 ## 15. Session Continuation Instruction
 

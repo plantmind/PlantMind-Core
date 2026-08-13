@@ -1160,21 +1160,47 @@ The review confirmed:
 - no external or production ingestion exposure is authorized;
 - application-level document Knowledge ingestion may be designed without introducing production transport or security claims.
 
-The evidence-based selected next workstream is:
+The initial post-RFC-056 Document Knowledge Ingestion direction was refined before contract acceptance after repository evidence confirmed that no canonical enterprise Document domain yet existed.
 
-`RFC-057 — Canonical Document Knowledge Ingestion Application Boundary`
+The accepted workstream became:
 
-RFC-057 SHALL be designed to consume `KnowledgeCaptureApplicationService` and SHALL NOT bypass the accepted Capture boundary to write directly through `KnowledgeRecordRepository`.
+`RFC-057 — Canonical Enterprise Document Foundation Boundary`
 
-RFC-057 is not yet an accepted architecture contract.
+under:
 
-AD-043 has not been created.
+`AD-043 — Canonical Enterprise Document Foundation Boundary`
 
-Technical implementation is not authorized.
+RFC-057 technical implementation is complete.
+
+Current canonical Document foundation:
+
+- `DocumentType`;
+- `DocumentSourceType`;
+- `DocumentSource`;
+- `EnterpriseDocument`;
+- shared `EntityId` identity;
+- source-neutral opaque source references;
+- immutable and revision-neutral Document-record semantics.
+
+Document and Knowledge remain distinct canonical concepts.
+
+RFC-057 introduced no Document repository, database schema, Document Library, ingestion, parsing, revision lifecycle, search, vector, graph, RAG, LLM or production composition.
+
+RFC-057 verification:
+
+- Contract commit: `63d9119`
+- Technical commit: `a134c7a`
+- Focused RFC-057 plus Knowledge architecture verification: 70 passed
+- Full regression: 586 passed
+- Compilation: passed
+- `git diff --check`: passed
+- Remote technical push: verified
+- Exact local/remote technical commit identity: verified
+- Working tree after technical push: clean
 
 ## Next Exact Action
 
-Draft and review the architecture contract for RFC-057 — Canonical Document Knowledge Ingestion Application Boundary before any implementation.
+Perform the required post-RFC-057 Source-of-Truth architecture review before selecting, defining or implementing another architecture RFC.
 
 ## Required Test Command
 
