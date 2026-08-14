@@ -1183,6 +1183,18 @@ Known deferred capabilities remain intentionally deferred.
 
 Engineering-memory drift was the only remaining post-RFC-061 consistency issue.
 
-No RFC-062 workstream is selected by this review.
+RFC-061 engineering-memory closure is complete.
 
-The next architecture workstream SHALL be selected from current repository, project-charter and architecture evidence only after this RFC-061 engineering-memory closure is committed and pushed.
+Closure commit:
+
+`0b268950558ab46a6cf6f3dedf9ee83fa6a33ef1`
+
+Exact local/remote closure identity: verified.
+
+Working tree after closure push: clean.
+
+RFC-061 is fully closed.
+
+Evidence-based selection of the next architecture workstream is now authorized.
+
+No new RFC implementation is authorized until its architecture contract is reviewed, accepted, committed, pushed and implementation-entry Git verification succeeds.

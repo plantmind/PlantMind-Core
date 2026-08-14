@@ -37,7 +37,7 @@ No item may be marked complete until:
 
 ### Status
 
-Technically Complete.
+Complete.
 
 Post-RFC-060 evidence-based architecture selection: complete.
 
@@ -66,7 +66,13 @@ Implementation-entry Git gate: satisfied.
 Post-RFC-061 system and architecture integrity review:
 complete — PASS.
 
-Engineering-memory closure: in progress.
+Engineering-memory closure:
+
+complete, committed and pushed at `0b268950558ab46a6cf6f3dedf9ee83fa6a33ef1`.
+
+Exact local/remote closure identity: verified.
+
+Working tree after closure push: clean.
 
 ### Objective
 
@@ -592,15 +598,23 @@ Exact local/remote technical commit identity: verified.
 
 Technical working tree before documentation closure: clean.
 
-Engineering-memory documentation closure is the only remaining RFC-061 completion activity.
+Engineering-memory documentation closure is complete.
+
+Closure commit:
+
+`0b268950558ab46a6cf6f3dedf9ee83fa6a33ef1`
+
+Exact local/remote closure identity: verified.
+
+Working tree after closure push: clean.
+
+RFC-061 is fully closed.
 
 ### Next Exact Action
 
-Complete and commit the RFC-061 engineering-memory and post-implementation architecture-review closure.
+Perform evidence-based selection of the next architecture workstream from current repository, project-charter and architecture evidence.
 
-After that closure is pushed and verified, select the next architecture workstream from current repository and project evidence.
-
-Do not preselect RFC-062.
+No new RFC implementation is authorized until its architecture contract is reviewed, accepted, committed, pushed and implementation-entry Git verification succeeds.
 
 
 ---

@@ -1459,8 +1459,18 @@ Preserve:
 11. canonical Alembic head remains `0003`;
 12. no production security, Cybersecurity approval or production-readiness claim is implied.
 
-Engineering-memory closure is currently in progress.
+Engineering-memory closure is complete.
 
-Do not preselect RFC-062.
+Closure commit:
 
-After this closure is committed and pushed, select the next architecture workstream from current repository, project-charter and architecture evidence.
+`0b268950558ab46a6cf6f3dedf9ee83fa6a33ef1`
+
+Exact local/remote closure identity: verified.
+
+Working tree after closure push: clean.
+
+RFC-061 is fully closed.
+
+Evidence-based selection of the next architecture workstream is now authorized.
+
+No new RFC implementation is authorized until its architecture contract is reviewed, accepted, committed, pushed and implementation-entry Git verification succeeds.
