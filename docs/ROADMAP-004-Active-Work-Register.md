@@ -33,6 +33,492 @@ No item may be marked complete until:
 
 # Active Work
 
+## RFC-060 — Canonical Enterprise Document Registration Application Boundary
+
+### Status
+
+Contract Accepted — Implementation Gate Pending.
+
+Post-RFC-059 system and architecture integrity review: complete — PASS.
+
+Evidence-based RFC-060 workstream selection: complete.
+
+Architecture decision:
+
+`AD-046 — Canonical Enterprise Document Registration Application Boundary`
+
+AD-046 status: Accepted.
+
+RFC-060 / AD-046 Contract Acceptance Review: passed.
+
+Technical implementation: not authorized until the implementation-entry Git gate is satisfied.
+
+Implementation gate: pending.
+
+### Objective
+
+Establish the first explicit application-level use case for registration of one canonical `EnterpriseDocument` without introducing a generic repository-delegation service or prematurely introducing Document Library, ingestion, parsing, search, revision or AI responsibilities.
+
+RFC-060 SHALL accept caller-supplied registration inputs, construct one canonical immutable `EnterpriseDocument`, persist it through the persistence-neutral `EnterpriseDocumentRepository`, and return that exact canonical Document only after persistence succeeds.
+
+RFC-060 SHALL NOT redesign the canonical Document domain, repository contract, relational adapter or database runtime.
+
+### Architecture Dependencies
+
+RFC-060 depends upon and SHALL preserve:
+
+- AD-043 / RFC-057 — Canonical Enterprise Document Foundation Boundary;
+- AD-044 / RFC-058 — Canonical Enterprise Document Repository Foundation Boundary;
+- AD-045 / RFC-059 — Canonical Document Relational Persistence Adapter Boundary;
+- shared canonical `EntityId`;
+- existing Runtime, Bootstrap, Composition and Security boundaries;
+- AD-009 source-neutral architecture.
+
+`EnterpriseDocument` remains the canonical representation of one enterprise Document record.
+
+`EnterpriseDocumentRepository` remains the persistence-neutral repository port.
+
+Canonical Document validation remains owned by `app.domain.document`.
+
+Repository Session and transaction semantics remain owned by the RFC-059 infrastructure adapter.
+
+`DatabaseRuntime` remains engine/session-factory lifecycle owner.
+
+### Canonical Registration Application Responsibility
+
+RFC-060 SHALL introduce one specialized application-level Document registration use case.
+
+The canonical application service SHALL be:
+
+`EnterpriseDocumentRegistrationApplicationService`
+
+under:
+
+`app.services.enterprise_document_registration_application_service`
+
+The same module SHALL contain the immutable application input contract:
+
+`EnterpriseDocumentRegistrationRequest`
+
+The application boundary SHALL NOT expose generic repository-equivalent methods such as:
+
+- `add(...)`;
+- `get(...)`;
+- `update(...)`;
+- `delete(...)`;
+- `upsert(...)`;
+- `save(...)`.
+
+The canonical application operation SHALL represent the business action:
+
+`register(request: EnterpriseDocumentRegistrationRequest) -> EnterpriseDocument`
+
+For one successful registration invocation, the boundary SHALL:
+
+1. receive one immutable registration request;
+2. establish one canonical `EntityId`;
+3. construct accepted canonical Document value objects;
+4. construct one canonical immutable `EnterpriseDocument`;
+5. submit that Document through `EnterpriseDocumentRepository.add(...)`;
+6. return the same canonical Document only after repository add succeeds.
+
+The Registration boundary SHALL NOT call `EnterpriseDocumentRepository.get(...)` merely to confirm the write or prevent duplicates.
+
+### Registration Request Boundary
+
+`EnterpriseDocumentRegistrationRequest` SHALL contain only the minimum caller-supplied values required to construct one canonical Document:
+
+- `document_type: str`;
+- `title: str`;
+- `source_type: str`;
+- `source_reference: str`.
+
+The caller SHALL NOT provide:
+
+- canonical `EnterpriseDocument.id`;
+- a preconstructed `EnterpriseDocument`;
+- a preconstructed `DocumentType`;
+- a preconstructed `DocumentSourceType`;
+- a preconstructed `DocumentSource`.
+
+Canonical domain construction belongs to the Registration application boundary.
+
+The registration request SHALL NOT become:
+
+- an HTTP transport schema;
+- a database row model;
+- a file-upload model;
+- a parsing/OCR result;
+- an ingestion payload;
+- a Knowledge Capture request;
+- a vector payload;
+- a graph node;
+- a prompt or LLM context.
+
+Future transport, source integration or ingestion boundaries MAY translate their own accepted inputs into `EnterpriseDocumentRegistrationRequest` only under their own accepted architecture contracts.
+
+### Canonical Domain Construction Boundary
+
+The Registration application boundary SHALL construct the canonical Document representation using accepted AD-043 / RFC-057 types:
+
+- `DocumentType`;
+- `DocumentSourceType`;
+- `DocumentSource`;
+- `EnterpriseDocument`.
+
+Canonical Document normalization and validation remain authoritative in:
+
+`app.domain.document`
+
+RFC-060 SHALL NOT duplicate Document normalization or invariant rules inside the application service.
+
+Invalid canonical Document input SHALL continue to fail through existing `DomainException` semantics.
+
+RFC-060 SHALL NOT introduce a competing application-level Document validation framework.
+
+### Canonical Identity Boundary
+
+The Registration boundary SHALL use the existing shared canonical:
+
+`EntityId`
+
+for new Document identity.
+
+The default identity source SHALL be:
+
+`EntityId.new()`
+
+The implementation MAY support narrow per-instance injection of an identity-producing callable compatible with:
+
+`() -> EntityId`
+
+for deterministic verification.
+
+The identity source SHALL NOT:
+
+- depend on SQLAlchemy;
+- depend on PostgreSQL;
+- read repository state to choose an identity;
+- retry with a new identity after duplicate failure;
+- use `source_reference` as identity;
+- require Runtime or Bootstrap availability;
+- use process-global mutable state.
+
+RFC-060 SHALL NOT introduce:
+
+- `DocumentId`;
+- a platform-wide identity service;
+- an identity provider registry;
+- a new dependency-injection framework.
+
+### Source Reference Boundary
+
+`DocumentSource.source_reference` remains external/source-system traceability only.
+
+RFC-060 SHALL NOT interpret `source_reference` as:
+
+- canonical PlantMind identity;
+- globally unique identity;
+- deduplication key;
+- repository lookup key;
+- database alternate key;
+- proof of source authenticity;
+- proof of document approval or correctness.
+
+Equal source references MAY occur on different canonical Document identities.
+
+The Registration boundary SHALL NOT perform source-reference lookup before persistence.
+
+### Repository Boundary
+
+`EnterpriseDocumentRegistrationApplicationService` SHALL receive:
+
+`EnterpriseDocumentRepository`
+
+explicitly during construction.
+
+For a registration invocation that reaches persistence:
+
+`EnterpriseDocumentRepository.add(...)`
+
+SHALL be invoked exactly once.
+
+The Registration boundary SHALL NOT call repository `get(...)` as:
+
+- a pre-insert existence check;
+- duplicate prevention;
+- post-write confirmation;
+- source-reference lookup.
+
+`EnterpriseDocumentAlreadyExistsError` remains the repository-boundary duplicate conflict.
+
+Duplicate conflict SHALL propagate without:
+
+- identity regeneration;
+- retry;
+- overwrite;
+- merge;
+- conversion to update;
+- synthetic success.
+
+Unexpected repository failures SHALL propagate without retry or synthetic success.
+
+### Persistence and Transaction Boundary
+
+RFC-060 SHALL remain persistence-implementation neutral.
+
+The Registration application boundary SHALL NOT construct, own or directly use:
+
+- SQLAlchemy;
+- SQLAlchemy Session;
+- database engine;
+- `DatabaseRuntime`;
+- database connection;
+- database configuration;
+- commit;
+- rollback;
+- Alembic migration;
+- `MetaData.create_all()`.
+
+Repository Session lifetime, commit, rollback and duplicate classification remain governed by AD-045 / RFC-059.
+
+RFC-060 SHALL NOT introduce a Unit of Work or cross-repository transaction coordinator.
+
+### Document Lifecycle Boundary
+
+RFC-060 registers one immutable canonical Document record only.
+
+It SHALL NOT introduce:
+
+- update;
+- delete;
+- upsert;
+- replacement;
+- supersession;
+- revision numbers;
+- version numbers;
+- current revision;
+- revision history;
+- approval lifecycle;
+- retention;
+- archival;
+- mutable document state.
+
+AD-043 revision neutrality remains unchanged.
+
+### Document Library and Binary Boundary
+
+Document registration is not a production Document Library.
+
+RFC-060 SHALL NOT introduce:
+
+- file upload/download;
+- file bytes or blobs;
+- filesystem storage;
+- object storage;
+- MIME metadata;
+- file hash or checksum;
+- document catalogue browsing;
+- document retrieval service;
+- source synchronization;
+- document permissions;
+- ownership;
+- retention management;
+- Document Library API.
+
+### Ingestion, Parsing and Knowledge Boundary
+
+RFC-060 SHALL NOT introduce:
+
+- document ingestion;
+- bulk ingestion;
+- automatic source synchronization;
+- PDF/Word/spreadsheet parsing;
+- OCR;
+- text extraction;
+- table extraction;
+- section detection;
+- chunking;
+- automatic metadata extraction;
+- automatic classification;
+- document-to-Knowledge transformation;
+- calls to `KnowledgeCaptureApplicationService`;
+- writes to `KnowledgeRecordRepository`.
+
+Document and Knowledge remain separate canonical concepts.
+
+A future document-to-Knowledge boundary SHALL consume accepted Document and Knowledge Capture contracts without bypassing either.
+
+### Search, Vector, Graph and AI Boundary
+
+RFC-060 SHALL NOT introduce:
+
+- list/browse search;
+- keyword search;
+- full-text search;
+- semantic search;
+- similarity search;
+- ranking;
+- embeddings;
+- vector persistence;
+- Qdrant;
+- Knowledge Graph persistence;
+- Neo4j;
+- RAG;
+- prompts;
+- LLM invocation;
+- summarization;
+- autonomous document agents.
+
+Canonical registration does not imply semantic retrieval or AI readiness.
+
+### Composition and Runtime Boundary
+
+RFC-060 SHALL NOT automatically modify or register the new application boundary through:
+
+- `CompositionRoot`;
+- `ServiceContainer`;
+- `PlatformComposition`;
+- `ApplicationFacade`.
+
+RFC-060 SHALL NOT automatically register or expose the relational Document repository in default composition.
+
+Default startup SHALL remain independent from:
+
+- `DATABASE_URL`;
+- PostgreSQL availability;
+- Document source availability.
+
+Document Registration SHALL NOT become a mandatory Runtime capability merely because the application boundary exists.
+
+Runtime lifecycle, readiness, request admission, Bootstrap, Health and operational-transition responsibilities remain unchanged.
+
+Production Document Registration composition requires a separate accepted architecture boundary.
+
+### Transport and Integration Boundary
+
+RFC-060 SHALL NOT introduce:
+
+- FastAPI routes;
+- HTTP endpoints;
+- transport DTOs;
+- message-bus integration;
+- event publication;
+- PI System integration;
+- DCS integration;
+- OPC UA integration;
+- CMMS integration;
+- SAP integration;
+- File Server integration;
+- SharePoint integration;
+- document-control-system integration.
+
+AD-009 source-neutral architecture remains authoritative.
+
+### Security and Trust Boundary
+
+RFC-060 does not establish:
+
+- authentication;
+- authorization;
+- RBAC;
+- principal identity;
+- actor audit;
+- Active Directory;
+- LDAP;
+- MFA;
+- document permissions;
+- source authenticity verification;
+- document approval;
+- document correctness;
+- compliance approval;
+- safety approval.
+
+The existing prototype security implementation SHALL NOT be represented as production enterprise security.
+
+RFC-060 acceptance or implementation SHALL NOT be represented as Cybersecurity approval or production deployment readiness.
+
+### Expected Technical Surface
+
+If implementation is later authorized, the expected minimum production surface is:
+
+- `backend/app/services/enterprise_document_registration_application_service.py`.
+
+Expected verification surface:
+
+- `tests/services/test_enterprise_document_registration_application_service.py`;
+- minimum architecture guardrails necessary to prove canonical dependency direction and absence of default composition registration.
+
+Any additional production file or responsibility requires evidence that it is necessary to satisfy the accepted RFC-060 contract.
+
+### TDD Acceptance Requirements
+
+Technical implementation SHALL be test-driven.
+
+Tests SHALL demonstrate at minimum:
+
+- registration request immutability;
+- deterministic identity injection;
+- default identity generation requires no database;
+- dependency source is not invoked merely by service construction;
+- canonical Document types are constructed through accepted domain constructors;
+- canonical normalization remains domain-owned;
+- one successful registration produces the expected canonical `EnterpriseDocument`;
+- repository `add()` is invoked exactly once;
+- repository `get()` is not used;
+- the exact canonical Document passed to the repository is returned after successful persistence;
+- invalid canonical input prevents persistence;
+- duplicate repository conflict propagates without retry or identity regeneration;
+- unexpected repository failure propagates without retry or synthetic success;
+- equal source references do not cause application-level deduplication;
+- no SQLAlchemy/database ownership enters the application boundary;
+- default composition does not automatically register or expose Document Registration;
+- Runtime and Bootstrap behavior remain unchanged.
+
+### Contract Acceptance Gate
+
+RFC-060 / AD-046 Contract Acceptance Review: passed.
+
+The review confirmed absence of:
+
+- generic repository-wrapper design;
+- competing Document identity;
+- source-reference identity or uniqueness semantics;
+- duplicate-precheck behavior;
+- persistence ownership leakage;
+- revision ownership;
+- Document Library ownership;
+- ingestion or parsing ownership;
+- Knowledge-transformation ownership;
+- search/vector/graph/RAG/LLM responsibility;
+- default-composition coupling;
+- Runtime-authority expansion;
+- transport/integration expansion;
+- unsupported security or production-readiness claims.
+
+### Current Contract State
+
+RFC-060: Contract Accepted — Implementation Gate Pending.
+
+AD-046: Accepted.
+
+Technical implementation remains prohibited until:
+
+1. accepted RFC-060 / AD-046 documentation is committed;
+2. the contract commit is pushed;
+3. exact local/remote contract commit identity is verified;
+4. the working tree is clean.
+
+### Next Exact Action
+
+Commit and push the accepted RFC-060 / AD-046 architecture contract.
+
+Verify exact local/remote contract commit identity and a clean working tree.
+
+Do not implement RFC-060 before the implementation-entry Git gate is satisfied.
+
+---
+
 ## RFC-059 — Canonical Document Relational Persistence Adapter Boundary
 
 ### Status

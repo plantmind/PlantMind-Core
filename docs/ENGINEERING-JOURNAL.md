@@ -3069,3 +3069,111 @@ No architectural restart or broad redesign is authorized.
 No RFC-060 workstream is preselected.
 
 The next workstream must be selected from current repository, project-charter and architecture evidence after this documentation closure is committed and pushed.
+
+---
+
+## 2026-08-14 — RFC-060 Workstream Selection
+
+### Evidence-Based Selection
+
+Following RFC-059 technical completion, engineering-memory closure and the post-RFC-059 system/architecture integrity PASS, the next workstream was selected from current repository evidence.
+
+The current canonical Document stack now contains:
+
+- AD-043 / RFC-057 — canonical `EnterpriseDocument` domain;
+- AD-044 / RFC-058 — persistence-neutral `EnterpriseDocumentRepository`;
+- AD-045 / RFC-059 — relational Document persistence adapter.
+
+Repository review confirms that no specialized Document Registration application boundary currently exists.
+
+RFC-059 explicitly deferred document registration workflow.
+
+The accepted RFC-056 Knowledge Capture pattern demonstrates that a specialized application use case is justified when it owns canonical entity construction and identity rather than merely mirroring repository operations.
+
+Selected direction:
+
+`RFC-060 — Canonical Enterprise Document Registration Application Boundary`
+
+Proposed/accepted decision:
+
+`AD-046 — Canonical Enterprise Document Registration Application Boundary`
+
+---
+
+## 2026-08-14 — RFC-060 / AD-046 Contract Acceptance Review
+
+### Outcome
+
+Passed.
+
+### Accepted Application Boundary
+
+RFC-060 establishes a specialized application use case:
+
+`EnterpriseDocumentRegistrationApplicationService`
+
+with immutable input:
+
+`EnterpriseDocumentRegistrationRequest`
+
+and operation:
+
+`register(request) -> EnterpriseDocument`
+
+### Accepted Responsibilities
+
+The Registration boundary:
+
+- receives caller-supplied document type, title, source type and source reference;
+- creates canonical `EntityId`;
+- constructs accepted canonical Document value objects;
+- constructs one immutable `EnterpriseDocument`;
+- invokes `EnterpriseDocumentRepository.add(...)` exactly once for registration reaching persistence;
+- performs no repository `get(...)` precheck or confirmation;
+- returns the same canonical Document after successful persistence.
+
+### Preserved Boundaries
+
+The contract preserves:
+
+- canonical Document domain validation;
+- shared `EntityId`;
+- source-reference traceability without uniqueness or deduplication semantics;
+- repository-owned duplicate conflicts;
+- RFC-059 Session and transaction ownership;
+- `DatabaseRuntime` lifecycle ownership;
+- default composition independence;
+- Runtime and Bootstrap authority.
+
+### Explicit Non-Responsibilities
+
+RFC-060 does not introduce:
+
+- Document revision/version lifecycle;
+- Document Library;
+- file/binary storage;
+- upload/download;
+- parsing/OCR/chunking;
+- ingestion;
+- Knowledge transformation;
+- Knowledge Capture calls;
+- search;
+- vector/graph/RAG/LLM capability;
+- transport endpoints;
+- industrial source integration;
+- authentication/authorization expansion;
+- Cybersecurity or production-readiness claims.
+
+### Acceptance Decision
+
+RFC-060 contract: Accepted.
+
+AD-046: Accepted.
+
+Technical implementation: not authorized until the accepted contract is committed and pushed, exact local/remote contract commit identity is verified and the working tree is clean.
+
+### Next Exact Action
+
+Commit and push the accepted RFC-060 / AD-046 contract.
+
+Do not implement RFC-060 before the implementation-entry Git gate is satisfied.

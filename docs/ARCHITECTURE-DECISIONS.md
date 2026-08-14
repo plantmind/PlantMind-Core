@@ -5756,3 +5756,177 @@ The review found no Domain dependency leak, persistence leak, default-compositio
 Commit and push the RFC-059 engineering-memory and post-implementation architecture-review closure.
 
 After documentation closure, select the next architecture workstream from current evidence; RFC-060 is not preselected.
+
+---
+
+# AD-046 — Canonical Enterprise Document Registration Application Boundary
+
+## Status
+
+Accepted.
+
+RFC-060 Contract Acceptance Review: passed.
+
+Technical implementation: not authorized until the implementation-entry Git gate is satisfied.
+
+## Context
+
+AD-043 / RFC-057 established canonical immutable `EnterpriseDocument` identity and Document semantics.
+
+AD-044 / RFC-058 established the persistence-neutral `EnterpriseDocumentRepository`.
+
+AD-045 / RFC-059 established the canonical relational implementation of that repository while explicitly deferring any document registration workflow.
+
+Post-RFC-059 architecture review confirmed that PlantMind remains architecturally sound and that no Document Registration application service currently exists.
+
+A generic application wrapper exposing repository-equivalent `add()` and `get()` behavior would add no independent application responsibility.
+
+PlantMind does, however, require an explicit use case that accepts caller registration inputs, owns creation of canonical Document identity, constructs canonical Document types and submits the resulting Document through the accepted repository port.
+
+## Decision
+
+PlantMind SHALL introduce:
+
+`EnterpriseDocumentRegistrationApplicationService`
+
+under:
+
+`app.services.enterprise_document_registration_application_service`
+
+with immutable application input:
+
+`EnterpriseDocumentRegistrationRequest`
+
+The canonical operation SHALL be:
+
+`register(request: EnterpriseDocumentRegistrationRequest) -> EnterpriseDocument`
+
+The service SHALL construct one canonical immutable `EnterpriseDocument`, persist it through `EnterpriseDocumentRepository.add(...)`, and return the same canonical Document only after persistence succeeds.
+
+## Application Input
+
+`EnterpriseDocumentRegistrationRequest` SHALL contain:
+
+- `document_type: str`;
+- `title: str`;
+- `source_type: str`;
+- `source_reference: str`.
+
+Caller input SHALL NOT provide canonical Document identity or preconstructed canonical Document objects.
+
+## Identity Ownership
+
+The Registration boundary SHALL create canonical Document identity using shared `EntityId`.
+
+Default identity generation SHALL use:
+
+`EntityId.new()`
+
+Narrow deterministic identity injection MAY be supported per service instance for verification.
+
+No `DocumentId`, global identity service, provider registry or new DI framework is introduced.
+
+## Domain Ownership
+
+Canonical normalization and validation remain owned by:
+
+`app.domain.document`
+
+The Registration boundary SHALL construct:
+
+- `DocumentType`;
+- `DocumentSourceType`;
+- `DocumentSource`;
+- `EnterpriseDocument`.
+
+It SHALL NOT duplicate canonical Document validation rules.
+
+## Source Reference
+
+`DocumentSource.source_reference` remains source-system traceability only.
+
+It SHALL NOT become canonical identity, global uniqueness, deduplication identity, repository alternate key, authenticity evidence or approval evidence.
+
+Equal source references MAY exist on distinct canonical Document identities.
+
+## Repository Boundary
+
+`EnterpriseDocumentRepository` SHALL be injected explicitly.
+
+For registration reaching persistence:
+
+`add(...)`
+
+SHALL be called exactly once.
+
+Repository `get(...)` SHALL NOT be used for pre-insert duplicate checks, post-write confirmation or source-reference lookup.
+
+`EnterpriseDocumentAlreadyExistsError` and unexpected repository failures SHALL propagate without retry, overwrite, identity regeneration or synthetic success.
+
+## Persistence Ownership
+
+RFC-060 SHALL NOT own SQLAlchemy, Session, engine, `DatabaseRuntime`, transaction, commit, rollback, migration or schema responsibility.
+
+AD-045 / RFC-059 remains authoritative for relational persistence behavior.
+
+## Explicit Deferrals
+
+RFC-060 SHALL NOT introduce:
+
+- update/delete/upsert;
+- revision/version lifecycle;
+- approval lifecycle;
+- Document Library;
+- binary/file storage;
+- upload/download;
+- catalogue browsing;
+- source synchronization;
+- parsing;
+- OCR;
+- chunking;
+- ingestion;
+- Knowledge transformation;
+- Knowledge Capture calls;
+- search;
+- embeddings;
+- vector persistence;
+- Knowledge Graph persistence;
+- RAG;
+- LLM invocation;
+- HTTP/transport;
+- industrial source integration;
+- default production composition.
+
+## Composition and Runtime
+
+RFC-060 SHALL NOT automatically modify `CompositionRoot`, `ServiceContainer`, `PlatformComposition` or `ApplicationFacade`.
+
+Default application startup remains independent from PostgreSQL and Document source availability.
+
+Runtime, Bootstrap, readiness, Health, request admission and operational-transition authority remain unchanged.
+
+## Security and Deployment
+
+RFC-060 does not establish authentication, authorization, RBAC, actor identity, actor audit, Active Directory, LDAP, MFA, document permissions, source authenticity, approval, Cybersecurity acceptance or production readiness.
+
+Those remain separately gated.
+
+## Contract Acceptance
+
+RFC-060 / AD-046 Contract Acceptance Review: passed.
+
+The accepted boundary is a specialized Document registration application use case rather than a generic repository wrapper.
+
+It preserves canonical Document identity, domain validation, repository persistence ownership, source-reference semantics, default composition independence and all deferred Document Library, ingestion, AI, security and deployment capabilities.
+
+## Current Decision State
+
+AD-046: Accepted.
+
+RFC-060: Contract Accepted — Implementation Gate Pending.
+
+Technical implementation remains prohibited until the accepted contract is committed, pushed, exact local/remote contract identity is verified and the working tree is clean.
+
+## Next Exact Action
+
+Commit and push the accepted RFC-060 / AD-046 contract and satisfy the implementation-entry Git gate.
