@@ -33,6 +33,539 @@ No item may be marked complete until:
 
 # Active Work
 
+## RFC-061 — Canonical Document-to-Knowledge Lineage Foundation Boundary
+
+### Status
+
+Contract Accepted — Implementation Gate Pending.
+
+Post-RFC-060 evidence-based architecture selection: complete.
+
+RFC-060 engineering-memory closure baseline:
+
+`7fff8ab3b350417ce25a1afd0308f2b570629afc`
+
+Architecture decision:
+
+`AD-047 — Canonical Document-to-Knowledge Lineage Foundation Boundary`
+
+AD-047 status: Accepted.
+
+RFC-061 / AD-047 Contract Acceptance Review: passed.
+
+Technical implementation is prohibited until the implementation-entry Git gate is satisfied.
+
+### Objective
+
+Establish the minimum canonical domain contract that can preserve the identity relationship between one canonical `EnterpriseDocument` and one canonical `KnowledgeRecord` derived from that Document.
+
+RFC-061 exists because external Document source references are traceability values rather than canonical PlantMind identity and MAY be shared by distinct canonical Documents.
+
+Document-derived Knowledge SHALL therefore not rely on `source_reference` alone when future architecture requires canonical Document-to-Knowledge lineage.
+
+### Architecture Evidence
+
+Accepted architecture establishes:
+
+- `EnterpriseDocument.id` as canonical Document identity;
+- `KnowledgeRecord.id` as canonical Knowledge identity;
+- `DocumentSource.source_reference` as external traceability rather than identity;
+- `KnowledgeProvenance` as origin metadata consisting of source type, source reference and capture time;
+- `KnowledgeSubject` as the optional primary contextual reference of Knowledge;
+- cross-record derivation and provenance relationships as a separately governed future contract.
+
+The previously considered Document Knowledge Ingestion boundary was rejected before commit because merely copying Document source metadata into `KnowledgeCaptureRequest` would lose canonical Document identity and collapse into a thin translation wrapper.
+
+### Canonical Domain Contract
+
+RFC-061 SHALL introduce:
+
+`DocumentKnowledgeLineage`
+
+under:
+
+`app.domain.document_knowledge_lineage`
+
+The canonical type SHALL be an immutable domain value representing one directed relationship:
+
+`EnterpriseDocument -> KnowledgeRecord`
+
+It SHALL contain exactly:
+
+- `document_id: EntityId`;
+- `knowledge_record_id: EntityId`.
+
+The relationship means:
+
+the identified canonical Knowledge record is derived from the identified canonical Enterprise Document.
+
+### Identity Boundary
+
+`document_id` SHALL contain the existing canonical `EnterpriseDocument.id`.
+
+`knowledge_record_id` SHALL contain the existing canonical `KnowledgeRecord.id`.
+
+RFC-061 SHALL use the shared canonical `EntityId`.
+
+RFC-061 SHALL NOT introduce:
+
+- `DocumentId`;
+- `KnowledgeId`;
+- `LineageId`;
+- a new identity generator;
+- a global identity service;
+- a database-generated identity.
+
+The lineage relation itself SHALL NOT receive a separate entity identity under RFC-061.
+
+### Domain Ownership Boundary
+
+`DocumentKnowledgeLineage` SHALL reference canonical identity without taking ownership of either Document or Knowledge.
+
+RFC-061 SHALL NOT:
+
+- construct an `EnterpriseDocument`;
+- construct a `KnowledgeRecord`;
+- modify either canonical entity;
+- duplicate Document validation;
+- duplicate Knowledge validation;
+- resolve either identity from a repository.
+
+The contract SHALL validate only that both supplied identifiers are canonical `EntityId` values.
+
+Invalid identifier types SHALL fail through existing `DomainException` semantics.
+
+### Dependency Boundary
+
+The production domain module SHALL depend only on the minimum shared domain primitives required to express the relation.
+
+It SHALL NOT depend on:
+
+- Document repository contracts;
+- Knowledge repository contracts;
+- application services;
+- infrastructure;
+- SQLAlchemy;
+- Psycopg;
+- Runtime;
+- Bootstrap;
+- Composition;
+- API;
+- parser;
+- search;
+- vector;
+- graph;
+- RAG;
+- LLM.
+
+The lineage domain contract SHALL NOT require repository or database access for validation.
+
+### Direction Semantics
+
+RFC-061 defines one explicit direction:
+
+`document_id -> knowledge_record_id`
+
+The source side is the canonical Document.
+
+The derived side is the canonical Knowledge record.
+
+RFC-061 SHALL NOT automatically define a reverse ownership relationship.
+
+A caller MAY navigate or index the relation differently in a future repository or graph boundary, but those persistence and query semantics are not part of RFC-061.
+
+### Provenance Separation
+
+RFC-061 SHALL NOT modify:
+
+`KnowledgeProvenance`
+
+Existing Knowledge provenance remains:
+
+- source type;
+- source reference;
+- capture timestamp.
+
+Document-to-Knowledge lineage is a canonical identity relationship and SHALL remain distinct from external-source provenance.
+
+RFC-061 SHALL NOT:
+
+- replace Knowledge provenance;
+- encode `document_id` into `source_reference`;
+- reinterpret `source_reference` as Document identity;
+- add Document identity to `KnowledgeProvenance`;
+- modify capture-time semantics.
+
+A future ingestion boundary MAY use both canonical lineage and existing provenance under its own accepted contract.
+
+### Knowledge Subject Separation
+
+RFC-061 SHALL NOT modify:
+
+`KnowledgeSubject`
+
+The Knowledge subject remains the optional primary contextual reference of the Knowledge record.
+
+A Document that produced Knowledge SHALL NOT automatically become the Knowledge subject merely because lineage exists.
+
+For example, Knowledge derived from a procedure Document MAY still have equipment as its primary Knowledge subject.
+
+Document lineage and Knowledge subject are separate semantics.
+
+### Source Reference Boundary
+
+`DocumentSource.source_reference` remains external/source-system traceability only.
+
+RFC-061 SHALL NOT interpret it as:
+
+- canonical Document identity;
+- canonical Knowledge identity;
+- lineage identity;
+- global uniqueness;
+- a repository alternate key;
+- a deduplication key;
+- proof of source authenticity;
+- proof of document approval.
+
+Equal source references MAY continue to exist on different canonical Document identities.
+
+Canonical lineage SHALL use canonical entity identity rather than external source-reference equality.
+
+### Cardinality Boundary
+
+One `DocumentKnowledgeLineage` value represents one Document-to-Knowledge identity pair.
+
+RFC-061 SHALL NOT decide global cardinality.
+
+It SHALL NOT establish whether:
+
+- one Document may derive many Knowledge records;
+- one Knowledge record may derive from multiple Documents;
+- duplicate lineage pairs are allowed in persistence;
+- one source is primary;
+- multiple sources are corroborating;
+- multiple derivations must be merged.
+
+Those semantics require future explicit architecture.
+
+RFC-053 restrictions on inferred multi-source provenance remain authoritative.
+
+### Equality and Uniqueness Boundary
+
+In-memory immutable value semantics SHALL NOT be interpreted as database uniqueness.
+
+RFC-061 SHALL NOT introduce:
+
+- unique constraints;
+- composite database keys;
+- duplicate exceptions;
+- deduplication behavior;
+- repository prechecks.
+
+Future repository and persistence contracts SHALL explicitly define duplicate and uniqueness semantics.
+
+### Persistence Boundary
+
+RFC-061 is domain-foundation only.
+
+It SHALL NOT introduce:
+
+- `DocumentKnowledgeLineageRepository`;
+- SQLAlchemy lineage models;
+- relational tables;
+- foreign keys;
+- indexes;
+- database constraints;
+- migrations;
+- Session ownership;
+- transactions;
+- commit or rollback behavior.
+
+Canonical Alembic head SHALL remain:
+
+`0003`
+
+A future persistence-neutral lineage repository requires a separate accepted contract.
+
+### Knowledge Capture Boundary
+
+RFC-061 SHALL NOT modify:
+
+`KnowledgeCaptureApplicationService`
+
+or:
+
+`KnowledgeCaptureRequest`
+
+RFC-061 SHALL NOT yet call Knowledge Capture.
+
+RFC-061 SHALL NOT:
+
+- construct Knowledge records;
+- generate Knowledge identity;
+- establish capture time;
+- persist Knowledge;
+- perform Document-to-Knowledge ingestion.
+
+The accepted Knowledge Capture boundary remains unchanged.
+
+### Document Registration Boundary
+
+RFC-061 SHALL NOT modify or call:
+
+`EnterpriseDocumentRegistrationApplicationService`
+
+Document registration remains separately owned by RFC-060 / AD-046.
+
+RFC-061 does not create, register or persist Documents.
+
+### Ingestion Boundary
+
+RFC-061 SHALL NOT introduce:
+
+`DocumentKnowledgeIngestionApplicationService`
+
+Document Knowledge ingestion remains deferred until canonical lineage foundations necessary to preserve Document identity are accepted and implemented.
+
+A future ingestion contract SHALL consume:
+
+- accepted canonical Document identity;
+- accepted Knowledge Capture boundary;
+- accepted Document-to-Knowledge lineage contracts;
+
+without bypassing their responsibilities.
+
+### Parsing and Extraction Boundary
+
+RFC-061 SHALL NOT introduce:
+
+- PDF parsing;
+- Word parsing;
+- spreadsheet parsing;
+- OCR;
+- text extraction;
+- table extraction;
+- section detection;
+- chunking;
+- automatic metadata extraction;
+- automatic classification.
+
+Existing empty parser seams remain unpromoted.
+
+### Document Library Boundary
+
+RFC-061 is not a Document Library.
+
+It SHALL NOT introduce:
+
+- upload;
+- download;
+- binary storage;
+- blobs;
+- filesystem storage;
+- object storage;
+- catalogue;
+- browse;
+- retrieval API;
+- permissions;
+- ownership;
+- retention;
+- archival;
+- synchronization.
+
+### Revision Boundary
+
+RFC-061 remains revision-neutral.
+
+It SHALL NOT establish:
+
+- Document revision identity;
+- version numbers;
+- revision numbers;
+- current revision;
+- supersession;
+- replacement;
+- revision history.
+
+Future revision semantics SHALL determine how lineage interacts with document revisions if and when revision architecture is accepted.
+
+### Search, Graph and AI Boundary
+
+RFC-061 SHALL NOT introduce:
+
+- keyword search;
+- full-text search;
+- semantic search;
+- ranking;
+- embeddings;
+- vector persistence;
+- Qdrant;
+- graph persistence;
+- Neo4j;
+- graph traversal;
+- RAG;
+- prompts;
+- LLM invocation;
+- summarization;
+- autonomous agents.
+
+The existence of a canonical lineage value does not establish Knowledge Graph capability.
+
+### Trust Boundary
+
+Document-to-Knowledge lineage means only that PlantMind records a derivation relationship between canonical identities.
+
+It does not establish:
+
+- source authenticity;
+- correctness;
+- trust;
+- document approval;
+- knowledge approval;
+- compliance approval;
+- safety approval;
+- authorization.
+
+Knowledge provenance remains separate from operational trust.
+
+### Composition and Runtime Boundary
+
+RFC-061 SHALL NOT modify:
+
+- `CompositionRoot`;
+- `ServiceContainer`;
+- `PlatformComposition`;
+- `ApplicationFacade`;
+- Runtime;
+- Bootstrap;
+- Health;
+- readiness;
+- request admission;
+- mandatory-capability policy.
+
+The domain value requires no default composition.
+
+### Transport and Integration Boundary
+
+RFC-061 SHALL introduce no:
+
+- FastAPI routes;
+- HTTP endpoints;
+- transport DTOs;
+- message bus;
+- event publication;
+- PI integration;
+- DCS integration;
+- OPC UA integration;
+- CMMS integration;
+- SAP integration;
+- File Server integration;
+- SharePoint integration;
+- document-control integration.
+
+AD-009 source-neutral architecture remains authoritative.
+
+### Security Boundary
+
+RFC-061 establishes no:
+
+- authentication;
+- authorization;
+- RBAC;
+- principal identity;
+- actor audit;
+- Active Directory;
+- LDAP;
+- MFA;
+- Cybersecurity approval.
+
+No production-readiness claim is implied.
+
+### Expected Technical Surface
+
+If implementation is later authorized, the expected production surface is exactly:
+
+- `backend/app/domain/document_knowledge_lineage.py`.
+
+Expected verification surface:
+
+- `tests/domain/test_document_knowledge_lineage.py`;
+- minimum architecture guardrails required to verify domain dependency direction.
+
+No existing production file is expected to change.
+
+No migration is expected.
+
+Any additional production file requires explicit evidence and review.
+
+### TDD Acceptance Requirements
+
+Technical implementation SHALL be test-driven.
+
+Tests SHALL demonstrate at minimum:
+
+- `DocumentKnowledgeLineage` is immutable;
+- valid canonical Document and Knowledge `EntityId` values are preserved exactly;
+- non-`EntityId` Document identity is rejected with `DomainException`;
+- non-`EntityId` Knowledge identity is rejected with `DomainException`;
+- no identity is generated by the lineage value;
+- no repository access occurs;
+- no database access occurs;
+- no Document or Knowledge entity reconstruction occurs;
+- the production module introduces no application-service dependency;
+- the production module introduces no repository dependency;
+- the production module introduces no SQLAlchemy or Psycopg dependency;
+- the production module does not alter `KnowledgeProvenance`;
+- the production module does not alter `KnowledgeSubject`;
+- the production module does not use Document source reference as canonical lineage identity;
+- default Composition and Runtime behavior remain unchanged;
+- canonical Alembic head remains `0003`.
+
+### Contract Acceptance Gate
+
+RFC-061 / AD-047 Contract Acceptance Review: passed.
+
+The review confirmed absence of:
+
+- source-reference-as-identity semantics;
+- Knowledge provenance redesign;
+- forced Document identity as Knowledge subject;
+- competing entity identity types;
+- generated lineage identity;
+- repository ownership;
+- persistence ownership;
+- migration ownership;
+- ingestion ownership;
+- parser/OCR ownership;
+- revision ownership;
+- Document Library ownership;
+- search/vector/graph/RAG/LLM ownership;
+- default-composition coupling;
+- Runtime-authority expansion;
+- unsupported security or production-readiness claims.
+
+### Current Contract State
+
+RFC-061: Contract Accepted — Implementation Gate Pending.
+
+AD-047: Accepted.
+
+Technical implementation remains prohibited until:
+
+1. this accepted RFC-061 / AD-047 contract is committed;
+2. the contract commit is pushed;
+3. exact local/remote contract identity is verified;
+4. the working tree is clean.
+
+### Next Exact Action
+
+Commit and push the accepted RFC-061 / AD-047 contract.
+
+Do not implement RFC-061 before the implementation-entry Git gate is satisfied.
+
+
+---
+
 ## RFC-060 — Canonical Enterprise Document Registration Application Boundary
 
 ### Status

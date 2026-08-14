@@ -5957,3 +5957,196 @@ Complete and commit the RFC-060 engineering-memory and post-implementation archi
 After that closure is pushed and verified, select the next architecture workstream from current evidence.
 
 Do not preselect RFC-061.
+
+---
+
+# AD-047 — Canonical Document-to-Knowledge Lineage Foundation Boundary
+
+## Status
+
+Accepted.
+
+RFC-061 / AD-047 Contract Acceptance Review: passed.
+
+Technical implementation is not authorized until the implementation-entry Git gate is satisfied.
+
+## Context
+
+PlantMind now has canonical Enterprise Document identity and canonical Knowledge identity.
+
+External Document source references remain intentionally distinct from canonical PlantMind identity and MAY be shared by multiple canonical Documents.
+
+Knowledge provenance currently records source type, source reference and capture timestamp.
+
+Knowledge subject is the optional primary contextual reference of a Knowledge record.
+
+RFC-053 explicitly deferred derivation and provenance relationships to a future explicit contract.
+
+A proposed Document Knowledge Ingestion contract was reviewed and rejected before commit because propagating only external Document source metadata into Knowledge would lose the canonical Document identity and create a thin translation wrapper over Knowledge Capture.
+
+## Decision
+
+PlantMind SHALL establish a canonical identity-level relationship:
+
+`DocumentKnowledgeLineage`
+
+under:
+
+`app.domain.document_knowledge_lineage`
+
+containing exactly:
+
+- `document_id: EntityId`;
+- `knowledge_record_id: EntityId`.
+
+It represents the directed semantic relationship:
+
+the canonical Knowledge record identified by `knowledge_record_id` is derived from the canonical Enterprise Document identified by `document_id`.
+
+## Identity Decision
+
+The relation reuses canonical entity identities.
+
+No new `DocumentId`, `KnowledgeId` or `LineageId` is introduced.
+
+The lineage value does not generate identity.
+
+It does not own either referenced entity.
+
+## Provenance Decision
+
+AD-047 SHALL NOT modify `KnowledgeProvenance`.
+
+Existing source type, source reference and capture-time semantics remain authoritative.
+
+Canonical Document lineage and external-source provenance are separate concepts.
+
+Document identity SHALL NOT be hidden inside provenance `source_reference`.
+
+## Subject Decision
+
+AD-047 SHALL NOT modify `KnowledgeSubject`.
+
+Document derivation SHALL NOT automatically replace the Knowledge record's primary contextual subject.
+
+Lineage and subject semantics remain separate.
+
+## Source Reference Decision
+
+`DocumentSource.source_reference` remains external traceability only.
+
+It SHALL NOT become lineage identity, canonical identity, uniqueness or deduplication identity.
+
+Canonical lineage therefore references `EnterpriseDocument.id`, not equality of source references.
+
+## Cardinality Decision
+
+AD-047 defines one directed identity pair only.
+
+It does not establish global one-to-one, one-to-many or many-to-many cardinality semantics.
+
+It does not establish corroboration, primary-source, merge or multi-source derivation rules.
+
+Those require future contracts.
+
+## Persistence Decision
+
+AD-047 establishes no repository or persistence contract.
+
+No lineage table, foreign key, unique constraint, index or Alembic migration is introduced.
+
+Persistence-neutral lineage repository semantics remain future architecture work.
+
+## Application Decision
+
+AD-047 does not establish Document Knowledge ingestion.
+
+It does not call Knowledge Capture or Document Registration.
+
+A future ingestion boundary must preserve canonical lineage rather than reducing Document identity to external source-reference metadata.
+
+## Parsing and Library Decision
+
+AD-047 introduces no parsing, OCR, extraction, chunking, Document Library, binary storage, catalogue or source synchronization.
+
+## Revision Decision
+
+AD-047 is revision-neutral.
+
+Document revision and supersession architecture remain separate.
+
+Future revision architecture must explicitly determine lineage interaction with revisions.
+
+## Search and AI Decision
+
+AD-047 establishes no search, vector, graph, RAG or LLM capability.
+
+A domain lineage relation is not equivalent to a Knowledge Graph implementation.
+
+## Trust Decision
+
+Lineage records derivation identity only.
+
+It does not establish authenticity, correctness, trust, authorization, approval, compliance or safety acceptance.
+
+## Composition and Runtime Decision
+
+AD-047 introduces no default composition, Runtime, Bootstrap, Health or request-admission change.
+
+## Security Decision
+
+AD-047 establishes no authentication, authorization, RBAC, actor audit, Active Directory, LDAP, MFA or Cybersecurity readiness.
+
+## Alternatives Rejected
+
+### Extend KnowledgeProvenance with Document identity
+
+Rejected because canonical Knowledge provenance already has accepted origin semantics and relational persistence.
+
+Document-to-Knowledge derivation is an explicit cross-record identity relationship and should not silently redefine provenance.
+
+### Encode Document identity in source_reference
+
+Rejected because source reference is intentionally opaque external traceability and MAY be shared by multiple canonical Documents.
+
+### Force Document identity into KnowledgeSubject
+
+Rejected because subject represents primary contextual reference and may correctly refer to equipment or another domain entity.
+
+### Implement Document Knowledge ingestion immediately
+
+Rejected because ingestion without a canonical identity-level lineage contract would lose canonical Document identity or collapse into a thin Knowledge Capture translation wrapper.
+
+### Introduce lineage persistence immediately
+
+Rejected because the canonical relationship semantics must be accepted independently before repository and relational technology decisions.
+
+### Implement graph lineage directly
+
+Rejected because canonical domain semantics must not be defined by Neo4j or graph technology.
+
+## Consequences
+
+PlantMind gains a minimal canonical Document-to-Knowledge derivation identity contract.
+
+Existing Document, Knowledge, provenance, subject, repository, persistence, Capture and Registration responsibilities remain unchanged.
+
+Future repository, relational persistence and ingestion work can build on the lineage contract without inventing competing identity semantics.
+
+## Contract Acceptance
+
+RFC-061 / AD-047 Contract Acceptance Review: passed.
+
+No production implementation is authorized until the accepted contract is committed, pushed and verified.
+
+## Current Decision State
+
+AD-047: Accepted.
+
+RFC-061: Contract Accepted — Implementation Gate Pending.
+
+## Next Exact Action
+
+Commit and push this accepted contract.
+
+Do not implement RFC-061 before Git implementation-entry verification.

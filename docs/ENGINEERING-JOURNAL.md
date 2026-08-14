@@ -3312,3 +3312,91 @@ No architectural restart or broad redesign is authorized.
 No RFC-061 workstream is preselected.
 
 The next workstream must be selected from current repository, project-charter and architecture evidence only after this documentation closure is committed and pushed.
+
+---
+
+## 2026-08-14 — RFC-061 Document-to-Knowledge Lineage Selection and Contract Acceptance
+
+### Outcome
+
+The first RFC-061 Document Knowledge Ingestion draft was rejected before commit.
+
+No production code or accepted architecture was damaged.
+
+The review discovered that copying only Document source type and source reference into Knowledge Capture would fail to preserve canonical `EnterpriseDocument.id`.
+
+Because Document source references are non-unique traceability, that design could not reliably identify the canonical Document from which Knowledge was derived.
+
+### Evidence-Based Refinement
+
+The correct RFC-061 workstream is:
+
+`RFC-061 — Canonical Document-to-Knowledge Lineage Foundation Boundary`
+
+under:
+
+`AD-047 — Canonical Document-to-Knowledge Lineage Foundation Boundary`
+
+RFC-053 already reserved cross-record derivation and provenance relationships for a future explicit contract.
+
+RFC-061 now fulfills that missing prerequisite without redefining existing Knowledge provenance.
+
+### Accepted Canonical Contract
+
+RFC-061 establishes immutable:
+
+`DocumentKnowledgeLineage`
+
+with exactly:
+
+- `document_id: EntityId`;
+- `knowledge_record_id: EntityId`.
+
+The relation preserves canonical PlantMind identity from Document to derived Knowledge.
+
+### Preserved Separation
+
+RFC-061 does not modify:
+
+- `EnterpriseDocument`;
+- `KnowledgeRecord`;
+- `KnowledgeProvenance`;
+- `KnowledgeSubject`;
+- Knowledge Capture;
+- Document Registration;
+- repositories;
+- relational schemas;
+- Alembic;
+- default composition;
+- Runtime.
+
+### Deferred Work
+
+RFC-061 does not yet establish:
+
+- lineage repository semantics;
+- relational lineage persistence;
+- duplicate/cardinality rules;
+- Document Knowledge ingestion;
+- parser/OCR;
+- revision lifecycle;
+- Document Library;
+- search/vector/graph/RAG/LLM;
+- production security or Cybersecurity readiness.
+
+### Verification Baseline
+
+Before contract recording:
+
+- branch: `feature/engineering-platform`;
+- local baseline: `7fff8ab3b350417ce25a1afd0308f2b570629afc`;
+- remote baseline: `7fff8ab3b350417ce25a1afd0308f2b570629afc`;
+- Alembic head: `0003`;
+- full regression: 653 passed;
+- working tree: clean.
+
+### Contract Acceptance
+
+RFC-061 / AD-047 Contract Acceptance Review: passed.
+
+Technical implementation remains prohibited until the accepted contract is committed, pushed, exact local/remote identity is verified and the working tree is clean.
