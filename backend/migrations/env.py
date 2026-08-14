@@ -13,6 +13,9 @@ from app.infrastructure.database.metadata import DatabaseBase
 from app.infrastructure.knowledge.models import (
     KnowledgeRecordRow as _KnowledgeRecordRow,
 )
+from app.infrastructure.document.models import (
+    EnterpriseDocumentRow as _EnterpriseDocumentRow,
+)
 
 
 target_metadata = DatabaseBase.metadata
