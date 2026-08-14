@@ -888,7 +888,25 @@ RFC-058 verification:
 
 RFC-058 does not introduce or claim relational Document persistence, SQLAlchemy Document adapters, schema migrations, Document Library behavior, revision lifecycle, ingestion, parsing, search, AI capability, default production composition, production security, Cybersecurity approval or production readiness.
 
-The next exact action is to commit and push the RFC-058 engineering-memory closure, then perform the required post-RFC-058 Source-of-Truth architecture review before selecting another RFC.
+The required post-RFC-058 Source-of-Truth architecture review is complete.
+
+The review confirmed that PlantMind now has both the canonical `EnterpriseDocument` domain and its persistence-neutral `EnterpriseDocumentRepository`, while relational Document persistence remains intentionally absent.
+
+Repository and architecture evidence identified the next missing prerequisite as the relational adapter boundary that implements the accepted repository port without expanding into Document Library, revision lifecycle, ingestion or search.
+
+The evidence-based next architecture direction is:
+
+`RFC-059 — Canonical Document Relational Persistence Adapter Boundary`
+
+RFC-059 status:
+
+Direction Selected — Contract Not Drafted.
+
+No architecture decision for RFC-059 has been drafted or accepted.
+
+No RFC-059 technical implementation is authorized.
+
+The next exact action is to draft the RFC-059 architecture contract and proposed architecture decision for review before any implementation.
 
 ## 15. Session Continuation Instruction
 

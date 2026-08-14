@@ -2618,3 +2618,115 @@ RFC-058 did not introduce:
 Commit and push the RFC-058 engineering-memory closure.
 
 Then perform the required post-RFC-058 Source-of-Truth architecture review before selecting another architecture workstream.
+
+---
+
+## 2026-08-14 — Post-RFC-058 Source-of-Truth Architecture Review
+
+### Outcome
+
+Complete.
+
+### Starting State
+
+RFC-058 / AD-044 is technically complete.
+
+PlantMind now has:
+
+- canonical `EnterpriseDocument`;
+- persistence-neutral `EnterpriseDocumentRepository`;
+- canonical `EntityId` duplicate semantics;
+- stable separation between Document domain and repository responsibility.
+
+RFC-058 intentionally introduced no relational Document persistence.
+
+### Evidence Reviewed
+
+The review inspected:
+
+- canonical Document domain and repository boundaries;
+- current Document infrastructure surface;
+- canonical database metadata authority;
+- Alembic environment behavior;
+- current migration chain;
+- accepted Knowledge relational model, mapping and repository adapter;
+- Document Library, revision, ingestion and search deferrals in the Source of Truth.
+
+### Findings
+
+No relational Document infrastructure currently exists.
+
+Specifically absent are:
+
+- relational `EnterpriseDocument` row/model;
+- canonical-to-relational Document mapper;
+- SQLAlchemy implementation of `EnterpriseDocumentRepository`;
+- Document relational table;
+- Document Alembic migration.
+
+The existing database foundation already owns:
+
+- relational metadata through `DatabaseBase.metadata`;
+- canonical database runtime;
+- Alembic schema lifecycle.
+
+The Knowledge persistence implementation provides an accepted architectural precedent for keeping:
+
+- canonical domain;
+- persistence-neutral repository;
+- infrastructure relational model;
+- explicit mapping;
+- SQLAlchemy repository adapter;
+- schema migration
+
+as distinct responsibilities.
+
+### Direction Selected
+
+`RFC-059 — Canonical Document Relational Persistence Adapter Boundary`
+
+Status:
+
+Direction Selected — Contract Not Drafted.
+
+### Preliminary Scope Direction
+
+The future RFC-059 contract may establish:
+
+- infrastructure-owned `EnterpriseDocument` relational representation;
+- explicit Document domain/row mapping;
+- SQLAlchemy implementation of `EnterpriseDocumentRepository`;
+- the next Alembic Document schema migration;
+- required Document-model registration with canonical metadata lifecycle.
+
+### Preserved Deferrals
+
+The review does not authorize:
+
+- source-reference uniqueness or identity;
+- revisions or version lifecycle;
+- update/delete/upsert;
+- list or search;
+- Document Library behavior;
+- binary/file storage;
+- ingestion;
+- parsing/OCR;
+- document-to-Knowledge transformation;
+- vector/graph/RAG/LLM capability;
+- default production composition;
+- security expansion;
+- production-readiness claims.
+
+### Governance State
+
+No RFC-059 architecture decision has been drafted or accepted.
+
+No RFC-059 contract has been accepted.
+
+No implementation gate is open.
+
+No RFC-059 code is authorized.
+
+### Next Exact Action
+
+Draft the RFC-059 architecture contract and proposed architecture decision for Contract Acceptance Review.

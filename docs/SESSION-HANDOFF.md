@@ -1261,9 +1261,36 @@ RFC-058 verification:
 - Exact local/remote technical commit identity: verified
 - Working tree after technical push: clean
 
+## Post-RFC-058 Architecture Review Outcome
+
+The required post-RFC-058 Source-of-Truth architecture review is complete.
+
+The review confirmed:
+
+- canonical `EnterpriseDocument` exists;
+- persistence-neutral `EnterpriseDocumentRepository` exists;
+- no relational Document model exists;
+- no SQLAlchemy Document repository adapter exists;
+- no Document migration exists;
+- the canonical database runtime, metadata and Alembic lifecycle already exist;
+- the accepted Knowledge relational persistence implementation provides a relevant architectural precedent;
+- Document revision lifecycle, Document Library, ingestion and search remain separately governed.
+
+The selected next architecture direction is:
+
+`RFC-059 — Canonical Document Relational Persistence Adapter Boundary`
+
+Status:
+
+Direction Selected — Contract Not Drafted.
+
+No RFC-059 architecture decision has been drafted or accepted.
+
+No RFC-059 implementation is authorized.
+
 ## Next Exact Action
 
-Commit and push the RFC-058 engineering-memory closure, then perform the required post-RFC-058 Source-of-Truth architecture review before selecting another architecture RFC.
+Draft the RFC-059 architecture contract and proposed architecture decision, then perform Contract Acceptance Review before opening any implementation gate.
 
 ## Required Test Command
 

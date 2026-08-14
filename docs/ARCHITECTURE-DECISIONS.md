@@ -5450,6 +5450,94 @@ AD-044: Accepted.
 
 RFC-058: Technically Complete.
 
+## Post-RFC-058 Source-of-Truth Architecture Review
+
+The required post-RFC-058 Source-of-Truth architecture review is complete.
+
+### Review Evidence
+
+The review confirmed that:
+
+- AD-043 / RFC-057 established canonical `EnterpriseDocument`;
+- AD-044 / RFC-058 established the persistence-neutral `EnterpriseDocumentRepository`;
+- no relational Document row/model currently exists;
+- no relational Document mapper currently exists;
+- no SQLAlchemy Document repository adapter currently exists;
+- no Document relational schema or Alembic migration currently exists;
+- `DatabaseBase.metadata` remains the canonical relational metadata authority;
+- Alembic remains the sole schema-migration authority;
+- existing Knowledge relational persistence demonstrates the accepted separation between canonical domain, persistence-neutral repository port and infrastructure-owned relational adapter;
+- the current migration chain ends with the Knowledge schema introduced after the canonical database foundation;
+- Document revision semantics remain undecided;
+- Document Library behavior remains separately governed;
+- document ingestion remains separately governed;
+- document search remains separately governed.
+
+### Architecture Direction Selected
+
+The next evidence-based architecture direction is:
+
+`RFC-059 — Canonical Document Relational Persistence Adapter Boundary`
+
+RFC-059 status:
+
+Direction Selected — Contract Not Drafted.
+
+No architecture decision for RFC-059 has been drafted or accepted by this review.
+
+No implementation gate is open.
+
+### Preliminary Boundary
+
+A future RFC-059 contract may define, subject to Contract Acceptance Review:
+
+- an infrastructure-owned relational representation of `EnterpriseDocument`;
+- explicit mapping between canonical `EnterpriseDocument` and its relational representation;
+- a SQLAlchemy implementation of the accepted `EnterpriseDocumentRepository`;
+- the next canonical Alembic migration required for Document relational persistence;
+- explicit registration of the Document relational model with the canonical metadata lifecycle where required.
+
+The preliminary relational shape is limited to canonical RFC-057 state:
+
+- canonical Document identity;
+- document type;
+- title;
+- source type;
+- source reference.
+
+The review does not authorize:
+
+- source-reference uniqueness;
+- source-reference identity;
+- revision/version columns;
+- update/delete/upsert;
+- list/search/query;
+- search indexes;
+- document binary or file storage;
+- Document Library behavior;
+- ingestion;
+- parsing or OCR;
+- Knowledge transformation;
+- vector, graph, RAG or LLM capability;
+- default production composition;
+- mandatory database startup;
+- authentication or authorization expansion;
+- Cybersecurity approval or production-readiness claims.
+
+### Review Outcome
+
+Post-RFC-058 Source-of-Truth architecture review: complete.
+
+RFC-059 direction: selected.
+
+RFC-059 contract: not drafted.
+
+RFC-059 architecture decision: not drafted.
+
+RFC-059 technical implementation: not authorized.
+
 ## Next Exact Action
 
-Commit and push the RFC-058 engineering-memory closure, then perform the required post-RFC-058 Source-of-Truth architecture review before selecting or authorizing another architecture workstream.
+Draft the RFC-059 architecture contract and proposed architecture decision.
+
+Perform Contract Acceptance Review before committing an accepted contract or opening any implementation gate.

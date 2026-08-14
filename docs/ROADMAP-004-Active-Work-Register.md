@@ -33,6 +33,97 @@ No item may be marked complete until:
 
 # Active Work
 
+## RFC-059 — Canonical Document Relational Persistence Adapter Boundary
+
+### Status
+
+Direction Selected — Contract Not Drafted.
+
+Post-RFC-058 Source-of-Truth architecture review: complete.
+
+Architecture decision: not drafted.
+
+Contract acceptance: not performed.
+
+Technical implementation: not authorized.
+
+Implementation gate: closed.
+
+### Evidence-Based Direction
+
+RFC-057 established canonical `EnterpriseDocument`.
+
+RFC-058 established the persistence-neutral `EnterpriseDocumentRepository`.
+
+The current repository contains no relational Document model, mapper, SQLAlchemy Document repository adapter or Document migration.
+
+The canonical database runtime, `DatabaseBase.metadata` authority and Alembic schema lifecycle already exist.
+
+The accepted Knowledge relational persistence implementation provides an architectural precedent for a separate infrastructure-owned relational adapter boundary.
+
+### Preliminary Objective
+
+Establish the minimum relational persistence adapter required to implement the accepted `EnterpriseDocumentRepository` without expanding canonical Document semantics or introducing Document Library, revision lifecycle, ingestion or search responsibility.
+
+### Preliminary Scope Direction
+
+Subject to RFC-059 Contract Acceptance Review, the workstream may include:
+
+- infrastructure-owned relational representation of `EnterpriseDocument`;
+- explicit canonical Document ↔ relational row mapping;
+- SQLAlchemy implementation of `EnterpriseDocumentRepository`;
+- the next canonical Alembic migration for Document relational persistence;
+- required registration of the relational Document model with the canonical metadata lifecycle.
+
+### Preliminary Relational State
+
+The relational representation is expected to persist only accepted canonical Document state:
+
+- `id`;
+- `document_type`;
+- `title`;
+- `source_type`;
+- `source_reference`.
+
+Canonical identity remains shared `EntityId`.
+
+`DocumentSource.source_reference` remains opaque external traceability and SHALL NOT become canonical identity or globally unique persistence key.
+
+### Explicitly Not Authorized
+
+RFC-059 direction selection does not authorize:
+
+- implementation code;
+- source-reference uniqueness;
+- source-reference lookup;
+- revision/version identity;
+- supersession or current-revision behavior;
+- update/delete/upsert;
+- list/search/filter/query/ranking;
+- search indexes;
+- document binary/file storage;
+- Document Library behavior;
+- ingestion;
+- parsing/OCR;
+- Knowledge transformation;
+- vector persistence;
+- graph persistence;
+- RAG;
+- LLM invocation;
+- default production composition;
+- mandatory database startup;
+- security-model expansion;
+- Cybersecurity approval;
+- production-readiness claims.
+
+### Next Exact Action
+
+Draft the RFC-059 architecture contract and proposed architecture decision.
+
+Perform Contract Acceptance Review before opening any implementation gate.
+
+---
+
 ## RFC-058 — Canonical Enterprise Document Repository Foundation Boundary
 
 ### Status
