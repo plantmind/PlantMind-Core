@@ -1282,15 +1282,21 @@ The selected next architecture direction is:
 
 Status:
 
-Direction Selected — Contract Not Drafted.
+Contract Accepted — Implementation Gate Pending.
 
-No RFC-059 architecture decision has been drafted or accepted.
+Architecture decision:
 
-No RFC-059 implementation is authorized.
+`AD-045 — Canonical Document Relational Persistence Adapter Boundary`
+
+AD-045 status: Accepted.
+
+RFC-059 / AD-045 Contract Acceptance Review: passed.
+
+Technical implementation remains unauthorized until the implementation-entry Git gate is satisfied.
 
 ## Next Exact Action
 
-Draft the RFC-059 architecture contract and proposed architecture decision, then perform Contract Acceptance Review before opening any implementation gate.
+Commit and push the accepted RFC-059 / AD-045 architecture contract, verify exact local/remote commit identity and verify a clean working tree before implementation.
 
 ## Required Test Command
 

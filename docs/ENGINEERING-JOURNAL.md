@@ -2730,3 +2730,172 @@ No RFC-059 code is authorized.
 ### Next Exact Action
 
 Draft the RFC-059 architecture contract and proposed architecture decision for Contract Acceptance Review.
+
+---
+
+## 2026-08-14 — RFC-059 / AD-045 Contract Draft
+
+### Workstream
+
+`RFC-059 — Canonical Document Relational Persistence Adapter Boundary`
+
+### Proposed Architecture Decision
+
+`AD-045 — Canonical Document Relational Persistence Adapter Boundary`
+
+### Current State
+
+RFC-059: Contract Draft — Under Architecture Review.
+
+AD-045: Proposed.
+
+Contract acceptance: not performed.
+
+Technical implementation: not authorized.
+
+Implementation gate: closed.
+
+### Draft Scope
+
+The draft proposes the minimum relational implementation of the accepted `EnterpriseDocumentRepository`.
+
+It preserves canonical `EntityId` identity and non-unique `DocumentSource.source_reference` traceability.
+
+Expected persistence responsibilities are limited to:
+
+- relational Document representation;
+- explicit domain/row mapping;
+- SQLAlchemy repository adapter;
+- deterministic session ownership;
+- repository transaction semantics;
+- structured duplicate classification;
+- `enterprise_documents`;
+- `pk_enterprise_documents`;
+- Alembic revision `0003`;
+- canonical metadata registration.
+
+### Explicit Deferrals
+
+The draft does not authorize:
+
+- revision/version semantics;
+- update/delete/upsert;
+- search;
+- Document Library;
+- binary/file storage;
+- ingestion;
+- parsing/OCR;
+- Knowledge transformation;
+- vector/graph/RAG/LLM capability;
+- default production composition;
+- production PostgreSQL readiness;
+- Cybersecurity approval.
+
+### Contract Review Refinements
+
+Pre-acceptance review identified and incorporated three tightening refinements:
+
+1. RFC-059 now fixes the canonical infrastructure contract names:
+   - `EnterpriseDocumentRow`;
+   - `document_to_row(...)`;
+   - `row_to_document(...)`;
+   - `SQLAlchemyEnterpriseDocumentRepository`.
+2. Alembic Document metadata registration is mandatory rather than optional and SHALL explicitly load `EnterpriseDocumentRow`.
+3. PostgreSQL duplicate translation requires both SQLSTATE `23505` and diagnostic constraint identity `pk_enterprise_documents`; neither signal alone is sufficient.
+
+These refinements reduce implementation ambiguity without expanding RFC-059 scope.
+
+### Next Exact Action
+
+Perform RFC-059 / AD-045 Contract Acceptance Review.
+
+No code is authorized before contract acceptance and the implementation-entry Git gate.
+
+---
+
+## 2026-08-14 — RFC-059 / AD-045 Contract Acceptance Review
+
+### Outcome
+
+Passed.
+
+### Accepted Workstream
+
+`RFC-059 — Canonical Document Relational Persistence Adapter Boundary`
+
+### Accepted Architecture Decision
+
+`AD-045 — Canonical Document Relational Persistence Adapter Boundary`
+
+### Accepted Technical Contracts
+
+The accepted infrastructure contract fixes:
+
+- `EnterpriseDocumentRow`;
+- `document_to_row(document: EnterpriseDocument) -> EnterpriseDocumentRow`;
+- `row_to_document(row: EnterpriseDocumentRow) -> EnterpriseDocument`;
+- `SQLAlchemyEnterpriseDocumentRepository`.
+
+The accepted relational schema identity is:
+
+`enterprise_documents`
+
+with canonical primary-key constraint:
+
+`pk_enterprise_documents`
+
+and append-only Alembic revision:
+
+`0003`
+
+after `0002`.
+
+### Acceptance Findings
+
+The review confirmed:
+
+- canonical Document identity remains shared `EntityId`;
+- source reference remains non-unique traceability;
+- repository operations remain exactly `add()` and `get()`;
+- canonical Document and repository layers remain SQLAlchemy-free;
+- session factory is injected;
+- `DatabaseRuntime` retains engine/session lifecycle ownership;
+- `add()` owns one atomic repository transaction;
+- `get()` remains read-only;
+- duplicate translation requires both SQLSTATE `23505` and `pk_enterprise_documents`;
+- Alembic explicitly loads `EnterpriseDocumentRow` registration;
+- migration history remains linear and append-only;
+- default platform startup remains independent from PostgreSQL.
+
+### Preserved Deferrals
+
+RFC-059 still does not authorize:
+
+- revision/version semantics;
+- update/delete/upsert;
+- source-reference lookup or uniqueness;
+- Document Library;
+- binary/file storage;
+- ingestion;
+- parser/OCR;
+- search;
+- Knowledge transformation;
+- vector/graph/RAG/LLM capability;
+- default relational production composition;
+- Runtime authority expansion;
+- production PostgreSQL readiness;
+- Cybersecurity approval.
+
+### Current State
+
+RFC-059: Contract Accepted — Implementation Gate Pending.
+
+AD-045: Accepted.
+
+Technical implementation: not authorized.
+
+### Next Exact Action
+
+Commit and push the accepted RFC-059 / AD-045 contract.
+
+Verify exact local/remote commit identity and a clean working tree before technical implementation.

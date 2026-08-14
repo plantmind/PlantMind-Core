@@ -5541,3 +5541,194 @@ RFC-059 technical implementation: not authorized.
 Draft the RFC-059 architecture contract and proposed architecture decision.
 
 Perform Contract Acceptance Review before committing an accepted contract or opening any implementation gate.
+
+---
+
+# AD-045 — Canonical Document Relational Persistence Adapter Boundary
+
+## Status
+
+Accepted.
+
+RFC-059 Contract Acceptance Review: passed.
+
+Technical implementation: not authorized until the implementation-entry Git gate is satisfied.
+
+## Context
+
+AD-043 / RFC-057 established canonical immutable `EnterpriseDocument`.
+
+AD-044 / RFC-058 established `EnterpriseDocumentRepository`.
+
+AD-040 / RFC-054 established canonical relational runtime, session-factory ownership, `DatabaseBase.metadata` and Alembic schema lifecycle.
+
+The post-RFC-058 review confirmed that no relational Document model, mapper, SQLAlchemy repository adapter or Document migration currently exists.
+
+AD-041 / RFC-055 provides the accepted relational persistence precedent.
+
+## Proposed Decision
+
+PlantMind SHALL introduce one infrastructure-owned SQLAlchemy implementation of:
+
+`EnterpriseDocumentRepository`
+
+under:
+
+`app.infrastructure.document`
+
+The canonical infrastructure contracts are proposed as:
+
+- `EnterpriseDocumentRow`;
+- `document_to_row(...)`;
+- `row_to_document(...)`;
+- `SQLAlchemyEnterpriseDocumentRepository`.
+
+The canonical domain and persistence-neutral repository SHALL remain unchanged.
+
+The adapter SHALL implement only:
+
+- `add(document: EnterpriseDocument) -> None`;
+- `get(document_id: EntityId) -> EnterpriseDocument | None`.
+
+## Relational Representation
+
+The canonical relational table SHALL be:
+
+`enterprise_documents`
+
+It SHALL preserve:
+
+- canonical UUID identity;
+- document type;
+- title;
+- source type;
+- source reference.
+
+The primary-key constraint SHALL be:
+
+`pk_enterprise_documents`
+
+`source_reference` SHALL remain non-unique external traceability.
+
+## Domain Boundary
+
+`app.domain.document` and `app.document.repository` SHALL remain SQLAlchemy-free.
+
+Explicit mapping SHALL reconstruct canonical Document objects through approved constructors.
+
+Relational rows SHALL NOT replace canonical domain entities.
+
+## Session and Transaction Boundary
+
+The adapter SHALL receive the canonical session factory explicitly.
+
+It SHALL NOT create an independent engine, competing session factory, hidden configuration dependency or process-global Session.
+
+`DatabaseRuntime` remains engine/session lifecycle owner.
+
+`add()` SHALL commit atomically or roll back.
+
+`get()` SHALL remain read-only.
+
+No Unit of Work or cross-repository transaction coordination is introduced.
+
+## Duplicate Boundary
+
+The relational primary key SHALL remain the concurrency-safe duplicate authority.
+
+Only a structured PostgreSQL failure satisfying both:
+
+- SQLSTATE `23505`;
+- diagnostic constraint identity `pk_enterprise_documents`
+
+SHALL translate to:
+
+`EnterpriseDocumentAlreadyExistsError`
+
+Neither SQLSTATE nor constraint identity alone is sufficient.
+
+No human-readable error-message parsing is permitted.
+
+No pre-insert lookup SHALL become authoritative duplicate prevention.
+
+## Migration Boundary
+
+Alembic remains the canonical schema-migration authority.
+
+RFC-059 proposes revision:
+
+`0003`
+
+as the single linear successor to:
+
+`0002`
+
+Revision `0003` SHALL create `enterprise_documents`.
+
+Revisions `0001` and `0002` SHALL remain unchanged.
+
+The migration graph SHALL retain one canonical head.
+
+## Metadata Boundary
+
+The mapped Document table SHALL register with:
+
+`DatabaseBase.metadata`
+
+Alembic SHALL explicitly load `EnterpriseDocumentRow` registration in `backend/migrations/env.py` before using canonical metadata for schema comparison.
+
+The registration SHALL follow the existing Knowledge mapped-model registration pattern.
+
+Metadata registration SHALL create no engine, Session, database connection or migration side effect.
+
+## Composition and Runtime Boundary
+
+RFC-059 SHALL NOT make PostgreSQL mandatory in default platform composition or startup.
+
+Runtime, Bootstrap, readiness, admission and lifecycle authority remain unchanged.
+
+## Deferred Boundaries
+
+RFC-059 SHALL NOT introduce:
+
+- source-reference uniqueness or lookup;
+- revision/version semantics;
+- update/delete/upsert;
+- Document Library;
+- file/binary storage;
+- ingestion;
+- parser/OCR;
+- search;
+- Knowledge transformation;
+- vector/graph/RAG/LLM capability;
+- default relational production composition.
+
+## Security and Deployment
+
+Passing architecture or implementation verification SHALL NOT mean production PostgreSQL connectivity, production schema deployment, Cybersecurity approval or production readiness.
+
+Those remain separately gated.
+
+## Contract Acceptance
+
+RFC-059 Contract Acceptance Review: passed.
+
+The review found no competing Document identity, source-reference identity leakage, source-reference uniqueness assumption, hidden search capability, premature revision ownership, Document Library ownership, ingestion ownership, competing engine/session ownership, migration-history rewrite, default-composition coupling, Runtime-authority expansion or unsupported production-readiness claim.
+
+Pre-acceptance refinements fixed:
+
+- canonical infrastructure contract names;
+- mandatory Alembic metadata registration for `EnterpriseDocumentRow`;
+- strict duplicate classification requiring both SQLSTATE `23505` and `pk_enterprise_documents`.
+
+## Current Decision State
+
+AD-045: Accepted.
+
+RFC-059: Contract Accepted — Implementation Gate Pending.
+
+Technical implementation remains prohibited until the accepted contract is committed, pushed, exact local/remote commit identity is verified and the working tree is clean.
+
+## Next Exact Action
+
+Commit and push the accepted RFC-059 / AD-045 contract and satisfy the implementation-entry Git gate.

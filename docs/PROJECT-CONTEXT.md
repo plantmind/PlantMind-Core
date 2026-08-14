@@ -900,13 +900,31 @@ The evidence-based next architecture direction is:
 
 RFC-059 status:
 
-Direction Selected — Contract Not Drafted.
+Contract Accepted — Implementation Gate Pending.
 
-No architecture decision for RFC-059 has been drafted or accepted.
+Architecture decision:
 
-No RFC-059 technical implementation is authorized.
+`AD-045 — Canonical Document Relational Persistence Adapter Boundary`
 
-The next exact action is to draft the RFC-059 architecture contract and proposed architecture decision for review before any implementation.
+AD-045 status: Accepted.
+
+RFC-059 / AD-045 Contract Acceptance Review: passed.
+
+The accepted contract fixes:
+
+- `EnterpriseDocumentRow`;
+- `document_to_row(...)`;
+- `row_to_document(...)`;
+- `SQLAlchemyEnterpriseDocumentRepository`;
+- `enterprise_documents`;
+- `pk_enterprise_documents`;
+- Alembic revision `0003`;
+- explicit canonical metadata registration;
+- structured duplicate classification requiring SQLSTATE `23505` and `pk_enterprise_documents`.
+
+Technical implementation remains unauthorized until the accepted contract is committed, pushed, exact local/remote commit identity is verified and the working tree is clean.
+
+The next exact action is to commit and push the accepted RFC-059 / AD-045 contract and satisfy the implementation-entry Git gate.
 
 ## 15. Session Continuation Instruction
 
