@@ -37,7 +37,7 @@ No item may be marked complete until:
 
 ### Status
 
-Contract Accepted — Implementation Gate Pending.
+Technically Complete.
 
 Post-RFC-057 Source-of-Truth architecture review: complete.
 
@@ -51,7 +51,20 @@ AD-044 status: Accepted.
 
 RFC-058 contract acceptance: passed.
 
-Technical implementation: not authorized until the implementation-entry Git gate is satisfied.
+Contract commit: `b0af39f5a1a8df63e15203fa51349233136c9d2d`.
+
+Technical commit: `b0f7ffc67100ce1899f0d30d43c2eabf0d2f7a73`.
+
+Remote technical push and exact local/remote commit identity: verified.
+
+Technical verification:
+
+- Focused RFC-058 verification: 14 passed
+- Document + repository guardrails: 47 passed
+- Full PlantMind regression: 600 passed
+- Python compilation: passed
+- `git diff --check`: passed
+- Working tree after technical push: clean
 
 ### Objective
 
@@ -617,15 +630,20 @@ Two refinements were accepted before contract approval:
 - `app.document.__init__.py` remains empty and introduces no public re-export API;
 - future ingestion dependency shape remains a future architecture decision.
 
-### Current Contract State
+### Technical Completion State
 
-RFC-058 contract: Accepted — Implementation Gate Pending.
+RFC-058 contract: Accepted.
 
 AD-044: Accepted.
 
-Technical implementation: not authorized.
+RFC-058 technical implementation: complete.
 
-No implementation file SHALL be created until the implementation-entry Git gate is satisfied.
+Implemented canonical files:
+
+- `app.document.__init__` remains empty;
+- `app.document.repository` provides the accepted persistence-neutral repository contract.
+
+Technical implementation remains strictly within the accepted RFC-058 / AD-044 boundary.
 
 ### Contract Acceptance Review Requirements
 
@@ -662,11 +680,9 @@ Acceptance SHALL specifically verify that the contract does not accidentally int
 
 ### Next Exact Action
 
-Commit and push the accepted RFC-058 / AD-044 architecture contract.
+Commit and push the RFC-058 engineering-memory closure.
 
-Verify exact local/remote commit identity and verify a clean working tree.
-
-Do not implement RFC-058 until that implementation-entry Git gate is satisfied.
+Then perform the required post-RFC-058 Source-of-Truth architecture review before selecting, defining or implementing another architecture RFC.
 ---
 
 ## RFC-057 — Canonical Enterprise Document Foundation Boundary

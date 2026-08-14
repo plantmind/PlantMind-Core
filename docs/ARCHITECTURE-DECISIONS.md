@@ -5124,11 +5124,11 @@ RFC-058 / AD-044 Contract Acceptance Review is complete and passed.
 
 AD-044 is accepted.
 
-RFC-058 status is Contract Accepted — Implementation Gate Pending.
+RFC-058 implementation-entry Git gate was subsequently satisfied.
 
-Technical implementation remains not authorized until the accepted contract documentation is committed, pushed, exact local/remote commit identity is verified and the working tree is clean.
+The accepted contract was committed and pushed, exact local/remote contract commit identity was verified and the working tree was clean before implementation.
 
-The next required action is to satisfy that implementation-entry Git gate.
+RFC-058 technical implementation is now complete within the accepted AD-044 boundary.
 
 ---
 
@@ -5140,9 +5140,9 @@ Accepted.
 
 RFC-058 Contract Acceptance Review: passed.
 
-RFC-058 status: Contract Accepted — Implementation Gate Pending.
+RFC-058 implementation-entry Git gate: satisfied.
 
-Technical implementation is not authorized until the accepted contract passes the implementation-entry Git gate.
+RFC-058 technical implementation: complete.
 
 ## Context
 
@@ -5386,9 +5386,15 @@ If accepted:
 
 ## Contract Review Gate
 
-RFC-058 Contract Acceptance Review has passed and AD-044 is accepted.
+RFC-058 Contract Acceptance Review passed and AD-044 was accepted before implementation.
 
-Contract acceptance does not itself permit code implementation until the accepted RFC-058 / AD-044 documentation is committed, pushed, exact local/remote commit identity is verified and the working tree is clean.
+The accepted RFC-058 / AD-044 contract was committed and pushed as:
+
+`b0af39f5a1a8df63e15203fa51349233136c9d2d`
+
+Exact local/remote contract commit identity and a clean working tree were verified before technical implementation began.
+
+The implementation-entry Git gate was therefore satisfied.
 
 ## Contract Acceptance
 
@@ -5401,14 +5407,49 @@ The two acceptance refinements were incorporated before acceptance:
 - `app.document.__init__.py` remains empty and does not establish a new public re-export API;
 - future ingestion dependency shape remains undecided and RFC-058 does not force direct repository dependency.
 
+## Technical Completion
+
+RFC-058 technical implementation is complete within the accepted AD-044 boundary.
+
+The implementation introduced:
+
+- empty `app.document.__init__.py`;
+- persistence-neutral `app.document.repository`;
+- `EnterpriseDocumentAlreadyExistsError`;
+- abstract `EnterpriseDocumentRepository`;
+- exactly `add()` and `get()` repository operations.
+
+The implementation preserved:
+
+- canonical `EntityId` duplicate semantics only;
+- `DocumentSource.source_reference` as traceability rather than identity;
+- absence-as-`None` identity lookup;
+- no search or CRUD expansion;
+- no revision semantics;
+- no relational-infrastructure dependency;
+- no default composition change.
+
+Technical verification:
+
+- Contract commit: `b0af39f5a1a8df63e15203fa51349233136c9d2d`
+- Technical commit: `b0f7ffc67100ce1899f0d30d43c2eabf0d2f7a73`
+- Focused RFC-058 verification: 14 passed
+- Document + repository guardrails: 47 passed
+- Full PlantMind regression: 600 passed
+- Python compilation: passed
+- `git diff --check`: passed
+- Remote technical push: verified
+- Exact local/remote technical commit identity: verified
+- Working tree after technical push: clean
+
+The implementation introduced no SQLAlchemy Document adapter, Document table, migration, Document Library, revision lifecycle, ingestion, parsing, search, vector/graph/RAG/LLM capability, production composition or production-security claim.
+
 ## Current Decision State
 
 AD-044: Accepted.
 
-RFC-058: Contract Accepted — Implementation Gate Pending.
-
-Technical implementation: not authorized.
+RFC-058: Technically Complete.
 
 ## Next Exact Action
 
-Commit and push the accepted RFC-058 / AD-044 contract, verify exact local/remote commit identity and verify a clean working tree before authorizing technical implementation.
+Commit and push the RFC-058 engineering-memory closure, then perform the required post-RFC-058 Source-of-Truth architecture review before selecting or authorizing another architecture workstream.

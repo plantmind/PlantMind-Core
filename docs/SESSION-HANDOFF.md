@@ -1231,10 +1231,12 @@ is accepted.
 
 RFC-058 status:
 
-Contract Accepted — Implementation Gate Pending.
+Technically Complete.
 
-The accepted persistence-neutral repository contract contains exactly:
+The implemented persistence-neutral repository foundation contains exactly:
 
+- empty `app.document.__init__.py`;
+- `app.document.repository`;
 - `EnterpriseDocumentRepository`;
 - `EnterpriseDocumentAlreadyExistsError`;
 - `add(document: EnterpriseDocument) -> None`;
@@ -1244,13 +1246,24 @@ Canonical duplicate identity is `EntityId` only.
 
 `DocumentSource.source_reference` remains traceability rather than repository identity or uniqueness.
 
-No search, CRUD expansion, revision semantics, SQLAlchemy, migration, Document Library, ingestion or default production composition is accepted by RFC-058.
+No search, CRUD expansion, revision semantics, SQLAlchemy, migration, Document Library, ingestion or default production composition was introduced.
 
-Technical implementation is not authorized until the accepted contract passes the Git implementation-entry gate.
+RFC-058 verification:
+
+- Contract commit: `b0af39f5a1a8df63e15203fa51349233136c9d2d`
+- Technical commit: `b0f7ffc67100ce1899f0d30d43c2eabf0d2f7a73`
+- Focused RFC-058 verification: 14 passed
+- Document + repository guardrails: 47 passed
+- Full regression: 600 passed
+- Compilation: passed
+- `git diff --check`: passed
+- Remote technical push: verified
+- Exact local/remote technical commit identity: verified
+- Working tree after technical push: clean
 
 ## Next Exact Action
 
-Commit and push the accepted RFC-058 / AD-044 architecture contract, verify exact local/remote commit identity and verify a clean working tree before technical implementation.
+Commit and push the RFC-058 engineering-memory closure, then perform the required post-RFC-058 Source-of-Truth architecture review before selecting another architecture RFC.
 
 ## Required Test Command
 

@@ -2509,3 +2509,112 @@ Technical implementation: not authorized.
 ### Next Exact Action
 
 Commit and push the accepted RFC-058 / AD-044 architecture contract, verify exact local/remote commit identity and verify a clean working tree before authorizing technical implementation.
+
+---
+
+## 2026-08-14 — RFC-058 Canonical Enterprise Document Repository Foundation Technical Completion
+
+### Outcome
+
+RFC-058 technical implementation is complete within accepted AD-044.
+
+### Git Gate
+
+Accepted contract commit:
+
+`b0af39f5a1a8df63e15203fa51349233136c9d2d`
+
+Technical implementation commit:
+
+`b0f7ffc67100ce1899f0d30d43c2eabf0d2f7a73`
+
+The technical commit was pushed successfully.
+
+Exact local/remote technical commit identity was verified.
+
+Working tree after technical push was clean.
+
+### Implemented Foundation
+
+RFC-058 introduced:
+
+- empty `backend/app/document/__init__.py`;
+- `backend/app/document/repository.py`;
+- `EnterpriseDocumentAlreadyExistsError`;
+- abstract `EnterpriseDocumentRepository`;
+- exactly `add(document: EnterpriseDocument) -> None`;
+- exactly `get(document_id: EntityId) -> EnterpriseDocument | None`.
+
+### Contract Semantics Preserved
+
+The implementation preserves:
+
+- canonical duplicate identity based only on `EnterpriseDocument.id` / `EntityId`;
+- no silent overwrite;
+- absent identity lookup returns `None`;
+- equal source references do not create canonical duplicate identity;
+- equal titles do not create canonical duplicate identity;
+- `DocumentSource.source_reference` remains traceability only;
+- package initializer remains empty.
+
+### TDD Evidence
+
+The implementation was developed test-first.
+
+Red phase failed as expected because:
+
+`app.document`
+
+did not yet exist.
+
+Green phase passed after introducing the accepted persistence-neutral repository boundary.
+
+A test filename collision with the existing Knowledge repository tests was identified during broader regression and corrected by renaming the RFC-058 test module to:
+
+`tests/document/test_document_repository.py`
+
+No production code or Pytest configuration change was required for that correction.
+
+### Verification
+
+- Focused RFC-058 verification: 14 passed
+- Document + repository guardrails: 47 passed
+- Full PlantMind regression: 600 passed
+- Python compilation: passed
+- forbidden implementation-expansion check: passed
+- `app.document.__init__.py`: 0 bytes
+- `git diff --check`: passed
+- Remote technical push: verified
+- Exact local/remote technical commit identity: verified
+- Working tree after technical push: clean
+
+### Preserved Boundaries
+
+RFC-058 did not introduce:
+
+- SQLAlchemy Document adapter;
+- Document database model;
+- Document table;
+- Alembic migration;
+- PostgreSQL Document persistence;
+- source-reference lookup;
+- list/search;
+- update/delete/upsert;
+- revision/version semantics;
+- Document Library;
+- ingestion;
+- parsing/OCR;
+- vector persistence;
+- Knowledge Graph persistence;
+- RAG;
+- LLM invocation;
+- default production composition;
+- production authentication/authorization;
+- Cybersecurity approval;
+- production deployment readiness.
+
+### Next Exact Action
+
+Commit and push the RFC-058 engineering-memory closure.
+
+Then perform the required post-RFC-058 Source-of-Truth architecture review before selecting another architecture workstream.
