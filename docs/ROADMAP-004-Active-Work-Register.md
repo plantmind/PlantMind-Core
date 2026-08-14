@@ -33,6 +33,292 @@ No item may be marked complete until:
 
 # Active Work
 
+---
+
+## RFC-062 — Canonical Document-to-Knowledge Lineage Repository Foundation Boundary
+
+### Status
+
+Contract Accepted — Implementation Gate Pending.
+
+RFC-062 / AD-048 Contract Acceptance Review: passed.
+
+Post-RFC-061 evidence-based architecture selection: complete.
+
+Selection baseline:
+
+`1fc8dda3adde6b78b46029df0767534ef24c9636`
+
+Proposed architecture decision:
+
+`AD-048 — Canonical Document-to-Knowledge Lineage Repository Foundation Boundary`
+
+AD-048 status:
+
+Accepted.
+
+### Objective
+
+Establish the minimum persistence-neutral repository contract for canonical `DocumentKnowledgeLineage` values without introducing relational persistence, application ingestion, query expansion or hidden business cardinality semantics.
+
+### Architecture Evidence
+
+Current accepted architecture establishes:
+
+- canonical `EnterpriseDocumentRepository` as a persistence-neutral Document repository port;
+- canonical `KnowledgeRecordRepository` as a persistence-neutral Knowledge repository port;
+- repository conflicts as repository-level exceptions rather than Domain validation errors;
+- `DocumentKnowledgeLineage` as an immutable directed canonical identity relation;
+- no accepted lineage repository or persistence contract;
+- no accepted lineage relational schema or migration;
+- no accepted Document Knowledge ingestion boundary.
+
+RFC-061 explicitly deferred lineage repository, persistence, uniqueness and duplicate semantics to future explicit architecture.
+
+### Proposed Repository Namespace
+
+RFC-062 SHALL introduce:
+
+`app.document_knowledge_lineage.repository`
+
+The package initializer:
+
+`app.document_knowledge_lineage.__init__`
+
+SHALL remain empty.
+
+RFC-062 SHALL NOT introduce a generic lineage framework or repository shared by unrelated future relationship types.
+
+### Proposed Repository Contract
+
+RFC-062 SHALL introduce:
+
+`DocumentKnowledgeLineageAlreadyExistsError`
+
+and:
+
+`DocumentKnowledgeLineageRepository`
+
+The repository SHALL be persistence-neutral.
+
+It SHALL expose exactly:
+
+`add(lineage: DocumentKnowledgeLineage) -> None`
+
+and:
+
+`get(document_id: EntityId, knowledge_record_id: EntityId) -> DocumentKnowledgeLineage | None`
+
+### Duplicate Identity Semantics
+
+Repository duplicate classification SHALL use the exact directed canonical identity pair:
+
+`(document_id, knowledge_record_id)`
+
+Re-adding the same directed pair SHALL raise:
+
+`DocumentKnowledgeLineageAlreadyExistsError`
+
+The repository SHALL NOT silently overwrite an existing canonical lineage relation.
+
+Neither `document_id` alone nor `knowledge_record_id` alone SHALL become repository duplicate identity under RFC-062.
+
+Therefore, at repository-storage level, distinct lineage pairs sharing one side are not duplicates and MAY coexist.
+
+This storage capability does not establish that such relationships are valid, authorized or meaningful at Business or Application level.
+
+RFC-062 does not establish:
+
+- business one-to-many policy;
+- business many-to-one policy;
+- corroboration semantics;
+- primary-source semantics;
+- merge semantics;
+- multi-source derivation authorization.
+
+Those higher-level semantics remain separately governed and require explicit future architecture.
+
+### Exact Retrieval Semantics
+
+`get(...)` SHALL perform exact-pair retrieval only.
+
+For an existing exact pair, it SHALL return the canonical `DocumentKnowledgeLineage`.
+
+For an absent exact pair, it SHALL return `None`.
+
+RFC-062 SHALL NOT introduce:
+
+- retrieval by Document alone;
+- retrieval by Knowledge alone;
+- reverse traversal;
+- list;
+- find;
+- search;
+- filter;
+- query;
+- pagination;
+- ranking.
+
+### Domain Ownership Boundary
+
+RFC-062 SHALL reuse:
+
+- `EntityId`;
+- `DocumentKnowledgeLineage`.
+
+The repository SHALL NOT:
+
+- generate identity;
+- construct Documents;
+- construct Knowledge records;
+- modify lineage values;
+- duplicate lineage Domain validation;
+- resolve referenced Document identity;
+- resolve referenced Knowledge identity;
+- call Document repositories;
+- call Knowledge repositories.
+
+Referenced-entity existence validation is not repository-port ownership under RFC-062.
+
+### Dependency Boundary
+
+The canonical repository port SHALL depend only on the minimum canonical contracts required to express its interface.
+
+It SHALL NOT depend on:
+
+- SQLAlchemy;
+- Psycopg;
+- infrastructure;
+- application services;
+- Runtime;
+- Bootstrap;
+- Composition;
+- FastAPI;
+- parser;
+- OCR;
+- search;
+- vector;
+- graph;
+- RAG;
+- LLM.
+
+### Persistence Boundary
+
+RFC-062 SHALL introduce no:
+
+- SQLAlchemy lineage row;
+- relational lineage table;
+- foreign key;
+- unique database constraint;
+- index;
+- Alembic migration;
+- Session ownership;
+- transaction;
+- commit;
+- rollback;
+- database-runtime composition.
+
+Canonical Alembic head SHALL remain:
+
+`0003`
+
+Relational lineage persistence requires a separate future accepted contract.
+
+### Application and Ingestion Boundary
+
+RFC-062 SHALL NOT introduce or modify:
+
+- `KnowledgeCaptureApplicationService`;
+- `EnterpriseDocumentRegistrationApplicationService`;
+- Document Knowledge ingestion;
+- application transaction orchestration;
+- compensation behavior.
+
+A future ingestion contract SHALL preserve canonical Document identity, Knowledge identity and lineage responsibilities without bypassing accepted boundaries.
+
+### Deferred Capabilities
+
+RFC-062 SHALL NOT introduce:
+
+- Document Library;
+- binary/file storage;
+- parsing;
+- OCR;
+- chunking;
+- revision lifecycle;
+- semantic search;
+- vector persistence;
+- graph persistence;
+- Neo4j;
+- RAG;
+- LLM invocation;
+- HTTP transport;
+- industrial integration;
+- authentication;
+- authorization;
+- RBAC;
+- Cybersecurity approval;
+- production-readiness claims.
+
+### Expected Technical Surface
+
+If the RFC-062 contract is later accepted and its implementation-entry Git gate is satisfied, the expected production surface is:
+
+- `backend/app/document_knowledge_lineage/__init__.py`;
+- `backend/app/document_knowledge_lineage/repository.py`.
+
+Expected verification surface:
+
+- repository contract tests;
+- architecture guardrails for dependency and operation containment.
+
+No existing production implementation is expected to require modification.
+
+No migration is expected.
+
+### TDD Acceptance Requirements
+
+Technical implementation SHALL demonstrate at minimum:
+
+- repository port is abstract;
+- exact abstract operation set is `add` and `get`;
+- repository conflict exception is not a `DomainException`;
+- canonical lineage value is preserved exactly;
+- absent exact pair returns `None`;
+- duplicate exact directed pair raises repository conflict;
+- duplicate add does not silently overwrite;
+- neither side alone is treated as repository duplicate identity;
+- no entity identity is generated;
+- no referenced entity repository lookup occurs;
+- no persistence technology enters the repository port;
+- no search or CRUD expansion appears;
+- default Composition remains unchanged;
+- Runtime and Bootstrap remain unchanged;
+- canonical Alembic head remains `0003`.
+
+### Contract Acceptance
+
+RFC-062 / AD-048 Contract Acceptance Review: passed.
+
+No production implementation is authorized by contract acceptance alone.
+
+### Contract State
+
+RFC-062: Contract Accepted — Implementation Gate Pending.
+
+AD-048: Accepted.
+
+Technical implementation is not authorized until the implementation-entry Git gate is satisfied.
+
+### Next Exact Action
+
+Commit and push the accepted RFC-062 / AD-048 contract.
+
+After push, verify exact local/remote contract identity and a clean working tree before technical implementation begins.
+
+Do not preselect the workstream after RFC-062.
+
+
 ## RFC-061 — Canonical Document-to-Knowledge Lineage Foundation Boundary
 
 ### Status

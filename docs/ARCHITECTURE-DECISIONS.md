@@ -6150,3 +6150,407 @@ RFC-061: Contract Accepted — Implementation Gate Pending.
 Commit and push this accepted contract.
 
 Do not implement RFC-061 before Git implementation-entry verification.
+
+---
+
+# AD-048 — Canonical Document-to-Knowledge Lineage Repository Foundation Boundary
+
+## Status
+
+Accepted.
+
+RFC-062 / AD-048 Contract Acceptance Review: passed.
+
+Technical implementation is not authorized until the implementation-entry Git gate is satisfied.
+
+## Context
+
+PlantMind now has:
+
+- canonical Enterprise Document identity;
+- canonical Knowledge Record identity;
+- canonical persistence-neutral Document repository semantics;
+- canonical persistence-neutral Knowledge repository semantics;
+- canonical immutable `DocumentKnowledgeLineage`;
+- explicit separation between canonical lineage, Knowledge provenance and Knowledge subject.
+
+RFC-061 / AD-047 established only the directed canonical identity relationship:
+
+`document_id -> knowledge_record_id`
+
+It deliberately introduced no repository, persistence, duplicate, database or application-ingestion behavior.
+
+AD-047 explicitly deferred persistence-neutral lineage repository semantics to future architecture.
+
+The next required architectural step is therefore to establish a minimal persistence-neutral repository port for canonical lineage values before relational persistence or Document Knowledge ingestion is considered.
+
+## Decision
+
+PlantMind SHALL establish:
+
+`DocumentKnowledgeLineageRepository`
+
+under:
+
+`app.document_knowledge_lineage.repository`
+
+The repository SHALL represent persistence-neutral storage and exact retrieval of canonical `DocumentKnowledgeLineage` values.
+
+The package:
+
+`app.document_knowledge_lineage`
+
+SHALL NOT become a generic relationship framework.
+
+Its initializer SHALL remain empty under RFC-062.
+
+## Repository Conflict Decision
+
+PlantMind SHALL establish:
+
+`DocumentKnowledgeLineageAlreadyExistsError`
+
+as a repository-level conflict exception.
+
+It SHALL derive from:
+
+`Exception`
+
+and SHALL NOT derive from `DomainException`.
+
+A repository conflict is not canonical Domain validation failure.
+
+## Repository Operation Decision
+
+`DocumentKnowledgeLineageRepository`
+
+SHALL expose exactly two abstract operations:
+
+`add(lineage: DocumentKnowledgeLineage) -> None`
+
+and:
+
+`get(document_id: EntityId, knowledge_record_id: EntityId) -> DocumentKnowledgeLineage | None`
+
+No generic CRUD contract is authorized.
+
+## Duplicate Identity Decision
+
+Repository duplicate identity SHALL be the exact directed canonical identity pair:
+
+`(document_id, knowledge_record_id)`
+
+Re-adding the same directed pair SHALL raise:
+
+`DocumentKnowledgeLineageAlreadyExistsError`
+
+and SHALL NOT silently overwrite the existing canonical lineage relation.
+
+Neither `document_id` alone nor `knowledge_record_id` alone SHALL define repository duplicate identity.
+
+Therefore, at repository-storage level, distinct canonical lineage pairs sharing one side are not duplicates and MAY coexist.
+
+For example, the repository contract does not classify either of the following as a duplicate solely because one identity is shared:
+
+- `(document_A, knowledge_A)` and `(document_A, knowledge_B)`;
+- `(document_A, knowledge_A)` and `(document_B, knowledge_A)`.
+
+This is a storage-level duplicate-classification decision only.
+
+It does not establish that such relationships are valid, authorized or meaningful at Business or Application level.
+
+AD-048 does not establish:
+
+- business one-to-one policy;
+- business one-to-many policy;
+- business many-to-one policy;
+- business many-to-many policy;
+- corroboration semantics;
+- primary-source semantics;
+- merge semantics;
+- multi-source derivation authorization.
+
+Those higher-level semantics remain separately governed and require explicit future architecture.
+
+Repository storage capability SHALL NOT be interpreted as Business or Application authorization for any cardinality or derivation policy.
+
+## Exact Retrieval Decision
+
+`get(...)`
+
+SHALL perform exact directed-pair lookup only.
+
+When the exact pair exists, the repository SHALL return the canonical `DocumentKnowledgeLineage`.
+
+When the exact pair does not exist, it SHALL return `None`.
+
+AD-048 SHALL NOT introduce:
+
+- `get_by_document`;
+- `get_by_knowledge`;
+- reverse traversal;
+- list;
+- find;
+- search;
+- filter;
+- query;
+- pagination;
+- ranking.
+
+Future query requirements require separate evidence and architecture review.
+
+## Domain Ownership Decision
+
+The repository SHALL consume existing canonical:
+
+- `EntityId`;
+- `DocumentKnowledgeLineage`.
+
+It SHALL NOT:
+
+- generate identity;
+- construct `EnterpriseDocument`;
+- construct `KnowledgeRecord`;
+- reconstruct lineage from unrelated values;
+- modify canonical lineage values;
+- duplicate canonical lineage Domain validation.
+
+Canonical lineage validation remains owned by:
+
+`app.domain.document_knowledge_lineage`
+
+## Referenced Entity Decision
+
+The lineage repository SHALL NOT validate existence of referenced Document or Knowledge entities.
+
+It SHALL NOT call:
+
+- `EnterpriseDocumentRepository`;
+- `KnowledgeRecordRepository`.
+
+It SHALL NOT own cross-repository referential verification.
+
+The repository port records and retrieves accepted canonical lineage values only.
+
+Any future application-level requirement to verify referenced entities requires explicit architecture ownership.
+
+## Dependency Decision
+
+The canonical lineage repository port SHALL remain persistence-neutral.
+
+It SHALL depend only on the minimum canonical contracts necessary to express its interface.
+
+It SHALL NOT depend on:
+
+- SQLAlchemy;
+- Psycopg;
+- infrastructure adapters;
+- application services;
+- Runtime;
+- Bootstrap;
+- Composition;
+- FastAPI;
+- parser;
+- OCR;
+- search;
+- vector infrastructure;
+- graph infrastructure;
+- RAG;
+- LLM.
+
+## Persistence Decision
+
+AD-048 establishes no relational persistence implementation.
+
+It introduces no:
+
+- SQLAlchemy row;
+- lineage table;
+- foreign key;
+- database uniqueness constraint;
+- database index;
+- Alembic migration;
+- Session ownership;
+- transaction ownership;
+- commit behavior;
+- rollback behavior;
+- `DatabaseRuntime` composition.
+
+Canonical Alembic head remains:
+
+`0003`
+
+A relational lineage adapter requires a separate future accepted contract.
+
+## Application Decision
+
+AD-048 establishes no Document Knowledge ingestion application service.
+
+It SHALL NOT modify or call:
+
+- `KnowledgeCaptureApplicationService`;
+- `EnterpriseDocumentRegistrationApplicationService`.
+
+It establishes no application transaction or compensation semantics.
+
+A future ingestion boundary must preserve accepted Document identity, Knowledge identity, Knowledge Capture and lineage responsibilities without bypassing them.
+
+## Atomicity Decision
+
+AD-048 does not claim atomicity across Knowledge persistence and lineage persistence.
+
+It does not define:
+
+- shared transaction orchestration;
+- rollback across repositories;
+- compensation;
+- retry;
+- partial-failure recovery.
+
+Those concerns must be resolved explicitly before any future ingestion workflow attempts coordinated persistence across these boundaries.
+
+## Parsing, Library and Revision Decision
+
+AD-048 introduces no:
+
+- Document Library;
+- binary storage;
+- file upload or download;
+- parser;
+- OCR;
+- extraction;
+- chunking;
+- revision lifecycle;
+- supersession behavior.
+
+## Search, Graph and AI Decision
+
+AD-048 introduces no:
+
+- semantic search;
+- embeddings;
+- vector persistence;
+- Qdrant;
+- graph persistence;
+- Neo4j;
+- graph traversal;
+- RAG;
+- prompts;
+- LLM invocation;
+- autonomous agents.
+
+A persistence-neutral lineage repository is not a Knowledge Graph implementation.
+
+## Composition and Runtime Decision
+
+AD-048 introduces no default:
+
+- `CompositionRoot`;
+- `ServiceContainer`;
+- `PlatformComposition`;
+- `ApplicationFacade`;
+- Runtime;
+- Bootstrap;
+- Health;
+- readiness;
+- request-admission
+
+change.
+
+## Security Decision
+
+AD-048 establishes no:
+
+- authentication;
+- authorization;
+- RBAC;
+- principal identity;
+- actor audit;
+- Active Directory;
+- LDAP;
+- MFA;
+- Cybersecurity approval.
+
+No production-readiness claim is implied.
+
+## Alternatives Rejected
+
+### Implement relational lineage persistence immediately
+
+Rejected because PlantMind architecture separates persistence-neutral repository semantics from relational adapter technology.
+
+### Implement Document Knowledge ingestion immediately
+
+Rejected because ingestion would require coordinated Knowledge and lineage persistence behavior, including explicit failure and atomicity semantics not owned by RFC-062.
+
+### Store lineage directly in Knowledge provenance
+
+Rejected because AD-047 already established canonical lineage and external-source provenance as separate concepts.
+
+### Use Document source reference as repository identity
+
+Rejected because source reference is external traceability and is not canonical PlantMind identity.
+
+### Query lineage by one side immediately
+
+Rejected because current evidence establishes exact identity-pair storage need, not broader traversal or search requirements.
+
+### Implement lineage directly in Neo4j
+
+Rejected because canonical repository semantics SHALL remain technology-neutral.
+
+## Consequences
+
+PlantMind gains a minimal persistence-neutral repository abstraction for canonical Document-to-Knowledge lineage.
+
+Existing:
+
+- Document ownership;
+- Knowledge ownership;
+- provenance semantics;
+- Knowledge subject semantics;
+- Knowledge Capture;
+- Document Registration;
+- relational persistence;
+- Runtime;
+- Composition
+
+remain unchanged.
+
+A future relational adapter can implement this accepted repository contract without defining canonical repository semantics inside SQLAlchemy or another persistence technology.
+
+Future ingestion architecture can depend on a canonical lineage repository contract rather than inventing persistence behavior inside the ingestion workflow.
+
+## Contract Acceptance
+
+RFC-062 / AD-048 Contract Acceptance Review: passed.
+
+The accepted contract preserves:
+
+- exact directed-pair repository duplicate identity;
+- separation of repository-storage capability from Business and Application cardinality policy;
+- exact-pair retrieval only;
+- persistence neutrality;
+- Domain ownership boundaries;
+- referenced-entity ownership boundaries;
+- relational persistence deferral;
+- ingestion and atomicity deferral;
+- Runtime and Composition independence.
+
+No production implementation is authorized by contract acceptance alone.
+
+## Contract State
+
+AD-048: Accepted.
+
+RFC-062: Contract Accepted — Implementation Gate Pending.
+
+Technical implementation is not authorized until the implementation-entry Git gate is satisfied.
+
+## Next Exact Action
+
+Commit and push the accepted RFC-062 / AD-048 contract.
+
+After push, verify exact local/remote contract identity and a clean working tree before technical implementation begins.
+
+Do not preselect the workstream after RFC-062.

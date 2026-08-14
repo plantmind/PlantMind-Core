@@ -3481,3 +3481,181 @@ Historical Engineering Journal entries remain unchanged.
 No RFC-062 workstream is preselected by this review.
 
 The next architecture workstream SHALL be selected from current repository, project-charter and architecture evidence only after this RFC-061 engineering-memory closure is committed and pushed.
+
+---
+
+## 2026-08-14 — RFC-062 Lineage Repository Workstream Selection and Contract Drafting
+
+### Outcome
+
+Post-RFC-061 evidence-based architecture selection identified the next workstream as:
+
+`RFC-062 — Canonical Document-to-Knowledge Lineage Repository Foundation Boundary`
+
+with proposed:
+
+`AD-048 — Canonical Document-to-Knowledge Lineage Repository Foundation Boundary`
+
+Selection baseline:
+
+`1fc8dda3adde6b78b46029df0767534ef24c9636`
+
+At selection time:
+
+- local and remote Git identity matched;
+- working tree was clean;
+- RFC-061 was fully closed.
+
+### Evidence Reviewed
+
+The review examined:
+
+- canonical `EnterpriseDocumentRepository`;
+- canonical `KnowledgeRecordRepository`;
+- their repository conflict semantics;
+- their contract and architecture tests;
+- canonical `DocumentKnowledgeLineage`;
+- RFC-061 / AD-047 explicit deferrals.
+
+The existing Document and Knowledge repository ports both establish:
+
+- persistence-neutral repository ownership;
+- repository-level conflict exceptions;
+- narrow `add(...)` and `get(...)` operation sets;
+- no generic CRUD expansion;
+- no persistence technology in the canonical port.
+
+RFC-061 established canonical lineage identity semantics but deliberately deferred repository and persistence behavior.
+
+### Selected Repository Direction
+
+RFC-062 proposes:
+
+`DocumentKnowledgeLineageRepository`
+
+under:
+
+`app.document_knowledge_lineage.repository`
+
+with repository-level:
+
+`DocumentKnowledgeLineageAlreadyExistsError`
+
+and exactly:
+
+`add(lineage: DocumentKnowledgeLineage) -> None`
+
+`get(document_id: EntityId, knowledge_record_id: EntityId) -> DocumentKnowledgeLineage | None`
+
+### Proposed Duplicate Semantics
+
+The proposed repository duplicate identity is the exact directed canonical pair:
+
+`(document_id, knowledge_record_id)`
+
+Neither side alone becomes duplicate identity.
+
+Therefore, at repository-storage level, distinct lineage pairs sharing one side are not duplicates and MAY coexist.
+
+This is a storage-level duplicate-classification decision only.
+
+It does not establish that those relationships are valid, authorized or meaningful at Business or Application level.
+
+RFC-062 does not establish business cardinality, corroboration, primary-source, merge or multi-source derivation policy.
+
+Those higher-level semantics require separate explicit architecture.
+
+### Proposed Retrieval Semantics
+
+Retrieval is exact-pair only.
+
+No:
+
+- retrieval by one side alone;
+- reverse traversal;
+- list;
+- find;
+- search;
+- filter;
+- query;
+- pagination;
+- ranking
+
+is proposed under RFC-062.
+
+### Preserved Boundaries
+
+The draft preserves:
+
+- canonical Document ownership;
+- canonical Knowledge ownership;
+- canonical lineage Domain validation;
+- Knowledge provenance semantics;
+- Knowledge subject semantics;
+- Document Registration ownership;
+- Knowledge Capture ownership;
+- database lifecycle ownership;
+- Runtime and Bootstrap authority;
+- default Composition independence.
+
+### Explicit Deferrals
+
+RFC-062 draft introduces no:
+
+- SQLAlchemy lineage adapter;
+- relational lineage table;
+- foreign key;
+- migration;
+- database transaction ownership;
+- ingestion application service;
+- application atomicity implementation;
+- parser or OCR;
+- Document Library;
+- revision lifecycle;
+- search/vector/graph/RAG/LLM;
+- production authentication or authorization;
+- Cybersecurity or production-readiness claim.
+
+Canonical Alembic head remains:
+
+`0003`
+
+### Atomicity Observation
+
+Future Document-to-Knowledge ingestion may require coordinated persistence across Knowledge and lineage boundaries.
+
+The current RFC-062 draft deliberately does not solve shared transaction, compensation, retry or partial-failure recovery semantics.
+
+Those concerns require explicit future architecture before a coordinated ingestion workflow is authorized.
+
+### Contract Acceptance Review
+
+PASS.
+
+The final contract review confirmed:
+
+- exact directed-pair repository identity;
+- explicit separation between storage-level duplicate semantics and Business/Application cardinality policy;
+- exact-pair retrieval only;
+- persistence neutrality;
+- no cross-repository existence validation ownership;
+- no relational persistence or migration;
+- no ingestion implementation;
+- explicit atomicity and partial-failure deferral;
+- unchanged Runtime and default Composition responsibilities.
+
+### Contract State
+
+RFC-062: Contract Accepted — Implementation Gate Pending.
+
+AD-048: Accepted.
+
+Technical implementation is not authorized until the implementation-entry Git gate is satisfied.
+
+### Next Exact Action
+
+Commit and push the accepted RFC-062 / AD-048 contract.
+
+After push, verify exact local/remote contract identity and a clean working tree before technical implementation begins.
+
+Do not preselect the workstream after RFC-062.
