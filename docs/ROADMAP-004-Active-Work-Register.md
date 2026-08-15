@@ -39,7 +39,7 @@ No item may be marked complete until:
 
 ### Status
 
-Selected — Architecture Contract Draft Pending.
+Accepted — Implementation Gate Pending.
 
 Post-RFC-063 evidence-based architecture selection: complete.
 
@@ -53,7 +53,15 @@ Proposed architecture decision:
 
 AD-050 status:
 
-Proposed.
+Accepted.
+
+Formal RFC-064 / AD-050 Contract Acceptance Review:
+
+**PASS.**
+
+Contract draft baseline:
+
+`f0fca291a24393222de660febdd8fd1dc8d4dcb5`
 
 ### Selection Evidence
 
@@ -201,23 +209,974 @@ RFC-064 contract drafting SHALL be reviewed against, at minimum:
 - RFC-063 / lineage relational persistence;
 - accepted architecture dependency, Composition, Runtime and Bootstrap rules.
 
+### Draft Architecture Contract
+
+#### Contract Intent
+
+RFC-064 SHALL establish the minimum persistence-neutral and infrastructure-backed coordination boundary required for canonical Knowledge persistence and canonical Document-to-Knowledge lineage persistence to participate in one atomic relational transaction.
+
+The contract exists solely to provide an atomic persistence foundation for future accepted application capabilities that require both repositories together.
+
+RFC-064 SHALL NOT itself implement Document-to-Knowledge ingestion.
+
+#### Canonical Atomicity Invariant
+
+For one coordinated operation, the persistence outcome SHALL be atomic with respect to all Knowledge and lineage writes actually submitted through the transaction-scoped repositories during that operation.
+
+If the supplied application operation performs both:
+
+- a canonical Knowledge write; and
+- its corresponding canonical lineage write;
+
+those participating writes SHALL commit together or neither SHALL be successfully committed by that transaction.
+
+All successful participating writes within one coordinated operation SHALL commit together.
+
+Any failure before successful commit SHALL cause the coordinated transaction to enter the accepted rollback path as one unit.
+
+RFC-064 SHALL NOT claim that the transaction coordinator itself:
+
+- requires both repositories to be written;
+- infers whether a lineage write is required;
+- infers correspondence between arbitrary Knowledge and lineage values;
+- enforces Knowledge-to-lineage business completeness;
+- enforces business cardinality.
+
+A future accepted application capability that requires one Knowledge record and one lineage relation SHALL own the obligation to invoke both required persistence operations before returning successful use-case completion.
+
+The coordinator guarantees atomicity of participating relational writes.
+
+It does not guarantee application-use-case completeness.
+
+This invariant applies only to writes participating in the same RFC-064 transaction scope.
+
+It does not define global Knowledge-to-lineage business cardinality.
+
+#### Persistence-Neutral Coordination Port
+
+RFC-064 SHALL introduce a narrowly scoped persistence-neutral coordination contract under:
+
+`app.knowledge_lineage_transaction`
+
+Expected package:
+
+- `backend/app/knowledge_lineage_transaction/__init__.py`;
+- `backend/app/knowledge_lineage_transaction/coordinator.py`.
+
+The package initializer SHALL remain empty unless a separately reviewed public API becomes necessary.
+
+The persistence-neutral contract SHALL define:
+
+`KnowledgeLineageTransactionCoordinator`
+
+with one coordinated execution operation equivalent in responsibility to:
+
+`execute(operation) -> T`
+
+The operation SHALL receive access only to:
+
+- `KnowledgeRecordRepository`;
+- `DocumentKnowledgeLineageRepository`.
+
+The coordination contract SHALL NOT expose:
+
+- SQLAlchemy `Session`;
+- SQLAlchemy transaction objects;
+- engine objects;
+- connection objects;
+- commit primitives;
+- rollback primitives;
+- flush primitives;
+- savepoints;
+- database-specific exceptions as transaction-control mechanisms.
+
+Application code SHALL therefore remain persistence-neutral.
+
+#### Application-Level and Dependency Ownership
+
+`KnowledgeLineageTransactionCoordinator` SHALL be an application-level persistence-coordination port.
+
+The term `application-level` describes responsibility and use-case position only.
+
+RFC-064 SHALL NOT introduce a seventh architectural layer and SHALL NOT modify the six-layer model defined by ARCH-001.
+
+The coordinator SHALL NOT be:
+
+- an architectural layer;
+- a Domain service;
+- a Core platform service;
+- an intelligence engine;
+- an AI agent;
+- an application workload entry point;
+- a replacement or competitor for `ApplicationFacade`;
+- a transport-facing use case by itself.
+
+It is a narrowly scoped supporting application-level persistence contract for future accepted Knowledge application capabilities.
+
+The persistence-neutral coordination package MAY depend only on:
+
+- accepted persistence-neutral Knowledge repository contracts;
+- accepted persistence-neutral lineage repository contracts;
+- Python standard-library typing / callable abstractions required to express the contract.
+
+It SHALL NOT depend on:
+
+- `app.infrastructure`;
+- SQLAlchemy;
+- Psycopg;
+- `DatabaseRuntime`;
+- Composition;
+- Runtime;
+- Bootstrap;
+- API transport;
+- agents;
+- intelligence engines.
+
+Application capabilities MAY depend on the persistence-neutral coordinator port.
+
+The SQLAlchemy implementation MAY depend only on the persistence-neutral coordinator contract and its coordination-specific errors as required to implement that accepted contract.
+
+AD-050 SHALL constitute the explicit narrow architecture authorization for that implementation dependency.
+
+This authorization SHALL NOT permit Infrastructure to depend on:
+
+- application services;
+- `ApplicationFacade`;
+- orchestration services;
+- business workflows;
+- agents;
+- intelligence engines.
+
+Canonical Domain and repository packages SHALL NOT depend outward on the coordinator implementation.
+
+No new general Infrastructure-to-Application dependency rule is established by RFC-064.
+
+#### Synchronous Execution Model
+
+RFC-064 establishes synchronous transaction coordination consistent with the accepted synchronous SQLAlchemy database runtime.
+
+One coordinated operation SHALL execute synchronously.
+
+RFC-064 SHALL NOT establish:
+
+- `AsyncSession`;
+- asynchronous transaction coordination;
+- concurrent use of one shared SQLAlchemy session by multiple threads or tasks;
+- cross-thread transaction-scoped repository use.
+
+A coordinator instance MAY support multiple independent sequential or concurrent callers only if each `execute(...)` invocation owns completely independent session and transaction state.
+
+The coordinator SHALL NOT store one active session as reusable instance state.
+
+#### Coordinated Operation Boundary
+
+One `execute(...)` invocation SHALL represent one independent Knowledge-and-lineage transaction scope.
+
+The coordinator SHALL invoke the supplied operation exactly once.
+
+The supplied operation MAY use only the transaction-scoped:
+
+- `KnowledgeRecordRepository`;
+- `DocumentKnowledgeLineageRepository`
+
+provided for that invocation.
+
+RFC-064 SHALL NOT introduce unrelated repositories into this coordination boundary.
+
+No Enterprise Document repository participation is authorized by RFC-064.
+
+No cross-repository Document existence validation is authorized.
+
+#### Transaction-Scoped Repository Participation
+
+The SQLAlchemy implementation SHALL provide transaction-scoped implementations of the existing:
+
+- `KnowledgeRecordRepository`;
+- `DocumentKnowledgeLineageRepository`.
+
+These participants SHALL preserve the existing persistence-neutral repository contracts.
+
+They SHALL use the same canonical Domain-to-relational mappings already established by accepted persistence architecture.
+
+They SHALL NOT:
+
+- generate Domain identity;
+- construct canonical Knowledge on behalf of the application;
+- construct canonical lineage on behalf of the application;
+- create a database engine;
+- create an independent session;
+- commit;
+- rollback;
+- close the shared session;
+- alter canonical Domain semantics;
+- alter repository public operations.
+
+Transaction-scoped participants SHALL receive one already-owned shared SQLAlchemy session from the coordinator implementation.
+
+#### Standalone Repository Preservation
+
+RFC-064 SHALL NOT replace or redefine the existing standalone:
+
+- `SQLAlchemyKnowledgeRecordRepository`;
+- `SQLAlchemyDocumentKnowledgeLineageRepository`.
+
+Existing standalone repository behavior SHALL remain valid:
+
+- each standalone repository may continue to acquire its own session;
+- each standalone repository continues to own its standalone commit / rollback / close lifecycle;
+- existing duplicate translation remains preserved;
+- existing repository runtime tests remain valid.
+
+RFC-064 adds a distinct coordinated transaction path rather than creating ambiguous dual transaction ownership inside the existing standalone repository classes.
+
+#### Shared Session Invariant
+
+For one coordinated `execute(...)` invocation:
+
+- exactly one SQLAlchemy session SHALL be acquired;
+- both transaction-scoped repository participants SHALL use that exact same session;
+- no participant SHALL acquire a second session;
+- no participant SHALL substitute another session;
+- the coordinator SHALL NOT retain that session for reuse by a later independent execution.
+
+A new independent execution SHALL receive a new transaction scope.
+
+#### Session Acquisition and Transaction Start
+
+For one coordinated `execute(...)` invocation:
+
+1. the injected session factory SHALL be invoked exactly once;
+2. one session SHALL be acquired;
+3. the coordinator SHALL establish exactly one transaction scope before invoking the supplied operation;
+4. transaction-scoped repository participants SHALL then be created for that scope;
+5. only after successful transaction establishment may the supplied operation be invoked.
+
+If session acquisition itself fails:
+
+- the failure SHALL propagate;
+- the supplied operation SHALL NOT be invoked;
+- no rollback SHALL be attempted because no owned session exists;
+- no session close SHALL be attempted for a session that was never acquired.
+
+If transaction establishment fails after a session has been acquired:
+
+- the supplied operation SHALL NOT be invoked;
+- no commit SHALL occur;
+- the acquired session SHALL still be closed exactly once;
+- rollback SHALL be attempted only when an active transaction was actually established.
+
+RFC-064 SHALL NOT depend on an implicit nested transaction or savepoint to establish this scope.
+
+#### DatabaseRuntime Ownership
+
+Canonical `DatabaseRuntime` SHALL remain the owner of:
+
+- SQLAlchemy engine creation;
+- canonical session-factory creation;
+- engine disposal.
+
+The SQLAlchemy transaction coordinator SHALL receive an injected synchronous session factory.
+
+It SHALL NOT:
+
+- create its own engine;
+- construct a second `DatabaseRuntime`;
+- read `DATABASE_URL` directly;
+- dispose the canonical engine;
+- redefine database configuration validation;
+- redefine database lifecycle authority.
+
+RFC-064 therefore coordinates a session obtained from canonical infrastructure without taking ownership of database-runtime lifecycle.
+
+#### Transaction Lifecycle Authority
+
+For one coordinated operation, the SQLAlchemy coordinator SHALL own:
+
+1. acquisition of one session;
+2. the single transaction scope for that session;
+3. creation of transaction-scoped repository participants using that session;
+4. invocation of the supplied operation exactly once;
+5. final commit authority;
+6. rollback authority on failure;
+7. session close authority.
+
+Transaction-scoped repositories SHALL own none of those lifecycle responsibilities except persistence operations and required flush behavior described below.
+
+#### Commit Semantics
+
+If the supplied coordinated operation completes successfully:
+
+1. all participant persistence work SHALL already have been submitted to the shared transaction;
+2. required participant constraint validation SHALL have been materialized through flush behavior;
+3. the coordinator SHALL perform exactly one final commit;
+4. only after successful commit may the operation result be considered successfully committed.
+
+No transaction-scoped repository SHALL commit independently.
+
+RFC-064 SHALL NOT introduce multiple success commits for one coordinated operation.
+
+#### Final Commit Failure and Outcome Certainty
+
+If final `commit` raises:
+
+- the coordinated operation SHALL NOT be reported as successfully completed;
+- the operation result SHALL NOT be returned as a successful result;
+- the coordinator SHALL attempt the accepted rollback failure path;
+- no automatic retry SHALL occur.
+
+RFC-064 SHALL distinguish database atomicity from caller-visible outcome certainty.
+
+PostgreSQL transaction atomicity means participating Knowledge and lineage writes are committed together or not committed together at the database transaction level.
+
+However, a client-side or connection failure during final commit MAY leave the caller unable to prove whether the database accepted the commit before the failure became observable.
+
+Therefore:
+
+- a final commit exception SHALL NOT be interpreted automatically as proof that nothing was committed;
+- rollback after a commit exception SHALL NOT be documented as proof that a previously completed server-side commit was reversed;
+- the coordinator SHALL NOT automatically retry a commit-failed operation;
+- future application retry or reconciliation policy requires separate architecture.
+
+This contract prevents a commit communication failure from being converted into an unsafe duplicate application attempt.
+
+#### Rollback Semantics
+
+If any failure occurs before successful commit, including:
+
+- Knowledge persistence failure;
+- lineage persistence failure;
+- translated duplicate conflict;
+- unrelated integrity failure;
+- operation failure;
+- flush failure;
+- final commit failure;
+
+the coordinator SHALL attempt exactly one rollback of the shared transaction.
+
+If rollback succeeds, the original failure SHALL propagate unchanged except where an accepted repository duplicate translation has already occurred.
+
+If rollback itself fails, the rollback failure SHALL NOT be suppressed.
+
+The rollback failure SHALL preserve causal linkage to the failure that triggered rollback.
+
+No participant SHALL independently rollback the shared session.
+
+#### Session Close Semantics
+
+The coordinator SHALL attempt to close the shared session exactly once for every coordinated execution.
+
+Session close SHALL occur after the success or failure transaction path has completed.
+
+During session cleanup, the coordinator SHALL NOT explicitly invoke:
+
+- a second commit; or
+- a second rollback.
+
+Session close SHALL NOT be used by PlantMind as a second transaction-decision mechanism.
+
+SQLAlchemy, the database driver or connection-pool implementation MAY perform internal resource cleanup required by their own lifecycle semantics.
+
+RFC-064 SHALL NOT represent such implementation-level cleanup as a new PlantMind transaction decision.
+
+Session cleanup SHALL NOT redefine the already established caller-visible transaction outcome.
+
+A session-close failure is an infrastructure cleanup failure and SHALL NOT be classified as a Domain validation failure or repository duplicate.
+
+RFC-064 SHALL NOT claim that a post-commit cleanup failure reverses an already committed database transaction.
+
+Automatic retry behavior for such failures remains outside RFC-064.
+
+#### Post-Commit Cleanup Outcome
+
+RFC-064 SHALL introduce the persistence-neutral coordination error:
+
+`KnowledgeLineageTransactionPostCommitCleanupError`
+
+This error SHALL be used only when:
+
+1. final database commit has already completed successfully; and
+2. subsequent coordinator-owned session cleanup fails.
+
+The error SHALL preserve causal linkage to the underlying cleanup failure.
+
+Its meaning SHALL be explicit:
+
+**the coordinated database transaction committed successfully; cleanup failed afterward.**
+
+A caller SHALL NOT interpret this error as evidence that the Knowledge-and-lineage transaction rolled back.
+
+A caller SHALL NOT automatically retry the coordinated persistence operation solely because this post-commit cleanup error occurred.
+
+If a transaction or rollback failure already exists and session cleanup also fails:
+
+- the transaction / rollback failure SHALL remain the primary transaction outcome;
+- the cleanup failure SHALL NOT replace or misrepresent that prior outcome;
+- diagnostic causal information about the cleanup failure SHALL be preserved where technically possible.
+
+This prevents a cleanup failure from creating an ambiguous persistence result.
+
+#### Flush Authority
+
+Transaction-scoped repository participants SHALL own flush of their own pending relational write.
+
+For transaction-scoped `add(...)`:
+
+1. the canonical value SHALL be mapped using the existing accepted mapper;
+2. the mapped row SHALL be added to the shared session;
+3. the participant SHALL flush the shared session;
+4. the participant SHALL perform no commit;
+5. the participant SHALL perform no rollback;
+6. the participant SHALL perform no close.
+
+The purpose of participant-owned flush is to materialize repository-owned database constraint failures at the repository boundary before final coordinated commit.
+
+This preserves repository-level duplicate classification even though final commit ownership moves to the coordinator.
+
+#### Duplicate Classification
+
+Knowledge duplicate classification SHALL preserve the accepted canonical semantics for:
+
+`pk_knowledge_records`
+
+and PostgreSQL unique-violation SQLSTATE:
+
+`23505`
+
+Lineage duplicate classification SHALL preserve the accepted canonical semantics for:
+
+`pk_document_knowledge_lineages`
+
+and PostgreSQL unique-violation SQLSTATE:
+
+`23505`
+
+A transaction-scoped repository SHALL translate only the exact database failure belonging to its accepted canonical identity constraint.
+
+Knowledge identity conflict SHALL translate to:
+
+`KnowledgeRecordAlreadyExistsError`
+
+Lineage identity conflict SHALL translate to:
+
+`DocumentKnowledgeLineageAlreadyExistsError`
+
+Unrelated integrity failures SHALL remain unrelated integrity failures.
+
+Message-text-only duplicate classification SHALL remain prohibited.
+
+The coordinator itself SHALL NOT guess repository ownership of an arbitrary integrity error.
+
+#### Canonical Duplicate-Classification Reuse
+
+RFC-064 SHALL NOT create divergent duplicate-classification algorithms for the same canonical repository identity.
+
+For Knowledge persistence, standalone and transaction-scoped paths SHALL use one canonical infrastructure-owned classification rule for:
+
+- SQLSTATE `23505`;
+- constraint `pk_knowledge_records`.
+
+For lineage persistence, standalone and transaction-scoped paths SHALL use one canonical infrastructure-owned classification rule for:
+
+- SQLSTATE `23505`;
+- constraint `pk_document_knowledge_lineages`.
+
+Technical implementation MAY refactor existing implementation-private duplicate classifiers into shared infrastructure-private helpers when required.
+
+Such a refactor SHALL NOT change:
+
+- repository public APIs;
+- accepted duplicate semantics;
+- exception types;
+- constraint identities;
+- SQLSTATE requirements;
+- standalone repository transaction ownership.
+
+Copying two independently maintained classification implementations for the same constraint SHALL NOT be accepted when a single internal classifier can preserve one source of truth.
+
+#### Commit-Time Failure Classification
+
+Participant-owned constraints SHALL be materialized through participant flush whenever technically possible.
+
+A failure appearing only at final commit SHALL NOT be heuristically reclassified by the coordinator as a Knowledge or lineage duplicate.
+
+Commit-time failures SHALL be rolled back and propagated unless a future separately accepted contract establishes safe classification.
+
+This prevents duplicate semantics from silently moving out of repository ownership.
+
+#### Transaction-Scoped Read Semantics
+
+Transaction-scoped implementations SHALL preserve the accepted repository `get(...)` behavior.
+
+For transaction-scoped `get(...)`:
+
+- the exact shared coordinator-owned session SHALL be used;
+- no independent session SHALL be acquired;
+- no commit SHALL occur;
+- no rollback SHALL occur;
+- no session close SHALL occur;
+- canonical row-to-Domain mapping SHALL remain unchanged;
+- an absent identity SHALL return `None` exactly as accepted by the existing repository contract.
+
+A transaction-scoped read SHALL NOT take transaction-lifecycle ownership from the coordinator.
+
+#### Persistence Ordering
+
+RFC-064 SHALL NOT impose a business-level ordering rule between Knowledge and lineage persistence.
+
+The future application operation determines the order in which it invokes the transaction-scoped repositories.
+
+Infrastructure atomicity SHALL remain valid regardless of which participant is called first.
+
+A future Document-derived Knowledge application capability may naturally need Knowledge identity before constructing lineage, but that is an application-use-case concern rather than a database transaction rule.
+
+#### KnowledgeCaptureApplicationService Compatibility
+
+RFC-064 SHALL NOT modify the accepted responsibilities or public behavior of:
+
+`KnowledgeCaptureApplicationService`
+
+The service SHALL remain dependent on the persistence-neutral:
+
+`KnowledgeRecordRepository`
+
+A future accepted application capability MAY use `KnowledgeCaptureApplicationService` inside an RFC-064 coordinated operation by supplying the transaction-scoped `KnowledgeRecordRepository`.
+
+RFC-064 SHALL NOT make the transaction coordinator:
+
+- generate Knowledge identity;
+- generate Knowledge capture timestamps;
+- construct Knowledge provenance;
+- construct Knowledge subject;
+- call `KnowledgeCaptureApplicationService` automatically;
+- become a Knowledge factory.
+
+Knowledge construction and capture semantics remain owned by the accepted Knowledge Capture application boundary.
+
+#### EnterpriseDocumentRegistrationApplicationService Preservation
+
+RFC-064 SHALL NOT modify:
+
+`EnterpriseDocumentRegistrationApplicationService`
+
+Document registration remains a separate application use case.
+
+RFC-064 does not establish a transaction spanning:
+
+- Enterprise Document registration;
+- Knowledge capture;
+- lineage persistence.
+
+Any such future cross-use-case transaction would require separate architecture evidence and acceptance.
+
+#### Domain Preservation
+
+RFC-064 SHALL NOT modify:
+
+- `EnterpriseDocument`;
+- `KnowledgeRecord`;
+- `KnowledgeProvenance`;
+- `KnowledgeSubject`;
+- `DocumentKnowledgeLineage`;
+- canonical `EntityId` semantics;
+- Document source traceability semantics;
+- directed Document-to-Knowledge lineage semantics.
+
+No transaction state SHALL enter canonical Domain entities or value objects.
+
+#### Repository Port Preservation
+
+RFC-064 SHALL NOT change the accepted public operations of:
+
+`KnowledgeRecordRepository`
+
+or:
+
+`DocumentKnowledgeLineageRepository`
+
+The existing `add(...)` and `get(...)` contracts remain authoritative.
+
+No SQLAlchemy types SHALL enter either persistence-neutral repository port.
+
+No commit, rollback, flush, session or transaction method SHALL be added to those repository ports.
+
+#### Transaction-Scope Lifetime
+
+Transaction-scoped repository participants are valid only during the active coordinated execution that created them.
+
+They SHALL NOT become platform singletons.
+
+They SHALL NOT be registered as durable default services.
+
+They SHALL NOT own reusable session state.
+
+They SHALL NOT be reused across independent coordinated operations.
+
+The implementation SHALL avoid exposing transaction-scoped participants as a new general-purpose persistence API.
+
+#### Reentrancy and Nested Transaction Boundary
+
+RFC-064 SHALL NOT establish:
+
+- nested coordinated transactions;
+- savepoint semantics;
+- recursive transaction scopes;
+- transaction suspension;
+- distributed transactions;
+- two-phase commit.
+
+No nested transaction guarantee is authorized.
+
+Any future need for nested or distributed transaction semantics requires separate evidence and architecture acceptance.
+
+#### Isolation and Concurrency Boundary
+
+RFC-064 SHALL NOT redefine:
+
+- database isolation level;
+- engine pool configuration;
+- connection pool lifecycle;
+- lock policy;
+- deadlock retry;
+- statement retry;
+- transaction timeout;
+- optimistic concurrency policy.
+
+The coordinated transaction SHALL inherit the canonical database configuration of the supplied session factory.
+
+#### Retry and Idempotency Boundary
+
+RFC-064 SHALL NOT automatically retry:
+
+- duplicate failures;
+- integrity failures;
+- operational database failures;
+- deadlocks;
+- commit failures;
+- rollback failures;
+- session cleanup failures.
+
+Application retry and idempotency semantics remain separately governed.
+
+No hidden retry loop SHALL be introduced.
+
+#### External Side-Effect Boundary
+
+RFC-064 atomicity applies only to relational work participating in the same canonical PostgreSQL transaction.
+
+It SHALL NOT claim atomicity for:
+
+- file-system writes;
+- binary document storage;
+- network calls;
+- PI / DCS / OPC UA interactions;
+- external databases;
+- message publication;
+- event delivery;
+- email;
+- HTTP calls;
+- parser execution;
+- OCR execution;
+- vector persistence;
+- graph persistence;
+- LLM invocation;
+- any other non-participating external system.
+
+The coordinated operation MAY perform pure in-memory canonical construction required to prepare Knowledge and lineage values.
+
+Long-running or non-transactional external work SHALL NOT be treated as rollback-protected merely because it occurs inside the callback.
+
+RFC-064 SHALL NOT introduce an outbox, distributed transaction or external compensation mechanism.
+
+Future application capabilities that combine relational persistence with external side effects require separately accepted coordination semantics.
+
+#### Compensation Boundary
+
+Because Knowledge and lineage relational persistence currently reside within the same canonical PostgreSQL transaction capability, RFC-064 SHALL prefer database atomic rollback over application compensation.
+
+RFC-064 SHALL NOT introduce compensation as a substitute for atomic rollback.
+
+Cross-system compensation remains outside scope.
+
+#### Relational Schema Boundary
+
+RFC-064 SHALL NOT require a new relational table.
+
+RFC-064 SHALL NOT change canonical columns or constraints for:
+
+- `knowledge_records`;
+- `document_knowledge_lineages`;
+- `enterprise_documents`.
+
+RFC-064 SHALL NOT introduce relational foreign keys.
+
+RFC-064 SHALL NOT introduce a new metadata root.
+
+Canonical SQLAlchemy metadata authority remains unchanged.
+
+#### Alembic Boundary
+
+RFC-064 SHALL NOT assume a new Alembic revision.
+
+Canonical Alembic head SHALL remain:
+
+`0004`
+
+unless contract review discovers a separately justified schema requirement.
+
+Any newly discovered schema requirement SHALL stop implementation and require explicit architecture review before a migration is authorized.
+
+#### SQLAlchemy Infrastructure Namespace
+
+The expected SQLAlchemy implementation namespace is:
+
+`app.infrastructure.knowledge_lineage_transaction`
+
+Expected minimum production surface:
+
+- `backend/app/infrastructure/knowledge_lineage_transaction/__init__.py`;
+- `backend/app/infrastructure/knowledge_lineage_transaction/coordinator.py`;
+- transaction-scoped repository participant implementation contained within that infrastructure boundary.
+
+The infrastructure package initializer SHALL remain empty unless a separately reviewed public API is necessary.
+
+The implementation SHALL reuse accepted Knowledge and lineage relational mappings and canonical SQLAlchemy metadata.
+
+It SHALL NOT introduce alternate relational models for the same canonical entities.
+
+#### Default Composition Boundary
+
+RFC-064 SHALL NOT automatically wire the SQLAlchemy transaction coordinator into default:
+
+`CompositionRoot`
+
+The existence of a transaction coordinator implementation does not itself make database availability a mandatory default platform capability.
+
+Production composition requires a separately accepted application capability that needs coordinated persistence.
+
+#### Runtime and Bootstrap Boundary
+
+RFC-064 SHALL NOT modify:
+
+- Runtime lifecycle authority;
+- Bootstrap authority;
+- Operational Transition authority;
+- mandatory capability readiness semantics;
+- availability semantics;
+- database mandatory-capability policy.
+
+No database startup dependency is introduced merely by implementing this foundation.
+
+#### Security Boundary
+
+RFC-064 does not establish or claim:
+
+- authentication;
+- authorization;
+- RBAC;
+- Active Directory integration;
+- Data Permission Layer;
+- AI response filtering;
+- cybersecurity approval;
+- production security readiness.
+
+Transaction atomicity is not a security authorization mechanism.
+
+#### Explicitly Deferred
+
+RFC-064 SHALL NOT establish:
+
+- Document-to-Knowledge ingestion;
+- Document Library;
+- binary document storage;
+- file upload;
+- parsing;
+- OCR;
+- chunking;
+- Document revision lifecycle;
+- source-document verification;
+- document approval state;
+- document trust state;
+- semantic search;
+- vector persistence;
+- graph persistence;
+- Neo4j;
+- RAG;
+- LLM invocation;
+- HTTP transport;
+- industrial integration;
+- one-sided lineage retrieval;
+- reverse lineage traversal;
+- lineage business cardinality;
+- corroboration;
+- primary-source semantics;
+- multi-source derivation;
+- a generic platform-wide Unit of Work;
+- transactions spanning unrelated PlantMind subsystems;
+- distributed transaction coordination;
+- compensation across external systems;
+- automatic retry policy;
+- asynchronous transaction coordination;
+- `AsyncSession`;
+- cross-thread shared-session use;
+- transactional event publication;
+- outbox semantics;
+- production-readiness claims.
+
+#### Expected TDD Verification
+
+RFC-064 technical implementation, if later authorized, SHALL verify at minimum:
+
+1. the persistence-neutral coordinator contract contains no SQLAlchemy dependency;
+2. existing Knowledge and lineage repository ports remain unchanged;
+3. existing Domain contracts remain unchanged;
+4. one coordinated execution acquires exactly one session;
+5. Knowledge and lineage transaction-scoped repositories use the exact same session;
+6. transaction-scoped repositories acquire no independent session;
+7. transaction-scoped Knowledge `add(...)` flushes but does not commit;
+8. transaction-scoped lineage `add(...)` flushes but does not commit;
+9. transaction-scoped repositories do not rollback;
+10. transaction-scoped repositories do not close the shared session;
+11. successful coordinated execution commits exactly once;
+12. successful coordinated execution closes the session exactly once;
+13. operation failure causes one rollback;
+14. Knowledge flush failure causes one rollback;
+15. lineage flush failure causes one rollback;
+16. final commit failure causes one rollback attempt;
+17. rollback failure is not swallowed and preserves causal linkage;
+18. Knowledge duplicate classification remains exact and constraint-aware;
+19. lineage duplicate classification remains exact and constraint-aware;
+20. unrelated integrity failures are not misclassified;
+21. coordinator does not heuristically classify commit-time integrity failures;
+22. no partial success is reported when either participant fails before commit;
+23. the operation result is returned only after successful final commit;
+24. transaction-scoped participants do not escape into default platform composition;
+25. independent executions do not reuse session state;
+26. existing standalone Knowledge repository behavior remains unchanged;
+27. existing standalone lineage repository behavior remains unchanged;
+28. `KnowledgeCaptureApplicationService` remains unchanged;
+29. `EnterpriseDocumentRegistrationApplicationService` remains unchanged;
+30. canonical `DatabaseRuntime` remains engine/session-factory lifecycle owner;
+31. no second metadata authority is introduced;
+32. no schema migration is introduced;
+33. canonical Alembic head remains `0004`;
+34. default `CompositionRoot` remains unchanged;
+35. Runtime and Bootstrap authority remain unchanged;
+36. Python compileall passes;
+37. architecture / forbidden-coupling guards pass;
+38. full PlantMind regression remains green;
+39. the coordinator port is application-level and persistence-neutral;
+40. no Domain or Core package depends on transaction infrastructure;
+41. session-factory acquisition failure does not invoke the operation;
+42. session-factory acquisition failure attempts neither rollback nor close on a nonexistent session;
+43. transaction-start failure does not invoke the operation;
+44. an acquired session is closed when transaction establishment fails;
+45. the transaction is established before the supplied operation is invoked;
+46. transaction-scoped `get(...)` uses the shared session without commit / rollback / close;
+47. standalone and coordinated Knowledge duplicate paths use one canonical classification rule;
+48. standalone and coordinated lineage duplicate paths use one canonical classification rule;
+49. final commit failure is never reported as successful completion;
+50. final commit failure triggers no automatic retry;
+51. post-commit close failure is distinguishable from transaction rollback through `KnowledgeLineageTransactionPostCommitCleanupError`;
+52. post-commit cleanup failure does not imply that committed data was rolled back;
+53. cleanup failure does not mask an already-existing transaction or rollback failure;
+54. one coordinator instance retains no active session between independent executions;
+55. no asynchronous or cross-thread shared-session behavior is introduced;
+56. no external-system atomicity claim enters the implementation;
+57. RFC-064 introduces no new ARCH-001 architectural layer;
+58. the coordinator is not an application workload entry point or `ApplicationFacade` competitor;
+59. transaction atomicity is not falsely represented as application-use-case completeness;
+60. session cleanup performs no second explicit PlantMind commit or rollback decision.
+
+#### Contract Acceptance Gate
+
+RFC-064 / AD-050 SHALL NOT become Accepted merely because this draft exists.
+
+Before acceptance, a dedicated architecture review SHALL verify:
+
+1. the coordination boundary is the minimum dependency-completing solution;
+2. the design does not become a generic Unit of Work;
+3. Domain contracts remain unchanged;
+4. repository ports remain persistence-neutral and unchanged;
+5. existing standalone repositories retain clear transaction ownership;
+6. transaction-scoped participants have unambiguous non-owning lifecycle semantics;
+7. one shared session is sufficient for atomicity;
+8. final commit authority exists in exactly one place;
+9. rollback authority exists in exactly one place;
+10. flush ownership preserves repository duplicate classification;
+11. no duplicate-classification semantics are weakened;
+12. `KnowledgeCaptureApplicationService` remains reusable without redesign;
+13. `DatabaseRuntime` lifecycle ownership is preserved;
+14. no schema or migration change is required;
+15. default Composition does not acquire a database dependency;
+16. Runtime and Bootstrap authority remain unchanged;
+17. deferred ingestion, Library, AI, search and security work remains outside scope;
+18. the coordinator port has explicit application-level responsibility without creating a new ARCH-001 layer;
+19. session acquisition and transaction-start failure paths are unambiguous;
+20. the supplied operation cannot execute before transaction establishment succeeds;
+21. commit failure is not falsely documented as proof of rollback;
+22. post-commit cleanup failure has an explicit committed-outcome semantic;
+23. transaction failure cannot be masked by a later cleanup failure;
+24. standalone and coordinated duplicate classification cannot drift into separate rules;
+25. transaction-scoped reads preserve repository semantics without acquiring lifecycle ownership;
+26. synchronous shared-session usage is explicit and async / cross-thread behavior remains outside scope;
+27. PostgreSQL transaction atomicity is not extended falsely to external side effects;
+28. the coordinator does not compete with `ApplicationFacade` or become a production workload entry boundary;
+29. AD-050 explicitly governs the narrow Infrastructure dependency on the persistence-neutral coordinator contract without establishing a general reverse-layer dependency rule;
+30. transaction atomicity is explicitly distinguished from application-use-case completeness;
+31. session-close semantics make no unverifiable guarantee about SQLAlchemy, driver or pool internal cleanup while prohibiting any second explicit PlantMind transaction decision.
+
+Outcome:
+
+**PASS — RFC-064 / AD-050 architecture contract accepted.**
+
+The formal review confirmed that all acceptance requirements are satisfied.
+
+The accepted contract preserves:
+
+- the six-layer ARCH-001 model without creating another architectural layer;
+- application-level responsibility without competing with `ApplicationFacade`;
+- persistence-neutral Domain and repository contracts;
+- one narrow Knowledge-and-lineage coordination responsibility;
+- one shared relational transaction scope per coordinated execution;
+- coordinator-owned commit, rollback and session-close authority;
+- transaction-scoped repository flush without independent transaction ownership;
+- exact constraint-aware Knowledge and lineage duplicate semantics;
+- standalone repository behavior outside coordinated execution;
+- canonical `DatabaseRuntime` lifecycle ownership;
+- `KnowledgeCaptureApplicationService` responsibility;
+- `EnterpriseDocumentRegistrationApplicationService` responsibility;
+- default Composition independence;
+- Runtime and Bootstrap authority;
+- canonical Alembic head `0004`;
+- explicit separation between transaction atomicity and application-use-case completeness;
+- explicit exclusion of external-system atomicity, retry, ingestion, Library, search, AI, security and production-readiness claims.
+
 ### Implementation Authorization
 
 Status:
 
-**Not Authorized**
+**Accepted — Implementation Gate Pending**
 
-No production implementation is authorized by this selection record.
+The RFC-064 / AD-050 architecture contract is accepted.
 
-RFC-064 / AD-050 must first be drafted as an explicit architecture contract, reviewed against the current repository and accepted architecture, refined where necessary, accepted, committed, pushed and verified through the implementation-entry Git gate.
+Production implementation is not yet authorized.
+
+Technical implementation SHALL remain prohibited until:
+
+1. the accepted RFC-064 / AD-050 documentation is committed;
+2. the accepted contract commit is pushed to `origin/feature/engineering-platform`;
+3. exact local/remote contract commit identity is verified;
+4. the working tree is clean.
 
 ### Next Exact Action
 
-Draft RFC-064 / AD-050 architecture contract from the verified post-RFC-063 repository baseline.
+Commit and push the accepted RFC-064 / AD-050 architecture contract.
 
-Perform a dedicated contract review before marking AD-050 Accepted.
+After push, verify exact local/remote contract identity and a clean working tree.
 
-Do not modify production code until the accepted contract is committed, pushed, exact local/remote contract identity is verified and the working tree is clean.
+Only after that implementation-entry Git gate passes may RFC-064 TDD technical implementation begin.
+
+Do not modify production code before that gate.
 
 
 ---

@@ -7003,3 +7003,773 @@ Status:
 The architecture contract is accepted.
 
 Technical implementation remains prohibited until this accepted contract is committed, pushed to `origin/feature/engineering-platform`, exact local/remote contract identity is verified, and the working tree is clean.
+
+---
+
+# AD-050 — Canonical Knowledge-and-Lineage Transaction Coordination Foundation Boundary
+
+## Status
+
+Accepted.
+
+## Context
+
+AD-039 through AD-042 established the canonical Knowledge Domain, relational database runtime, relational Knowledge persistence and specialized `KnowledgeCaptureApplicationService`.
+
+AD-043 through AD-046 established the canonical Enterprise Document Domain, repository, relational persistence and specialized Document Registration application boundary.
+
+AD-047 through AD-049 established canonical directed Document-to-Knowledge lineage, its persistence-neutral repository and its relational persistence adapter.
+
+The accepted relational Knowledge and lineage repositories currently own independent SQLAlchemy session and transaction lifecycles.
+
+Each standalone relational repository may independently acquire a session and own commit, rollback and close behavior.
+
+AD-049 explicitly deferred:
+
+- application transaction orchestration;
+- shared Unit of Work;
+- cross-repository transaction semantics;
+- compensation;
+- retry policy;
+- Document-to-Knowledge ingestion.
+
+A future accepted Document-derived Knowledge application capability may need one canonical `KnowledgeRecord` and its canonical `DocumentKnowledgeLineage` to participate in one relational transaction.
+
+Without an accepted coordination boundary, introducing that capability would force transaction ownership, partial-failure semantics and rollback behavior implicitly into application code.
+
+The minimum dependency-completing architecture is therefore a narrow Knowledge-and-lineage transaction coordination foundation.
+
+## Decision
+
+PlantMind SHALL establish a persistence-neutral coordination contract:
+
+`KnowledgeLineageTransactionCoordinator`
+
+under:
+
+`app.knowledge_lineage_transaction`
+
+The coordinator SHALL expose one synchronous coordinated execution responsibility equivalent to:
+
+`execute(operation) -> T`
+
+The supplied operation SHALL receive transaction-scoped implementations of exactly:
+
+- `KnowledgeRecordRepository`;
+- `DocumentKnowledgeLineageRepository`.
+
+RFC-064 / AD-050 SHALL NOT itself implement Document-to-Knowledge ingestion.
+
+## Application-Level Responsibility
+
+`KnowledgeLineageTransactionCoordinator` is an application-level persistence-coordination contract.
+
+The term `application-level` describes responsibility and use-case position only.
+
+AD-050 SHALL NOT introduce a seventh architectural layer.
+
+The six-layer architecture defined by ARCH-001 remains unchanged.
+
+The coordinator SHALL NOT become:
+
+- an architectural layer;
+- a Domain service;
+- a Core Service;
+- an Intelligence Engine;
+- an AI Agent;
+- an application workload entry point;
+- a replacement or competitor for `ApplicationFacade`;
+- an HTTP or other transport boundary.
+
+It is a specialized supporting application-level persistence contract for future accepted Knowledge application capabilities.
+
+## Dependency Decision
+
+The persistence-neutral coordinator contract MAY depend only on:
+
+- `KnowledgeRecordRepository`;
+- `DocumentKnowledgeLineageRepository`;
+- Python standard-library typing and callable abstractions required to express the contract.
+
+The persistence-neutral coordinator contract SHALL NOT depend on:
+
+- SQLAlchemy;
+- Psycopg;
+- `DatabaseRuntime`;
+- Infrastructure implementations;
+- Composition;
+- Runtime;
+- Bootstrap;
+- transport;
+- agents;
+- intelligence engines.
+
+The SQLAlchemy implementation MAY depend on the persistence-neutral coordinator contract and its coordination-specific errors as required to implement this decision.
+
+AD-050 explicitly authorizes that narrow implementation dependency.
+
+This authorization SHALL NOT establish a general Infrastructure-to-Application dependency rule.
+
+Infrastructure SHALL NOT thereby gain permission to depend on:
+
+- application services;
+- `ApplicationFacade`;
+- orchestration services;
+- business workflows;
+- AI Agents;
+- Intelligence Engines.
+
+Canonical Domain and repository packages SHALL NOT depend outward on transaction infrastructure.
+
+## Canonical Atomicity Boundary
+
+For one coordinated operation, atomicity applies to Knowledge and lineage writes actually submitted through the transaction-scoped repositories during that operation.
+
+If an application operation performs both:
+
+1. one canonical Knowledge write; and
+2. its corresponding canonical lineage write;
+
+those participating writes SHALL commit together or neither SHALL be successfully committed by that transaction.
+
+All successful participating writes within one coordinated operation SHALL commit together.
+
+A failure before successful commit SHALL enter the accepted rollback path for the shared transaction.
+
+The coordinator SHALL NOT itself:
+
+- require both repositories to be written;
+- infer whether lineage is required;
+- infer correspondence between arbitrary Knowledge and lineage objects;
+- enforce Knowledge-to-lineage business completeness;
+- enforce business cardinality.
+
+A future application capability that requires both writes SHALL own the obligation to invoke both required persistence operations before returning successful use-case completion.
+
+AD-050 therefore guarantees transaction atomicity for participating relational writes.
+
+It does not guarantee application-use-case completeness.
+
+## Shared Session Invariant
+
+One coordinated `execute(...)` invocation SHALL:
+
+1. acquire exactly one synchronous SQLAlchemy session;
+2. establish exactly one transaction scope;
+3. provide transaction-scoped Knowledge and lineage repository participants using that exact session;
+4. invoke the supplied operation exactly once;
+5. own final commit authority;
+6. own rollback authority;
+7. own session-close authority.
+
+The shared session SHALL NOT be retained for later independent executions.
+
+Each independent execution SHALL own independent session and transaction state.
+
+No shared active session SHALL be stored as reusable coordinator instance state.
+
+## Transaction-Scoped Repository Participation
+
+The SQLAlchemy implementation SHALL provide transaction-scoped implementations of the existing:
+
+- `KnowledgeRecordRepository`;
+- `DocumentKnowledgeLineageRepository`.
+
+Those participants SHALL preserve the accepted persistence-neutral repository contracts.
+
+They SHALL NOT:
+
+- create an engine;
+- create an independent session;
+- commit;
+- rollback;
+- close the shared session;
+- generate Domain identity;
+- construct Knowledge;
+- construct lineage;
+- change Domain semantics;
+- change repository public operations.
+
+They SHALL use the existing accepted relational mappings.
+
+No alternate relational models for the same canonical entities are authorized.
+
+## Transaction-Scoped Write Semantics
+
+For transaction-scoped `add(...)`, the participant SHALL:
+
+1. map the canonical value using the accepted mapper;
+2. add the relational row to the shared session;
+3. flush the shared session;
+4. perform no commit;
+5. perform no rollback;
+6. perform no close.
+
+Participant-owned flush exists to materialize repository-owned relational constraint failures at the repository boundary before final coordinated commit.
+
+## Transaction-Scoped Read Semantics
+
+For transaction-scoped `get(...)`, the participant SHALL:
+
+- use the exact shared coordinator-owned session;
+- acquire no independent session;
+- perform no commit;
+- perform no rollback;
+- perform no close;
+- preserve the accepted canonical row-to-Domain mapping;
+- return `None` for an absent identity exactly as defined by the existing repository contract.
+
+A transaction-scoped read SHALL NOT acquire transaction-lifecycle ownership.
+
+## Standalone Repository Preservation
+
+AD-050 SHALL NOT replace or redefine:
+
+- `SQLAlchemyKnowledgeRecordRepository`;
+- `SQLAlchemyDocumentKnowledgeLineageRepository`.
+
+Existing standalone behavior remains authoritative outside coordinated execution.
+
+Standalone repositories may continue to:
+
+- acquire their own sessions;
+- own standalone commit;
+- own standalone rollback;
+- own standalone close;
+- preserve their existing duplicate translation behavior.
+
+AD-050 adds a distinct coordinated persistence path rather than introducing ambiguous dual transaction ownership into the standalone repository classes.
+
+## Duplicate Classification
+
+Knowledge duplicate classification SHALL remain based on exactly:
+
+- PostgreSQL SQLSTATE `23505`;
+- constraint `pk_knowledge_records`.
+
+Lineage duplicate classification SHALL remain based on exactly:
+
+- PostgreSQL SQLSTATE `23505`;
+- constraint `pk_document_knowledge_lineages`.
+
+Knowledge identity conflict SHALL continue to translate to:
+
+`KnowledgeRecordAlreadyExistsError`
+
+Lineage identity conflict SHALL continue to translate to:
+
+`DocumentKnowledgeLineageAlreadyExistsError`
+
+Unrelated integrity failures SHALL remain unrelated integrity failures.
+
+Message-text-only duplicate classification remains prohibited.
+
+The coordinator SHALL NOT heuristically infer repository ownership of arbitrary database integrity errors.
+
+Standalone and transaction-scoped paths SHALL use one canonical infrastructure-owned classification rule for each canonical identity constraint.
+
+Implementation-private duplicate-classification helpers MAY be refactored to prevent semantic drift.
+
+Such refactoring SHALL NOT change public repository APIs, exception types, constraint identity, SQLSTATE requirements or standalone transaction ownership.
+
+## Commit-Time Failure Boundary
+
+Repository-owned constraints SHALL be materialized through transaction-scoped participant flush whenever technically possible.
+
+A failure appearing only at final commit SHALL NOT be heuristically reclassified by the coordinator as a Knowledge or lineage duplicate.
+
+Commit-time failures SHALL enter the coordinated failure path and propagate unless a future accepted contract establishes safe additional classification.
+
+## Session Acquisition and Transaction Start
+
+The injected synchronous session factory SHALL be invoked exactly once per coordinated execution.
+
+The supplied application operation SHALL NOT run before successful transaction establishment.
+
+If session acquisition fails:
+
+- the failure SHALL propagate;
+- the operation SHALL NOT execute;
+- no rollback SHALL be attempted for a nonexistent session;
+- no close SHALL be attempted for a session that was never acquired.
+
+If transaction establishment fails after session acquisition:
+
+- the operation SHALL NOT execute;
+- no commit SHALL occur;
+- the acquired session SHALL be closed exactly once;
+- rollback SHALL be attempted only when a transaction was actually established.
+
+Nested transaction and savepoint behavior are not established by AD-050.
+
+## Commit Semantics
+
+After successful completion of the supplied operation:
+
+1. participant persistence work SHALL already be submitted to the shared transaction;
+2. required participant constraint validation SHALL already have been materialized through flush where technically possible;
+3. the coordinator SHALL perform one final commit;
+4. the operation result SHALL be returned only after successful final commit.
+
+Transaction-scoped repositories SHALL NOT commit independently.
+
+## Final Commit Failure and Outcome Certainty
+
+If final commit raises:
+
+- successful completion SHALL NOT be reported;
+- the operation result SHALL NOT be returned as success;
+- the accepted rollback path SHALL be attempted;
+- no automatic retry SHALL occur.
+
+AD-050 distinguishes database transaction atomicity from caller-visible outcome certainty.
+
+A client-side or connection failure during final commit MAY prevent the caller from proving whether PostgreSQL accepted the commit before the failure became observable.
+
+Therefore a commit exception SHALL NOT automatically be interpreted as proof that nothing was committed.
+
+Rollback after a commit exception SHALL NOT be represented as proof that a previously completed server-side commit was reversed.
+
+Automatic retry of a commit-failed coordinated operation is prohibited by AD-050.
+
+Retry and reconciliation policy remain separately governed.
+
+## Rollback Semantics
+
+If a failure occurs before successful commit, including:
+
+- Knowledge persistence failure;
+- lineage persistence failure;
+- translated duplicate conflict;
+- unrelated integrity failure;
+- application operation failure;
+- flush failure;
+- final commit failure;
+
+the coordinator SHALL attempt one rollback of the shared transaction.
+
+If rollback succeeds, the original failure SHALL propagate except where a repository duplicate has already been translated through its accepted contract.
+
+If rollback itself fails, the rollback failure SHALL NOT be suppressed.
+
+Rollback failure SHALL preserve causal linkage to the failure that triggered rollback.
+
+Transaction-scoped repository participants SHALL NOT independently rollback.
+
+## Session Cleanup Semantics
+
+The coordinator SHALL attempt to close the acquired shared session exactly once after the transaction success or failure path.
+
+During cleanup, PlantMind SHALL NOT explicitly invoke a second commit or second rollback.
+
+Session close SHALL NOT be used as a second PlantMind transaction-decision mechanism.
+
+SQLAlchemy, the database driver or the connection pool MAY perform internal implementation-level cleanup required by their own lifecycle semantics.
+
+AD-050 SHALL NOT represent such internal cleanup as a new PlantMind transaction decision.
+
+## Post-Commit Cleanup Failure
+
+AD-050 SHALL establish the persistence-neutral coordination error:
+
+`KnowledgeLineageTransactionPostCommitCleanupError`
+
+This error applies only when:
+
+1. final database commit completed successfully; and
+2. subsequent coordinator-owned session cleanup fails.
+
+Its meaning is explicit:
+
+the coordinated database transaction committed successfully, but cleanup failed afterward.
+
+A caller SHALL NOT interpret this error as evidence that the transaction rolled back.
+
+Automatic retry solely because of this error is prohibited.
+
+If an existing transaction or rollback failure is already primary and cleanup also fails, cleanup failure SHALL NOT replace or misrepresent the primary transaction outcome.
+
+Diagnostic causal information about cleanup failure SHALL be preserved where technically possible.
+
+## DatabaseRuntime Boundary
+
+Canonical `DatabaseRuntime` SHALL remain responsible for:
+
+- SQLAlchemy engine creation;
+- canonical session-factory creation;
+- engine disposal;
+- database configuration lifecycle.
+
+The SQLAlchemy coordinator SHALL receive an injected synchronous session factory.
+
+It SHALL NOT:
+
+- create another engine;
+- construct another `DatabaseRuntime`;
+- read `DATABASE_URL` directly;
+- dispose the canonical engine;
+- redefine database configuration;
+- redefine database lifecycle ownership.
+
+## Knowledge Capture Compatibility
+
+AD-050 SHALL NOT modify the responsibilities or public behavior of:
+
+`KnowledgeCaptureApplicationService`
+
+That application service SHALL remain dependent on:
+
+`KnowledgeRecordRepository`
+
+A future accepted application capability MAY use `KnowledgeCaptureApplicationService` inside an AD-050 coordinated operation by supplying the transaction-scoped `KnowledgeRecordRepository`.
+
+The coordinator SHALL NOT:
+
+- generate Knowledge identity;
+- generate capture timestamps;
+- construct Knowledge provenance;
+- construct Knowledge subject;
+- automatically invoke Knowledge Capture;
+- become a Knowledge factory.
+
+Knowledge construction and capture semantics remain owned by the accepted Knowledge Capture application boundary.
+
+## Enterprise Document Registration Preservation
+
+AD-050 SHALL NOT modify:
+
+`EnterpriseDocumentRegistrationApplicationService`
+
+AD-050 SHALL NOT establish a transaction spanning:
+
+- Enterprise Document registration;
+- Knowledge capture;
+- lineage persistence.
+
+Any future transaction spanning those separate application use cases requires separate architecture evidence and acceptance.
+
+## Persistence Ordering
+
+AD-050 SHALL NOT impose a business-level ordering rule between Knowledge and lineage persistence.
+
+A future application operation determines the order in which it invokes the transaction-scoped repositories.
+
+Infrastructure transaction atomicity SHALL remain valid regardless of participant invocation order.
+
+Any future use-case requirement that Knowledge must be constructed before lineage is an application concern rather than a database transaction rule.
+
+## Synchronous and Concurrency Boundary
+
+AD-050 establishes synchronous transaction coordination consistent with the accepted synchronous SQLAlchemy runtime.
+
+It SHALL NOT establish:
+
+- `AsyncSession`;
+- asynchronous transaction coordination;
+- concurrent use of one shared session by multiple threads or tasks;
+- cross-thread transaction-scoped repository use.
+
+Separate invocations MAY execute concurrently only when each invocation owns completely independent session and transaction state.
+
+## External Side-Effect Boundary
+
+AD-050 atomicity applies only to relational work participating in the same canonical PostgreSQL transaction.
+
+It SHALL NOT claim atomicity for:
+
+- file-system writes;
+- binary document storage;
+- network calls;
+- PI / DCS / OPC UA operations;
+- other databases;
+- events or message publication;
+- HTTP calls;
+- parser execution;
+- OCR;
+- vector persistence;
+- graph persistence;
+- LLM invocation;
+- any other non-participating external system.
+
+Pure in-memory construction may occur inside the supplied operation.
+
+Non-transactional external work SHALL NOT be treated as rollback-protected merely because it occurs inside the callback.
+
+AD-050 does not introduce distributed transactions, outbox semantics or external compensation.
+
+## Compensation Boundary
+
+Because current Knowledge and lineage relational persistence can participate in the same canonical PostgreSQL transaction, AD-050 SHALL prefer database rollback over application compensation.
+
+Application compensation SHALL NOT substitute for relational transaction atomicity.
+
+Cross-system compensation remains outside scope.
+
+## Retry and Idempotency Boundary
+
+AD-050 SHALL NOT automatically retry:
+
+- duplicate failures;
+- integrity failures;
+- operational database failures;
+- deadlocks;
+- commit failures;
+- rollback failures;
+- cleanup failures.
+
+Application retry, reconciliation and idempotency remain separately governed.
+
+No hidden retry loop is authorized.
+
+## Relational Schema and Alembic Boundary
+
+AD-050 SHALL NOT introduce:
+
+- a new relational table;
+- new canonical columns;
+- new canonical constraints;
+- relational foreign keys;
+- a second SQLAlchemy metadata root.
+
+Canonical tables remain unchanged:
+
+- `knowledge_records`;
+- `document_knowledge_lineages`;
+- `enterprise_documents`.
+
+No new Alembic revision is required by this decision.
+
+Canonical Alembic head remains:
+
+`0004`
+
+Any newly discovered schema requirement SHALL stop technical implementation and require explicit architecture review before migration authorization.
+
+## SQLAlchemy Infrastructure Boundary
+
+The expected SQLAlchemy implementation namespace is:
+
+`app.infrastructure.knowledge_lineage_transaction`
+
+Expected minimum surface:
+
+- `backend/app/infrastructure/knowledge_lineage_transaction/__init__.py`;
+- `backend/app/infrastructure/knowledge_lineage_transaction/coordinator.py`;
+- narrowly scoped transaction-scoped repository participant implementation.
+
+The infrastructure package initializer SHALL remain empty unless a separately reviewed public API is required.
+
+Accepted Knowledge and lineage mappings and canonical SQLAlchemy metadata SHALL be reused.
+
+## Composition Boundary
+
+AD-050 SHALL NOT automatically modify default:
+
+- `CompositionRoot`;
+- `ServiceContainer`;
+- `PlatformComposition`;
+- `ApplicationFacade`.
+
+The existence of a transaction coordinator does not itself make PostgreSQL or coordinated persistence a mandatory default platform capability.
+
+Production composition requires a separately accepted application capability that explicitly needs coordinated persistence.
+
+## Runtime and Bootstrap Boundary
+
+AD-050 SHALL NOT modify:
+
+- Runtime lifecycle authority;
+- Bootstrap authority;
+- Operational Transition authority;
+- readiness semantics;
+- request-admission semantics;
+- mandatory-capability policy;
+- database availability policy.
+
+No database startup dependency is introduced merely by this foundation.
+
+## Security Boundary
+
+AD-050 does not establish or claim:
+
+- authentication;
+- authorization;
+- RBAC;
+- Active Directory;
+- Data Permission Layer;
+- actor audit;
+- Cybersecurity approval;
+- production security readiness.
+
+Transaction atomicity is not an authorization mechanism.
+
+## Explicitly Deferred
+
+AD-050 SHALL NOT establish:
+
+- Document-to-Knowledge ingestion;
+- Document Library;
+- binary document storage;
+- file upload;
+- parsing;
+- OCR;
+- chunking;
+- Document revision lifecycle;
+- source verification;
+- Document approval or trust state;
+- semantic search;
+- vector persistence;
+- graph persistence;
+- Neo4j;
+- RAG;
+- LLM invocation;
+- HTTP transport;
+- industrial integration;
+- one-sided lineage retrieval;
+- reverse lineage traversal;
+- lineage business cardinality;
+- corroboration;
+- primary-source semantics;
+- multi-source derivation;
+- generic platform-wide Unit of Work;
+- unrelated cross-subsystem transactions;
+- nested coordinated transactions;
+- savepoints;
+- distributed transactions;
+- two-phase commit;
+- transactional event publication;
+- outbox semantics;
+- asynchronous coordination;
+- automatic retry policy;
+- production-readiness claims.
+
+## Alternatives Considered
+
+### Implement Document-to-Knowledge ingestion now
+
+Rejected.
+
+The unresolved transaction boundary must be established before an ingestion use case can safely require Knowledge and lineage persistence together.
+
+### Convert the existing standalone repositories into optional transaction owners
+
+Rejected.
+
+Allowing the same repository instance to sometimes own and sometimes not own commit, rollback and close would create ambiguous transaction ownership and weaken existing accepted standalone semantics.
+
+### Introduce a generic platform-wide Unit of Work
+
+Rejected.
+
+Current evidence requires coordination only between Knowledge persistence and Document-to-Knowledge lineage persistence.
+
+A generic transaction framework would exceed the demonstrated architectural need.
+
+### Use application compensation instead of one PostgreSQL transaction
+
+Rejected.
+
+Both relational writes can participate in one canonical PostgreSQL transaction.
+
+Compensation would introduce unnecessary partial-state and recovery complexity.
+
+### Add relational foreign keys as part of transaction coordination
+
+Rejected.
+
+Cross-domain relational referential-integrity policy remains separately governed and is not required for transaction atomicity.
+
+### Wire the coordinator into default Composition immediately
+
+Rejected.
+
+An infrastructure capability does not itself establish a default application dependency or mandatory database Runtime capability.
+
+## Acceptance Requirements
+
+Before AD-050 may become Accepted, architecture review SHALL confirm:
+
+1. no new ARCH-001 architectural layer is introduced;
+2. application-level responsibility does not compete with `ApplicationFacade`;
+3. the coordinator contract remains persistence-neutral;
+4. Domain and repository contracts remain unchanged;
+5. the narrow Infrastructure dependency on the coordinator contract is explicitly contained by AD-050;
+6. no general Infrastructure-to-Application dependency rule is created;
+7. one coordinated execution owns exactly one session and one transaction scope;
+8. transaction-scoped repositories share the exact same session;
+9. final commit authority exists only in the coordinator;
+10. rollback authority exists only in the coordinator;
+11. session-close authority exists only in the coordinator;
+12. transaction-scoped repositories flush but do not commit, rollback or close;
+13. transaction-scoped reads preserve accepted repository semantics;
+14. standalone repository transaction ownership remains unchanged;
+15. Knowledge duplicate classification remains exact and constraint-aware;
+16. lineage duplicate classification remains exact and constraint-aware;
+17. standalone and coordinated duplicate-classification rules cannot drift independently;
+18. commit-time failures are not heuristically misclassified;
+19. commit uncertainty is not falsely represented as proof of rollback;
+20. post-commit cleanup failure has explicit committed-outcome semantics;
+21. transaction atomicity is distinguished from application-use-case completeness;
+22. `KnowledgeCaptureApplicationService` remains unchanged and reusable;
+23. `EnterpriseDocumentRegistrationApplicationService` remains unchanged;
+24. canonical `DatabaseRuntime` lifecycle ownership remains unchanged;
+25. no schema or Alembic revision is required;
+26. canonical Alembic head remains `0004`;
+27. default Composition remains unchanged;
+28. Runtime and Bootstrap authority remain unchanged;
+29. synchronous shared-session behavior is explicit;
+30. PostgreSQL transaction atomicity is not falsely extended to external side effects;
+31. all ingestion, Library, search, AI, security and deployment capabilities listed as deferred remain outside scope.
+
+## Contract Acceptance Review
+
+Outcome:
+
+**PASS — AD-050 accepted.**
+
+The final formal review confirmed that the recorded AD-050 decision is materially consistent with the reviewed RFC-064 architecture contract and current authoritative architecture.
+
+The review was performed against:
+
+- ARCH-001;
+- CORE-002;
+- CORE-003;
+- AD-027 application-boundary semantics;
+- AD-039 through AD-049;
+- canonical Knowledge and lineage repository contracts;
+- current standalone SQLAlchemy transaction ownership;
+- canonical `DatabaseRuntime` authority;
+- canonical metadata and Alembic authority;
+- `KnowledgeCaptureApplicationService`;
+- `EnterpriseDocumentRegistrationApplicationService`;
+- default Composition;
+- Runtime and Bootstrap authority.
+
+All 31 AD-050 Acceptance Requirements are satisfied.
+
+No unresolved architecture divergence requires further contract refinement before the implementation-entry Git gate.
+
+The accepted decision preserves the narrow transaction-coordination responsibility and all explicitly deferred higher-level capabilities.
+
+## Implementation Authorization
+
+Status:
+
+**Accepted — Implementation Gate Pending**
+
+The AD-050 architecture decision and RFC-064 contract are accepted.
+
+Technical implementation remains prohibited until:
+
+1. the accepted documentation is committed;
+2. the accepted contract commit is pushed to `origin/feature/engineering-platform`;
+3. exact local/remote contract identity is verified;
+4. the working tree is clean.
+
+## Next Exact Action
+
+Commit and push the accepted RFC-064 / AD-050 architecture contract.
+
+After push, verify exact local/remote contract identity and a clean working tree before technical implementation begins.
+
+Do not modify production code before the implementation-entry Git gate passes.
