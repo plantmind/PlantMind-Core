@@ -3855,3 +3855,230 @@ No RFC-063 content is assumed or preselected by this reconciliation.
 The next architecture workstream SHALL be selected from current repository, project-charter and architecture evidence.
 
 No new RFC implementation is authorized until its architecture contract is reviewed, accepted, committed, pushed and its implementation-entry Git gate is satisfied.
+
+---
+
+## 2026-08-15 — Post-RFC-062 Evidence-Based Selection of RFC-063
+
+### Selection Baseline
+
+Repository baseline:
+
+`6261f598a9ccfb9e16075ba14d4847c94ef05503`
+
+At selection time:
+
+- local HEAD matched `origin/feature/engineering-platform`;
+- RFC-062 was fully closed;
+- post-closure reconciliation was complete;
+- working tree was clean.
+
+### Evidence Reviewed
+
+The selection review examined current repository, architecture and project evidence, including:
+
+- canonical Knowledge Domain and repository;
+- canonical Knowledge relational persistence;
+- canonical Knowledge Capture application boundary;
+- canonical Enterprise Document Domain;
+- canonical Enterprise Document repository;
+- canonical Enterprise Document relational persistence;
+- canonical Enterprise Document Registration application boundary;
+- canonical `DocumentKnowledgeLineage`;
+- canonical `DocumentKnowledgeLineageRepository`;
+- accepted database runtime and metadata authority;
+- Alembic history through revision `0003`;
+- Phase 1 project objectives and deferred capabilities;
+- accepted architecture decisions governing Document, Knowledge, lineage, persistence, composition and application boundaries.
+
+### Candidate Workstreams Considered
+
+The review considered at minimum:
+
+1. relational persistence for canonical Document-to-Knowledge lineage;
+2. coordinated Document-to-Knowledge ingestion;
+3. Document Library capability;
+4. parsing / OCR / chunking;
+5. Search Engine capability;
+6. semantic / vector / graph retrieval;
+7. RAG / LLM capability;
+8. production composition of existing Document or Knowledge application boundaries.
+
+### Selection Decision
+
+Selected next architecture workstream:
+
+`RFC-063 — Canonical Document-to-Knowledge Lineage Relational Persistence Adapter Boundary`
+
+Proposed architecture decision:
+
+`AD-049 — Canonical Document-to-Knowledge Lineage Relational Persistence Adapter Boundary`
+
+### Selection Rationale
+
+The selected workstream is the minimum dependency-completing step after RFC-062.
+
+Current architecture already provides:
+
+- canonical immutable lineage identity;
+- persistence-neutral lineage repository semantics;
+- canonical relational infrastructure;
+- established Knowledge relational persistence pattern;
+- established Enterprise Document relational persistence pattern.
+
+RFC-062 explicitly deferred relational lineage persistence to a separate future accepted contract.
+
+A relational lineage adapter therefore completes the next missing infrastructure responsibility without expanding Domain or application behavior.
+
+### Why Ingestion Was Not Selected
+
+Document Knowledge ingestion was not selected as the immediate next step.
+
+A coordinated ingestion capability would require explicit decisions for:
+
+- Knowledge persistence plus lineage persistence coordination;
+- transaction ownership;
+- cross-repository atomicity;
+- partial-failure behavior;
+- rollback or compensation;
+- retry semantics.
+
+Those responsibilities are not currently accepted.
+
+Introducing ingestion before those boundaries are explicitly governed would create hidden application transaction semantics.
+
+### Why Higher-Level Capabilities Were Not Selected
+
+Document Library, parsing, OCR, search, vector, graph, RAG and LLM capabilities remain important Phase 1 objectives but are not the minimum safe next dependency.
+
+They SHALL NOT bypass canonical Document, Knowledge and lineage foundations or promote existing prototype components into production architecture.
+
+### Proposed Contract Direction
+
+RFC-063 is drafted to introduce only:
+
+- `DocumentKnowledgeLineageRow`;
+- explicit lineage Domain/relational mapping;
+- `SQLAlchemyDocumentKnowledgeLineageRepository`;
+- canonical relational table `document_knowledge_lineages`;
+- composite relational identity `(document_id, knowledge_record_id)`;
+- primary-key constraint `pk_document_knowledge_lineages`;
+- append-only Alembic revision `0004`.
+
+The draft intentionally excludes:
+
+- surrogate lineage identity;
+- relational foreign keys;
+- application ingestion;
+- cross-repository transaction orchestration;
+- default Composition changes;
+- Runtime or Bootstrap authority changes;
+- one-sided lineage queries;
+- business cardinality semantics;
+- Document Library;
+- parsing / OCR;
+- search;
+- vector / graph;
+- RAG / LLM;
+- security or production-readiness claims.
+
+### Current Contract State
+
+RFC-063:
+
+**Contract Drafted — Acceptance Review Pending**
+
+AD-049:
+
+**Proposed**
+
+No production implementation is authorized.
+
+### Next Exact Action
+
+Perform RFC-063 / AD-049 Contract Acceptance Review against:
+
+- accepted Domain contracts;
+- accepted repository contracts;
+- RFC-054 database authority;
+- RFC-055 Knowledge persistence pattern;
+- RFC-059 Document persistence pattern;
+- RFC-061 lineage identity;
+- RFC-062 lineage repository semantics;
+- architecture dependency and composition rules.
+
+Only if that review passes may RFC-063 / AD-049 be marked accepted and committed as an architecture contract.
+
+Technical implementation remains prohibited until the accepted contract commit is pushed and exact local/remote implementation-entry Git identity is verified.
+
+---
+
+## 2026-08-15 — RFC-063 / AD-049 Contract Acceptance Review
+
+### Review Outcome
+
+**PASS — RFC-063 / AD-049 architecture contract accepted.**
+
+The Contract Acceptance Review was performed against the accepted PlantMind Domain, repository, relational persistence, migration, composition and lifecycle architecture.
+
+### Pre-Acceptance Refinements
+
+Two contract refinements were required before final acceptance:
+
+1. lineage identity columns were made explicitly `postgresql.UUID(as_uuid=True)` and non-nullable, matching accepted canonical relational identity representation;
+2. `backend/migrations/env.py` was explicitly included in the expected technical surface only for registration of `DocumentKnowledgeLineageRow` with the existing canonical metadata authority.
+
+No production code was changed.
+
+### Accepted Contract
+
+RFC-063 authorizes a future technical implementation containing only the minimum canonical relational lineage persistence surface:
+
+- `DocumentKnowledgeLineageRow`;
+- explicit Domain/relational mapping;
+- `SQLAlchemyDocumentKnowledgeLineageRepository`;
+- table `document_knowledge_lineages`;
+- composite primary key `(document_id, knowledge_record_id)`;
+- constraint `pk_document_knowledge_lineages`;
+- append-only Alembic revision `0004`;
+- minimum lineage-model registration in `backend/migrations/env.py`.
+
+### Preserved Boundaries
+
+Acceptance confirms:
+
+- canonical `DocumentKnowledgeLineage` remains unchanged;
+- canonical `DocumentKnowledgeLineageRepository` remains unchanged;
+- no surrogate lineage identity is introduced;
+- neither identity side alone becomes unique;
+- no relational foreign keys are introduced;
+- no Document or Knowledge repository lookup enters lineage persistence;
+- duplicate translation requires SQLSTATE `23505` plus exact canonical constraint identity;
+- no Document Knowledge ingestion is introduced;
+- no cross-repository atomicity is claimed;
+- no shared transaction orchestration is introduced;
+- default Composition remains unchanged;
+- Runtime and Bootstrap authority remain unchanged;
+- Document Library, parsing, OCR, search, vector, graph, RAG, LLM and production security remain deferred.
+
+### Contract State
+
+RFC-063:
+
+**Contract Accepted — Implementation Gate Pending**
+
+AD-049:
+
+**Accepted**
+
+### Implementation Gate
+
+Technical implementation is still prohibited.
+
+Next required sequence:
+
+1. commit the accepted RFC-063 / AD-049 architecture contract;
+2. push the contract commit;
+3. verify exact local/remote contract commit identity;
+4. verify the working tree is clean;
+5. only then begin RFC-063 TDD technical implementation.

@@ -35,6 +35,394 @@ No item may be marked complete until:
 
 ---
 
+## RFC-063 — Canonical Document-to-Knowledge Lineage Relational Persistence Adapter Boundary
+
+### Status
+
+Contract Accepted — Implementation Gate Pending.
+
+Post-RFC-062 evidence-based architecture selection: complete.
+
+Selection baseline:
+
+`6261f598a9ccfb9e16075ba14d4847c94ef05503`
+
+Proposed architecture decision:
+
+`AD-049 — Canonical Document-to-Knowledge Lineage Relational Persistence Adapter Boundary`
+
+AD-049 status:
+
+Accepted.
+
+### Selection Rationale
+
+Current accepted architecture now provides:
+
+- canonical immutable `DocumentKnowledgeLineage`;
+- persistence-neutral `DocumentKnowledgeLineageRepository`;
+- exact directed-pair repository identity;
+- canonical relational database runtime and metadata authority;
+- canonical relational Knowledge persistence;
+- canonical relational Enterprise Document persistence;
+- linear Alembic history through revision `0003`.
+
+RFC-062 explicitly deferred relational lineage persistence to a separate future accepted contract.
+
+Document Knowledge ingestion is not selected because coordinated Knowledge and lineage persistence requires explicit atomicity, failure and transaction semantics not yet accepted.
+
+Document Library, parsing, OCR, search, vector, graph, RAG and LLM capabilities remain later application/platform work and SHALL NOT bypass the canonical persistence foundations.
+
+The minimum dependency-completing next step is therefore a relational adapter for the already accepted lineage repository port.
+
+### Objective
+
+Establish the minimum canonical relational persistence adapter for:
+
+`DocumentKnowledgeLineageRepository`
+
+without changing canonical Domain semantics, repository semantics, application boundaries, Runtime authority or default Composition.
+
+### Infrastructure Namespace
+
+RFC-063 SHALL introduce:
+
+`app.infrastructure.document_knowledge_lineage`
+
+The expected production surface is:
+
+- `backend/app/infrastructure/document_knowledge_lineage/__init__.py`;
+- `backend/app/infrastructure/document_knowledge_lineage/models.py`;
+- `backend/app/infrastructure/document_knowledge_lineage/mapping.py`;
+- `backend/app/infrastructure/document_knowledge_lineage/repository.py`.
+
+The package initializer SHALL remain empty unless a separately reviewed public infrastructure API becomes necessary.
+
+### Relational Representation
+
+RFC-063 SHALL introduce:
+
+`DocumentKnowledgeLineageRow`
+
+as the infrastructure-owned relational representation of one canonical lineage pair.
+
+It SHALL contain exactly:
+
+- `document_id`;
+- `knowledge_record_id`.
+
+Both columns SHALL use exactly:
+
+`postgresql.UUID(as_uuid=True)`
+
+and SHALL be non-nullable.
+
+This preserves the canonical relational identity representation already used by accepted Knowledge and Enterprise Document persistence.
+
+The row SHALL NOT introduce:
+
+- a separate lineage identifier;
+- generated identity;
+- timestamp;
+- provenance duplication;
+- source reference;
+- subject fields;
+- status;
+- approval state;
+- trust state;
+- revision;
+- business cardinality metadata.
+
+### Relational Identity
+
+The canonical relational identity SHALL remain the exact directed pair:
+
+`(document_id, knowledge_record_id)`
+
+The table SHALL use a composite primary key over that exact pair.
+
+Expected primary-key constraint name:
+
+`pk_document_knowledge_lineages`
+
+Neither `document_id` alone nor `knowledge_record_id` alone SHALL be unique.
+
+Distinct rows sharing only one side SHALL remain representable at storage level.
+
+This does not establish Business or Application cardinality policy.
+
+### Table
+
+RFC-063 SHALL introduce the canonical table:
+
+`document_knowledge_lineages`
+
+with exactly the canonical identity columns required by the accepted lineage repository contract.
+
+RFC-063 SHALL NOT introduce an independent surrogate key.
+
+### Foreign-Key Boundary
+
+RFC-063 SHALL NOT introduce relational foreign keys from lineage to:
+
+- `enterprise_documents`;
+- `knowledge_records`.
+
+Canonical identity references SHALL be persisted exactly, but cross-domain relational referential-integrity policy remains separately governed.
+
+RFC-063 SHALL NOT perform cross-repository existence validation.
+
+### Mapping Boundary
+
+RFC-063 SHALL introduce explicit mapping between:
+
+`DocumentKnowledgeLineage`
+
+and:
+
+`DocumentKnowledgeLineageRow`
+
+Expected mapper operations:
+
+`lineage_to_row(lineage: DocumentKnowledgeLineage) -> DocumentKnowledgeLineageRow`
+
+and:
+
+`row_to_lineage(row: DocumentKnowledgeLineageRow) -> DocumentKnowledgeLineage`
+
+Mapping SHALL preserve both canonical `EntityId` values exactly.
+
+Mapping SHALL NOT:
+
+- generate identity;
+- resolve Documents;
+- resolve Knowledge records;
+- call repositories;
+- infer provenance;
+- infer cardinality;
+- enrich the Domain value.
+
+### Repository Adapter
+
+RFC-063 SHALL introduce:
+
+`SQLAlchemyDocumentKnowledgeLineageRepository`
+
+implementing the existing:
+
+`DocumentKnowledgeLineageRepository`
+
+The adapter SHALL preserve exactly:
+
+`add(lineage: DocumentKnowledgeLineage) -> None`
+
+and:
+
+`get(document_id: EntityId, knowledge_record_id: EntityId) -> DocumentKnowledgeLineage | None`
+
+No additional public repository operations are authorized.
+
+### Session Ownership
+
+The relational adapter SHALL receive an injected synchronous SQLAlchemy session factory consistent with the accepted canonical database runtime.
+
+For one `add(...)` operation it SHALL:
+
+1. acquire one session;
+2. map the canonical lineage value;
+3. add the relational row;
+4. commit once on success;
+5. rollback on write failure;
+6. close the session.
+
+For `get(...)` it SHALL:
+
+1. acquire one session;
+2. perform exact composite-identity lookup;
+3. return canonical lineage when found;
+4. return `None` when absent;
+5. close the session;
+6. perform no commit.
+
+RFC-063 SHALL NOT own engine creation or `DatabaseRuntime`.
+
+### Duplicate Classification
+
+The relational adapter SHALL translate only the database failure corresponding to violation of:
+
+`pk_document_knowledge_lineages`
+
+into:
+
+`DocumentKnowledgeLineageAlreadyExistsError`
+
+For PostgreSQL, duplicate classification SHALL require the accepted unique-violation SQLSTATE together with the exact canonical constraint identity.
+
+Unrelated integrity or database failures SHALL propagate and SHALL NOT be misclassified as lineage duplicates.
+
+### Metadata Authority
+
+`DocumentKnowledgeLineageRow` SHALL participate in the existing canonical SQLAlchemy metadata authority.
+
+RFC-063 SHALL NOT create a second metadata root.
+
+### Alembic Migration
+
+RFC-063 SHALL introduce append-only Alembic revision:
+
+`0004`
+
+with:
+
+`down_revision = "0003"`
+
+Expected migration file:
+
+`backend/migrations/versions/0004_document_knowledge_lineages.py`
+
+RFC-063 technical implementation SHALL also modify:
+
+`backend/migrations/env.py`
+
+only as required to explicitly load `DocumentKnowledgeLineageRow` into the existing canonical SQLAlchemy metadata authority.
+
+Revision `0004` SHALL create only the schema required for canonical lineage relational persistence.
+
+Alembic metadata registration SHALL explicitly ensure `DocumentKnowledgeLineageRow` participates in canonical metadata.
+
+Downgrade SHALL remove only schema introduced by revision `0004`.
+
+### Application Boundary
+
+RFC-063 SHALL NOT introduce or modify:
+
+- `KnowledgeCaptureApplicationService`;
+- `EnterpriseDocumentRegistrationApplicationService`;
+- Document Knowledge ingestion;
+- application transaction orchestration;
+- shared Unit of Work;
+- compensation behavior;
+- retry policy.
+
+### Composition and Runtime Boundary
+
+RFC-063 SHALL NOT make lineage persistence part of default `CompositionRoot`.
+
+It SHALL NOT modify:
+
+- Runtime lifecycle authority;
+- Bootstrap authority;
+- mandatory capability readiness;
+- database availability policy.
+
+Production composition requires a separately accepted application capability when needed.
+
+### Explicitly Deferred
+
+RFC-063 SHALL NOT establish:
+
+- Document Knowledge ingestion;
+- cross-repository atomicity;
+- shared transaction orchestration;
+- compensation across Knowledge and lineage repositories;
+- partial-failure recovery;
+- one-sided lineage query;
+- reverse traversal;
+- list/search/filter/pagination;
+- Business/Application cardinality;
+- corroboration;
+- primary-source semantics;
+- multi-source derivation;
+- Document Library;
+- binary storage;
+- parsing;
+- OCR;
+- chunking;
+- revision lifecycle;
+- semantic search;
+- vector persistence;
+- graph persistence;
+- Neo4j;
+- RAG;
+- LLM invocation;
+- HTTP transport;
+- authentication;
+- authorization;
+- RBAC;
+- Cybersecurity approval;
+- production-readiness claims.
+
+### Expected TDD Verification
+
+RFC-063 technical implementation, if later authorized, SHALL verify at minimum:
+
+- canonical lineage maps to relational row exactly;
+- relational row maps back to canonical lineage exactly;
+- composite identity is preserved;
+- no surrogate lineage identity exists;
+- same exact pair conflicts;
+- distinct pairs sharing one side remain permitted at persistence level;
+- exact pair `get(...)` returns canonical lineage;
+- absent pair returns `None`;
+- unrelated integrity failures are not classified as duplicate lineage;
+- one successful add commits exactly once;
+- failed add rolls back;
+- sessions close correctly;
+- read path performs no commit;
+- no Document repository lookup occurs;
+- no Knowledge repository lookup occurs;
+- no Domain or application persistence leakage occurs;
+- canonical metadata includes lineage row;
+- Alembic history becomes `0001 → 0002 → 0003 → 0004`;
+- default Composition remains unchanged;
+- Runtime and Bootstrap remain unchanged;
+- full regression remains green.
+
+### Contract Acceptance Review
+
+Outcome:
+
+**PASS — RFC-063 / AD-049 architecture contract accepted.**
+
+The review confirmed:
+
+- canonical `DocumentKnowledgeLineage` Domain ownership remains unchanged;
+- `DocumentKnowledgeLineageRepository` remains unchanged;
+- relational identity is exactly `(document_id, knowledge_record_id)`;
+- both identity columns use `postgresql.UUID(as_uuid=True)` and are non-nullable;
+- no surrogate lineage identity is introduced;
+- neither identity side alone becomes unique;
+- no relational foreign keys are introduced;
+- duplicate translation requires PostgreSQL SQLSTATE `23505` and exact constraint `pk_document_knowledge_lineages`;
+- canonical SQLAlchemy metadata authority remains singular;
+- `backend/migrations/env.py` may change only for explicit lineage-model registration;
+- Alembic revision `0004` must extend `0003`;
+- no Document or Knowledge repository lookup enters the adapter;
+- no Document Knowledge ingestion enters scope;
+- no cross-repository atomicity or transaction orchestration is implied;
+- default Composition, Runtime and Bootstrap authority remain unchanged;
+- Document Library, parsing, OCR, search, vector, graph, RAG, LLM and production security remain deferred.
+
+### Contract State
+
+RFC-063: Contract Accepted — Implementation Gate Pending.
+
+AD-049: Accepted.
+
+Technical implementation remains prohibited until the accepted contract commit is pushed and the implementation-entry Git gate is satisfied.
+
+### Next Exact Action
+
+Commit the accepted RFC-063 / AD-049 architecture contract and selection/acceptance engineering record.
+
+Push the contract commit to `origin/feature/engineering-platform`.
+
+Verify exact local/remote contract commit identity and a clean working tree.
+
+Only after that implementation-entry Git gate succeeds may RFC-063 technical TDD implementation begin.
+
+---
+
 ## RFC-062 — Canonical Document-to-Knowledge Lineage Repository Foundation Boundary
 
 ### Status

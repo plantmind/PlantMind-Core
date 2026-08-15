@@ -6554,3 +6554,452 @@ Commit and push the accepted RFC-062 / AD-048 contract.
 After push, verify exact local/remote contract identity and a clean working tree before technical implementation begins.
 
 Do not preselect the workstream after RFC-062.
+
+---
+
+# AD-049 — Canonical Document-to-Knowledge Lineage Relational Persistence Adapter Boundary
+
+## Status
+
+Accepted.
+
+## Context
+
+PlantMind now has an accepted canonical foundation for Document-derived Knowledge lineage.
+
+Accepted architecture provides:
+
+- canonical immutable `DocumentKnowledgeLineage`;
+- canonical Document identity through `EnterpriseDocument.id`;
+- canonical Knowledge identity through `KnowledgeRecord.id`;
+- persistence-neutral `DocumentKnowledgeLineageRepository`;
+- exact directed-pair repository identity;
+- canonical synchronous relational database runtime;
+- canonical SQLAlchemy metadata authority;
+- relational Knowledge persistence;
+- relational Enterprise Document persistence;
+- linear Alembic history through revision `0003`.
+
+AD-047 established canonical lineage identity semantics.
+
+AD-048 established the persistence-neutral lineage repository port and explicitly deferred relational lineage persistence.
+
+The current repository therefore contains a complete canonical lineage Domain and Repository contract but no production relational adapter for that repository.
+
+Document Knowledge ingestion SHALL NOT be introduced at this stage because coordinated Knowledge persistence and lineage persistence requires explicit transaction, failure, atomicity and compensation semantics that are not yet accepted.
+
+The minimum dependency-completing architectural step is therefore relational persistence for the already accepted lineage repository contract.
+
+## Decision
+
+PlantMind SHALL establish a canonical relational persistence adapter for:
+
+`DocumentKnowledgeLineageRepository`
+
+under:
+
+`app.infrastructure.document_knowledge_lineage`
+
+The adapter SHALL preserve the accepted canonical Domain and Repository contracts exactly.
+
+It SHALL NOT expand application behavior, Runtime responsibility, default composition, lineage business semantics or Document Knowledge ingestion capability.
+
+## Canonical Relational Representation
+
+The infrastructure layer SHALL introduce:
+
+`DocumentKnowledgeLineageRow`
+
+representing exactly one canonical directed lineage pair.
+
+The row SHALL contain exactly:
+
+- `document_id`;
+- `knowledge_record_id`.
+
+Both SHALL use exactly:
+
+`postgresql.UUID(as_uuid=True)`
+
+with non-nullable relational columns.
+
+This preserves the canonical relational identity representation already established by accepted Knowledge and Enterprise Document persistence.
+
+The relational representation SHALL NOT contain:
+
+- surrogate lineage identity;
+- generated identity;
+- timestamps;
+- duplicated provenance;
+- source reference;
+- Knowledge subject fields;
+- status;
+- approval;
+- trust;
+- revision;
+- business cardinality metadata.
+
+## Relational Identity
+
+The relational identity SHALL be the exact directed canonical pair:
+
+`(document_id, knowledge_record_id)`
+
+The canonical table SHALL use a composite primary key over that pair.
+
+The primary-key constraint SHALL be named:
+
+`pk_document_knowledge_lineages`
+
+Neither side alone SHALL be unique.
+
+Distinct lineage pairs sharing one side SHALL remain representable at relational-storage level.
+
+This storage capability SHALL NOT establish Business or Application cardinality semantics.
+
+## Canonical Table
+
+The canonical relational table SHALL be:
+
+`document_knowledge_lineages`
+
+It SHALL contain only the relational columns required to preserve the accepted canonical lineage repository identity.
+
+No surrogate primary key SHALL be introduced.
+
+## Referential-Integrity Boundary
+
+AD-049 SHALL NOT introduce relational foreign keys to:
+
+- `enterprise_documents`;
+- `knowledge_records`.
+
+Canonical identities SHALL be persisted exactly as lineage references.
+
+Cross-domain relational referential-integrity policy remains separately governed.
+
+The relational adapter SHALL NOT:
+
+- resolve referenced Documents;
+- resolve referenced Knowledge records;
+- call `EnterpriseDocumentRepository`;
+- call `KnowledgeRecordRepository`;
+- verify referenced entity existence.
+
+## Mapping Boundary
+
+Infrastructure SHALL provide explicit mapping between:
+
+`DocumentKnowledgeLineage`
+
+and:
+
+`DocumentKnowledgeLineageRow`
+
+using:
+
+`lineage_to_row(lineage: DocumentKnowledgeLineage) -> DocumentKnowledgeLineageRow`
+
+and:
+
+`row_to_lineage(row: DocumentKnowledgeLineageRow) -> DocumentKnowledgeLineage`
+
+Mapping SHALL preserve both canonical identities exactly.
+
+Mapping SHALL NOT:
+
+- generate identity;
+- mutate canonical values;
+- construct Documents;
+- construct Knowledge records;
+- call repositories;
+- infer provenance;
+- infer cardinality;
+- enrich lineage Domain semantics.
+
+## Repository Adapter
+
+Infrastructure SHALL provide:
+
+`SQLAlchemyDocumentKnowledgeLineageRepository`
+
+implementing:
+
+`DocumentKnowledgeLineageRepository`
+
+It SHALL expose no public repository operations beyond the accepted contract:
+
+`add(lineage: DocumentKnowledgeLineage) -> None`
+
+and:
+
+`get(document_id: EntityId, knowledge_record_id: EntityId) -> DocumentKnowledgeLineage | None`
+
+## Session and Transaction Ownership
+
+The relational repository adapter SHALL receive an injected synchronous SQLAlchemy session factory.
+
+It SHALL NOT create or own the canonical database engine or `DatabaseRuntime`.
+
+For successful `add(...)`:
+
+1. one session is acquired;
+2. the lineage value is mapped to its relational representation;
+3. one row is submitted;
+4. one commit occurs;
+5. the session closes.
+
+For failed `add(...)`:
+
+1. the failure is observed;
+2. the transaction is rolled back;
+3. the session closes;
+4. the failure is either translated only when canonical duplicate conditions are satisfied or otherwise propagated.
+
+For `get(...)`:
+
+1. one session is acquired;
+2. exact composite-identity lookup is performed;
+3. canonical lineage is returned when present;
+4. `None` is returned when absent;
+5. the session closes;
+6. no commit occurs.
+
+## Duplicate Classification
+
+Only violation of the canonical relational identity constraint:
+
+`pk_document_knowledge_lineages`
+
+MAY be translated into:
+
+`DocumentKnowledgeLineageAlreadyExistsError`
+
+For PostgreSQL, duplicate classification SHALL require both:
+
+- unique-violation SQLSTATE `23505`;
+- exact canonical constraint identity `pk_document_knowledge_lineages`.
+
+Unrelated integrity failures or database failures SHALL propagate unchanged.
+
+The adapter SHALL NOT classify failure merely from exception type or message text.
+
+## Metadata Authority
+
+`DocumentKnowledgeLineageRow` SHALL participate in the existing canonical SQLAlchemy metadata authority.
+
+AD-049 SHALL NOT introduce a second declarative metadata root.
+
+## Schema Lifecycle
+
+AD-049 authorizes one append-only Alembic revision:
+
+`0004`
+
+with:
+
+`down_revision = "0003"`
+
+The revision SHALL create only the canonical lineage relational schema authorized by this decision.
+
+Expected table:
+
+`document_knowledge_lineages`
+
+Expected primary key:
+
+`pk_document_knowledge_lineages`
+
+Alembic metadata loading SHALL explicitly register the lineage relational model with canonical metadata.
+
+`backend/migrations/env.py` SHALL be modified only as required to explicitly load `DocumentKnowledgeLineageRow` into that existing metadata authority.
+
+No second metadata root or alternate schema authority SHALL be introduced.
+
+Downgrade SHALL remove only schema introduced by revision `0004`.
+
+## Application Boundary
+
+AD-049 SHALL NOT introduce or modify:
+
+- `KnowledgeCaptureApplicationService`;
+- `EnterpriseDocumentRegistrationApplicationService`;
+- Document Knowledge ingestion;
+- application transaction orchestration;
+- shared Unit of Work;
+- cross-repository transaction semantics;
+- compensation;
+- retry policy.
+
+## Composition Boundary
+
+The relational lineage adapter SHALL NOT be automatically registered in default `CompositionRoot`.
+
+Production composition requires a separately accepted application capability that explicitly needs lineage persistence.
+
+Database availability SHALL NOT become a mandatory Runtime capability solely because this adapter exists.
+
+## Runtime and Bootstrap Boundary
+
+AD-049 SHALL NOT modify:
+
+- Runtime lifecycle authority;
+- Bootstrap authority;
+- operational transition authority;
+- mandatory capability policy;
+- readiness semantics;
+- database availability policy.
+
+## Explicitly Deferred
+
+The following remain outside AD-049:
+
+- Document Knowledge ingestion;
+- cross-repository atomicity;
+- shared transaction orchestration;
+- compensation across repositories;
+- retry and partial-failure recovery;
+- one-sided lineage retrieval;
+- reverse traversal;
+- list/search/filter/query/pagination;
+- Business/Application lineage cardinality;
+- corroboration;
+- primary-source semantics;
+- merge semantics;
+- multi-source derivation;
+- Document Library;
+- binary storage;
+- parsing;
+- OCR;
+- chunking;
+- Document revision lifecycle;
+- semantic search;
+- vector persistence;
+- graph persistence;
+- Neo4j;
+- RAG;
+- LLM invocation;
+- HTTP transport;
+- industrial integration;
+- authentication;
+- authorization;
+- RBAC;
+- Cybersecurity approval;
+- production-readiness claims.
+
+## Alternatives Considered
+
+### Implement Document Knowledge ingestion now
+
+Rejected.
+
+The existing architecture does not yet define coordinated Knowledge and lineage persistence atomicity, transaction ownership, compensation or partial-failure semantics.
+
+Introducing ingestion now would force those responsibilities implicitly into an application boundary.
+
+### Introduce foreign keys immediately
+
+Rejected.
+
+Canonical lineage identity references are accepted, but cross-domain relational referential-integrity policy has not been separately established.
+
+Foreign keys would introduce database-level lifecycle and deletion coupling beyond the accepted repository contract.
+
+### Add a surrogate lineage identity
+
+Rejected.
+
+Canonical lineage identity is already the exact directed pair:
+
+`(document_id, knowledge_record_id)`
+
+A new identifier would add an unnecessary identity concept and weaken the accepted canonical model.
+
+### Add one-sided or traversal queries
+
+Rejected.
+
+AD-048 established exact-pair retrieval only.
+
+Search and traversal capability requires separate architecture.
+
+### Compose relational lineage persistence immediately
+
+Rejected.
+
+The existence of an infrastructure adapter does not itself establish an application capability or mandatory Runtime dependency.
+
+## Consequences
+
+Positive consequences:
+
+- canonical lineage becomes persistable using the accepted relational infrastructure;
+- canonical pair identity remains consistent across Domain, Repository and relational storage;
+- lineage persistence follows established Knowledge and Document persistence patterns;
+- migration history remains linear;
+- infrastructure remains replaceable behind the persistence-neutral repository port;
+- Document Knowledge ingestion may later build on a real persistence foundation rather than a placeholder.
+
+Constraints preserved:
+
+- no application ingestion yet;
+- no implicit cross-repository transaction semantics;
+- no foreign-key lifecycle coupling;
+- no default Composition coupling;
+- no Runtime authority expansion;
+- no search/traversal expansion;
+- no production security or deployment claim.
+
+## Acceptance Requirements
+
+Before AD-049 may become Accepted, architecture review SHALL confirm:
+
+1. canonical Domain ownership remains unchanged;
+2. `DocumentKnowledgeLineageRepository` remains unchanged;
+3. relational identity exactly matches the accepted directed pair;
+4. no surrogate lineage identity is introduced;
+5. neither side alone becomes unique;
+6. no relational foreign keys are introduced;
+7. duplicate translation requires SQLSTATE `23505` and exact canonical constraint identity;
+8. canonical metadata authority remains singular;
+9. Alembic lineage becomes `0001 → 0002 → 0003 → 0004`;
+10. no Document or Knowledge repository lookup enters the adapter;
+11. no Document Knowledge ingestion enters scope;
+12. no cross-repository atomicity is implied;
+13. default Composition remains unchanged;
+14. Runtime and Bootstrap authority remain unchanged;
+15. deferred Document Library, search, AI and security capabilities remain deferred.
+
+## Contract Acceptance Review
+
+Outcome:
+
+**PASS — AD-049 accepted.**
+
+The review confirmed all acceptance requirements after two pre-acceptance refinements:
+
+1. canonical UUID storage is explicitly `postgresql.UUID(as_uuid=True)` with non-nullable lineage identity columns;
+2. `backend/migrations/env.py` is explicitly included only for registration of `DocumentKnowledgeLineageRow` with the existing canonical metadata authority.
+
+The accepted decision preserves:
+
+- canonical Domain and repository ownership;
+- exact directed-pair relational identity;
+- composite primary-key duplicate semantics;
+- no surrogate identity;
+- no foreign-key lifecycle coupling;
+- no cross-repository existence validation;
+- no ingestion or application transaction semantics;
+- no default Composition dependency;
+- unchanged Runtime and Bootstrap authority;
+- all explicitly deferred higher-level capabilities.
+
+## Implementation Authorization
+
+Status:
+
+**Accepted — Implementation Gate Pending**
+
+The architecture contract is accepted.
+
+Technical implementation remains prohibited until this accepted contract is committed, pushed to `origin/feature/engineering-platform`, exact local/remote contract identity is verified, and the working tree is clean.
