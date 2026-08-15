@@ -35,6 +35,193 @@ No item may be marked complete until:
 
 ---
 
+## RFC-064 — Canonical Knowledge-and-Lineage Transaction Coordination Foundation Boundary
+
+### Status
+
+Selected — Architecture Contract Draft Pending.
+
+Post-RFC-063 evidence-based architecture selection: complete.
+
+Selection baseline:
+
+`f8b63af07dcb7796da5f204ba954b44f5901c7c5`
+
+Proposed architecture decision:
+
+`AD-050 — Canonical Knowledge-and-Lineage Transaction Coordination Foundation Boundary`
+
+AD-050 status:
+
+Proposed.
+
+### Selection Evidence
+
+The post-RFC-063 foundation audit confirmed:
+
+- RFC-063 is fully closed;
+- exact local/remote repository identity is verified;
+- working tree is clean;
+- targeted Document + Knowledge + lineage foundation regression: 158 passed;
+- full PlantMind regression: 717 passed;
+- Python compileall: passed;
+- canonical Alembic head: `0004`;
+- migration lineage remains linear: `0001 → 0002 → 0003 → 0004`;
+- canonical `DatabaseRuntime` owns the SQLAlchemy engine and session factory;
+- canonical Knowledge, Enterprise Document and Document-to-Knowledge lineage relational repositories are implemented;
+- each current relational repository independently acquires its own session and owns its own commit / rollback / close lifecycle;
+- no accepted shared Unit of Work, cross-repository transaction coordinator or equivalent atomic persistence boundary currently exists;
+- coordinated Document-to-Knowledge ingestion remains intentionally deferred because Knowledge persistence and lineage persistence do not yet have accepted shared atomicity and failure semantics.
+
+### Selection Rationale
+
+The canonical Document, Knowledge and Document-to-Knowledge lineage foundations are now individually complete through relational persistence.
+
+A future Document-derived Knowledge ingestion capability must be able to persist:
+
+1. one canonical `KnowledgeRecord`; and
+2. its canonical `DocumentKnowledgeLineage`
+
+without allowing a partial state in which one succeeds and the other fails.
+
+Introducing ingestion before defining this coordination boundary would force transaction ownership, rollback behavior, partial-failure semantics or compensation behavior implicitly into an application service.
+
+Document-derived Knowledge ingestion SHALL NOT be selected ahead of this unresolved persistence-coordination dependency.
+
+Document Library, parsing, OCR, chunking, semantic search, vector persistence, graph persistence, RAG and LLM capabilities remain separate future workstreams. Their selection SHALL remain evidence-based and SHALL NOT bypass or implicitly redefine the transaction-coordination contract established here.
+
+The minimum dependency-completing next architecture workstream is therefore a narrow Knowledge-and-lineage transaction coordination foundation.
+
+### Objective
+
+Define the minimum canonical transaction-coordination boundary required to allow Knowledge persistence and Document-to-Knowledge lineage persistence to participate in one atomic application-level persistence operation when a later accepted capability requires it.
+
+The workstream SHALL preserve existing canonical Domain identities, repository ports and application responsibilities unless an explicit contract review proves that a narrowly scoped extension is required.
+
+### Required Architecture Questions
+
+RFC-064 / AD-050 contract review SHALL explicitly resolve:
+
+1. transaction ownership;
+2. shared SQLAlchemy session ownership;
+3. commit authority;
+4. rollback authority;
+5. repository participation in an externally coordinated transaction;
+6. success semantics when both Knowledge and lineage persistence succeed;
+7. failure semantics when either persistence step fails;
+8. prevention of either partial state within the coordinated operation: Knowledge persisted without its lineage, or lineage persisted without its corresponding Knowledge record;
+9. persistence ordering and whether ordering is an application contract or only an infrastructure implementation detail;
+10. SQLAlchemy flush authority and the point at which database constraint failures must be materialized before final transaction commit;
+11. duplicate and integrity-error classification ownership when individual repositories no longer own the coordinated commit;
+12. preservation of exact constraint-aware duplicate semantics in both standalone and coordinated persistence paths;
+13. session close ownership;
+14. preservation of standalone repository behavior outside coordinated operations;
+15. preservation of persistence-neutral repository ports;
+16. interaction with `KnowledgeCaptureApplicationService`;
+17. whether any existing implementation must be extended or whether transaction-scoped adapters are required;
+18. whether compensation is unnecessary when both writes share one canonical PostgreSQL transaction;
+19. preservation of canonical `DatabaseRuntime` engine and session-factory ownership without making it a transaction coordinator implicitly;
+20. prevention of SQLAlchemy `Session` or transaction primitives leaking into Domain or persistence-neutral repository ports;
+21. containment of the capability so it does not become a generic platform-wide Unit of Work without separate evidence.
+
+### Existing Responsibilities That SHALL Be Preserved
+
+The selection assumes no redesign of:
+
+- `EnterpriseDocument`;
+- `KnowledgeRecord`;
+- `DocumentKnowledgeLineage`;
+- `EnterpriseDocumentRepository`;
+- `KnowledgeRecordRepository`;
+- `DocumentKnowledgeLineageRepository`;
+- `EnterpriseDocumentRegistrationApplicationService`;
+- `KnowledgeCaptureApplicationService`;
+- canonical `DatabaseRuntime` engine and session-factory ownership;
+- standalone relational repository behavior outside explicitly coordinated operations;
+- canonical Knowledge provenance semantics;
+- canonical Knowledge subject semantics;
+- Document source traceability semantics;
+- directed Document-to-Knowledge lineage identity;
+- existing relational identity constraints;
+- canonical SQLAlchemy metadata authority;
+- canonical Alembic schema lifecycle;
+- Runtime lifecycle authority;
+- Bootstrap authority.
+
+### Explicit Non-Goals
+
+RFC-064 selection does NOT authorize:
+
+- Document-to-Knowledge ingestion;
+- Document registration redesign;
+- Document Library behavior;
+- binary document storage;
+- file upload;
+- parser implementation;
+- OCR;
+- chunking;
+- Document revision lifecycle;
+- semantic search;
+- vector persistence;
+- graph persistence;
+- Neo4j;
+- RAG;
+- LLM invocation;
+- HTTP transport;
+- industrial integration;
+- one-sided lineage traversal;
+- reverse lineage traversal;
+- lineage business cardinality policy;
+- corroboration semantics;
+- primary-source semantics;
+- multi-source derivation semantics;
+- default `CompositionRoot` database wiring;
+- mandatory database Runtime capability;
+- authentication or authorization expansion;
+- RBAC;
+- Cybersecurity approval;
+- production-readiness claims;
+- a generic transaction framework for unrelated PlantMind subsystems;
+- a new relational schema or Alembic revision as an assumed requirement.
+
+### Dependency Baseline
+
+RFC-064 contract drafting SHALL be reviewed against, at minimum:
+
+- RFC-053 / canonical Knowledge foundation;
+- RFC-054 / canonical database runtime and schema lifecycle;
+- RFC-055 / Knowledge relational persistence;
+- RFC-056 / Knowledge Capture application boundary;
+- RFC-057 / canonical Enterprise Document foundation;
+- RFC-058 / Enterprise Document repository;
+- RFC-059 / Enterprise Document relational persistence;
+- RFC-060 / Enterprise Document Registration application boundary;
+- RFC-061 / canonical Document-to-Knowledge lineage;
+- RFC-062 / lineage repository;
+- RFC-063 / lineage relational persistence;
+- accepted architecture dependency, Composition, Runtime and Bootstrap rules.
+
+### Implementation Authorization
+
+Status:
+
+**Not Authorized**
+
+No production implementation is authorized by this selection record.
+
+RFC-064 / AD-050 must first be drafted as an explicit architecture contract, reviewed against the current repository and accepted architecture, refined where necessary, accepted, committed, pushed and verified through the implementation-entry Git gate.
+
+### Next Exact Action
+
+Draft RFC-064 / AD-050 architecture contract from the verified post-RFC-063 repository baseline.
+
+Perform a dedicated contract review before marking AD-050 Accepted.
+
+Do not modify production code until the accepted contract is committed, pushed, exact local/remote contract identity is verified and the working tree is clean.
+
+
+---
+
 ## RFC-063 — Canonical Document-to-Knowledge Lineage Relational Persistence Adapter Boundary
 
 ### Status
