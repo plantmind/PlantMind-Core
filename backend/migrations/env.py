@@ -16,6 +16,9 @@ from app.infrastructure.knowledge.models import (
 from app.infrastructure.document.models import (
     EnterpriseDocumentRow as _EnterpriseDocumentRow,
 )
+from app.infrastructure.document_knowledge_lineage.models import (
+    DocumentKnowledgeLineageRow as _DocumentKnowledgeLineageRow,
+)
 
 
 target_metadata = DatabaseBase.metadata
