@@ -1623,8 +1623,20 @@ Preserve:
 12. Runtime and Bootstrap authority remain unchanged;
 13. no production security, Cybersecurity approval or production-readiness claim is implied.
 
-Engineering-memory documentation closure is now in progress.
+Engineering-memory closure is complete.
 
-Do not preselect RFC-064.
+Closure commit:
 
-After this closure is reviewed, committed, pushed and exact local/remote closure identity is verified, reconcile maintained current-state engineering memory before selecting the next architecture workstream.
+`30c494ec790db5e38d1f579de3b131664925e58a`
+
+Exact local/remote closure identity: verified.
+
+Working tree after closure push: clean.
+
+RFC-063 is fully closed.
+
+Evidence-based selection of the next architecture workstream is now authorized.
+
+Do not assume RFC-064 content before that selection review.
+
+No new RFC implementation is authorized until its architecture contract is reviewed, accepted, committed, pushed and its implementation-entry Git gate is satisfied.

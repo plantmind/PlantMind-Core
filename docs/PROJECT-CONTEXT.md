@@ -1377,8 +1377,20 @@ Still explicitly deferred:
 - RAG and LLM capability;
 - production authentication, authorization and RBAC.
 
-RFC-063 engineering-memory documentation closure is in progress.
+RFC-063 engineering-memory closure is complete.
 
-No RFC-064 workstream is preselected.
+Closure commit:
 
-The next architecture workstream may be selected only after RFC-063 engineering-memory closure is committed, pushed, exact local/remote closure identity is verified and maintained current-state engineering memory is reconciled.
+`30c494ec790db5e38d1f579de3b131664925e58a`
+
+Exact local/remote closure identity: verified.
+
+Working tree after closure push: clean.
+
+RFC-063 is fully closed.
+
+Evidence-based selection of the next architecture workstream is now authorized.
+
+Do not assume RFC-064 content before that selection review.
+
+No new RFC implementation is authorized until its architecture contract is reviewed, accepted, committed, pushed and its implementation-entry Git gate is satisfied.

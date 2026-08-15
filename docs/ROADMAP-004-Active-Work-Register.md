@@ -39,7 +39,7 @@ No item may be marked complete until:
 
 ### Status
 
-Technically Complete.
+Complete.
 
 Post-RFC-062 evidence-based architecture selection: complete.
 
@@ -498,29 +498,39 @@ Still explicitly deferred:
 - production authentication, authorization and RBAC;
 - Cybersecurity approval and production-readiness claims.
 
-Engineering-memory documentation closure is now in progress.
+RFC-063 engineering-memory closure is complete.
+
+Closure commit:
+
+`30c494ec790db5e38d1f579de3b131664925e58a`
+
+Exact local/remote closure identity: verified.
+
+Working tree after closure push: clean.
+
+RFC-063 is fully closed.
 
 ### Contract State
 
-RFC-063: Technically Complete.
+RFC-063: Complete.
 
 AD-049: Accepted.
 
-Engineering-memory closure: in progress.
+Engineering-memory closure:
 
-RFC-063 is not fully closed until these documentation changes are reviewed, committed, pushed and exact local/remote closure identity is verified.
+complete, committed and pushed at `30c494ec790db5e38d1f579de3b131664925e58a`.
+
+Exact local/remote closure identity: verified.
+
+Working tree after closure push: clean.
 
 ### Next Exact Action
 
-Review the RFC-063 engineering-memory documentation diff.
+Perform evidence-based selection of the next architecture workstream from current repository, project-charter and architecture evidence.
 
-If the review passes, commit and push the RFC-063 engineering-memory and post-implementation architecture-review closure.
+Do not assume RFC-064 content before that selection review.
 
-After exact local/remote closure identity and a clean working tree are verified, reconcile maintained current-state engineering memory.
-
-Only after RFC-063 is fully closed may the next architecture workstream be selected from current repository, project-charter and architecture evidence.
-
-Do not preselect RFC-064.
+No new RFC implementation is authorized until its architecture contract is reviewed, accepted, committed, pushed and its implementation-entry Git gate is satisfied.
 
 ---
 
