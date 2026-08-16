@@ -39,7 +39,7 @@ No item may be marked complete until:
 
 ### Status
 
-Accepted — Implementation Gate Pending.
+Implemented — Engineering Closure Pending.
 
 Post-RFC-063 evidence-based architecture selection: complete.
 
@@ -1155,28 +1155,67 @@ The accepted contract preserves:
 
 Status:
 
-**Accepted — Implementation Gate Pending**
+**Satisfied — Technical implementation completed and verified.**
 
-The RFC-064 / AD-050 architecture contract is accepted.
+The RFC-064 / AD-050 architecture contract was accepted and committed at:
 
-Production implementation is not yet authorized.
+`7f63e0262a1dc9c3f22466ae64d4c2235b74855c`
 
-Technical implementation SHALL remain prohibited until:
+The implementation-entry Git gate was subsequently satisfied:
 
-1. the accepted RFC-064 / AD-050 documentation is committed;
-2. the accepted contract commit is pushed to `origin/feature/engineering-platform`;
-3. exact local/remote contract commit identity is verified;
-4. the working tree is clean.
+1. the accepted contract was committed;
+2. the accepted contract was pushed to `origin/feature/engineering-platform`;
+3. exact local / remote contract commit identity was verified;
+4. the working tree was clean.
+
+RFC-064 technical implementation was then completed and committed at:
+
+`f62179a621f1289b47833b6057661a631e5357be`
+
+Exact local / remote technical commit identity was verified after push.
+
+### Technical Verification Evidence
+
+RFC-064 technical verification completed successfully with:
+
+- RFC-064 targeted verification: **37 passed**;
+- full PlantMind regression: **754 passed**;
+- Python compileall: passed;
+- `git diff --check`: passed;
+- canonical Alembic head remains `0004`;
+- no new schema migration was introduced;
+- default `CompositionRoot` remains independent of RFC-064 transaction coordination;
+- Runtime and Bootstrap authority remain unchanged;
+- canonical `DatabaseRuntime` lifecycle ownership remains unchanged;
+- Knowledge and lineage standalone repository behavior remains preserved;
+- coordinated Knowledge and lineage participants use one shared SQLAlchemy session;
+- transaction-scoped participants flush without independent commit / rollback / close authority;
+- coordinator-owned final commit, rollback and session-close behavior is verified;
+- exact constraint-aware duplicate classification is shared between standalone and coordinated persistence paths;
+- commit-time integrity failures are not heuristically reclassified;
+- post-commit cleanup failure has explicit committed-outcome semantics;
+- failure of the second participant after the first participant has flushed produces no partial-success result and enters one coordinated rollback path;
+- no new ARCH-001 architectural layer was introduced;
+- no Domain or Core dependency on transaction infrastructure was introduced;
+- no Document-to-Knowledge ingestion, Library, search, AI, external-system atomicity, security or production-readiness capability was introduced.
+
+RFC-064 technical implementation is therefore accepted as implemented.
+
+RFC-064 SHALL NOT yet be marked fully complete until the required engineering-memory and architecture-closure documentation is updated, committed, pushed and verified.
 
 ### Next Exact Action
 
-Commit and push the accepted RFC-064 / AD-050 architecture contract.
+Complete RFC-064 engineering-memory and architecture closure.
 
-After push, verify exact local/remote contract identity and a clean working tree.
+Update the authoritative engineering-memory documents to record:
 
-Only after that implementation-entry Git gate passes may RFC-064 TDD technical implementation begin.
+- RFC-064 technical implementation commit;
+- verified test and migration evidence;
+- preserved architecture responsibilities;
+- remaining deferred capabilities;
+- the evidence-based next-work selection gate.
 
-Do not modify production code before that gate.
+After documentation review, commit the engineering closure separately from the technical implementation.
 
 
 ---

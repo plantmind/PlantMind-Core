@@ -1394,3 +1394,108 @@ Evidence-based selection of the next architecture workstream is now authorized.
 Do not assume RFC-064 content before that selection review.
 
 No new RFC implementation is authorized until its architecture contract is reviewed, accepted, committed, pushed and its implementation-entry Git gate is satisfied.
+
+---
+
+## RFC-064 Technical Completion and Post-Implementation Architecture Review
+
+RFC-064 — Canonical Knowledge-and-Lineage Transaction Coordination Foundation Boundary is technically complete under accepted AD-050.
+
+Contract commit:
+
+`7f63e0262a1dc9c3f22466ae64d4c2235b74855c`
+
+Technical implementation commit:
+
+`f62179a621f1289b47833b6057661a631e5357be`
+
+Exact local/remote technical commit identity was verified after push.
+
+The canonical Knowledge-and-lineage persistence foundation now includes:
+
+- persistence-neutral `KnowledgeLineageTransactionCoordinator`;
+- SQLAlchemy-backed transaction coordinator infrastructure;
+- one shared SQLAlchemy session per coordinated execution;
+- explicit transaction establishment before application operation execution;
+- transaction-scoped Knowledge repository participation;
+- transaction-scoped Document-to-Knowledge lineage repository participation;
+- participant `add(...)` using `flush()` without independent commit / rollback / close ownership;
+- participant `get(...)` using the shared session without lifecycle ownership;
+- coordinator-owned final commit, rollback and session close;
+- explicit `KnowledgeLineageTransactionPostCommitCleanupError`;
+- shared exact duplicate-classification rules between standalone and coordinated Knowledge persistence;
+- shared exact duplicate-classification rules between standalone and coordinated lineage persistence;
+- preservation of standalone repository behavior outside coordinated execution.
+
+RFC-064 verification:
+
+- RFC-064 targeted verification: 37 passed;
+- full PlantMind regression: 754 passed;
+- Python compileall: passed;
+- `git diff --check`: passed;
+- canonical Alembic head: `0004`;
+- migration lineage remains `0001 → 0002 → 0003 → 0004`;
+- no new schema migration;
+- default `CompositionRoot` remains independent of RFC-064 transaction coordination;
+- Runtime and Bootstrap authority remain unchanged;
+- canonical `DatabaseRuntime` engine/session-factory lifecycle ownership remains unchanged;
+- Domain and Core remain free of transaction-infrastructure dependencies;
+- session acquisition and transaction-start failure semantics are verified;
+- final commit failure does not report success and triggers one rollback attempt;
+- rollback failure preserves causal linkage;
+- post-commit cleanup failure is explicitly distinguishable from rollback;
+- independent executions do not reuse active session state;
+- second-participant failure after first-participant flush enters one coordinated rollback path and produces no partial-success result.
+
+### Post-RFC-064 System and Architecture Integrity Review
+
+Outcome:
+
+**PASS — architecture remains sound and RFC-064 conforms to accepted AD-050.**
+
+The review confirmed:
+
+- RFC-064 provides only the minimum Knowledge-and-lineage transaction-coordination foundation;
+- the persistence-neutral coordinator is application-level responsibility without creating a new ARCH-001 architectural layer;
+- the coordinator does not compete with `ApplicationFacade` and is not a production workload entry point;
+- canonical Knowledge, Enterprise Document and Document-to-Knowledge lineage Domain ownership remains unchanged;
+- canonical repository ports remain persistence-neutral;
+- `KnowledgeCaptureApplicationService` remains unchanged;
+- `EnterpriseDocumentRegistrationApplicationService` remains unchanged;
+- standalone Knowledge and lineage relational repository behavior remains preserved;
+- one shared SQLAlchemy session provides atomicity for participating relational writes;
+- transaction-scoped participants do not own commit, rollback or close;
+- canonical `DatabaseRuntime` remains engine and session-factory lifecycle owner;
+- no second metadata authority was introduced;
+- no migration or schema change was introduced;
+- default `CompositionRoot` remains unchanged;
+- Runtime and Bootstrap authority remain unchanged;
+- exact constraint-aware duplicate semantics remain preserved;
+- transaction atomicity is explicitly distinct from application-use-case completeness;
+- no external-system atomicity guarantee was introduced;
+- no production security, Cybersecurity approval or production-readiness claim is implied;
+- no production-code architecture redesign is required.
+
+Still explicitly deferred:
+
+- Document-to-Knowledge ingestion application coordination;
+- Document Library and binary storage;
+- parsing, OCR and chunking;
+- Document revision lifecycle;
+- semantic search;
+- vector persistence;
+- graph persistence and Neo4j;
+- RAG and LLM capability;
+- authentication, authorization and RBAC expansion;
+- async or cross-thread shared-session coordination;
+- retries and idempotency policy;
+- savepoints and nested transactions;
+- distributed transactions;
+- outbox behavior;
+- external-system transaction coordination.
+
+RFC-064 engineering-memory closure is still in progress.
+
+RFC-064 SHALL NOT yet be marked fully closed until all authoritative engineering-memory documents are reconciled, reviewed, committed, pushed and exact local/remote closure identity is verified.
+
+No next RFC implementation is authorized during RFC-064 engineering closure.

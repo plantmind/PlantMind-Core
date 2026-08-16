@@ -4268,3 +4268,156 @@ No RFC-064 content is assumed or preselected by this reconciliation.
 The next architecture workstream SHALL be selected from current repository, project-charter and architecture evidence.
 
 No new RFC implementation is authorized until its architecture contract is reviewed, accepted, committed, pushed and its implementation-entry Git gate is satisfied.
+
+---
+
+## 2026-08-16 — RFC-064 Technical Completion and Engineering Closure
+
+### Technical Completion
+
+RFC-064 — Canonical Knowledge-and-Lineage Transaction Coordination Foundation Boundary is technically complete under accepted:
+
+`AD-050 — Canonical Knowledge-and-Lineage Transaction Coordination Foundation Boundary`
+
+Contract commit:
+
+`7f63e0262a1dc9c3f22466ae64d4c2235b74855c`
+
+Technical implementation commit:
+
+`f62179a621f1289b47833b6057661a631e5357be`
+
+The implementation established the minimum accepted persistence-neutral and SQLAlchemy-backed coordination foundation required for canonical Knowledge and Document-to-Knowledge lineage persistence to participate in one shared relational transaction.
+
+Production changes established:
+
+- persistence-neutral `KnowledgeLineageTransactionCoordinator`;
+- SQLAlchemy-backed transaction coordinator infrastructure;
+- exactly one shared SQLAlchemy session per coordinated execution;
+- explicit transaction establishment before supplied operation execution;
+- transaction-scoped Knowledge repository participation;
+- transaction-scoped Document-to-Knowledge lineage repository participation;
+- participant `add(...)` using shared-session `flush()` without independent commit / rollback / close authority;
+- participant `get(...)` using the shared session without lifecycle ownership;
+- coordinator-owned final commit;
+- coordinator-owned rollback;
+- coordinator-owned session close;
+- explicit `KnowledgeLineageTransactionPostCommitCleanupError`;
+- shared exact duplicate-classification rules for standalone and coordinated Knowledge persistence;
+- shared exact duplicate-classification rules for standalone and coordinated lineage persistence;
+- preservation of standalone Knowledge and lineage repository behavior.
+
+### TDD and Verification Evidence
+
+RFC-064 was developed and verified across:
+
+- persistence-neutral coordinator contract;
+- shared-session transaction lifecycle;
+- transaction-scoped Knowledge repository behavior;
+- transaction-scoped lineage repository behavior;
+- exact duplicate classification;
+- commit failure semantics;
+- rollback failure semantics;
+- session acquisition failure semantics;
+- transaction-start failure semantics;
+- post-commit cleanup semantics;
+- independent execution/session isolation;
+- architecture and containment guardrails;
+- coordinated atomic rollback after first-participant flush and second-participant failure.
+
+Final verified evidence:
+
+- RFC-064 targeted verification: 37 passed;
+- full PlantMind regression: 754 passed;
+- Python compileall: passed;
+- `git diff --check`: passed;
+- canonical Alembic head: `0004`;
+- migration lineage remains `0001 → 0002 → 0003 → 0004`;
+- no new schema migration;
+- implementation-entry Git gate: satisfied;
+- remote technical push: verified;
+- exact local/remote technical commit identity: verified;
+- working tree after technical push: clean.
+
+### Post-RFC-064 Architecture Integrity Review
+
+Outcome:
+
+**PASS — architecture remains sound and RFC-064 conforms to accepted AD-050.**
+
+The review confirmed:
+
+- RFC-064 remains a narrow Knowledge-and-lineage transaction coordination foundation rather than a generic platform Unit of Work;
+- the coordinator port remains application-level and persistence-neutral;
+- no new ARCH-001 architectural layer was introduced;
+- the coordinator does not compete with `ApplicationFacade`;
+- the coordinator is not a production workload entry point;
+- canonical Knowledge, Enterprise Document and lineage Domain ownership remains unchanged;
+- canonical repository ports remain persistence-neutral;
+- `KnowledgeCaptureApplicationService` remains unchanged;
+- `EnterpriseDocumentRegistrationApplicationService` remains unchanged;
+- canonical `DatabaseRuntime` remains engine and session-factory lifecycle owner;
+- no second metadata authority was introduced;
+- no new relational schema or Alembic revision was introduced;
+- default `CompositionRoot` remains unchanged;
+- Runtime and Bootstrap authority remain unchanged;
+- standalone Knowledge and lineage repository transaction ownership remains preserved outside coordinated execution;
+- transaction-scoped participants do not independently commit, rollback or close the shared session;
+- duplicate translation remains exact and constraint-aware;
+- commit-time integrity failures are not heuristically reclassified;
+- post-commit cleanup failure has explicit committed-outcome semantics;
+- transaction failure cannot be masked by a later cleanup failure;
+- transaction atomicity is explicitly distinct from application-use-case completeness;
+- PostgreSQL transaction atomicity is not extended to external systems;
+- no production security, Cybersecurity approval or production-readiness claim is implied.
+
+### Deferred Architecture
+
+RFC-064 deliberately does not establish:
+
+- Document-to-Knowledge ingestion application coordination;
+- Document Library;
+- binary document storage;
+- parsing;
+- OCR;
+- chunking;
+- Document revision lifecycle;
+- semantic search;
+- vector persistence;
+- graph persistence;
+- Neo4j;
+- RAG;
+- LLM invocation;
+- HTTP transport;
+- authentication or authorization expansion;
+- RBAC;
+- async or cross-thread shared-session coordination;
+- retries or idempotency policy;
+- savepoints;
+- nested transactions;
+- distributed transactions;
+- outbox behavior;
+- external-system transaction coordination.
+
+### Engineering-Memory Closure State
+
+Current RFC-064 engineering-memory closure updates include:
+
+- `ROADMAP-004-Active-Work-Register.md`;
+- `SESSION-HANDOFF.md`;
+- `PROJECT-CONTEXT.md`;
+- this append-only Engineering Journal entry.
+
+Historical Engineering Journal entries remain unchanged.
+
+RFC-064 closure is not complete until the remaining authoritative engineering-memory documents are reconciled, all documentation changes are reviewed, committed, pushed and exact local/remote closure identity is verified.
+
+### Next Workstream Rule
+
+No next RFC implementation is authorized during RFC-064 engineering closure.
+
+After RFC-064 closure is committed and pushed, maintained current-state engineering memory SHALL be reconciled to the verified closure state.
+
+Only after that reconciliation may the next architecture workstream be selected from current repository, project-charter and architecture evidence.
+
+No new RFC implementation is authorized until its architecture contract is reviewed, accepted, committed, pushed and its implementation-entry Git gate is satisfied.
