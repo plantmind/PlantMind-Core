@@ -7834,3 +7834,953 @@ Perform evidence-based selection of the next architecture workstream.
 No RFC-065 content is assumed or preselected by AD-050 or RFC-064 closure.
 
 Any next workstream SHALL be selected from current repository, project-charter and architecture evidence and SHALL require its own reviewed and accepted contract before technical implementation is authorized.
+
+---
+
+# AD-051 — Canonical Document-to-Knowledge Ingestion Application Boundary
+
+## Status
+
+Accepted — Implementation Entry Git Gate Pending.
+
+RFC-065 / AD-051 Contract Acceptance Review: passed.
+
+Technical implementation remains unauthorized until the accepted
+contract is committed, pushed and verified through the implementation-
+entry Git gate.
+
+## Context
+
+AD-039 through AD-042 established canonical enterprise Knowledge,
+relational Knowledge persistence and the specialized
+`KnowledgeCaptureApplicationService`.
+
+AD-043 through AD-046 established canonical immutable
+`EnterpriseDocument`, its persistence-neutral repository, relational
+persistence and the specialized
+`EnterpriseDocumentRegistrationApplicationService`.
+
+AD-047 through AD-049 established canonical directed
+Document-to-Knowledge lineage, its repository contract and relational
+persistence.
+
+AD-050 / RFC-064 established the narrow persistence-neutral
+`KnowledgeLineageTransactionCoordinator` required for canonical
+Knowledge persistence and lineage persistence to participate in one
+coordinated relational transaction.
+
+Earlier Document Knowledge ingestion was intentionally deferred because
+the platform previously lacked:
+
+1. canonical Document identity;
+2. canonical lineage identity;
+3. lineage persistence;
+4. coordinated Knowledge / lineage transaction semantics.
+
+Those prerequisite foundations now exist.
+
+PlantMind therefore has sufficient canonical lower-level architecture to
+review one specialized application use case for creating Knowledge
+derived from an already registered canonical Enterprise Document.
+
+## Decision
+
+PlantMind SHALL establish one specialized internal application boundary:
+
+`DocumentKnowledgeIngestionApplicationService`
+
+under:
+
+`app.services.document_knowledge_ingestion_application_service`
+
+with immutable application contracts:
+
+- `DocumentKnowledgeIngestionRequest`;
+- `DocumentKnowledgeIngestionResult`.
+
+The canonical operation SHALL be:
+
+`ingest(request: DocumentKnowledgeIngestionRequest) -> DocumentKnowledgeIngestionResult`
+
+RFC-065 ingestion represents creation of one canonical Knowledge record
+derived from one existing canonical Enterprise Document and creation of
+the corresponding canonical `DocumentKnowledgeLineage`.
+
+RFC-065 is not raw-file ingestion, parsing, Library behavior or AI
+reasoning.
+
+## Application-Level Responsibility
+
+The term `application` describes use-case responsibility only.
+
+AD-051 SHALL NOT introduce a seventh architectural layer.
+
+The six-layer architecture defined by ARCH-001 remains unchanged.
+
+The ingestion boundary is an internal specialized application use case.
+
+It SHALL NOT become:
+
+- the canonical external workload entry point;
+- a Presentation component;
+- an AI Agent;
+- an Intelligence Engine;
+- a Core Service;
+- a generic orchestration layer;
+- a generic Unit of Work.
+
+AD-051 narrowly governs only the dependencies required by this accepted
+use case and SHALL NOT establish a general dependency exception for
+unrelated PlantMind components.
+
+## ApplicationFacade Boundary
+
+AD-027 remains authoritative.
+
+`ApplicationFacade` remains the canonical application-level production
+operational workload entry boundary.
+
+`DocumentKnowledgeIngestionApplicationService` SHALL NOT compete with
+`ApplicationFacade`.
+
+AD-051 SHALL NOT modify:
+
+- `ApplicationFacade`;
+- `IntegrationGateway`;
+- `OrchestrationService`;
+- `WorkflowExecutor`.
+
+AD-051 introduces no external transport or production workload-entry
+path.
+
+Any future production external exposure of ingestion requires separately
+accepted transport, composition and security architecture consistent
+with AD-027.
+
+## Construction and Dependency Contract
+
+`DocumentKnowledgeIngestionApplicationService` SHALL receive exactly
+these application-level constructor dependencies:
+
+- `document_repository: EnterpriseDocumentRepository`;
+- `transaction_coordinator: KnowledgeLineageTransactionCoordinator`;
+- optional `knowledge_capture_factory`.
+
+The optional factory contract SHALL be equivalent to:
+
+`Callable[[KnowledgeRecordRepository], KnowledgeCaptureApplicationService]`
+
+When no factory is supplied, the ingestion service SHALL use a local
+default factory that constructs:
+
+`KnowledgeCaptureApplicationService(repository=scoped_knowledge_repository)`
+
+without overriding the identity-source or capture-time defaults accepted
+by AD-042.
+
+For each ingestion invocation that resolves an existing canonical
+Document, exactly one Knowledge Capture service SHALL be constructed
+inside the RFC-064 coordinated operation after the transaction-scoped
+repositories have been supplied.
+
+The factory SHALL receive the exact transaction-scoped
+`KnowledgeRecordRepository` supplied by RFC-064.
+
+The ingestion-service constructor SHALL NOT accept a preconstructed
+`KnowledgeCaptureApplicationService`.
+
+A preconstructed Capture service would bind its repository before the
+RFC-064 transaction scope exists and could therefore violate the
+required atomic Knowledge / lineage persistence boundary.
+
+The optional factory exists solely as a narrow deterministic
+verification seam.
+
+It SHALL NOT:
+
+- perform persistence;
+- own transaction lifecycle;
+- perform external I/O;
+- resolve dependencies globally;
+- register services;
+- become a provider registry;
+- become a Core Service;
+- become a dependency-injection framework.
+
+## Canonical Application Input
+
+`DocumentKnowledgeIngestionRequest` SHALL be immutable, keyword-only and
+contain:
+
+- `document_id: EntityId`;
+- `kind: str`;
+- `title: str`;
+- `content: str`;
+- `subject: KnowledgeCaptureSubject | None = None`.
+
+Caller input SHALL NOT provide:
+
+- Knowledge identity;
+- Knowledge capture timestamp;
+- Document source type;
+- Document source reference;
+- preconstructed `KnowledgeRecord`;
+- preconstructed `DocumentKnowledgeLineage`.
+
+## Canonical Result
+
+`DocumentKnowledgeIngestionResult` SHALL be immutable, keyword-only and
+contain exactly:
+
+- `knowledge_record: KnowledgeRecord`;
+- `lineage: DocumentKnowledgeLineage`.
+
+The result SHALL be returned only after the RFC-064 coordinator reports
+successful completion.
+
+The result does not imply trust, approval, authorization, indexing,
+searchability, RAG availability or production readiness.
+
+## Existing Document Requirement
+
+RFC-065 SHALL operate only on an already registered canonical
+`EnterpriseDocument`.
+
+The ingestion boundary SHALL NOT register, create, update or delete a
+Document.
+
+`EnterpriseDocumentRepository` SHALL be injected explicitly.
+
+For one ingestion invocation, the application boundary SHALL call:
+
+`EnterpriseDocumentRepository.get(request.document_id)`
+
+exactly once before entering coordinated Knowledge / lineage
+persistence.
+
+No source-reference lookup or alternate Document identity is authorized.
+
+## Document Not-Found Semantics
+
+RFC-065 SHALL introduce the specialized application error:
+
+`DocumentKnowledgeIngestionDocumentNotFoundError`
+
+If Document lookup returns `None`, this error SHALL be raised before
+transaction coordination begins.
+
+For Document not-found:
+
+- `KnowledgeLineageTransactionCoordinator.execute(...)` SHALL NOT run;
+- Knowledge Capture SHALL NOT run;
+- no Knowledge identity SHALL be generated;
+- no capture timestamp SHALL be generated;
+- no Knowledge write SHALL occur;
+- no lineage write SHALL occur.
+
+Unexpected Document repository failures SHALL propagate without
+conversion to not-found, retry or synthetic success.
+
+## Document Lookup Transaction Boundary
+
+Document lookup SHALL occur before the RFC-064 Knowledge / lineage
+transaction.
+
+The accepted Enterprise Document is immutable and current architecture
+provides no update, delete or mutable revision lifecycle.
+
+AD-051 SHALL NOT extend `KnowledgeLineageTransactionCoordinator` to
+include `EnterpriseDocumentRepository`.
+
+AD-051 SHALL NOT establish one transaction spanning:
+
+- Document registration;
+- Knowledge capture;
+- lineage persistence.
+
+Future accepted Document mutation, deletion, replacement or revision
+semantics SHALL require explicit review of this assumption before
+changing ingestion behavior.
+
+## Canonical Document Identity
+
+Canonical derivation identity SHALL be:
+
+`EnterpriseDocument.id`
+
+Canonical lineage SHALL use this identity directly.
+
+`DocumentSource.source_reference` remains external source traceability
+only.
+
+It SHALL NOT become:
+
+- canonical Document identity;
+- lineage identity;
+- repository alternate identity;
+- uniqueness identity;
+- deduplication identity.
+
+Canonical Document identity SHALL NOT be encoded into
+`KnowledgeProvenance.source_reference`.
+
+## Provenance Derivation
+
+Knowledge provenance input SHALL be derived from the loaded canonical
+Document source.
+
+The ingestion boundary SHALL supply Knowledge Capture with:
+
+- `source_type = document.source.source_type.value`;
+- `source_reference = document.source.source_reference`.
+
+Caller-provided provenance source metadata is not authorized by
+RFC-065.
+
+`KnowledgeCaptureApplicationService` remains responsible for canonical
+Knowledge provenance construction and capture-time generation.
+
+Canonical Document lineage and external-source provenance remain
+separate concepts.
+
+## Knowledge Subject Boundary
+
+Document derivation SHALL NOT automatically replace the canonical
+Knowledge subject.
+
+The ingestion request MAY carry the already accepted
+`KnowledgeCaptureSubject`.
+
+RFC-065 SHALL pass that subject through accepted Knowledge Capture
+semantics.
+
+RFC-065 SHALL NOT establish:
+
+- subject existence validation;
+- subject accessibility validation;
+- automatic Document-as-subject behavior;
+- Asset Library resolution;
+- new subject-type semantics.
+
+## Knowledge Capture Preservation
+
+AD-042 remains authoritative.
+
+RFC-065 SHALL consume:
+
+`KnowledgeCaptureApplicationService`
+
+It SHALL NOT bypass Knowledge Capture by directly constructing a
+canonical `KnowledgeRecord` as application logic or directly persisting
+Knowledge through `KnowledgeRecordRepository.add(...)`.
+
+Knowledge Capture retains ownership of:
+
+- canonical Knowledge identity creation;
+- canonical capture-time generation;
+- canonical Knowledge domain construction;
+- canonical provenance construction;
+- canonical subject construction.
+
+The public behavior and accepted responsibilities of
+`KnowledgeCaptureApplicationService` SHALL remain unchanged.
+
+## Transaction-Scoped Knowledge Capture Binding
+
+RFC-064 provides a transaction-scoped `KnowledgeRecordRepository`.
+
+RFC-065 SHALL use `KnowledgeCaptureApplicationService` bound to that
+exact scoped repository inside the coordinated operation.
+
+AD-051 SHALL use the Construction and Dependency Contract defined
+above.
+
+The capture-service factory SHALL be invoked exactly once inside the
+coordinated operation and SHALL receive the exact transaction-scoped
+Knowledge repository supplied by RFC-064.
+
+RFC-065 SHALL NOT accept or reuse a preconstructed
+`KnowledgeCaptureApplicationService`.
+
+Default behavior SHALL preserve the accepted Knowledge Capture identity
+and UTC capture-time semantics.
+
+## Coordinated Transaction Boundary
+
+For an existing Document, RFC-065 SHALL invoke:
+
+`KnowledgeLineageTransactionCoordinator.execute(...)`
+
+exactly once.
+
+The supplied operation SHALL receive and use exactly the
+transaction-scoped:
+
+- `KnowledgeRecordRepository`;
+- `DocumentKnowledgeLineageRepository`
+
+provided by RFC-064.
+
+RFC-065 SHALL NOT directly own:
+
+- SQLAlchemy Session;
+- transaction primitives;
+- commit;
+- rollback;
+- session close;
+- engine;
+- session factory.
+
+RFC-064 / AD-050 remains authoritative for transaction lifecycle and
+failure semantics.
+
+## Persistence Ordering
+
+Inside the coordinated operation, RFC-065 SHALL:
+
+1. prepare one `KnowledgeCaptureRequest`;
+2. invoke `KnowledgeCaptureApplicationService.capture(...)` exactly once;
+3. obtain the resulting canonical `KnowledgeRecord`;
+4. construct one canonical `DocumentKnowledgeLineage`;
+5. call transaction-scoped lineage repository `add(...)` exactly once;
+6. return one `DocumentKnowledgeIngestionResult` to the coordinator.
+
+Knowledge Capture SHALL precede lineage construction because canonical
+Knowledge identity is generated by Knowledge Capture.
+
+This ordering does not transfer commit, rollback or session ownership
+from RFC-064.
+
+## Lineage Construction
+
+The canonical lineage SHALL contain exactly:
+
+- `document_id = enterprise_document.id`;
+- `knowledge_record_id = knowledge_record.id`.
+
+RFC-065 SHALL NOT introduce:
+
+- lineage surrogate identity;
+- lineage timestamp;
+- lineage type;
+- foreign-key lifecycle coupling;
+- new lineage cardinality rules;
+- primary-source semantics;
+- corroboration;
+- merge semantics;
+- multi-source derivation.
+
+## Success Semantics
+
+RFC-065 SHALL report success only when
+`KnowledgeLineageTransactionCoordinator.execute(...)` successfully
+returns after coordinated commit.
+
+Knowledge construction or flush alone is not successful ingestion.
+
+Lineage construction or flush alone is not successful ingestion.
+
+No partial-success result is authorized.
+
+## Knowledge Failure Semantics
+
+If Knowledge Capture fails:
+
+- the failure SHALL propagate;
+- lineage persistence SHALL not report success;
+- RFC-065 SHALL not retry;
+- RFC-065 SHALL not fabricate a result;
+- coordinator-owned rollback semantics remain authoritative when a
+  transaction is active.
+
+Canonical Knowledge duplicate errors SHALL propagate unchanged.
+
+## Lineage Failure Semantics
+
+If lineage persistence fails after Knowledge has been added or flushed:
+
+- the failure SHALL propagate;
+- RFC-065 SHALL not return partial success;
+- RFC-065 SHALL not manually compensate;
+- RFC-065 SHALL not commit or rollback;
+- RFC-064 coordinator behavior remains authoritative.
+
+Canonical lineage duplicate errors SHALL propagate unchanged.
+
+## Unexpected Failure Semantics
+
+RFC-065 SHALL preserve unexpected Domain, repository, transaction and
+persistence failures unless another accepted contract defines narrower
+semantics.
+
+It SHALL NOT:
+
+- heuristically classify unrelated integrity failures as duplicates;
+- regenerate Knowledge identity automatically;
+- retry automatically;
+- overwrite canonical records;
+- convert failures into synthetic success.
+
+## Post-Commit Cleanup Failure
+
+`KnowledgeLineageTransactionPostCommitCleanupError` retains its accepted
+AD-050 meaning.
+
+RFC-065 SHALL not translate this outcome into an exception that falsely
+claims rollback.
+
+When this exception occurs, participating relational persistence may
+already be committed.
+
+RFC-065 SHALL not automatically retry after this outcome.
+
+## Duplicate and Idempotency Boundary
+
+RFC-065 introduces no new ingestion-level duplicate definition.
+
+Existing canonical duplicate behavior remains authoritative.
+
+Repeated ingestion from the same Document is not automatically a
+duplicate because no accepted one-Knowledge-record-per-Document
+cardinality exists.
+
+Equal external source references do not establish duplicate ingestion.
+
+RFC-065 introduces no idempotency key, content hash, deduplication
+algorithm or retry policy.
+
+Those require future explicit architecture if needed.
+
+## Repository Preservation
+
+AD-051 SHALL NOT change the public contracts of:
+
+- `EnterpriseDocumentRepository`;
+- `KnowledgeRecordRepository`;
+- `DocumentKnowledgeLineageRepository`.
+
+No ingestion-specific repository methods are authorized.
+
+Standalone relational repository behavior remains unchanged.
+
+RFC-064 transaction-scoped repository behavior remains unchanged.
+
+## DatabaseRuntime Boundary
+
+Canonical `DatabaseRuntime` remains sole owner of:
+
+- SQLAlchemy engine;
+- session factory;
+- database configuration;
+- database lifecycle.
+
+RFC-065 SHALL NOT create another engine, session factory,
+`DatabaseRuntime`, metadata root or database configuration source.
+
+## Relational Schema and Alembic Boundary
+
+RFC-065 SHALL introduce no relational schema change under the current
+contract.
+
+No new:
+
+- table;
+- column;
+- constraint;
+- index;
+- relational foreign key;
+- metadata root;
+- Alembic revision
+
+is required.
+
+Canonical Alembic head remains:
+
+`0004`
+
+Discovery of a genuine schema requirement during technical review SHALL
+stop implementation and require explicit architecture review before
+migration authorization.
+
+## Composition Boundary
+
+AD-051 SHALL NOT automatically modify default:
+
+- `CompositionRoot`;
+- `ServiceContainer`;
+- `PlatformComposition`.
+
+Existence of RFC-065 does not make PostgreSQL or Document / Knowledge
+persistence a mandatory default platform capability.
+
+Production composition remains separately governed.
+
+## Runtime and Bootstrap Boundary
+
+RFC-065 SHALL NOT modify:
+
+- Runtime lifecycle authority;
+- Bootstrap authority;
+- readiness;
+- Health;
+- request admission;
+- operational-transition authority;
+- mandatory-capability policy.
+
+Successful ingestion SHALL NOT itself change Runtime lifecycle state.
+
+## Parsing and Document Library Boundary
+
+RFC-065 ingests prepared Knowledge associated with an already registered
+canonical Document.
+
+It does not ingest or process raw files.
+
+Caller-supplied Knowledge content is already prepared for Knowledge
+Capture.
+
+RFC-065 SHALL NOT implement:
+
+- Document Library;
+- binary storage;
+- upload;
+- download;
+- file synchronization;
+- PDF parsing;
+- OCR;
+- text extraction;
+- chunking;
+- metadata extraction;
+- revision tracking.
+
+Future parsing and extraction capabilities MAY consume RFC-065 only
+after their own contracts are accepted.
+
+## Search and AI Boundary
+
+RFC-065 SHALL NOT establish:
+
+- search;
+- semantic retrieval;
+- embeddings;
+- vector persistence;
+- graph persistence;
+- Neo4j;
+- Knowledge Graph redesign;
+- RAG;
+- LLM invocation;
+- AI Agent behavior;
+- engineering reasoning.
+
+Canonical ingestion success does not imply searchability or AI
+availability.
+
+## Core Boundary
+
+RFC-065 is not a Core Service.
+
+Core Services SHALL NOT acquire ingestion workflow responsibility.
+
+CORE-002 remains authoritative.
+
+## Dependency Boundary
+
+RFC-065 implementation SHALL depend on accepted contracts and public
+application boundaries.
+
+It SHALL NOT depend directly on SQLAlchemy or external systems.
+
+Dependencies SHALL remain explicit and acyclic.
+
+ARCH-001, CORE-002 and CORE-003 remain authoritative except only for the
+narrow responsibility explicitly governed by this ADR.
+
+AD-051 SHALL NOT establish a general reverse-dependency or layer-bypass
+rule.
+
+## Security and Trust Boundary
+
+RFC-065 SHALL NOT establish or claim:
+
+- authentication;
+- authorization;
+- RBAC;
+- Active Directory;
+- LDAP;
+- MFA;
+- actor identity;
+- actor audit;
+- source authenticity;
+- source correctness;
+- Document trust;
+- Knowledge trust;
+- approval;
+- safety approval;
+- compliance approval;
+- Cybersecurity approval;
+- production-security readiness.
+
+Provenance records traceable origin.
+
+Lineage records derivation identity.
+
+Neither establishes trust or authorization.
+
+## Explicitly Deferred
+
+AD-051 SHALL NOT establish:
+
+- Document creation or registration during ingestion;
+- Document mutation;
+- Document deletion;
+- Document revision or supersession lifecycle;
+- Document Library;
+- binary storage;
+- upload or download;
+- source synchronization;
+- parsing;
+- OCR;
+- extraction;
+- chunking;
+- search;
+- embeddings;
+- vector persistence;
+- graph persistence;
+- Neo4j;
+- RAG;
+- LLM invocation;
+- AI Agent behavior;
+- HTTP transport;
+- API endpoint creation;
+- PI System integration;
+- DCS integration;
+- external-system transaction atomicity;
+- source verification;
+- approval lifecycle;
+- lineage traversal APIs;
+- lineage cardinality policy;
+- corroboration;
+- primary-source semantics;
+- multi-source derivation;
+- ingestion-level deduplication;
+- ingestion-level idempotency;
+- automatic retry;
+- savepoints;
+- nested transactions;
+- distributed transactions;
+- two-phase commit;
+- transactional event publication;
+- outbox semantics;
+- asynchronous coordination;
+- default production composition;
+- authentication or authorization expansion;
+- production-readiness claims.
+
+## Alternatives Considered
+
+### Bypass Knowledge Capture and construct Knowledge directly
+
+Rejected.
+
+AD-042 explicitly established Knowledge Capture as the specialized
+application boundary that future ingestion capabilities shall consume.
+
+Bypassing it would duplicate identity, timestamp, provenance, subject
+and Domain-construction responsibilities.
+
+### Use Document source_reference as Document identity
+
+Rejected.
+
+AD-043 through AD-047 explicitly separate source traceability from
+canonical Document identity.
+
+Canonical lineage shall use `EnterpriseDocument.id`.
+
+### Allow caller-supplied provenance source metadata
+
+Rejected.
+
+The ingestion use case already identifies one canonical Document.
+
+Deriving provenance source metadata from that canonical Document avoids
+caller disagreement between Document identity and external source
+traceability.
+
+### Put Document lookup inside the RFC-064 transaction
+
+Rejected under current architecture.
+
+RFC-064 intentionally coordinates only Knowledge and lineage
+persistence.
+
+Enterprise Documents are currently immutable and have no delete or
+mutable revision lifecycle.
+
+Extending the coordinator would exceed demonstrated need.
+
+### Include Document Registration in the transaction
+
+Rejected.
+
+AD-050 explicitly excludes a transaction spanning Document Registration,
+Knowledge Capture and lineage persistence.
+
+RFC-065 consumes an already existing canonical Document.
+
+### Add a generic application Unit of Work
+
+Rejected.
+
+RFC-064 already provides the narrow coordination required by this use
+case.
+
+A generic Unit of Work would exceed evidence.
+
+### Add parsing, OCR or chunking to RFC-065
+
+Rejected.
+
+RFC-065 consumes prepared Knowledge fields.
+
+Raw-file transformation is a separate responsibility and future
+workstream.
+
+### Add idempotency or content deduplication now
+
+Rejected.
+
+No accepted business identity exists for duplicate Document-derived
+Knowledge beyond canonical record and lineage identities.
+
+Such semantics require separate evidence and contract.
+
+## Acceptance Requirements
+
+Before AD-051 may become Accepted, architecture review SHALL confirm:
+
+1. no new ARCH-001 layer is introduced;
+2. `ApplicationFacade` remains production workload-entry authority;
+3. ingestion remains an internal specialized application use case;
+4. ingestion begins from existing canonical `EnterpriseDocument.id`;
+5. Document lookup uses `EnterpriseDocumentRepository.get(...)`;
+6. Document lookup occurs exactly once before coordination;
+7. Document not-found prevents all coordinated persistence;
+8. source-reference identity or lookup is not introduced;
+9. provenance source data derives from canonical Document source;
+10. Document identity is not hidden inside provenance;
+11. Knowledge subject remains independent from Document lineage;
+12. Knowledge Capture is consumed rather than bypassed;
+13. Knowledge Capture public behavior remains unchanged;
+14. Knowledge identity remains owned by Knowledge Capture;
+15. capture timestamp remains owned by Knowledge Capture;
+16. exactly one Knowledge Capture service is constructed inside the
+    coordinated operation through the narrow factory using the exact
+    transaction-scoped Knowledge repository, and no preconstructed
+    Knowledge Capture service is accepted;
+17. coordinator execution occurs exactly once for an existing Document;
+18. Knowledge Capture occurs exactly once inside the operation;
+19. one lineage value is constructed from exact canonical identities;
+20. lineage `add(...)` occurs exactly once;
+21. no Knowledge or lineage duplicate pre-read is introduced;
+22. success occurs only after coordinated commit;
+23. no partial-success result is possible;
+24. Knowledge failure prevents lineage success;
+25. lineage failure uses RFC-064 rollback authority;
+26. duplicate semantics remain exact and unchanged;
+27. unrelated failures are not heuristically reclassified;
+28. post-commit cleanup semantics remain unchanged;
+29. no automatic retry is introduced;
+30. no ingestion-level idempotency or deduplication is introduced;
+31. repository public contracts remain unchanged;
+32. standalone repository lifecycle behavior remains unchanged;
+33. RFC-064 scoped repository behavior remains unchanged;
+34. `DatabaseRuntime` ownership remains unchanged;
+35. no schema or migration change is required;
+36. canonical Alembic head remains `0004`;
+37. default Composition remains unchanged;
+38. Runtime and Bootstrap remain unchanged;
+39. no Document Registration transaction is introduced;
+40. parsing, OCR, Library, search, vector, graph, RAG and LLM remain
+    outside scope;
+41. security, trust and production-readiness claims remain outside scope;
+42. dependency direction remains explicit, acyclic and compatible with
+    ARCH-001 / CORE-002 / CORE-003 and approved ADR authority.
+
+## Contract Acceptance Review
+
+Status:
+
+**Passed — 42 / 42 Acceptance Requirements**
+
+RFC-065 / AD-051 Contract Acceptance Review is complete.
+
+Review evidence:
+
+- Gate 1 — Dependency & Application-Boundary Compatibility: PASS;
+- Gate 2 — Canonical Document Identity & Existence Semantics: PASS;
+- Gate 3 — Provenance & Knowledge Subject Preservation: PASS;
+- Gate 4 — Transaction, Atomicity & Failure Semantics: PASS;
+- Gate 5 — Schema, Composition, Runtime, Bootstrap & Security Preservation: PASS;
+- Final Static Contract Review: PASS.
+
+Final requirement disposition:
+
+- PASS: 42;
+- REFINE: 0;
+- BLOCKED: 0.
+
+The review covered:
+
+- ARCH-001;
+- CORE-002;
+- CORE-003;
+- AD-027;
+- AD-039 through AD-050;
+- canonical Domain contracts;
+- repository ports;
+- application services;
+- RFC-064 transaction coordination;
+- default Composition;
+- Runtime and Bootstrap authority;
+- canonical relational metadata and Alembic authority;
+- current security implementation boundaries.
+
+AD-051 is Accepted.
+
+Acceptance does not by itself authorize implementation.
+
+The implementation-entry Git gate requires the accepted contract to be
+committed, pushed, exact local / remote commit identity verified and the
+working tree confirmed clean.
+
+## Implementation Authorization
+
+Status:
+
+**Not Authorized — Implementation Entry Git Gate Pending**
+
+AD-051 is Accepted and its Contract Acceptance Review has passed.
+
+Technical implementation remains prohibited until the accepted
+RFC-065 / AD-051 contract is:
+
+- committed;
+- pushed to `origin/feature/engineering-platform`;
+- verified with exact local / remote commit identity;
+- verified with a clean working tree.
+
+Only after that implementation-entry Git gate passes may RFC-065
+technical implementation begin through TDD RED.
+
+Contract acceptance alone does not authorize production-code changes.
+
+## Next Exact Action
+
+Commit and push the accepted RFC-065 / AD-051 architecture contract.
+
+Verify exact local and remote contract commit identity and a clean
+working tree.
+
+Only after the implementation-entry Git gate passes may technical
+implementation begin with TDD RED tests.
