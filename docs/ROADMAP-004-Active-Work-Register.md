@@ -39,7 +39,7 @@ No item may be marked complete until:
 
 ### Status
 
-Implemented — Engineering Closure Pending.
+Complete.
 
 Post-RFC-063 evidence-based architecture selection: complete.
 
@@ -1201,21 +1201,25 @@ RFC-064 technical verification completed successfully with:
 
 RFC-064 technical implementation is therefore accepted as implemented.
 
-RFC-064 SHALL NOT yet be marked fully complete until the required engineering-memory and architecture-closure documentation is updated, committed, pushed and verified.
+### Engineering Closure Verification
+
+RFC-064 engineering-memory and architecture closure was committed and pushed at:
+
+`43563a416a24fea7cad4a370a2a4599936c87380`
+
+Exact local / remote closure identity was verified.
+
+Working tree after closure push was clean.
+
+RFC-064 is fully closed.
 
 ### Next Exact Action
 
-Complete RFC-064 engineering-memory and architecture closure.
+Perform evidence-based selection of the next architecture workstream from the current repository, project charter, accepted architecture and remaining dependency gaps.
 
-Update the authoritative engineering-memory documents to record:
+No RFC-065 content is assumed or preselected by RFC-064 closure.
 
-- RFC-064 technical implementation commit;
-- verified test and migration evidence;
-- preserved architecture responsibilities;
-- remaining deferred capabilities;
-- the evidence-based next-work selection gate.
-
-After documentation review, commit the engineering closure separately from the technical implementation.
+No new RFC implementation is authorized until the selected workstream has an architecture contract that is reviewed, accepted, committed, pushed and passes its implementation-entry Git gate.
 
 
 ---

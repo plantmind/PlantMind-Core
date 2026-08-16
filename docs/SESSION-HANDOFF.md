@@ -1729,8 +1729,20 @@ Preserve:
 17. authentication, authorization, RBAC, Cybersecurity approval and production-readiness claims remain outside RFC-064 scope;
 18. async, cross-thread shared-session use, retries, savepoints, nested transactions, distributed transactions and outbox behavior remain outside RFC-064 scope.
 
-Engineering-memory closure is still in progress.
+Engineering-memory closure is complete.
 
-RFC-064 SHALL NOT yet be marked fully closed until the remaining authoritative engineering-memory documents are updated, reviewed, committed, pushed and exact local/remote closure identity is verified.
+Closure commit:
 
-No next RFC implementation is authorized during this closure activity.
+`43563a416a24fea7cad4a370a2a4599936c87380`
+
+Exact local/remote closure identity: verified.
+
+Working tree after closure push: clean.
+
+RFC-064 is fully closed.
+
+Evidence-based selection of the next architecture workstream is now authorized.
+
+No RFC-065 content is assumed or preselected by this closure.
+
+No new RFC implementation is authorized until its architecture contract is reviewed, accepted, committed, pushed and its implementation-entry Git gate is satisfied.

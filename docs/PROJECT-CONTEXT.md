@@ -1494,8 +1494,22 @@ Still explicitly deferred:
 - outbox behavior;
 - external-system transaction coordination.
 
-RFC-064 engineering-memory closure is still in progress.
+RFC-064 engineering-memory closure is complete.
 
-RFC-064 SHALL NOT yet be marked fully closed until all authoritative engineering-memory documents are reconciled, reviewed, committed, pushed and exact local/remote closure identity is verified.
+Closure commit:
 
-No next RFC implementation is authorized during RFC-064 engineering closure.
+`43563a416a24fea7cad4a370a2a4599936c87380`
+
+Exact local/remote closure identity was verified.
+
+Working tree after closure push was clean.
+
+RFC-064 is fully closed.
+
+Evidence-based selection of the next architecture workstream is now authorized.
+
+No RFC-065 content is assumed or preselected by this reconciliation.
+
+The next workstream SHALL be selected from current repository, project-charter and architecture evidence.
+
+No new RFC implementation is authorized until its architecture contract is reviewed, accepted, committed, pushed and its implementation-entry Git gate is satisfied.
