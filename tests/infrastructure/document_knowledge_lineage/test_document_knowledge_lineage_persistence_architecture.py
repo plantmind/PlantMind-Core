@@ -94,20 +94,58 @@ def test_lineage_infrastructure_does_not_reach_peer_or_application_boundaries() 
     assert violations == []
 
 
-def test_no_other_application_module_imports_lineage_relational_adapter() -> None:
-    violations: list[str] = []
+def test_only_transaction_coordination_infrastructure_may_import_lineage_relational_components() -> None:
+    transaction_infrastructure = (
+        BACKEND_APP
+        / "infrastructure"
+        / "knowledge_lineage_transaction"
+    )
 
-    for path in BACKEND_APP.rglob("*.py"):
-        if LINEAGE_INFRASTRUCTURE in path.parents:
+    allowed_transaction_dependencies = {
+        (
+            "app.infrastructure.document_knowledge_lineage."
+            "duplicate_classification"
+        ),
+        "app.infrastructure.document_knowledge_lineage.mapping",
+        "app.infrastructure.document_knowledge_lineage.models",
+    }
+
+    violations: list[tuple[str, str]] = []
+
+    for candidate in BACKEND_APP.rglob("*.py"):
+        if LINEAGE_INFRASTRUCTURE in candidate.parents:
             continue
 
-        for module in _imported_modules(path):
+        lineage_imports = {
+            module
+            for module in _imported_modules(candidate)
             if module.startswith(
                 "app.infrastructure.document_knowledge_lineage"
+            )
+        }
+
+        if not lineage_imports:
+            continue
+
+        if transaction_infrastructure in candidate.parents:
+            for module in sorted(
+                lineage_imports - allowed_transaction_dependencies
             ):
                 violations.append(
-                    str(path.relative_to(REPOSITORY_ROOT))
+                    (
+                        str(candidate.relative_to(REPOSITORY_ROOT)),
+                        module,
+                    )
                 )
+            continue
+
+        for module in sorted(lineage_imports):
+            violations.append(
+                (
+                    str(candidate.relative_to(REPOSITORY_ROOT)),
+                    module,
+                )
+            )
 
     assert violations == []
 

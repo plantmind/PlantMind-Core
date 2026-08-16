@@ -15,6 +15,9 @@ from app.domain.base import EntityId
 from app.domain.document_knowledge_lineage import (
     DocumentKnowledgeLineage,
 )
+from app.infrastructure.document_knowledge_lineage.duplicate_classification import (
+    is_identity_duplicate,
+)
 from app.infrastructure.document_knowledge_lineage.mapping import (
     lineage_to_row,
     row_to_lineage,
@@ -25,10 +28,6 @@ from app.infrastructure.document_knowledge_lineage.models import (
 
 
 SessionFactory = Callable[[], Session]
-
-_IDENTITY_UNIQUE_SQLSTATE = "23505"
-_IDENTITY_CONSTRAINT_NAME = "pk_document_knowledge_lineages"
-
 
 class SQLAlchemyDocumentKnowledgeLineageRepository(
     DocumentKnowledgeLineageRepository
@@ -60,7 +59,7 @@ class SQLAlchemyDocumentKnowledgeLineageRepository(
 
             if (
                 isinstance(exc, IntegrityError)
-                and _is_identity_duplicate(exc)
+                and is_identity_duplicate(exc)
             ):
                 raise DocumentKnowledgeLineageAlreadyExistsError(
                     "Canonical Document-to-Knowledge lineage "
@@ -93,36 +92,3 @@ class SQLAlchemyDocumentKnowledgeLineageRepository(
             return row_to_lineage(row)
         finally:
             session.close()
-
-
-def _is_identity_duplicate(
-    error: IntegrityError,
-) -> bool:
-    """Identify only the canonical lineage composite-PK conflict."""
-
-    driver_error = error.orig
-
-    if (
-        getattr(
-            driver_error,
-            "sqlstate",
-            None,
-        )
-        != _IDENTITY_UNIQUE_SQLSTATE
-    ):
-        return False
-
-    diagnostic = getattr(
-        driver_error,
-        "diag",
-        None,
-    )
-
-    return (
-        getattr(
-            diagnostic,
-            "constraint_name",
-            None,
-        )
-        == _IDENTITY_CONSTRAINT_NAME
-    )
