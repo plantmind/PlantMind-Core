@@ -7837,7 +7837,9 @@ Any next workstream SHALL be selected from current repository, project-charter a
 
 ---
 
-# AD-051 — Canonical Document-to-Knowledge Ingestion Application Boundary## Status
+# AD-051 — Canonical Document-to-Knowledge Ingestion Application Boundary
+
+## Status
 
 Accepted.
 

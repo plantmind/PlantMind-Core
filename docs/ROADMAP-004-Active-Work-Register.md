@@ -283,15 +283,25 @@ This workstream selection does not authorize:
 - monolithic Document Library implementation rejected as premature;
 - Canonical Enterprise Document Content Foundation Boundary selected.
 
+### Selection Verification
+
+Selection review: passed.
+
+Selection commit:
+
+`8c67a681ef1b13d83dc15955b177c3cf55f2944d`
+
+Exact local / remote selection identity: verified.
+
+Working tree after selection push: clean.
+
 ### Remaining Work
 
-- review this selection record;
-- commit and push the selection record;
-- verify exact local / remote selection identity;
-- verify clean working tree;
 - draft the architecture contract for the selected workstream;
-- perform formal architecture-contract review before assigning any
-  implementation authorization.
+- perform formal architecture-contract review;
+- commit and push an accepted contract only after that review passes;
+- satisfy the implementation-entry Git gate before any production-code
+  implementation.
 
 ### Dependencies
 
@@ -307,26 +317,28 @@ for architecture review of this foundation.
 
 ### Resume Condition
 
-Architecture-contract drafting may begin only after this selection
-record is reviewed, committed, pushed, exact local / remote selection
-identity is verified and the working tree is clean.
+Satisfied.
+
+The evidence-based selection record was reviewed, committed, pushed,
+exact local / remote selection identity was verified and the working
+tree was clean.
+
+Architecture-contract drafting is now authorized.
 
 ### Next Exact Action
 
-Perform final review of this evidence-based workstream selection.
+Draft and review the architecture contract for the selected:
 
-If the selection review passes:
+**Canonical Enterprise Document Content Foundation Boundary**
 
-1. commit the selection record;
-2. push it to `origin/feature/engineering-platform`;
-3. verify exact local / remote selection identity;
-4. verify the working tree is clean;
-5. then draft the architecture contract for the selected
-   **Canonical Enterprise Document Content Foundation Boundary**.
+The contract must resolve the recorded architecture questions before
+acceptance.
 
 No production-code implementation is authorized.
 
-No RFC-066 contract content is established by this selection record.
+RFC-066 / AD-052 naming and contract status shall be established only
+through the reviewed architecture contract; this selection record alone
+does not constitute contract acceptance.
 
 ---
 
