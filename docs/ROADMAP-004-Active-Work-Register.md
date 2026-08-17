@@ -35,7 +35,304 @@ No item may be marked complete until:
 
 ---
 
-## RFC-065 — Canonical Document-to-Knowledge Ingestion Application Boundary### Status
+## Selected Architecture Workstream — Canonical Enterprise Document Content Foundation Boundary
+
+### Status
+
+Selected — Architecture Contract Pending.
+
+This is an evidence-based workstream selection only.
+
+It does not constitute an accepted RFC contract, implementation
+authorization or production-readiness claim.
+
+Selection baseline:
+
+`70a094b2c2154b6555a21f3ad3d31abfe571d1db`
+
+### Selection Evidence
+
+The post-RFC-065 architecture and repository review confirms:
+
+- RFC-065 is fully closed and Source-of-Truth reconciled;
+- AD-051 remains Accepted;
+- RFC-065 full PlantMind regression baseline is **779 passed**;
+- canonical `EnterpriseDocument` identity and Domain semantics exist;
+- persistence-neutral Enterprise Document repository semantics exist;
+- relational Enterprise Document persistence exists;
+- `EnterpriseDocumentRegistrationApplicationService` exists;
+- canonical Knowledge identity, capture and relational persistence exist;
+- canonical Document-to-Knowledge lineage exists;
+- canonical lineage relational persistence exists;
+- RFC-064 provides coordinated Knowledge / lineage persistence;
+- RFC-065 provides canonical Knowledge ingestion from an already
+  registered `EnterpriseDocument.id`;
+- RFC-065 consumes prepared Knowledge fields and deliberately does not
+  perform raw-file transformation;
+- current canonical Document registration carries Document metadata and
+  external source traceability but does not establish canonical Document
+  content semantics;
+- `DocumentSource.source_reference` remains external traceability and is
+  not canonical Document identity, repository alternate identity,
+  uniqueness identity or deduplication identity;
+- accepted architecture does not authorize silently treating
+  `source_reference` as canonical content identity;
+- current `document_parser.py`, `semantic_search.py`, `rag_engine.py`
+  and `vector_memory.py` remain empty capability seams;
+- the current `KnowledgeGraphService` remains an in-memory prototype;
+- Document Library behavior, binary storage, upload/download, source
+  synchronization, parsing, OCR, extraction, chunking, revision,
+  semantic retrieval, embeddings, vector persistence, graph
+  persistence, Neo4j, RAG and LLM behavior remain separately deferred;
+- authentication, authorization, RBAC, Active Directory and production
+  Cybersecurity readiness remain separately gated;
+- no accepted lower-level canonical Document-content abstraction was
+  identified in the reviewed repository evidence.
+
+### Selection Rationale
+
+PlantMind now possesses canonical Document identity and can derive
+canonical Knowledge from an existing Enterprise Document, but the
+architecture still lacks an accepted definition of the Document's
+content itself.
+
+Introducing parsing, OCR, chunking, semantic search, vector persistence
+or RAG before defining canonical Document-content semantics would force
+those higher-level capabilities to invent their own answers for content
+ownership, association, integrity and retrieval.
+
+Treating `DocumentSource.source_reference` as an implicit file or
+content locator would also risk collapsing accepted external
+traceability semantics into storage semantics without an explicit
+architecture decision.
+
+The minimum dependency-completing next workstream is therefore:
+
+**Canonical Enterprise Document Content Foundation Boundary**
+
+This workstream shall establish the architecture contract needed before
+raw Document transformation or Document Library behavior can be safely
+promoted.
+
+The selection does not yet decide the detailed content model,
+persistence contract or storage technology.
+
+### Objective
+
+Review and define the minimum canonical foundation for Document content
+associated with an existing canonical `EnterpriseDocument` while
+preserving:
+
+- canonical Enterprise Document identity;
+- existing Document source-traceability semantics;
+- accepted Document immutability;
+- existing Document repository responsibility;
+- existing Document Registration responsibility;
+- RFC-065 ingestion responsibility;
+- canonical Knowledge and lineage semantics;
+- six-layer ARCH-001 architecture;
+- CORE-002 and CORE-003 dependency rules;
+- canonical DatabaseRuntime ownership;
+- canonical metadata and Alembic authority;
+- default Composition authority;
+- Runtime and Bootstrap authority.
+
+### Required Architecture Questions
+
+The architecture contract for this selected workstream shall explicitly
+resolve:
+
+1. the canonical name and namespace for Document-content semantics;
+2. whether canonical Document content is represented by a new Domain
+   concept, a value object, or an explicitly reviewed extension of the
+   accepted Document contract;
+3. whether Document content has independent canonical identity or is
+   identified only through an existing `EnterpriseDocument.id`;
+4. whether any content cardinality relationship may be assumed;
+5. whether raw binary payload belongs inside a Domain object or behind a
+   persistence-neutral content boundary;
+6. exact distinction between Document metadata and Document content;
+7. exact distinction between external source traceability and canonical
+   content location or retrieval semantics;
+8. prohibition on silently repurposing
+   `DocumentSource.source_reference`;
+9. whether media/content type is canonical metadata and, if so, where it
+   belongs;
+10. whether character encoding belongs in the foundation and under what
+    conditions;
+11. whether byte length or equivalent size metadata belongs in the
+    foundation;
+12. whether a cryptographic digest is required for integrity evidence;
+13. if a digest exists, whether it is integrity evidence only or whether
+    identity/deduplication semantics require a separate future decision;
+14. exact immutability semantics for canonical Document content;
+15. compatibility with the currently deferred Document revision /
+    supersession lifecycle;
+16. whether Document existence must be established before content can be
+    associated with it;
+17. whether a persistence-neutral Document-content repository/store
+    contract belongs in this same workstream or must follow as a
+    separate foundation;
+18. whether content retrieval semantics belong in this foundation or a
+    later repository/storage boundary;
+19. how a future parser shall consume canonical content without owning
+    Document identity or storage semantics;
+20. how future binary storage remains infrastructure-owned;
+21. how future Document Library behavior remains distinct from the
+    canonical content foundation;
+22. how trust, approval, authorization and source authenticity remain
+    separate from content existence or integrity;
+23. whether any schema or Alembic change is actually required;
+24. whether default Composition changes are required; none are assumed
+    by this selection;
+25. exact architecture tests needed to prevent dependency leakage and
+    responsibility duplication;
+26. exact TDD verification required before any technical implementation
+    may be accepted.
+
+### Existing Responsibilities That Shall Be Preserved
+
+Selection of this workstream does not authorize silent redesign of:
+
+- `EnterpriseDocument`;
+- `DocumentSource`;
+- `DocumentSourceType`;
+- `DocumentType`;
+- `EnterpriseDocumentRepository`;
+- `EnterpriseDocumentRegistrationApplicationService`;
+- `KnowledgeRecord`;
+- `KnowledgeProvenance`;
+- `KnowledgeSubject`;
+- `KnowledgeCaptureApplicationService`;
+- `DocumentKnowledgeLineage`;
+- `DocumentKnowledgeIngestionApplicationService`;
+- `KnowledgeLineageTransactionCoordinator`;
+- canonical relational Document persistence;
+- canonical relational Knowledge persistence;
+- canonical lineage persistence;
+- standalone repository lifecycle semantics;
+- RFC-064 coordinated transaction semantics;
+- canonical `DatabaseRuntime`;
+- canonical SQLAlchemy metadata authority;
+- canonical Alembic lifecycle;
+- `ApplicationFacade`;
+- default `CompositionRoot`;
+- Runtime;
+- Bootstrap;
+- ARCH-001;
+- CORE-002;
+- CORE-003.
+
+If the future content contract requires changing any accepted prior
+contract, that change must be identified and reviewed explicitly rather
+than being introduced indirectly.
+
+### Explicit Non-Goals
+
+This workstream selection does not authorize:
+
+- production code;
+- Document Library implementation;
+- file upload;
+- file download;
+- file-server synchronization;
+- binary-storage adapter implementation;
+- filesystem storage implementation;
+- object-storage implementation;
+- parser implementation;
+- PDF extraction;
+- OCR;
+- metadata extraction infrastructure;
+- chunking;
+- Document revision or supersession lifecycle;
+- Document mutation or deletion;
+- semantic search;
+- search indexing;
+- embeddings;
+- vector persistence;
+- graph persistence;
+- Neo4j;
+- Knowledge Graph redesign;
+- RAG;
+- LLM invocation;
+- AI Agent behavior;
+- HTTP transport;
+- API endpoints;
+- PI System integration;
+- DCS integration;
+- source authenticity or verification;
+- Document approval or trust state;
+- content deduplication policy;
+- source-reference deduplication;
+- default PostgreSQL Composition wiring;
+- Runtime lifecycle expansion;
+- Bootstrap responsibility expansion;
+- authentication;
+- authorization;
+- RBAC;
+- Active Directory integration;
+- Cybersecurity approval;
+- production-readiness claims.
+
+### Completed Work
+
+- post-RFC-065 Source-of-Truth closure verified;
+- next-workstream evidence pack reviewed;
+- dependency ordering reviewed;
+- higher-level Parser/Search/Vector/RAG candidates rejected as premature;
+- monolithic Document Library implementation rejected as premature;
+- Canonical Enterprise Document Content Foundation Boundary selected.
+
+### Remaining Work
+
+- review this selection record;
+- commit and push the selection record;
+- verify exact local / remote selection identity;
+- verify clean working tree;
+- draft the architecture contract for the selected workstream;
+- perform formal architecture-contract review before assigning any
+  implementation authorization.
+
+### Dependencies
+
+This selection depends on the accepted foundations established through
+the Enterprise Document, Knowledge, lineage, transaction-coordination
+and RFC-065 ingestion workstreams.
+
+Those prerequisites are satisfied.
+
+No parser, storage adapter, Document Library, search, vector, graph,
+RAG, LLM or production-security capability is considered a prerequisite
+for architecture review of this foundation.
+
+### Resume Condition
+
+Architecture-contract drafting may begin only after this selection
+record is reviewed, committed, pushed, exact local / remote selection
+identity is verified and the working tree is clean.
+
+### Next Exact Action
+
+Perform final review of this evidence-based workstream selection.
+
+If the selection review passes:
+
+1. commit the selection record;
+2. push it to `origin/feature/engineering-platform`;
+3. verify exact local / remote selection identity;
+4. verify the working tree is clean;
+5. then draft the architecture contract for the selected
+   **Canonical Enterprise Document Content Foundation Boundary**.
+
+No production-code implementation is authorized.
+
+No RFC-066 contract content is established by this selection record.
+
+---
+
+## RFC-065 — Canonical Document-to-Knowledge Ingestion Application Boundary
+
+### Status
 
 Complete.
 
