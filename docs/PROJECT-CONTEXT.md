@@ -1513,3 +1513,106 @@ No RFC-065 content is assumed or preselected by this reconciliation.
 The next workstream SHALL be selected from current repository, project-charter and architecture evidence.
 
 No new RFC implementation is authorized until its architecture contract is reviewed, accepted, committed, pushed and its implementation-entry Git gate is satisfied.
+
+---
+
+## RFC-065 Technical Completion and Post-Implementation Architecture Review
+
+RFC-065 — Canonical Document-to-Knowledge Ingestion Application Boundary
+is technically complete under accepted AD-051.
+
+Contract commit:
+
+`3db01142802d98f82a565808b3137a3db64158ac`
+
+Technical implementation commit:
+
+`c1ab20b693ac90782592961d91dafda8e0782fa1`
+
+Exact local / remote technical commit identity was verified after push.
+
+The canonical application capability now includes:
+
+- `DocumentKnowledgeIngestionApplicationService`;
+- immutable `DocumentKnowledgeIngestionRequest`;
+- immutable `DocumentKnowledgeIngestionResult`;
+- explicit `DocumentKnowledgeIngestionDocumentNotFoundError`;
+- canonical Document lookup by `EnterpriseDocument.id`;
+- exactly one Document lookup before transaction coordination;
+- Knowledge Capture through `KnowledgeCaptureApplicationService`;
+- narrow transaction-scoped Knowledge Capture factory binding;
+- canonical provenance derived from the loaded Document source;
+- independent optional Knowledge subject semantics;
+- exact Document-to-Knowledge lineage construction;
+- RFC-064 coordinated Knowledge and lineage persistence;
+- unchanged duplicate, rollback and post-commit cleanup semantics;
+- no ingestion-level retry, idempotency or deduplication.
+
+RFC-065 verification:
+
+- RFC-065 targeted verification: 25 passed;
+- preservation verification: 66 passed;
+- full PlantMind regression: 779 passed;
+- Python compileall: passed;
+- `git diff --check`: passed;
+- canonical Alembic head: `0004`;
+- migration lineage remains `0001 → 0002 → 0003 → 0004`;
+- no schema or migration change;
+- default `CompositionRoot` remains independent of RFC-065;
+- Runtime and Bootstrap authority remain unchanged;
+- canonical `DatabaseRuntime` lifecycle ownership remains unchanged;
+- `ApplicationFacade` remains the canonical production workload-entry authority;
+- Knowledge Capture public behavior remains unchanged;
+- RFC-064 transaction coordination remains authoritative;
+- repository public contracts and standalone lifecycle behavior remain unchanged.
+
+### Post-RFC-065 System and Architecture Integrity Review
+
+Outcome:
+
+**PASS — architecture remains sound and RFC-065 conforms to accepted AD-051.**
+
+The review confirmed:
+
+- no new ARCH-001 architectural layer was introduced;
+- RFC-065 remains a specialized internal application use case;
+- `ApplicationFacade` remains the production workload-entry authority;
+- canonical Enterprise Document, Knowledge and lineage Domain ownership remains unchanged;
+- repository ports remain persistence-neutral;
+- Document identity is preserved through canonical lineage rather than hidden in provenance;
+- Knowledge subject remains independent from Document lineage;
+- Knowledge identity and capture timestamp remain owned by Knowledge Capture;
+- RFC-064 retains commit, rollback, session-close and failure-semantics authority;
+- canonical duplicate behavior remains unchanged;
+- no automatic retry or application-level deduplication was introduced;
+- canonical `DatabaseRuntime` remains unchanged;
+- no new relational metadata or migration authority was introduced;
+- default Composition, Runtime and Bootstrap remain unchanged;
+- no production-code architecture redesign is required.
+
+Still explicitly deferred:
+
+- Document Library and binary storage;
+- upload, download and source synchronization;
+- parsing, PDF extraction, OCR and chunking;
+- Document revision / supersession lifecycle;
+- semantic search and retrieval;
+- embeddings and vector persistence;
+- graph persistence and Neo4j;
+- RAG and LLM capability;
+- AI Agent behavior;
+- HTTP transport and external production exposure;
+- PI System and DCS integration;
+- authentication, authorization, RBAC and Active Directory integration;
+- source trust, approval and compliance lifecycle;
+- production-security and Cybersecurity-readiness claims;
+- ingestion-level idempotency or content deduplication;
+- retries, savepoints and nested transactions;
+- distributed transactions and outbox behavior;
+- external-system transaction coordination.
+
+RFC-065 engineering-memory closure is pending.
+
+No next RFC implementation is authorized until RFC-065 engineering
+closure is reviewed, committed, pushed and exact local / remote closure
+identity is verified.

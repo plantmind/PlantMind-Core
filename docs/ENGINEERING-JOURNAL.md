@@ -4486,3 +4486,161 @@ No RFC-065 content is assumed or preselected by this reconciliation.
 The next architecture workstream SHALL be selected from current repository, project-charter and architecture evidence.
 
 No new RFC implementation is authorized until its architecture contract is reviewed, accepted, committed, pushed and its implementation-entry Git gate is satisfied.
+
+---
+
+## 2026-08-17 — RFC-065 Technical Completion and Engineering Closure
+
+### Workstream
+
+RFC-065 — Canonical Document-to-Knowledge Ingestion Application Boundary.
+
+Architecture decision:
+
+AD-051 — Canonical Document-to-Knowledge Ingestion Application Boundary.
+
+### Contract and Implementation
+
+Accepted architecture contract commit:
+
+`3db01142802d98f82a565808b3137a3db64158ac`
+
+Verified technical implementation commit:
+
+`c1ab20b693ac90782592961d91dafda8e0782fa1`
+
+The implementation-entry Git gate was satisfied before technical
+implementation began.
+
+Exact local / remote technical commit identity was verified after push.
+
+Working tree after technical push was clean.
+
+### Implemented Capability
+
+RFC-065 introduced the canonical internal application boundary for
+deriving Knowledge from an already registered canonical Enterprise
+Document.
+
+The implemented capability provides:
+
+- `DocumentKnowledgeIngestionApplicationService`;
+- immutable `DocumentKnowledgeIngestionRequest`;
+- immutable `DocumentKnowledgeIngestionResult`;
+- explicit `DocumentKnowledgeIngestionDocumentNotFoundError`;
+- canonical Document lookup by `EnterpriseDocument.id`;
+- exactly one Document lookup before transaction coordination;
+- Knowledge creation through `KnowledgeCaptureApplicationService`;
+- one Knowledge Capture service constructed inside the RFC-064
+  coordinated operation using the exact transaction-scoped Knowledge
+  repository;
+- Knowledge provenance derived from the loaded canonical Document source;
+- Knowledge subject semantics independent from Document lineage;
+- canonical `DocumentKnowledgeLineage` construction using exact Document
+  and Knowledge identities;
+- RFC-064 coordinated Knowledge and lineage persistence;
+- preservation of accepted duplicate and transaction failure semantics;
+- no automatic retry;
+- no ingestion-level idempotency or deduplication.
+
+### Technical Verification
+
+Verified evidence:
+
+- RFC-065 targeted verification: 25 passed;
+- preservation verification: 66 passed;
+- full PlantMind regression: 779 passed;
+- Python compileall: passed;
+- `git diff --check`: passed;
+- canonical Alembic head remains `0004`;
+- migration lineage remains `0001 → 0002 → 0003 → 0004`;
+- no schema or migration change was introduced;
+- no accepted tracked implementation was modified by RFC-065;
+- default `CompositionRoot` remains independent of RFC-065;
+- Runtime and Bootstrap authority remain unchanged;
+- canonical `DatabaseRuntime` lifecycle ownership remains unchanged;
+- `ApplicationFacade` remains the canonical production workload-entry
+  authority;
+- Knowledge Capture public behavior remains unchanged;
+- RFC-064 transaction coordination remains authoritative;
+- repository public contracts and standalone lifecycle behavior remain
+  unchanged.
+
+### Post-Implementation Architecture Review
+
+Outcome:
+
+**PASS — RFC-065 conforms to accepted AD-051 and the existing PlantMind architecture remains sound.**
+
+The review confirmed:
+
+- no new ARCH-001 architectural layer was introduced;
+- RFC-065 remains a specialized internal application use case;
+- `ApplicationFacade` remains the canonical production workload-entry
+  authority;
+- canonical Enterprise Document, Knowledge and lineage Domain ownership
+  remains unchanged;
+- canonical repository ports remain persistence-neutral;
+- Document identity is represented through canonical lineage rather than
+  hidden inside Knowledge provenance;
+- Knowledge subject remains independent from Document lineage;
+- Knowledge identity and capture timestamp remain owned by Knowledge
+  Capture;
+- RFC-064 retains transaction lifecycle and failure-semantics authority;
+- standalone repository behavior remains preserved;
+- canonical `DatabaseRuntime` ownership remains unchanged;
+- default Composition, Runtime and Bootstrap remain unchanged;
+- no new schema or Alembic authority was introduced;
+- no production-code architecture redesign is required.
+
+### Explicitly Deferred
+
+RFC-065 does not establish:
+
+- Document Library or binary storage;
+- upload, download or source synchronization;
+- parsing, PDF extraction, OCR or chunking;
+- Document revision or supersession lifecycle;
+- semantic search or retrieval;
+- embeddings or vector persistence;
+- graph persistence or Neo4j;
+- RAG or LLM capability;
+- AI Agent behavior;
+- HTTP transport or external production exposure;
+- PI System or DCS integration;
+- authentication, authorization, RBAC or Active Directory integration;
+- source trust, approval or compliance lifecycle;
+- Cybersecurity approval or production-readiness claims;
+- ingestion-level idempotency or content deduplication;
+- retry policy;
+- savepoints or nested transactions;
+- distributed transactions;
+- outbox behavior;
+- external-system transaction coordination.
+
+### Engineering-Memory Closure State
+
+Current RFC-065 engineering-memory closure updates include:
+
+- `ROADMAP-004-Active-Work-Register.md`;
+- `ARCHITECTURE-DECISIONS.md`;
+- `PROJECT-CONTEXT.md`;
+- `SESSION-HANDOFF.md`;
+- this append-only Engineering Journal entry.
+
+Historical Engineering Journal entries remain unchanged.
+
+RFC-065 engineering closure is not complete until these documentation
+changes are reviewed, committed, pushed and exact local / remote closure
+identity is verified.
+
+### Next Workstream Rule
+
+No next RFC implementation is authorized during RFC-065 engineering
+closure.
+
+After RFC-065 closure is committed and pushed, the verified closure
+state SHALL be reconciled before evidence-based selection of the next
+architecture workstream.
+
+No next RFC is preselected by RFC-065 closure.
