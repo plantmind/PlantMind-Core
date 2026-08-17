@@ -342,6 +342,1128 @@ does not constitute contract acceptance.
 
 ---
 
+## RFC-066 — Canonical Enterprise Document Content Foundation Boundary
+
+### Status
+
+Accepted.
+
+RFC-066 / AD-052 architecture-contract review:
+
+**Passed — 52 / 52 Acceptance Requirements**
+
+Combined RFC-066 / AD-052 semantic-consistency review:
+
+**Passed — 52 PASS / 0 REFINE / 0 BLOCKED**
+
+RFC-066 is Accepted.
+
+Technical implementation:
+
+**NOT AUTHORIZED — Accepted-Contract Git Gate Pending**
+
+Acceptance of this architecture contract does not authorize production
+implementation until the accepted documentation is committed, pushed,
+exact local / remote identity is verified and the working tree is
+clean.
+
+### Context
+
+RFC-057 / AD-043 established the canonical immutable
+`EnterpriseDocument` with:
+
+- canonical `EntityId`;
+- `DocumentType`;
+- title;
+- `DocumentSource`.
+
+RFC-058 through RFC-060 established:
+
+- persistence-neutral Enterprise Document repository semantics;
+- relational Enterprise Document persistence;
+- Enterprise Document Registration application responsibility.
+
+RFC-061 through RFC-065 subsequently established:
+
+- canonical Document-to-Knowledge lineage;
+- lineage persistence;
+- coordinated Knowledge / lineage persistence;
+- canonical Document-derived Knowledge ingestion.
+
+The current canonical `EnterpriseDocument` intentionally does not contain:
+
+- raw bytes;
+- text payload;
+- binary payload;
+- storage location;
+- content digest;
+- media type;
+- byte length;
+- parser output;
+- revision information.
+
+The accepted `DocumentSource.source_reference` remains external
+traceability only.
+
+It is not canonical Document identity, storage identity, content
+identity, repository alternate identity, uniqueness identity or
+deduplication identity.
+
+Current architecture therefore lacks a canonical definition of the
+content associated with an Enterprise Document.
+
+Parser, OCR, extraction, chunking, search, vector and RAG capabilities
+must not invent their own content identity, payload or storage semantics.
+
+### Objective
+
+Define the minimum persistence-neutral Domain foundation that describes
+the canonical content associated with an existing immutable
+`EnterpriseDocument`.
+
+RFC-066 shall establish:
+
+- canonical content-description semantics;
+- association with canonical Enterprise Document identity;
+- media-type semantics;
+- exact byte-length semantics;
+- SHA-256 integrity-descriptor semantics;
+- content immutability semantics;
+- current content cardinality semantics;
+- strict separation between Document source traceability and content
+  storage/access semantics.
+
+RFC-066 shall not implement content persistence, binary storage,
+Document Library behavior, parsing or retrieval.
+
+### Required Architecture Questions — Accepted Resolution
+
+The selected workstream recorded 26 required architecture questions.
+
+This draft resolves them as follows.
+
+1. **Canonical name and namespace**
+
+   The canonical Domain module shall be:
+
+   `app.domain.document_content`
+
+   It shall be implemented in:
+
+   `backend/app/domain/document_content.py`
+
+2. **Domain representation**
+
+   RFC-066 shall introduce a new independent Domain concept rather than
+   modifying the accepted RFC-057 `EnterpriseDocument` contract.
+
+   The canonical content concept shall be represented by immutable value
+   contracts in the new module.
+
+3. **Content identity**
+
+   Document content shall not receive an independent `EntityId`.
+
+   Its canonical association identity shall be the existing:
+
+   `EnterpriseDocument.id`
+
+   RFC-066 shall not introduce `DocumentContentId`.
+
+4. **Cardinality**
+
+   Under the current immutable, revision-neutral Document architecture,
+   one canonical Enterprise Document may have zero or one canonical
+   content descriptor.
+
+   Absence of content does not invalidate an already registered
+   `EnterpriseDocument`.
+
+   Multiple independent content artifacts, attachments or alternate
+   renditions for one Document are not established by RFC-066.
+
+5. **Raw binary payload**
+
+   Raw bytes shall not be stored inside the RFC-066 Domain object.
+
+   The Domain foundation shall describe content, not become an in-memory
+   binary-storage container.
+
+   Future byte/stream access shall require a separately accepted
+   persistence-neutral content-access/store contract.
+
+6. **Document metadata versus Document content**
+
+   `EnterpriseDocument` shall continue to own:
+
+   - Document identity;
+   - Document type;
+   - title;
+   - external source traceability.
+
+   RFC-066 content contracts shall own only canonical content-description
+   semantics.
+
+7. **Source traceability versus content location**
+
+   `DocumentSource.source_reference` shall remain external traceability.
+
+   It shall not become a filesystem path contract, URI contract,
+   object-store key, binary-store key or canonical content locator.
+
+8. **Source-reference preservation**
+
+   RFC-066 shall not reinterpret, extend or overload
+   `DocumentSource.source_reference`.
+
+9. **Media type**
+
+   Canonical content description shall include:
+
+   `DocumentContentMediaType`
+
+   representing a base media type such as:
+
+   `application/pdf`
+
+   or:
+
+   `text/plain`
+
+   The value shall be normalized by trimming and lowercasing.
+
+   It shall contain one non-empty type and one non-empty subtype
+   separated by `/`.
+
+   RFC-066 shall not include media-type parameters such as charset.
+
+10. **Character encoding**
+
+    Character encoding shall not be part of the RFC-066 canonical
+    content descriptor.
+
+    Encoding detection, declaration or normalization belongs to a future
+    parsing/extraction contract.
+
+11. **Byte length**
+
+    Canonical content description shall include:
+
+    `byte_length: int`
+
+    representing the exact number of bytes in the canonical raw payload.
+
+    Boolean values and non-integers shall be rejected.
+
+    Zero shall be valid.
+
+    Negative values shall be rejected.
+
+12. **Cryptographic digest**
+
+    Canonical content description shall require an immutable SHA-256
+    digest.
+
+13. **Digest semantics**
+
+    The digest shall provide content-integrity description only.
+
+    It shall not become:
+
+    - Document identity;
+    - content identity;
+    - repository identity;
+    - uniqueness identity;
+    - idempotency identity;
+    - deduplication identity.
+
+14. **Immutability**
+
+    RFC-066 content value contracts shall be immutable.
+
+    RFC-066 shall introduce no content update, replace or mutation
+    operation.
+
+15. **Revision compatibility**
+
+    RFC-066 shall remain revision-neutral.
+
+    It shall not establish Document revision, supersession or replacement
+    semantics.
+
+    Any future revision model that requires multiple content states for
+    one Document identity shall require explicit review of RFC-066
+    cardinality and immutability assumptions.
+
+16. **Enterprise Document existence**
+
+    Canonical persisted association of content with a Document shall
+    require an existing `EnterpriseDocument.id`.
+
+    RFC-066 Domain construction itself shall not perform repository
+    lookup or cross-aggregate existence validation.
+
+    Future content-registration/persistence application architecture
+    shall own that existence check.
+
+17. **Repository/store responsibility**
+
+    A persistence-neutral content repository or content store shall not
+    be introduced by RFC-066.
+
+    It shall be the subject of a later explicit architecture workstream.
+
+18. **Content retrieval**
+
+    Retrieval, streaming and byte-reading operations shall not be defined
+    by RFC-066.
+
+    They belong to the future content-access/store contract.
+
+19. **Future parser consumption**
+
+    A future parser shall consume bytes only through an accepted
+    content-access/store boundary.
+
+    It shall not:
+
+    - open `DocumentSource.source_reference`;
+    - perform alternate Document identity lookup;
+    - own binary-storage semantics;
+    - redefine canonical content metadata.
+
+20. **Binary storage**
+
+    Future binary persistence shall remain Infrastructure responsibility
+    behind a persistence-neutral contract.
+
+    RFC-066 shall not select filesystem, database BLOB, object storage,
+    network file server or another storage technology.
+
+21. **Document Library**
+
+    Document Library is a broader application capability and remains
+    separate from this Domain foundation.
+
+22. **Trust, approval and authorization**
+
+    Content existence, media type, byte length or SHA-256 digest shall
+    not imply:
+
+    - source authenticity;
+    - Document approval;
+    - content correctness;
+    - authorization;
+    - trust;
+    - compliance approval;
+    - Cybersecurity approval.
+
+23. **Schema / Alembic**
+
+    RFC-066 requires no relational schema change.
+
+    Canonical Alembic head shall remain:
+
+    `0004`
+
+24. **Composition**
+
+    RFC-066 shall not modify default:
+
+    - `CompositionRoot`;
+    - `ServiceContainer`;
+    - `PlatformComposition`;
+    - Runtime;
+    - Bootstrap.
+
+25. **Architecture tests**
+
+    RFC-066 implementation shall include architecture guardrails proving
+    that:
+
+    - the new Domain module is persistence-neutral;
+    - accepted `app.domain.document` public classes remain unchanged;
+    - no repository contract exists in the Domain module;
+    - no file I/O exists in the Domain module;
+    - no Infrastructure, service, SQLAlchemy, FastAPI or Pydantic
+      dependency enters the Domain module;
+    - no raw byte payload field enters the canonical descriptor;
+    - no content identity generator is introduced;
+    - no default Composition wiring is introduced.
+
+26. **TDD verification**
+
+    Technical implementation, if later authorized, shall begin with RED
+    tests for the accepted Domain contract and architecture guardrails.
+
+    GREEN implementation may begin only after the accepted contract is
+    committed, pushed, exact local / remote contract identity is verified
+    and the working tree is clean.
+
+### Existing Responsibilities That SHALL Be Preserved
+
+RFC-066 shall not silently redesign:
+
+- `EntityId`;
+- `DomainEntity`;
+- `EnterpriseDocument`;
+- `DocumentType`;
+- `DocumentSourceType`;
+- `DocumentSource`;
+- `EnterpriseDocumentRepository`;
+- `EnterpriseDocumentRegistrationApplicationService`;
+- canonical Enterprise Document relational persistence;
+- `KnowledgeRecord`;
+- `KnowledgeProvenance`;
+- `KnowledgeSubject`;
+- `KnowledgeCaptureApplicationService`;
+- `DocumentKnowledgeLineage`;
+- `DocumentKnowledgeIngestionApplicationService`;
+- `KnowledgeLineageTransactionCoordinator`;
+- canonical Knowledge persistence;
+- canonical lineage persistence;
+- `DatabaseRuntime`;
+- canonical SQLAlchemy metadata authority;
+- canonical Alembic lifecycle;
+- `ApplicationFacade`;
+- default `CompositionRoot`;
+- Runtime;
+- Bootstrap;
+- ARCH-001;
+- CORE-002;
+- CORE-003.
+
+The existing file:
+
+`backend/app/domain/document.py`
+
+shall not be modified by RFC-066 implementation.
+
+The existing RFC-057 architecture rule that the canonical Document
+module contains exactly:
+
+- `DocumentType`;
+- `DocumentSourceType`;
+- `DocumentSource`;
+- `EnterpriseDocument`
+
+shall remain intact.
+
+### Accepted Architecture Contract
+
+RFC-066 proposes one new persistence-neutral Domain module:
+
+`app.domain.document_content`
+
+implemented at:
+
+`backend/app/domain/document_content.py`
+
+The proposed canonical public Domain surface is exactly:
+
+- `DocumentContentMediaType`;
+- `DocumentContentDigest`;
+- `DocumentContentDescriptor`.
+
+This draft is not yet accepted.
+
+### Canonical DocumentContentMediaType Contract
+
+`DocumentContentMediaType` shall be an immutable, keyword-only value
+object containing exactly:
+
+`value: str`
+
+Construction shall:
+
+1. require a string;
+2. trim surrounding whitespace;
+3. lowercase the value;
+4. reject an empty value;
+5. reject media-type parameters containing `;`;
+6. require exactly one `/`;
+7. require a non-empty type component;
+8. require a non-empty subtype component;
+9. reject ASCII whitespace inside the normalized media type.
+
+Examples of valid canonical values include:
+
+- `application/pdf`;
+- `text/plain`;
+- `image/png`;
+- `application/vnd.openxmlformats-officedocument.wordprocessingml.document`.
+
+RFC-066 does not attempt full IANA media-type registry validation.
+
+Unknown but structurally valid media types may remain representable.
+
+### Canonical DocumentContentDigest Contract
+
+`DocumentContentDigest` shall be an immutable, keyword-only value object
+containing exactly:
+
+`value: str`
+
+Its algorithm is fixed by RFC-066 to:
+
+`SHA-256`
+
+Construction shall:
+
+1. require a string;
+2. trim surrounding whitespace;
+3. lowercase the value;
+4. require exactly 64 hexadecimal characters;
+5. reject all non-hexadecimal values.
+
+The digest shall represent SHA-256 calculated over the exact canonical
+raw byte sequence associated with the Document.
+
+No text normalization, parsing, OCR, decompression or semantic
+transformation shall alter the byte sequence used for this digest.
+
+Successful construction of `DocumentContentDigest` validates only digest
+format.
+
+It does not by itself prove that:
+
+- payload bytes exist;
+- payload bytes were persisted;
+- the digest was computed correctly;
+- a future store has verified the digest against stored bytes.
+
+Payload verification belongs to a future accepted content
+persistence/access contract.
+
+### Canonical DocumentContentDescriptor Contract
+
+`DocumentContentDescriptor` shall be an immutable, keyword-only Domain
+value object containing exactly:
+
+- `document_id: EntityId`;
+- `media_type: DocumentContentMediaType`;
+- `byte_length: int`;
+- `digest: DocumentContentDigest`.
+
+Construction shall require canonical instances of:
+
+- `EntityId`;
+- `DocumentContentMediaType`;
+- `DocumentContentDigest`.
+
+`byte_length` shall:
+
+- require an integer;
+- explicitly reject `bool`;
+- allow zero;
+- reject negative values.
+
+`DocumentContentDescriptor` shall not inherit from `DomainEntity`.
+
+It shall not generate an identity.
+
+It shall not contain:
+
+- `content_id`;
+- raw `bytes`;
+- `bytearray`;
+- memory buffer;
+- stream;
+- file handle;
+- filesystem path;
+- URI;
+- object-store key;
+- source reference;
+- title;
+- Document type;
+- character encoding;
+- extracted text;
+- parser result;
+- revision;
+- timestamps;
+- actor;
+- approval state;
+- trust state.
+
+### Canonical Identity and Association Boundary
+
+Canonical Enterprise Document identity remains:
+
+`EnterpriseDocument.id`
+
+RFC-066 shall not introduce another identity representing the same
+Document-content association.
+
+`DocumentContentDescriptor.document_id` shall reference canonical
+Enterprise Document identity.
+
+The digest shall not become identity.
+
+Media type shall not become identity.
+
+Byte length shall not become identity.
+
+Source reference shall not become identity.
+
+Under the current contract, semantic cardinality is:
+
+`EnterpriseDocument.id -> zero-or-one DocumentContentDescriptor`
+
+This is a Domain architecture statement.
+
+RFC-066 does not itself introduce persistence capable of enforcing that
+cardinality.
+
+Future repository/store architecture shall explicitly preserve or
+review this rule.
+
+### EnterpriseDocument Preservation Boundary
+
+RFC-066 shall not add content fields to `EnterpriseDocument`.
+
+It shall not modify:
+
+- `EnterpriseDocument.__init__` semantics;
+- existing Document identity;
+- existing Document validation;
+- existing Document source semantics;
+- existing Document persistence mapping;
+- existing Document relational schema.
+
+An Enterprise Document may continue to exist without registered
+canonical content.
+
+Document registration shall remain independent from content
+registration/persistence.
+
+### Source Reference Boundary
+
+`DocumentSource.source_reference` remains an opaque external traceability
+value.
+
+RFC-066 shall not define it as:
+
+- local path;
+- mounted path;
+- network path;
+- file URI;
+- HTTP URI;
+- storage locator;
+- storage key;
+- content key;
+- content identity;
+- digest;
+- deduplication key.
+
+Future acquisition architecture may use source-specific adapters to
+interpret an external reference, but such interpretation shall not
+change the canonical meaning of `DocumentSource.source_reference`.
+
+### Payload Boundary
+
+RFC-066 Domain contracts shall contain no raw payload bytes.
+
+This prevents the Domain foundation from becoming:
+
+- a binary transport API;
+- a storage adapter;
+- a memory-loading policy;
+- a streaming framework;
+- a parser input implementation.
+
+Future content access must define separately:
+
+- how bytes are written;
+- how bytes are read;
+- whether streaming is mandatory;
+- size limits;
+- resource lifecycle;
+- integrity verification;
+- storage failure semantics;
+- missing-content semantics.
+
+### Document Existence Boundary
+
+RFC-066 shall not import or depend on:
+
+`EnterpriseDocumentRepository`
+
+inside `app.domain.document_content`.
+
+Domain construction shall not perform I/O.
+
+A future application boundary that establishes persisted content shall
+verify canonical Enterprise Document existence before treating the
+content association as successfully established.
+
+No orphan-content persistence semantics are authorized by RFC-066.
+
+### Repository and Store Boundary
+
+RFC-066 introduces no:
+
+- `DocumentContentRepository`;
+- `DocumentContentStore`;
+- persistence adapter;
+- filesystem adapter;
+- object-store adapter;
+- database BLOB adapter;
+- session lifecycle;
+- transaction coordinator.
+
+The exact persistence-neutral content-access contract shall be selected
+and reviewed separately after RFC-066 is closed.
+
+### Transaction and Atomicity Boundary
+
+RFC-066 introduces no new transaction.
+
+It shall not change RFC-060 Document Registration transaction semantics.
+
+It shall not change RFC-064 Knowledge / lineage transaction semantics.
+
+It shall not change RFC-065 Document-to-Knowledge ingestion transaction
+assumptions.
+
+Atomicity between:
+
+- Enterprise Document registration;
+- content descriptor persistence;
+- binary payload persistence
+
+is not decided by RFC-066.
+
+That question belongs to the future content persistence/application
+architecture.
+
+### Revision and Mutation Boundary
+
+RFC-066 introduces no:
+
+- update;
+- replace;
+- delete;
+- revision number;
+- revision identity;
+- supersession relationship;
+- current/latest pointer;
+- mutable content state.
+
+The descriptor is immutable.
+
+The current zero-or-one content association assumes the accepted
+revision-neutral Enterprise Document model.
+
+If future architecture introduces revisions, RFC-066 SHALL be explicitly
+reviewed before multiple content states are attached to one canonical
+Document identity.
+
+### Parsing and Extraction Boundary
+
+RFC-066 shall not implement:
+
+- parser;
+- PDF parser;
+- OCR;
+- DOCX extraction;
+- spreadsheet extraction;
+- text extraction;
+- metadata extraction;
+- chunking;
+- character-encoding detection;
+- content normalization.
+
+Future parsing shall operate only after a content-access contract exists.
+
+A parser shall not call:
+
+`open(document.source.source_reference)`
+
+or equivalent logic that converts source traceability into canonical
+content access.
+
+### Document Library Boundary
+
+RFC-066 is not the Document Library.
+
+It shall not establish:
+
+- upload;
+- download;
+- browse;
+- folder hierarchy;
+- source synchronization;
+- user file management;
+- content registration workflow;
+- permissions;
+- approval workflow;
+- retention policy;
+- revision history.
+
+Those capabilities require separate contracts.
+
+### Search, Vector, Graph and AI Boundary
+
+RFC-066 shall not establish:
+
+- keyword search;
+- full-text indexing;
+- semantic search;
+- embeddings;
+- vector persistence;
+- Qdrant integration;
+- graph persistence;
+- Neo4j integration;
+- RAG;
+- LLM invocation;
+- AI Agent behavior;
+- engineering reasoning.
+
+A canonical content descriptor does not imply that content is parsed,
+indexed, searchable or available to AI.
+
+### Security and Trust Boundary
+
+RFC-066 shall not establish:
+
+- authentication;
+- authorization;
+- RBAC;
+- Active Directory;
+- LDAP;
+- MFA;
+- actor identity;
+- actor audit;
+- Document permissions;
+- source verification;
+- malware scanning;
+- content approval;
+- Document approval;
+- trust classification;
+- compliance approval;
+- Cybersecurity approval;
+- production-security readiness.
+
+The SHA-256 digest is an integrity descriptor.
+
+It does not establish trust.
+
+### DatabaseRuntime, Schema and Alembic Boundary
+
+RFC-066 shall not create or own:
+
+- database engine;
+- SQLAlchemy session;
+- session factory;
+- `DATABASE_URL`;
+- metadata root;
+- migration lifecycle.
+
+RFC-066 requires:
+
+- no new table;
+- no new column;
+- no new index;
+- no new constraint;
+- no foreign key;
+- no new Alembic revision.
+
+Canonical Alembic head remains:
+
+`0004`
+
+If implementation review discovers a genuine persistence requirement,
+implementation shall stop and the contract shall be reviewed before any
+schema work is authorized.
+
+### Composition, Runtime and Bootstrap Boundary
+
+RFC-066 shall not modify default:
+
+- `CompositionRoot`;
+- `ServiceContainer`;
+- `PlatformComposition`.
+
+RFC-066 shall not modify:
+
+- Runtime lifecycle;
+- Bootstrap;
+- readiness semantics;
+- health semantics;
+- request admission;
+- mandatory capability policy.
+
+Existence of Domain content contracts does not make content persistence
+a mandatory runtime capability.
+
+### Architectural Layer and Dependency Boundary
+
+RFC-066 introduces no new ARCH-001 layer.
+
+The new module is a Domain contract within the accepted architecture.
+
+It shall depend only on:
+
+- Python standard library;
+- accepted shared Domain primitives from `app.domain.base`.
+
+It shall not depend on:
+
+- `app.domain.document`;
+- `app.document.repository`;
+- `app.services`;
+- `app.infrastructure`;
+- SQLAlchemy;
+- FastAPI;
+- Pydantic;
+- filesystem APIs;
+- network clients.
+
+The descriptor references an `EntityId`, not an
+`EnterpriseDocument` object.
+
+This preserves Domain separation and avoids circular aggregate
+dependency.
+
+### Core Boundary
+
+RFC-066 does not create a Core Service.
+
+Core Services shall not gain Document-content responsibility through
+this RFC.
+
+CORE-002 remains authoritative.
+
+### Explicitly Deferred
+
+RFC-066 shall not establish:
+
+- independent Document Content identity;
+- content repository;
+- content store;
+- binary persistence;
+- filesystem persistence;
+- object storage;
+- database BLOB persistence;
+- upload;
+- download;
+- acquisition;
+- source synchronization;
+- content retrieval API;
+- streaming API;
+- parser;
+- OCR;
+- extraction;
+- chunking;
+- character encoding;
+- revision;
+- supersession;
+- mutation;
+- deletion;
+- attachments;
+- alternate renditions;
+- multi-artifact Document semantics;
+- digest-based deduplication;
+- source-reference deduplication;
+- idempotency;
+- content registration application service;
+- cross-store transaction coordination;
+- distributed transaction;
+- outbox;
+- retry policy;
+- search;
+- embeddings;
+- vector persistence;
+- graph persistence;
+- Neo4j;
+- RAG;
+- LLM;
+- AI Agent behavior;
+- HTTP/API;
+- PI System integration;
+- DCS integration;
+- authentication;
+- authorization;
+- RBAC;
+- Active Directory;
+- trust;
+- approval;
+- malware scanning;
+- retention;
+- production composition;
+- Cybersecurity approval;
+- production-readiness claims.
+
+### Acceptance Requirements
+
+Before RFC-066 / AD-052 may become Accepted, architecture review SHALL
+confirm:
+
+1. RFC-066 introduces no new ARCH-001 layer;
+2. RFC-057 `EnterpriseDocument` remains unchanged;
+3. `backend/app/domain/document.py` remains unchanged;
+4. the RFC-057 exact Document-class surface remains unchanged;
+5. the new canonical module is `app.domain.document_content`;
+6. the proposed public surface contains exactly
+   `DocumentContentMediaType`, `DocumentContentDigest` and
+   `DocumentContentDescriptor`;
+7. all three contracts are immutable;
+8. no `DocumentContentId` is introduced;
+9. `DocumentContentDescriptor` does not inherit from `DomainEntity`;
+10. canonical association uses existing `EnterpriseDocument.id`;
+11. the descriptor contains exactly document identity, media type, byte
+    length and SHA-256 digest;
+12. raw bytes do not enter the Domain descriptor;
+13. paths, URIs, handles and storage keys do not enter the Domain
+    descriptor;
+14. `DocumentSource.source_reference` remains external traceability only;
+15. source reference is not used as content identity or locator;
+16. media type is normalized and structurally validated;
+17. media-type parameters and charset remain outside RFC-066;
+18. byte length rejects bool, non-integer and negative values;
+19. zero byte length remains valid;
+20. digest is fixed to SHA-256;
+21. SHA-256 digest is normalized to lowercase 64-character hexadecimal;
+22. digest is integrity description only;
+23. digest does not establish identity, uniqueness, idempotency or
+    deduplication;
+24. digest construction does not falsely claim payload verification;
+25. current cardinality is zero-or-one content descriptor per canonical
+    Document identity;
+26. RFC-066 introduces no persistence mechanism to enforce cardinality;
+27. Domain construction performs no Document repository lookup;
+28. future persisted association must require existing canonical Document
+    identity;
+29. no content repository/store contract is introduced;
+30. no content retrieval/streaming contract is introduced;
+31. no binary-storage technology is selected;
+32. no content registration application service is introduced;
+33. no transaction or atomicity expansion is introduced;
+34. RFC-060, RFC-064 and RFC-065 transaction responsibilities remain
+    unchanged;
+35. revision, supersession, mutation and deletion remain deferred;
+36. parser/OCR/extraction/chunking remain deferred;
+37. future parser access cannot reinterpret `source_reference` as storage;
+38. Document Library remains separately deferred;
+39. search/vector/graph/RAG/LLM remain separately deferred;
+40. trust, approval and authorization remain outside content semantics;
+41. no schema or Alembic change is introduced;
+42. canonical Alembic head remains `0004`;
+43. default Composition remains unchanged;
+44. Runtime and Bootstrap remain unchanged;
+45. the new Domain module performs no file I/O;
+46. the new Domain module introduces no repository contract;
+47. the new Domain module has no Infrastructure or application-service
+    dependency;
+48. the new Domain module has no SQLAlchemy, FastAPI or Pydantic
+    dependency;
+49. dependency direction remains explicit and acyclic;
+50. implementation architecture tests preserve the accepted RFC-057
+    Document module contract;
+51. implementation begins with RED tests only after the accepted contract
+    Git gate is satisfied;
+52. no production-readiness or Cybersecurity claim is introduced.
+
+### Contract Acceptance Gate
+
+Status:
+
+**Passed — RFC-066 / AD-052 Accepted**
+
+Formal architecture-contract review:
+
+- Gate 1 — Domain Identity & RFC-057 Preservation: PASS;
+- Gate 2 — Content Semantics & Integrity: PASS;
+- Gate 3 — Repository / Storage / Transaction / Parser Boundaries: PASS;
+- Gate 4 — Layering / Dependency / Security / Prior-Contract Preservation: PASS;
+- Final Static Contract Review: PASS;
+- Semantic Contradiction Scan: PASS;
+- Acceptance Requirements: 52 PASS / 0 REFINE / 0 BLOCKED.
+
+Combined RFC-066 / AD-052 semantic-consistency review:
+
+**PASS**
+
+The 52 Acceptance Requirements in RFC-066 and AD-052 are
+byte-for-byte equivalent.
+
+The combined review confirmed preservation of:
+
+- canonical Enterprise Document identity;
+- RFC-057 Document Domain contract;
+- zero-or-one Document-content cardinality;
+- SHA-256 integrity-only semantics;
+- source-reference traceability semantics;
+- repository/store/persistence boundaries;
+- transaction and atomicity boundaries;
+- revision neutrality;
+- parser, Document Library, search, vector, graph and AI deferrals;
+- security and trust separation;
+- DatabaseRuntime and Alembic authority;
+- default Composition;
+- Runtime and Bootstrap;
+- ARCH-001;
+- CORE-002;
+- CORE-003;
+- all accepted prior architecture responsibilities.
+
+RFC-066 is Accepted.
+
+AD-052 is Accepted.
+
+Technical implementation remains NOT AUTHORIZED until the
+accepted-contract Git gate is satisfied.
+
+### Implementation Authorization
+
+Status:
+
+**NOT AUTHORIZED — Accepted-Contract Git Gate Pending**
+
+Architecture acceptance prerequisites are complete:
+
+1. RFC-066 formal review: PASS;
+2. all 52 Acceptance Requirements: PASS;
+3. combined RFC-066 / AD-052 semantic-consistency review: PASS;
+4. RFC-066: Accepted;
+5. AD-052: Accepted.
+
+Technical implementation SHALL NOT begin until:
+
+1. the accepted RFC-066 / AD-052 documentation is committed;
+2. that exact commit is pushed to
+   `origin/feature/engineering-platform`;
+3. exact local / remote commit identity is verified;
+4. the working tree is clean.
+
+Only after those Git-gate conditions are satisfied may RFC-066 TDD RED
+implementation begin.
+
+No production implementation is authorized by this status transition.
+
+### Next Exact Action
+
+Review the complete accepted-contract documentation diff.
+
+Verify:
+
+1. only RFC-066 and appended AD-052 are new/changed;
+2. AD-001 through AD-051 remain unchanged;
+3. RFC-065 and earlier Roadmap history remain unchanged;
+4. RFC-066 and AD-052 both state Accepted;
+5. all 52 Acceptance Requirements remain exactly equivalent;
+6. implementation remains NOT AUTHORIZED pending the Git gate;
+7. `git diff --check` passes.
+
+After that review, commit the accepted RFC-066 / AD-052 contract
+documentation.
+
+Do not create production code or TDD RED tests before the accepted
+contract commit is pushed, local / remote identity is exact and the
+working tree is clean.
+
+---
+
 ## RFC-065 — Canonical Document-to-Knowledge Ingestion Application Boundary
 
 ### Status

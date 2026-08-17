@@ -8825,3 +8825,1010 @@ No RFC-066 content is assumed or preselected by AD-051.
 No new RFC implementation is authorized until its architecture contract
 is reviewed, accepted, committed, pushed and its implementation-entry
 Git gate is satisfied.
+---
+
+# AD-052 — Canonical Enterprise Document Content Foundation Boundary
+
+## Status
+
+Accepted.
+
+RFC-066 formal architecture-contract review:
+
+**Passed — 52 / 52 Acceptance Requirements**
+
+Combined RFC-066 / AD-052 semantic-consistency review:
+
+**Passed — 52 PASS / 0 REFINE / 0 BLOCKED**
+
+AD-052 is Accepted.
+
+The matching RFC-066 contract is Accepted.
+
+Implementation authorization:
+
+**NOT AUTHORIZED — Accepted-Contract Git Gate Pending**
+
+Architecture acceptance does not authorize technical implementation
+until the accepted documentation is committed, pushed, exact local /
+remote identity is verified and the working tree is clean.
+
+## Context
+
+RFC-057 / AD-043 established the immutable canonical
+`EnterpriseDocument` with:
+
+- canonical `EntityId`;
+- `DocumentType`;
+- title;
+- `DocumentSource`.
+
+RFC-058 through RFC-060 established persistence-neutral Document
+repository semantics, relational Document persistence and the
+Enterprise Document Registration application boundary.
+
+RFC-061 through RFC-065 subsequently established canonical
+Document-to-Knowledge lineage, lineage persistence, coordinated
+Knowledge / lineage persistence and canonical Document-derived
+Knowledge ingestion.
+
+The current accepted Enterprise Document architecture intentionally
+contains no:
+
+- raw binary payload;
+- textual payload;
+- content-storage location;
+- canonical content digest;
+- content media type;
+- content byte length;
+- parser output;
+- revision state.
+
+`DocumentSource.source_reference` remains external traceability only.
+
+It is not:
+
+- canonical Document identity;
+- canonical content identity;
+- storage identity;
+- storage location;
+- repository alternate identity;
+- uniqueness identity;
+- deduplication identity.
+
+PlantMind therefore requires a canonical persistence-neutral foundation
+describing Document content before storage, acquisition, parsing,
+extraction, indexing or AI capabilities may define their own content
+semantics.
+
+## Decision
+
+PlantMind SHALL establish one new persistence-neutral Domain module:
+
+`app.domain.document_content`
+
+implemented at:
+
+`backend/app/domain/document_content.py`
+
+The canonical public surface SHALL contain exactly:
+
+- `DocumentContentMediaType`;
+- `DocumentContentDigest`;
+- `DocumentContentDescriptor`.
+
+AD-052 SHALL NOT modify the accepted RFC-057
+`app.domain.document` contract.
+
+AD-052 SHALL NOT introduce a new architectural layer.
+
+AD-052 SHALL NOT introduce persistence, storage, parsing, Document
+Library, search, AI or production-security behavior.
+
+## Canonical Domain Representation
+
+Document-content semantics SHALL be represented by immutable Domain
+value contracts independent from the accepted `EnterpriseDocument`
+class.
+
+`EnterpriseDocument` SHALL NOT gain content fields.
+
+The existing file:
+
+`backend/app/domain/document.py`
+
+SHALL remain unchanged by RFC-066 implementation.
+
+The RFC-057 canonical Document class surface SHALL remain exactly:
+
+- `DocumentType`;
+- `DocumentSourceType`;
+- `DocumentSource`;
+- `EnterpriseDocument`.
+
+## Canonical Content Identity
+
+AD-052 SHALL NOT introduce an independent Document Content entity
+identity.
+
+There SHALL be no:
+
+`DocumentContentId`
+
+Document content SHALL NOT receive an independent `EntityId`.
+
+The canonical association SHALL use the existing canonical:
+
+`EnterpriseDocument.id`
+
+`DocumentContentDescriptor` SHALL reference that identity through:
+
+`document_id: EntityId`
+
+The descriptor SHALL NOT inherit from `DomainEntity`.
+
+It SHALL NOT generate or replace canonical identity.
+
+The following SHALL NOT become Document Content identity:
+
+- SHA-256 digest;
+- media type;
+- byte length;
+- `DocumentSource.source_reference`.
+
+## Canonical Cardinality
+
+Under the current immutable and revision-neutral Enterprise Document
+architecture, the canonical Domain relationship SHALL be:
+
+`EnterpriseDocument.id -> zero-or-one DocumentContentDescriptor`
+
+An Enterprise Document MAY exist without canonical content.
+
+Absence of content SHALL NOT invalidate an already registered canonical
+Enterprise Document.
+
+AD-052 SHALL NOT establish:
+
+- multiple independent content artifacts for one Document;
+- attachment semantics;
+- alternate rendition semantics;
+- revision-specific content multiplicity.
+
+This cardinality is a Domain architecture rule.
+
+AD-052 introduces no persistence mechanism that enforces the rule.
+
+A future repository/store architecture SHALL explicitly preserve or
+review this cardinality.
+
+## Canonical DocumentContentMediaType
+
+`DocumentContentMediaType` SHALL be an immutable keyword-only value
+object containing exactly:
+
+`value: str`
+
+Construction SHALL:
+
+1. require a string;
+2. trim surrounding whitespace;
+3. lowercase the value;
+4. reject an empty value;
+5. reject media-type parameters containing `;`;
+6. require exactly one `/`;
+7. require a non-empty type component;
+8. require a non-empty subtype component;
+9. reject ASCII whitespace inside the normalized media type.
+
+Examples include:
+
+- `application/pdf`;
+- `text/plain`;
+- `image/png`;
+- `application/vnd.openxmlformats-officedocument.wordprocessingml.document`.
+
+AD-052 SHALL NOT perform full IANA registry validation.
+
+Unknown but structurally valid media types MAY remain representable.
+
+Media-type parameters and character-set parameters are outside AD-052.
+
+## Character-Encoding Boundary
+
+Character encoding SHALL NOT be part of the canonical RFC-066 content
+descriptor.
+
+Encoding detection, declaration, conversion and normalization remain
+future parsing/extraction responsibilities.
+
+## Canonical DocumentContentDigest
+
+`DocumentContentDigest` SHALL be an immutable keyword-only value object
+containing exactly:
+
+`value: str`
+
+The algorithm fixed by AD-052 SHALL be:
+
+`SHA-256`
+
+Construction SHALL:
+
+1. require a string;
+2. trim surrounding whitespace;
+3. lowercase the value;
+4. require exactly 64 hexadecimal characters;
+5. reject non-hexadecimal values.
+
+The digest SHALL describe SHA-256 calculated over the exact canonical
+raw byte sequence associated with the Document.
+
+The digest input SHALL NOT be altered through:
+
+- text normalization;
+- parsing;
+- OCR;
+- decompression;
+- semantic transformation.
+
+Construction of `DocumentContentDigest` SHALL validate digest format
+only.
+
+Successful Domain construction SHALL NOT prove:
+
+- payload existence;
+- successful payload persistence;
+- correct digest computation;
+- verification against persisted bytes.
+
+Verification against payload bytes belongs to a future accepted
+content persistence/access contract.
+
+## Digest Integrity Boundary
+
+SHA-256 SHALL be an integrity descriptor only.
+
+It SHALL NOT establish:
+
+- Document identity;
+- content identity;
+- repository identity;
+- uniqueness identity;
+- idempotency identity;
+- deduplication identity.
+
+Digest-based deduplication requires a separate future architecture
+decision.
+
+## Canonical DocumentContentDescriptor
+
+`DocumentContentDescriptor` SHALL be an immutable keyword-only Domain
+value object containing exactly:
+
+- `document_id: EntityId`;
+- `media_type: DocumentContentMediaType`;
+- `byte_length: int`;
+- `digest: DocumentContentDigest`.
+
+Construction SHALL require canonical instances of:
+
+- `EntityId`;
+- `DocumentContentMediaType`;
+- `DocumentContentDigest`.
+
+`byte_length` SHALL represent the exact number of bytes in the
+canonical raw payload.
+
+`byte_length` SHALL:
+
+- require an integer;
+- explicitly reject `bool`;
+- allow zero;
+- reject negative values.
+
+The descriptor SHALL NOT contain:
+
+- independent content identity;
+- raw `bytes`;
+- `bytearray`;
+- memory buffer;
+- stream;
+- file handle;
+- filesystem path;
+- URI;
+- object-storage key;
+- source reference;
+- title;
+- Document type;
+- character encoding;
+- extracted text;
+- parser result;
+- revision;
+- timestamp;
+- actor;
+- approval state;
+- trust state.
+
+## EnterpriseDocument Preservation
+
+AD-052 SHALL NOT modify:
+
+- `EnterpriseDocument`;
+- `EnterpriseDocument.id`;
+- `EnterpriseDocument.document_type`;
+- `EnterpriseDocument.title`;
+- `EnterpriseDocument.source`;
+- Document validation;
+- Document persistence mapping;
+- Document relational schema;
+- Document Registration behavior.
+
+Document registration SHALL remain independent from future content
+registration/persistence.
+
+## Source Reference Boundary
+
+`DocumentSource.source_reference` SHALL remain an opaque external
+traceability value.
+
+AD-052 SHALL NOT define it as:
+
+- local filesystem path;
+- mounted path;
+- network path;
+- file URI;
+- HTTP URI;
+- storage locator;
+- storage key;
+- object-store key;
+- content key;
+- canonical content locator;
+- content identity;
+- digest;
+- deduplication key.
+
+Future source-specific acquisition adapters MAY interpret an external
+reference.
+
+Such interpretation SHALL NOT redefine the canonical meaning of
+`DocumentSource.source_reference`.
+
+## Raw Payload Boundary
+
+RFC-066 Domain contracts SHALL contain no raw payload bytes.
+
+AD-052 SHALL NOT become:
+
+- binary transport API;
+- binary storage adapter;
+- memory-loading policy;
+- streaming framework;
+- parser input implementation.
+
+A future content-access contract SHALL separately define:
+
+- byte writes;
+- byte reads;
+- streaming semantics;
+- size limits;
+- resource lifecycle;
+- integrity verification;
+- missing-content semantics;
+- storage failures.
+
+## Document Existence Boundary
+
+`app.domain.document_content` SHALL NOT import or depend on:
+
+`EnterpriseDocumentRepository`
+
+Domain construction SHALL perform no I/O.
+
+Domain construction SHALL perform no cross-aggregate existence lookup.
+
+A future application boundary that establishes persisted canonical
+Document content SHALL verify that the referenced canonical
+`EnterpriseDocument.id` exists.
+
+AD-052 SHALL NOT authorize orphan-content persistence semantics.
+
+## Repository and Store Boundary
+
+AD-052 SHALL introduce no:
+
+- `DocumentContentRepository`;
+- `DocumentContentStore`;
+- content persistence port;
+- persistence adapter;
+- filesystem adapter;
+- object-storage adapter;
+- database BLOB adapter;
+- session lifecycle;
+- transaction coordinator.
+
+A persistence-neutral content access/store contract SHALL be selected
+and reviewed separately after RFC-066 is closed.
+
+## Binary Storage Boundary
+
+Future binary persistence SHALL remain Infrastructure responsibility
+behind an accepted persistence-neutral contract.
+
+AD-052 SHALL NOT select:
+
+- local filesystem;
+- network filesystem;
+- database BLOB;
+- object storage;
+- file server;
+- another storage technology.
+
+## Content Retrieval Boundary
+
+AD-052 SHALL NOT establish:
+
+- byte retrieval operation;
+- content retrieval operation;
+- streaming operation;
+- download operation;
+- resource-lifecycle API.
+
+Those responsibilities belong to a future content access/store
+contract.
+
+## Transaction and Atomicity Boundary
+
+AD-052 introduces no new transaction.
+
+AD-052 SHALL NOT change RFC-060 Document Registration transaction
+semantics.
+
+AD-052 SHALL NOT change RFC-064 Knowledge / lineage transaction
+semantics.
+
+AD-052 SHALL NOT change RFC-065 Document-to-Knowledge ingestion
+transaction assumptions.
+
+Atomicity between:
+
+- Enterprise Document registration;
+- content descriptor persistence;
+- binary payload persistence
+
+is not decided by AD-052.
+
+A future content persistence/application architecture SHALL explicitly
+decide those transaction and partial-failure semantics.
+
+## Revision and Mutation Boundary
+
+AD-052 SHALL remain revision-neutral.
+
+It SHALL introduce no:
+
+- update;
+- replace;
+- delete;
+- revision number;
+- revision identity;
+- supersession relationship;
+- current/latest pointer;
+- mutable content state.
+
+Canonical content descriptors SHALL be immutable.
+
+If future architecture introduces Document revision, replacement,
+supersession or multiple content states for one canonical Document
+identity, AD-052 SHALL be explicitly reviewed before that behavior is
+accepted.
+
+## Parsing and Extraction Boundary
+
+AD-052 SHALL NOT implement:
+
+- parser;
+- PDF parser;
+- OCR;
+- DOCX extraction;
+- spreadsheet extraction;
+- text extraction;
+- metadata extraction;
+- chunking;
+- character-encoding detection;
+- content normalization.
+
+Future parsing SHALL consume bytes only through an accepted
+content-access boundary.
+
+A parser SHALL NOT perform:
+
+`open(document.source.source_reference)`
+
+or equivalent logic that silently converts source traceability into
+canonical storage/access semantics.
+
+## Document Library Boundary
+
+AD-052 is not the Document Library.
+
+It SHALL NOT establish:
+
+- upload;
+- download;
+- browse;
+- folder hierarchy;
+- source synchronization;
+- user file management;
+- content registration workflow;
+- Document permissions;
+- approval workflow;
+- retention policy;
+- revision history.
+
+## Search, Vector, Graph and AI Boundary
+
+AD-052 SHALL NOT establish:
+
+- keyword search;
+- full-text indexing;
+- semantic search;
+- embeddings;
+- vector persistence;
+- Qdrant integration;
+- graph persistence;
+- Neo4j integration;
+- RAG;
+- LLM invocation;
+- AI Agent behavior;
+- engineering reasoning.
+
+Existence of a canonical content descriptor does not mean the Document
+content is parsed, indexed, searchable or available to AI.
+
+## Security and Trust Boundary
+
+AD-052 SHALL NOT establish or claim:
+
+- authentication;
+- authorization;
+- RBAC;
+- Active Directory;
+- LDAP;
+- MFA;
+- actor identity;
+- actor audit;
+- Document permissions;
+- source verification;
+- malware scanning;
+- content approval;
+- Document approval;
+- trust classification;
+- compliance approval;
+- Cybersecurity approval;
+- production-security readiness.
+
+SHA-256 is an integrity descriptor.
+
+It does not establish trust, approval, authorization or authenticity.
+
+## DatabaseRuntime Boundary
+
+AD-052 SHALL NOT create or own:
+
+- database engine;
+- SQLAlchemy session;
+- session factory;
+- `DATABASE_URL`;
+- metadata root;
+- database lifecycle;
+- migration lifecycle.
+
+Canonical `DatabaseRuntime` ownership remains unchanged.
+
+## Relational Schema and Alembic Boundary
+
+AD-052 requires:
+
+- no new table;
+- no new column;
+- no new index;
+- no new constraint;
+- no foreign key;
+- no new Alembic revision.
+
+Canonical Alembic head remains:
+
+`0004`
+
+If a future implementation review discovers a genuine persistence
+requirement, implementation SHALL stop and architecture review SHALL
+occur before schema authorization.
+
+## Composition Boundary
+
+AD-052 SHALL NOT modify default:
+
+- `CompositionRoot`;
+- `ServiceContainer`;
+- `PlatformComposition`.
+
+Existence of canonical Document-content Domain contracts SHALL NOT make
+content persistence a mandatory default platform capability.
+
+## Runtime and Bootstrap Boundary
+
+AD-052 SHALL NOT modify:
+
+- Runtime lifecycle;
+- Bootstrap;
+- readiness semantics;
+- Health semantics;
+- request-admission semantics;
+- mandatory-capability policy.
+
+## Architectural Layer Boundary
+
+AD-052 introduces no new ARCH-001 layer.
+
+`app.domain.document_content` is a Domain contract within the accepted
+architecture.
+
+The six-layer ARCH-001 architecture remains unchanged.
+
+## Dependency Boundary
+
+`app.domain.document_content` SHALL depend only on:
+
+- Python standard library;
+- accepted shared Domain primitives from `app.domain.base`.
+
+It SHALL NOT depend on:
+
+- `app.domain.document`;
+- `app.document.repository`;
+- `app.services`;
+- `app.infrastructure`;
+- SQLAlchemy;
+- FastAPI;
+- Pydantic;
+- filesystem APIs;
+- network clients.
+
+`DocumentContentDescriptor` SHALL reference `EntityId`, not an
+`EnterpriseDocument` instance.
+
+This preserves explicit, acyclic Domain dependency direction and avoids
+cross-aggregate circular dependency.
+
+## Core Boundary
+
+AD-052 does not create a Core Service.
+
+Core Services SHALL NOT gain Document-content responsibility through
+RFC-066.
+
+CORE-002 remains authoritative.
+
+CORE-003 dependency-management rules remain authoritative.
+
+## Existing Responsibilities Preserved
+
+AD-052 SHALL preserve accepted responsibility and public contracts for:
+
+- `EntityId`;
+- `DomainEntity`;
+- `EnterpriseDocument`;
+- `DocumentType`;
+- `DocumentSourceType`;
+- `DocumentSource`;
+- `EnterpriseDocumentRepository`;
+- `EnterpriseDocumentRegistrationApplicationService`;
+- canonical Enterprise Document relational persistence;
+- `KnowledgeRecord`;
+- `KnowledgeProvenance`;
+- `KnowledgeSubject`;
+- `KnowledgeCaptureApplicationService`;
+- `DocumentKnowledgeLineage`;
+- `DocumentKnowledgeIngestionApplicationService`;
+- `KnowledgeLineageTransactionCoordinator`;
+- canonical Knowledge relational persistence;
+- canonical lineage persistence;
+- standalone repository lifecycle semantics;
+- RFC-064 transaction coordination;
+- `DatabaseRuntime`;
+- canonical SQLAlchemy metadata authority;
+- canonical Alembic lifecycle;
+- `ApplicationFacade`;
+- default `CompositionRoot`;
+- Runtime;
+- Bootstrap;
+- ARCH-001;
+- CORE-002;
+- CORE-003.
+
+AD-052 SHALL NOT establish a general dependency exception for unrelated
+PlantMind components.
+
+## Explicitly Deferred
+
+AD-052 SHALL NOT establish:
+
+- independent Document Content identity;
+- content repository;
+- content store;
+- content persistence;
+- binary persistence;
+- filesystem persistence;
+- object storage;
+- database BLOB persistence;
+- upload;
+- download;
+- acquisition;
+- source synchronization;
+- content retrieval API;
+- streaming API;
+- parser;
+- OCR;
+- extraction;
+- chunking;
+- character encoding;
+- revision;
+- supersession;
+- mutation;
+- deletion;
+- attachments;
+- alternate renditions;
+- multiple-content-artifact semantics;
+- digest-based deduplication;
+- source-reference deduplication;
+- idempotency;
+- content registration application service;
+- cross-store transaction coordination;
+- distributed transaction;
+- outbox;
+- retry policy;
+- search;
+- embeddings;
+- vector persistence;
+- graph persistence;
+- Neo4j;
+- RAG;
+- LLM;
+- AI Agent behavior;
+- HTTP/API;
+- PI System integration;
+- DCS integration;
+- authentication;
+- authorization;
+- RBAC;
+- Active Directory;
+- trust;
+- approval;
+- malware scanning;
+- retention;
+- production composition;
+- Cybersecurity approval;
+- production-readiness claims.
+
+## Alternatives Considered
+
+### Add content fields directly to EnterpriseDocument
+
+Rejected.
+
+RFC-057 intentionally established a minimal immutable canonical Document
+contract and architecture tests protect its exact class surface.
+
+Adding content fields would silently redesign an accepted prior
+contract.
+
+### Introduce DocumentContentId
+
+Rejected.
+
+Current architecture requires no second entity identity for the
+Document-content association.
+
+Canonical association remains anchored to `EnterpriseDocument.id`.
+
+### Store raw bytes inside the Domain descriptor
+
+Rejected.
+
+That would mix Domain description with payload transport, storage,
+memory-loading and streaming concerns.
+
+### Use DocumentSource.source_reference as the content locator
+
+Rejected.
+
+`source_reference` is accepted external traceability only.
+
+Using it as canonical storage access would collapse source traceability
+and internal content-storage semantics.
+
+### Use SHA-256 as content identity or deduplication identity
+
+Rejected.
+
+SHA-256 is accepted only as integrity description.
+
+Identity, deduplication and idempotency require separate contracts.
+
+### Introduce DocumentContentRepository or DocumentContentStore now
+
+Rejected.
+
+RFC-066 establishes the Domain foundation only.
+
+Persistence and byte-access semantics require a separately reviewed
+architecture contract.
+
+### Add parser or OCR behavior now
+
+Rejected.
+
+Parsing requires canonical byte-access semantics that RFC-066
+deliberately does not own.
+
+### Add Document revision semantics now
+
+Rejected.
+
+The accepted Enterprise Document architecture remains immutable and
+revision-neutral.
+
+Revision semantics require independent evidence and architecture review.
+
+## Acceptance Requirements
+
+Before AD-052 may become Accepted, combined RFC-066 / AD-052 review
+SHALL confirm:
+
+1. RFC-066 introduces no new ARCH-001 layer;
+2. RFC-057 `EnterpriseDocument` remains unchanged;
+3. `backend/app/domain/document.py` remains unchanged;
+4. the RFC-057 exact Document-class surface remains unchanged;
+5. the new canonical module is `app.domain.document_content`;
+6. the proposed public surface contains exactly
+   `DocumentContentMediaType`, `DocumentContentDigest` and
+   `DocumentContentDescriptor`;
+7. all three contracts are immutable;
+8. no `DocumentContentId` is introduced;
+9. `DocumentContentDescriptor` does not inherit from `DomainEntity`;
+10. canonical association uses existing `EnterpriseDocument.id`;
+11. the descriptor contains exactly document identity, media type, byte
+    length and SHA-256 digest;
+12. raw bytes do not enter the Domain descriptor;
+13. paths, URIs, handles and storage keys do not enter the Domain
+    descriptor;
+14. `DocumentSource.source_reference` remains external traceability only;
+15. source reference is not used as content identity or locator;
+16. media type is normalized and structurally validated;
+17. media-type parameters and charset remain outside RFC-066;
+18. byte length rejects bool, non-integer and negative values;
+19. zero byte length remains valid;
+20. digest is fixed to SHA-256;
+21. SHA-256 digest is normalized to lowercase 64-character hexadecimal;
+22. digest is integrity description only;
+23. digest does not establish identity, uniqueness, idempotency or
+    deduplication;
+24. digest construction does not falsely claim payload verification;
+25. current cardinality is zero-or-one content descriptor per canonical
+    Document identity;
+26. RFC-066 introduces no persistence mechanism to enforce cardinality;
+27. Domain construction performs no Document repository lookup;
+28. future persisted association must require existing canonical Document
+    identity;
+29. no content repository/store contract is introduced;
+30. no content retrieval/streaming contract is introduced;
+31. no binary-storage technology is selected;
+32. no content registration application service is introduced;
+33. no transaction or atomicity expansion is introduced;
+34. RFC-060, RFC-064 and RFC-065 transaction responsibilities remain
+    unchanged;
+35. revision, supersession, mutation and deletion remain deferred;
+36. parser/OCR/extraction/chunking remain deferred;
+37. future parser access cannot reinterpret `source_reference` as storage;
+38. Document Library remains separately deferred;
+39. search/vector/graph/RAG/LLM remain separately deferred;
+40. trust, approval and authorization remain outside content semantics;
+41. no schema or Alembic change is introduced;
+42. canonical Alembic head remains `0004`;
+43. default Composition remains unchanged;
+44. Runtime and Bootstrap remain unchanged;
+45. the new Domain module performs no file I/O;
+46. the new Domain module introduces no repository contract;
+47. the new Domain module has no Infrastructure or application-service
+    dependency;
+48. the new Domain module has no SQLAlchemy, FastAPI or Pydantic
+    dependency;
+49. dependency direction remains explicit and acyclic;
+50. implementation architecture tests preserve the accepted RFC-057
+    Document module contract;
+51. implementation begins with RED tests only after the accepted contract
+    Git gate is satisfied;
+52. no production-readiness or Cybersecurity claim is introduced.
+
+## Contract Acceptance Review
+
+Status:
+
+**PASSED — 52 / 52 Acceptance Requirements**
+
+RFC-066 formal architecture-contract review:
+
+**PASS**
+
+Combined RFC-066 / AD-052 semantic-consistency review:
+
+**PASS**
+
+Disposition:
+
+- PASS: 52;
+- REFINE: 0;
+- BLOCKED: 0.
+
+The RFC-066 and AD-052 Acceptance Requirements are byte-for-byte
+equivalent.
+
+The combined review confirmed that AD-052 is materially and
+semantically equivalent to the reviewed RFC-066 architecture contract.
+
+AD-052 is Accepted.
+
+RFC-066 is Accepted.
+
+No accepted prior architecture decision was modified.
+
+Technical implementation remains NOT AUTHORIZED pending the
+accepted-contract Git gate.
+
+## Implementation Authorization
+
+Status:
+
+**NOT AUTHORIZED — Accepted-Contract Git Gate Pending**
+
+Architecture acceptance prerequisites are complete:
+
+1. combined RFC-066 / AD-052 semantic-consistency review passed;
+2. all 52 Acceptance Requirements remain PASS;
+3. AD-052 is Accepted;
+4. RFC-066 is Accepted.
+
+Technical implementation SHALL NOT begin until:
+
+1. the accepted contract documentation is committed;
+2. the accepted contract commit is pushed to
+   `origin/feature/engineering-platform`;
+3. exact local / remote accepted-contract identity is verified;
+4. the working tree is clean.
+
+Only then may RFC-066 TDD RED implementation begin.
+
+## Next Exact Action
+
+Review the complete accepted RFC-066 / AD-052 documentation diff.
+
+Confirm historical architecture decisions remain unchanged and the
+accepted contract is ready for its documentation commit.
+
+Do not begin technical implementation until the accepted-contract Git
+gate is fully satisfied.
+
+
+
+Perform combined semantic-consistency review between:
+
+- RFC-066 in `ROADMAP-004-Active-Work-Register.md`;
+- AD-052 in `ARCHITECTURE-DECISIONS.md`.
+
+Verify all 52 Acceptance Requirements and confirm that no accepted prior
+architecture decision has been modified.
+
+Do not mark AD-052 or RFC-066 Accepted until that review passes.
+
+Do not implement production code.
