@@ -47,7 +47,7 @@ Technical implementation: complete and verified.
 
 Engineering-memory and architecture closure: complete.
 
-Post-closure Source-of-Truth reconciliation: in progress.
+Post-closure Source-of-Truth reconciliation: complete and verified.
 
 Post-RFC-064 evidence-based architecture selection: complete.
 
@@ -1240,12 +1240,20 @@ Verified technical evidence:
 
 ### Next Exact Action
 
-Complete this post-closure Source-of-Truth reconciliation and commit,
-push and verify it.
+RFC-065 post-closure Source-of-Truth reconciliation is complete and
+verified at:
 
-After reconciliation is verified, perform evidence-based selection of
-the next architecture workstream from the current repository, project
-charter, accepted architecture and remaining dependency gaps.
+`fe0d8bb82b4e3d22d1ad4e6191205fa05919d30b`
+
+Exact local / remote reconciliation identity was verified.
+
+Working tree after reconciliation push was clean.
+
+RFC-065 is fully closed and Source-of-Truth reconciled.
+
+Evidence-based selection of the next architecture workstream is now
+authorized from the current repository, project charter, accepted
+architecture and remaining dependency gaps.
 
 No RFC-066 content is assumed or preselected by RFC-065 closure.
 

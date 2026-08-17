@@ -7859,7 +7859,7 @@ Working tree after closure push was clean.
 
 RFC-065 is fully closed.
 
-Post-closure Source-of-Truth reconciliation is in progress.
+Post-closure Source-of-Truth reconciliation is complete and verified.
 
 ## Context
 
@@ -8808,10 +8808,15 @@ RFC-065 is fully closed.
 
 ## Next Exact Action
 
-Complete and verify RFC-065 post-closure Source-of-Truth reconciliation.
+RFC-065 post-closure Source-of-Truth reconciliation is complete and
+verified at:
 
-After reconciliation is committed, pushed and verified, perform
-evidence-based selection of the next architecture workstream.
+`fe0d8bb82b4e3d22d1ad4e6191205fa05919d30b`
+
+RFC-065 is fully closed and Source-of-Truth reconciled.
+
+Evidence-based selection of the next architecture workstream is now
+authorized.
 
 No RFC-066 content is assumed or preselected by AD-051.
 
