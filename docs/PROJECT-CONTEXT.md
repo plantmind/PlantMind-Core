@@ -1611,8 +1611,25 @@ Still explicitly deferred:
 - distributed transactions and outbox behavior;
 - external-system transaction coordination.
 
-RFC-065 engineering-memory closure is pending.
+RFC-065 engineering-memory and architecture closure is complete.
 
-No next RFC implementation is authorized until RFC-065 engineering
-closure is reviewed, committed, pushed and exact local / remote closure
-identity is verified.
+Closure commit:
+
+`cc99e2d0358f1ea7263789aac66747322a62d1f2`
+
+Exact local / remote closure identity was verified.
+
+Working tree after closure push was clean.
+
+RFC-065 is fully closed.
+
+Post-closure Source-of-Truth reconciliation is in progress.
+
+After reconciliation is committed, pushed and verified, evidence-based
+selection of the next architecture workstream is authorized.
+
+No RFC-066 content is assumed or preselected by RFC-065 closure.
+
+No new RFC implementation is authorized until its architecture contract
+is reviewed, accepted, committed, pushed and its implementation-entry
+Git gate is satisfied.

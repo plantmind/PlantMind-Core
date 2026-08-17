@@ -1830,8 +1830,25 @@ Preserve:
 15. Document Library, parsing, OCR, revision, search, vector, graph, RAG and LLM remain deferred;
 16. authentication, authorization, RBAC, Cybersecurity approval and production-readiness claims remain outside RFC-065 scope.
 
-Engineering-memory closure remains pending.
+Engineering-memory and architecture closure is complete.
 
-No next RFC implementation is authorized until RFC-065 closure is
-reviewed, committed, pushed and exact local / remote closure identity
-is verified.
+Closure commit:
+
+`cc99e2d0358f1ea7263789aac66747322a62d1f2`
+
+Exact local / remote closure identity: verified.
+
+Working tree after closure push: clean.
+
+RFC-065 is fully closed.
+
+Post-closure Source-of-Truth reconciliation is in progress.
+
+After reconciliation is committed, pushed and verified, evidence-based
+selection of the next architecture workstream is authorized.
+
+No RFC-066 content is assumed or preselected by this closure.
+
+No new RFC implementation is authorized until its architecture contract
+is reviewed, accepted, committed, pushed and its implementation-entry
+Git gate is satisfied.

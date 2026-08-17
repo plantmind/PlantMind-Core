@@ -35,11 +35,19 @@ No item may be marked complete until:
 
 ---
 
-## RFC-065 — Canonical Document-to-Knowledge Ingestion Application Boundary
+## RFC-065 — Canonical Document-to-Knowledge Ingestion Application Boundary### Status
 
-### Status
+Complete.
 
-Technical Implementation Complete and Verified — Engineering Closure Pending.
+RFC-065 / AD-051 Contract Acceptance Review: passed.
+
+Implementation-entry Git gate: satisfied.
+
+Technical implementation: complete and verified.
+
+Engineering-memory and architecture closure: complete.
+
+Post-closure Source-of-Truth reconciliation: in progress.
 
 Post-RFC-064 evidence-based architecture selection: complete.
 
@@ -47,13 +55,13 @@ Selection baseline:
 
 `56ff5f7a54ea9d5105ae7a9d9cedd86597ef8fdf`
 
-Proposed architecture decision:
+Architecture decision:
 
 `AD-051 — Canonical Document-to-Knowledge Ingestion Application Boundary`
 
 AD-051 status:
 
-Accepted — Technical Implementation Complete and Verified; Engineering Closure Pending.
+Accepted.
 
 ### Selection Evidence
 
@@ -1199,31 +1207,51 @@ Still explicitly deferred:
 
 ### Engineering Closure State
 
-Technical implementation is complete and verified.
+RFC-065 engineering-memory and architecture closure was committed and
+pushed at:
 
-Engineering-memory closure is **Pending**.
+`cc99e2d0358f1ea7263789aac66747322a62d1f2`
 
-RFC-065 is not fully closed until authoritative engineering-memory
-documents are reconciled, closure changes are reviewed, committed,
-pushed and exact local / remote closure identity is verified.
+Exact local / remote closure identity was verified.
+
+Working tree after closure push was clean.
+
+RFC-065 is fully closed.
+
+Contract commit:
+
+`3db01142802d98f82a565808b3137a3db64158ac`
+
+Technical implementation commit:
+
+`c1ab20b693ac90782592961d91dafda8e0782fa1`
+
+Engineering-memory closure commit:
+
+`cc99e2d0358f1ea7263789aac66747322a62d1f2`
+
+Verified technical evidence:
+
+- RFC-065 targeted verification: **25 passed**;
+- preservation verification: **66 passed**;
+- full PlantMind regression: **779 passed**;
+- canonical Alembic head: `0004`;
+- post-RFC-065 architecture review: **PASS**.
 
 ### Next Exact Action
 
-Reconcile authoritative RFC-065 engineering-memory state in:
+Complete this post-closure Source-of-Truth reconciliation and commit,
+push and verify it.
 
-- `PROJECT-CONTEXT.md`;
-- `SESSION-HANDOFF.md`;
-- `ENGINEERING-JOURNAL.md`;
-- this Active Work Register;
-- `ARCHITECTURE-DECISIONS.md`.
+After reconciliation is verified, perform evidence-based selection of
+the next architecture workstream from the current repository, project
+charter, accepted architecture and remaining dependency gaps.
 
-Then review, commit and push the RFC-065 engineering closure and verify
-exact local / remote closure identity and a clean working tree.
+No RFC-066 content is assumed or preselected by RFC-065 closure.
 
-No next RFC implementation is authorized during RFC-065 engineering closure.
-
-
----
+No new RFC implementation is authorized until the selected workstream
+has its own reviewed and accepted architecture contract, committed,
+pushed and verified through its implementation-entry Git gate.
 
 ## RFC-064 — Canonical Knowledge-and-Lineage Transaction Coordination Foundation Boundary
 

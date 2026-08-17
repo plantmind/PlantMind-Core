@@ -7837,11 +7837,9 @@ Any next workstream SHALL be selected from current repository, project-charter a
 
 ---
 
-# AD-051 — Canonical Document-to-Knowledge Ingestion Application Boundary
+# AD-051 — Canonical Document-to-Knowledge Ingestion Application Boundary## Status
 
-## Status
-
-Accepted — Technical Implementation Complete and Verified; Engineering Closure Pending.
+Accepted.
 
 RFC-065 / AD-051 Contract Acceptance Review: passed.
 
@@ -7851,7 +7849,17 @@ Technical implementation completed and verified at:
 
 `c1ab20b693ac90782592961d91dafda8e0782fa1`
 
-Engineering-memory closure remains pending.
+Engineering-memory and architecture closure was committed and pushed at:
+
+`cc99e2d0358f1ea7263789aac66747322a62d1f2`
+
+Exact local / remote closure identity was verified.
+
+Working tree after closure push was clean.
+
+RFC-065 is fully closed.
+
+Post-closure Source-of-Truth reconciliation is in progress.
 
 ## Context
 
@@ -8788,11 +8796,25 @@ Technical verification evidence:
 RFC-065 technical implementation is accepted as implemented within the
 AD-051 boundary.
 
-Engineering-memory closure remains pending.
+Engineering-memory and architecture closure is complete.
+
+Closure commit:
+
+`cc99e2d0358f1ea7263789aac66747322a62d1f2`
+
+Exact local / remote closure identity was verified.
+
+RFC-065 is fully closed.
 
 ## Next Exact Action
 
-Complete RFC-065 engineering-memory reconciliation and closure.
+Complete and verify RFC-065 post-closure Source-of-Truth reconciliation.
 
-Do not begin a new RFC implementation until RFC-065 closure is reviewed,
-committed, pushed and exact local / remote closure identity is verified.
+After reconciliation is committed, pushed and verified, perform
+evidence-based selection of the next architecture workstream.
+
+No RFC-066 content is assumed or preselected by AD-051.
+
+No new RFC implementation is authorized until its architecture contract
+is reviewed, accepted, committed, pushed and its implementation-entry
+Git gate is satisfied.
