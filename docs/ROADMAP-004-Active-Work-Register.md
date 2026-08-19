@@ -39,7 +39,7 @@ No item may be marked complete until:
 
 ### Status
 
-Selection Record Complete — RFC-066 Engineering Closure Verified; Post-Closure Source-of-Truth Reconciliation In Progress.
+Selection Record Complete — RFC-066 Fully Closed and Source-of-Truth Reconciled; Broad Architecture/System Review Pending.
 
 This section preserves the evidence-based workstream-selection record that
 preceded RFC-066 / AD-052 acceptance and technical implementation.
@@ -298,13 +298,14 @@ Working tree after selection push: clean.
 
 ### Remaining Work
 
-- complete post-closure Source-of-Truth reconciliation;
-- review the reconciled maintained Source-of-Truth diff;
-- commit and push the reconciliation documentation;
-- verify exact local / remote reconciliation identity and a clean
-  working tree;
-- only then begin evidence-based selection of another architecture
-  workstream.
+- perform the broad post-RFC-066 architecture and system evidence review;
+- verify architecture boundaries, accepted contracts, implementation
+  responsibilities, tests, persistence state and deferred capabilities
+  remain coherent;
+- identify any architecture debt, contradiction, stale Source-of-Truth
+  state or required remediation before new work is selected;
+- only after that review passes begin evidence-based selection of another
+  architecture workstream.
 
 ### Dependencies
 
@@ -320,9 +321,10 @@ for architecture review of this foundation.
 
 ### Resume Condition
 
-Satisfied through verified RFC-066 engineering closure.
+Satisfied through verified post-closure Source-of-Truth reconciliation.
 
-The evidence-based selection record was reviewed, committed and pushed.
+The evidence-based RFC-066 selection record was reviewed, committed and
+pushed.
 
 The RFC-066 / AD-052 contract was accepted, committed, pushed and
 verified.
@@ -340,23 +342,33 @@ Closure commit:
 
 `1ddc46c00680aac4718e6d3d76127857acbd4532`
 
-Exact local / remote closure identity: verified.
+Post-closure Source-of-Truth reconciliation was reviewed, committed,
+pushed and verified.
 
-Working tree after closure push: clean.
+Reconciliation commit:
 
-Post-closure Source-of-Truth reconciliation is now authorized and in
-progress.
+`9dee653e32b8c22fabdf85a719985ed22a9e8459`
+
+Exact local / remote reconciliation identity: verified.
+
+Working tree after reconciliation push: clean.
+
+RFC-066 is fully closed and Source-of-Truth reconciled.
 
 ### Next Exact Action
 
-Complete post-closure Source-of-Truth reconciliation across the
-maintained PlantMind engineering-memory documents.
+Perform a broad post-RFC-066 architecture and system evidence review
+before selecting another architecture workstream.
 
-Review the reconciliation diff, commit and push it, then verify exact
-local / remote reconciliation identity and a clean working tree.
+The review SHALL examine the maintained Source-of-Truth, accepted
+architecture contracts, current implementation, tests, dependency
+boundaries, persistence state and explicitly deferred capabilities for
+cross-system consistency and remaining architecture risk.
 
-No next RFC selection or implementation is authorized until
-post-closure Source-of-Truth reconciliation is complete and verified.
+No next RFC has been selected or authorized.
+
+Evidence-based selection of another architecture workstream may begin
+only after that broad architecture/system review passes.
 
 ---
 
@@ -364,7 +376,7 @@ post-closure Source-of-Truth reconciliation is complete and verified.
 
 ### Status
 
-Engineering Closure Complete and Verified — Post-Closure Source-of-Truth Reconciliation In Progress.
+Fully Closed and Source-of-Truth Reconciled.
 
 RFC-066 / AD-052 architecture-contract review:
 
@@ -432,7 +444,19 @@ Working tree after closure push: clean.
 
 Post-closure Source-of-Truth reconciliation:
 
-**IN PROGRESS**
+**COMPLETE AND VERIFIED**
+
+Reconciliation commit:
+
+`9dee653e32b8c22fabdf85a719985ed22a9e8459`
+
+Reconciliation push: verified.
+
+Exact local / remote reconciliation identity: verified.
+
+Working tree after reconciliation push: clean.
+
+RFC-066 is fully closed and Source-of-Truth reconciled.
 
 ### Context
 
@@ -1530,31 +1554,29 @@ Closure commit:
 Closure push and exact local / remote identity were verified, and the
 working tree after closure push was clean.
 
+Post-closure Source-of-Truth reconciliation commit:
+
+`9dee653e32b8c22fabdf85a719985ed22a9e8459`
+
+Reconciliation push and exact local / remote identity were verified.
+
+Working tree after reconciliation push was clean.
+
+RFC-066 is fully closed and Source-of-Truth reconciled.
+
 ### Next Exact Action
 
-Perform post-closure Source-of-Truth reconciliation.
+Perform the broad post-RFC-066 architecture and system evidence review.
 
-Reconcile the maintained engineering-memory documents so that they
-record:
+The review SHALL determine whether the current repository, accepted
+architecture contracts, engineering-memory documents, tests,
+dependencies, persistence boundaries and deferred work remain coherent
+before another architecture workstream is selected.
 
-1. RFC-066 engineering closure as complete and verified;
-2. closure commit `1ddc46c00680aac4718e6d3d76127857acbd4532`;
-3. verified closure push and exact local / remote identity;
-4. Post-RFC-066 system and architecture integrity review: PASS;
-5. technical baseline: 840 passed;
-6. canonical Alembic head: `0004`;
-7. no next RFC selected or authorized.
+No next RFC has been selected or authorized.
 
-After the reconciliation documentation is reviewed:
-
-1. commit and push the reconciliation;
-2. verify exact local / remote reconciliation identity;
-3. verify a clean working tree;
-4. only then perform the next evidence-based architecture/workstream
-   selection.
-
-No next RFC selection or implementation is authorized until the
-post-closure Source-of-Truth reconciliation is complete and verified.
+Only after the broad architecture/system review passes may PlantMind
+begin evidence-based selection of the next architecture workstream.
 
 ---
 

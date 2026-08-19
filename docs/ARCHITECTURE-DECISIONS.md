@@ -9893,40 +9893,41 @@ Working tree after closure push: clean.
 
 Post-closure Source-of-Truth reconciliation:
 
-**IN PROGRESS**
+**COMPLETE AND VERIFIED**
+
+Reconciliation commit:
+
+`9dee653e32b8c22fabdf85a719985ed22a9e8459`
+
+Reconciliation push: verified.
+
+Exact local / remote reconciliation identity: verified.
+
+Working tree after reconciliation push: clean.
+
+RFC-066 is fully closed and Source-of-Truth reconciled.
 
 AD-052 remains Accepted. Its accepted architecture semantics and all 52
 Acceptance Requirements remain unchanged.
 
 ## Next Exact Action
 
-Complete post-closure Source-of-Truth reconciliation across the
-maintained PlantMind engineering-memory documents.
+Perform the broad post-RFC-066 architecture and system evidence review
+before selecting another architecture workstream.
 
-The reconciliation SHALL record:
+The review SHALL examine:
 
-1. RFC-066 engineering closure as complete and verified;
-2. closure commit `1ddc46c00680aac4718e6d3d76127857acbd4532`;
-3. verified closure push and exact local / remote identity;
-4. Post-RFC-066 system and architecture integrity review: PASS;
-5. AD-052 remains Accepted;
-6. all 52 accepted RFC-066 / AD-052 Acceptance Requirements remain
-   unchanged and exactly equivalent;
-7. AD-001 through AD-051 remain unchanged;
-8. RFC-057 Enterprise Document contract remains unchanged;
-9. canonical Alembic head remains `0004`;
-10. default Composition, Runtime and Bootstrap authority remain
-    unchanged;
-11. all capabilities explicitly deferred by AD-052 remain deferred;
-12. no next RFC is selected or authorized.
+1. maintained Source-of-Truth consistency;
+2. accepted architecture contracts and dependency boundaries;
+3. current implementation responsibilities and composition authority;
+4. test and regression evidence;
+5. persistence and transaction boundaries;
+6. explicitly deferred capabilities;
+7. remaining architecture debt, contradictions, stale state or required
+   remediation.
 
-After reconciliation review passes:
+No next RFC has been selected or authorized.
 
-1. commit and push the reconciliation documentation;
-2. verify exact local / remote reconciliation identity;
-3. verify a clean working tree;
-4. only then begin evidence-based selection of another architecture
-   workstream.
-
-No next RFC selection or implementation is authorized until the
-post-closure Source-of-Truth reconciliation is complete and verified.
+No next RFC selection or implementation may begin until the broad
+architecture/system review passes and evidence-based workstream
+selection is subsequently completed.
