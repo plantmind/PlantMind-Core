@@ -9,9 +9,12 @@
 | Status | Active Development |
 | Deployment Model | On-Premise |
 | Development Branch | `feature/engineering-platform` |
-| Last Completed RFC | RFC-053 — Canonical Enterprise Knowledge Foundation Boundary |
-| Test Baseline | 476 passing tests |
-| Technical Baseline Commit | `ee18bc8` |
+| Last Completed RFC | RFC-065 — Canonical Document-to-Knowledge Ingestion Application Boundary |
+| Active RFC | RFC-066 — Canonical Enterprise Document Content Foundation Boundary — Technical Implementation Verified; Post-Implementation Architecture Review Passed; Engineering Closure Pending |
+| Test Baseline | 840 passing tests |
+| Technical Baseline Commit | `49080b6c1f6f0607e6ba04ba2476f222dea97155` |
+| Accepted Contract Commit | `fb277fe00a9e606192c795338ab5419f4b9db788` |
+| Alembic Head | `0004` |
 | Purpose | Authoritative context for continuing PlantMind development across engineering sessions |
 
 ---
@@ -1643,3 +1646,129 @@ No RFC-066 content is assumed or preselected by RFC-065 closure.
 No new RFC implementation is authorized until its architecture contract
 is reviewed, accepted, committed, pushed and its implementation-entry
 Git gate is satisfied.
+
+---
+
+## RFC-066 Technical Completion and Engineering-Closure Entry
+
+RFC-066 — Canonical Enterprise Document Content Foundation Boundary
+is technically complete under accepted AD-052.
+
+Accepted architecture contract commit:
+
+`fb277fe00a9e606192c795338ab5419f4b9db788`
+
+Technical implementation commit:
+
+`49080b6c1f6f0607e6ba04ba2476f222dea97155`
+
+The implementation-entry Git gate was satisfied before TDD RED
+implementation began.
+
+Remote technical push was verified.
+
+Exact local / remote technical identity was verified.
+
+Working tree after technical push was clean.
+
+The implemented canonical Domain foundation provides exactly:
+
+- `DocumentContentMediaType`;
+- `DocumentContentDigest`;
+- `DocumentContentDescriptor`.
+
+The canonical module is:
+
+`backend/app/domain/document_content.py`
+
+RFC-066 verification evidence:
+
+- focused RFC-066 Domain and architecture verification: 65 passed;
+- full PlantMind regression: 840 passed;
+- `git diff --check`: passed;
+- RFC-057 `backend/app/domain/document.py` remained unchanged;
+- canonical RFC-057 Document public class surface remained unchanged;
+- no independent `DocumentContentId` was introduced;
+- `DocumentContentDescriptor` does not inherit from `DomainEntity`;
+- canonical content association remains based on existing
+  `EnterpriseDocument.id`;
+- SHA-256 remains an integrity descriptor only;
+- `DocumentSource.source_reference` remains external traceability only;
+- no repository or content-store contract was introduced;
+- no persistence adapter or file-I/O responsibility was introduced;
+- no schema or Alembic revision was introduced;
+- canonical Alembic head remains `0004`;
+- no default `CompositionRoot`, Runtime or Bootstrap expansion was
+  introduced.
+
+RFC-066 preserves the accepted separation between:
+
+- Enterprise Document identity and Document-content description;
+- external source traceability and canonical content access/storage;
+- content integrity description and identity/deduplication semantics;
+- Domain content semantics and future Infrastructure-owned binary
+  persistence.
+
+Still explicitly deferred:
+
+- Document-content repository/store and persistence;
+- binary storage;
+- content retrieval and streaming;
+- Document Library behavior;
+- upload and download;
+- source acquisition and synchronization;
+- parsing, PDF extraction, OCR and chunking;
+- character-encoding semantics;
+- Document revision, supersession, mutation and deletion;
+- attachments and alternate renditions;
+- digest-based or source-reference deduplication;
+- content-registration application coordination;
+- cross-store transaction coordination;
+- semantic search and indexing;
+- embeddings and vector persistence;
+- graph persistence and Neo4j;
+- RAG and LLM capability;
+- AI Agent behavior;
+- HTTP/API exposure;
+- PI System and DCS integration;
+- authentication, authorization, RBAC and Active Directory integration;
+- source authenticity, trust, approval and compliance lifecycle;
+- malware scanning;
+- Cybersecurity approval and production-readiness claims.
+
+### RFC-066 Closure State
+
+Technical implementation: complete and verified.
+
+Post-RFC-066 system and architecture integrity review:
+
+**PASS — technical implementation conforms to accepted AD-052 and the
+existing PlantMind architecture remains sound.**
+
+Final review evidence confirms:
+
+- focused RFC-066 Domain and architecture verification: 65 passed;
+- full PlantMind regression: 840 passed;
+- Python compile verification: passed;
+- `git diff --check`: passed;
+- canonical Alembic head remains `0004`;
+- RFC-057 `backend/app/domain/document.py` remained unchanged;
+- default `CompositionRoot` remained unchanged;
+- no migration or schema change was introduced;
+- the RFC-066 technical commit remained limited to the canonical
+  Document Content Domain module and its tests;
+- no architecture defect, accepted-contract violation or required
+  production-code redesign was identified.
+
+Engineering-memory and architecture closure remains pending until the
+complete closure documentation is reviewed, committed, pushed and exact
+local / remote closure identity is verified.
+
+RFC-066 is not fully closed until that Git closure gate is satisfied.
+
+No next RFC selection or implementation is authorized during RFC-066
+engineering closure.
+
+After verified closure, PlantMind SHALL perform post-closure
+Source-of-Truth reconciliation before evidence-based selection of
+another architecture workstream.
