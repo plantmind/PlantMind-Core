@@ -39,7 +39,7 @@ No item may be marked complete until:
 
 ### Status
 
-Selection Record Complete — RFC-066 Technical Implementation Verified; Engineering Closure Pending.
+Selection Record Complete — RFC-066 Engineering Closure Verified; Post-Closure Source-of-Truth Reconciliation In Progress.
 
 This section preserves the evidence-based workstream-selection record that
 preceded RFC-066 / AD-052 acceptance and technical implementation.
@@ -298,11 +298,13 @@ Working tree after selection push: clean.
 
 ### Remaining Work
 
-- complete RFC-066 engineering-memory and architecture closure;
-- commit and push the closure documentation;
-- verify exact local / remote closure identity and a clean working tree;
-- perform post-closure Source-of-Truth reconciliation before selecting
-  another architecture workstream.
+- complete post-closure Source-of-Truth reconciliation;
+- review the reconciled maintained Source-of-Truth diff;
+- commit and push the reconciliation documentation;
+- verify exact local / remote reconciliation identity and a clean
+  working tree;
+- only then begin evidence-based selection of another architecture
+  workstream.
 
 ### Dependencies
 
@@ -318,31 +320,43 @@ for architecture review of this foundation.
 
 ### Resume Condition
 
-Satisfied through technical implementation.
+Satisfied through verified RFC-066 engineering closure.
 
 The evidence-based selection record was reviewed, committed and pushed.
 
-The RFC-066 / AD-052 contract was subsequently accepted, committed,
-pushed and verified.
+The RFC-066 / AD-052 contract was accepted, committed, pushed and
+verified.
 
 The implementation-entry Git gate was satisfied before TDD RED work.
 
 RFC-066 technical implementation was completed, pushed and verified.
 
-Engineering-memory and architecture closure is now authorized.
+The Post-RFC-066 system and architecture integrity review passed.
+
+Engineering-memory and architecture closure was reviewed, committed,
+pushed and verified.
+
+Closure commit:
+
+`1ddc46c00680aac4718e6d3d76127857acbd4532`
+
+Exact local / remote closure identity: verified.
+
+Working tree after closure push: clean.
+
+Post-closure Source-of-Truth reconciliation is now authorized and in
+progress.
 
 ### Next Exact Action
 
-Complete RFC-066 engineering-memory and architecture closure.
+Complete post-closure Source-of-Truth reconciliation across the
+maintained PlantMind engineering-memory documents.
 
-Commit and push the reviewed closure documentation, then verify exact
-local / remote closure identity and a clean working tree.
+Review the reconciliation diff, commit and push it, then verify exact
+local / remote reconciliation identity and a clean working tree.
 
-After closure verification, perform post-closure Source-of-Truth
-reconciliation before selecting another architecture workstream.
-
-No next RFC selection or implementation is authorized during RFC-066
-engineering closure.
+No next RFC selection or implementation is authorized until
+post-closure Source-of-Truth reconciliation is complete and verified.
 
 ---
 
@@ -350,7 +364,7 @@ engineering closure.
 
 ### Status
 
-Technically Complete — Post-Implementation Architecture Review Passed; Engineering Closure Pending.
+Engineering Closure Complete and Verified — Post-Closure Source-of-Truth Reconciliation In Progress.
 
 RFC-066 / AD-052 architecture-contract review:
 
@@ -402,8 +416,23 @@ Final execution verification:
 - technical implementation remained limited to the canonical Domain
   module and its tests.
 
-Engineering-memory and architecture closure remains pending until the
-closure documentation is reviewed, committed, pushed and verified.
+Engineering-memory and architecture closure:
+
+**COMPLETE AND VERIFIED**
+
+Closure commit:
+
+`1ddc46c00680aac4718e6d3d76127857acbd4532`
+
+Closure push: verified.
+
+Exact local / remote closure identity: verified.
+
+Working tree after closure push: clean.
+
+Post-closure Source-of-Truth reconciliation:
+
+**IN PROGRESS**
 
 ### Context
 
@@ -1492,38 +1521,40 @@ Technical verification evidence:
 RFC-066 technical implementation is accepted as implemented within the
 AD-052 boundary.
 
-Engineering-memory and architecture closure remains pending.
+Engineering-memory and architecture closure is complete and verified.
+
+Closure commit:
+
+`1ddc46c00680aac4718e6d3d76127857acbd4532`
+
+Closure push and exact local / remote identity were verified, and the
+working tree after closure push was clean.
 
 ### Next Exact Action
 
-Review the complete five-document RFC-066 closure diff.
+Perform post-closure Source-of-Truth reconciliation.
 
-Verify before closure commit:
+Reconcile the maintained engineering-memory documents so that they
+record:
 
-1. the working tree contains exactly the five RFC-066 closure documents;
-2. the Post-RFC-066 system and architecture integrity review PASS is
-   recorded across the maintained closure documentation;
-3. AD-001 through AD-051 remain unchanged;
-4. committed Engineering Journal history remains unchanged and RFC-066
-   Journal records remain append-only;
-5. historical RFC-065 Roadmap content remains unchanged;
-6. all 52 accepted RFC-066 / AD-052 Acceptance Requirements remain
-   unchanged and exactly equivalent;
-7. `git diff --check` remains clean.
+1. RFC-066 engineering closure as complete and verified;
+2. closure commit `1ddc46c00680aac4718e6d3d76127857acbd4532`;
+3. verified closure push and exact local / remote identity;
+4. Post-RFC-066 system and architecture integrity review: PASS;
+5. technical baseline: 840 passed;
+6. canonical Alembic head: `0004`;
+7. no next RFC selected or authorized.
 
-After the complete closure review passes:
+After the reconciliation documentation is reviewed:
 
-1. commit the RFC-066 engineering-memory and architecture closure;
-2. push the closure commit;
-3. verify exact local / remote closure identity;
-4. verify a clean working tree;
-5. perform post-closure Source-of-Truth reconciliation before selecting
-   another architecture workstream.
+1. commit and push the reconciliation;
+2. verify exact local / remote reconciliation identity;
+3. verify a clean working tree;
+4. only then perform the next evidence-based architecture/workstream
+   selection.
 
-RFC-066 is not fully closed until that Git closure gate is satisfied.
-
-No next RFC selection or implementation is authorized during RFC-066
-engineering closure.
+No next RFC selection or implementation is authorized until the
+post-closure Source-of-Truth reconciliation is complete and verified.
 
 ---
 

@@ -9877,43 +9877,56 @@ No architecture defect, accepted-contract violation or required
 production-code redesign was identified by the post-implementation
 review.
 
-Engineering-memory and architecture closure remains pending until the
-closure documentation is reviewed, committed, pushed and exact local /
-remote closure identity is verified.
+Engineering-memory and architecture closure:
+
+**COMPLETE AND VERIFIED**
+
+Closure commit:
+
+`1ddc46c00680aac4718e6d3d76127857acbd4532`
+
+Closure push: verified.
+
+Exact local / remote closure identity: verified.
+
+Working tree after closure push: clean.
+
+Post-closure Source-of-Truth reconciliation:
+
+**IN PROGRESS**
+
+AD-052 remains Accepted. Its accepted architecture semantics and all 52
+Acceptance Requirements remain unchanged.
 
 ## Next Exact Action
 
-Review the complete five-document RFC-066 closure diff.
+Complete post-closure Source-of-Truth reconciliation across the
+maintained PlantMind engineering-memory documents.
 
-Verify before closure commit:
+The reconciliation SHALL record:
 
-1. the working tree contains exactly the five RFC-066 closure documents;
-2. the verified Post-RFC-066 system and architecture integrity review
-   PASS is recorded across the maintained closure documentation;
-3. all 52 accepted RFC-066 / AD-052 Acceptance Requirements remain
+1. RFC-066 engineering closure as complete and verified;
+2. closure commit `1ddc46c00680aac4718e6d3d76127857acbd4532`;
+3. verified closure push and exact local / remote identity;
+4. Post-RFC-066 system and architecture integrity review: PASS;
+5. AD-052 remains Accepted;
+6. all 52 accepted RFC-066 / AD-052 Acceptance Requirements remain
    unchanged and exactly equivalent;
-4. AD-052 accepted architecture semantics remain unchanged;
-5. AD-001 through AD-051 remain unchanged;
-6. committed Engineering Journal history remains unchanged and RFC-066
-   Journal records remain append-only;
-7. historical RFC-065 Roadmap content remains unchanged;
+7. AD-001 through AD-051 remain unchanged;
 8. RFC-057 Enterprise Document contract remains unchanged;
 9. canonical Alembic head remains `0004`;
 10. default Composition, Runtime and Bootstrap authority remain
     unchanged;
 11. all capabilities explicitly deferred by AD-052 remain deferred;
-12. `git diff --check` remains clean.
+12. no next RFC is selected or authorized.
 
-After the complete closure review passes:
+After reconciliation review passes:
 
-1. commit the RFC-066 engineering-memory and architecture closure;
-2. push the closure commit;
-3. verify exact local / remote closure identity;
-4. verify a clean working tree;
-5. perform post-closure Source-of-Truth reconciliation before selecting
-   another architecture workstream.
+1. commit and push the reconciliation documentation;
+2. verify exact local / remote reconciliation identity;
+3. verify a clean working tree;
+4. only then begin evidence-based selection of another architecture
+   workstream.
 
-RFC-066 is not fully closed until that Git closure gate is satisfied.
-
-No next RFC selection or implementation is authorized during RFC-066
-engineering closure.
+No next RFC selection or implementation is authorized until the
+post-closure Source-of-Truth reconciliation is complete and verified.
