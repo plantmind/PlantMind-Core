@@ -10144,3 +10144,1210 @@ After the reviewed selection commit is created:
 Technical implementation remains prohibited until a future architecture
 contract is reviewed, accepted, committed, pushed and its implementation
 Git gate is satisfied.
+
+---
+
+# AD-053 — Operational Workload Evidence Contract Placement Remediation
+
+## Status
+
+**Accepted**
+
+RFC-067 formal RFC-side architecture review:
+
+**PASSED — 52 / 52**
+
+RFC-067 remains Draft and is not yet Accepted.
+
+AD-053 is not yet Accepted.
+
+Technical implementation:
+
+**NOT AUTHORIZED**
+
+## Decision Classification
+
+AD-053 is the accepted matching Architecture Decision for:
+
+`RFC-067 — Operational Workload Evidence Contract Placement Remediation`
+
+This draft does not amend historical AD-032, AD-033, AD-036 or AD-037.
+
+It does not alter AD-001 through AD-052 history.
+
+It does not authorize technical implementation.
+
+## Relationship to RFC-067
+
+The normative architecture contract below is reproduced directly from the
+formally reviewed RFC-067 draft without semantic modification.
+
+References to `RFC-067` inside the reproduced normative contract are
+intentional. They identify the paired RFC workstream whose architecture
+AD-053 authorizes.
+
+AD-053 SHALL NOT introduce an architecture requirement that is broader,
+narrower or materially different from the reviewed RFC-067 contract.
+
+The RFC-067 Acceptance Requirements reproduced below SHALL remain
+byte-for-byte equivalent to the reviewed RFC-side requirements before
+AD-053 may become Accepted.
+
+## Normative Matching Architecture Contract
+
+### Context
+
+The broad post-RFC-066 architecture and system review identified one
+isolated dependency-direction debt.
+
+Canonical operational-transition Core components currently consume:
+
+`OperationalWorkloadEvidence`
+
+from:
+
+`app.services.orchestration.workload_evidence`
+
+The two identified Core consumers are:
+
+- `app.core.operational_transition_evidence`;
+- `app.core.operational_transition_coordinator`.
+
+The accepted behavior itself is not defective.
+
+AD-032 established trusted correlated operational-workload evidence.
+
+AD-033 established immutable operational-transition evidence aggregation.
+
+AD-036 established operational-transition coordination.
+
+AD-037 established the explicit operational-transition application
+boundary.
+
+Those accepted semantics remain authoritative.
+
+The architecture debt is physical contract placement:
+
+Core currently depends outward on a Services-owned package for an
+immutable evidence contract.
+
+CORE-002 permits Core dependencies on shared models and value objects but
+prohibits Core dependencies on Business Services and Workflows.
+
+CORE-003 permits dependencies on Contracts and Value Objects while
+requiring dependency direction to remain explicit and acyclic.
+
+ARCH-003 requires Contracts to belong to Domain Architecture rather than
+Services, Infrastructure, APIs, Engines or external frameworks.
+
+RFC-067 therefore addresses package ownership and dependency direction
+only.
+
+### Decision
+
+RFC-067 SHALL relocate the existing operational-workload evidence
+contract family to one canonical Domain Architecture module:
+
+`backend/app/domain/operational_workload_evidence.py`
+
+with canonical Python import path:
+
+`app.domain.operational_workload_evidence`
+
+The canonical contract family SHALL remain exactly:
+
+- `ApplicationFacadeEntryEvidence`;
+- `WorkflowExecutionStartEvidence`;
+- `OperationalWorkloadEvidence`.
+
+RFC-067 SHALL NOT create:
+
+- `app.shared`;
+- `app.contracts`;
+- another architectural layer;
+- another Core Service;
+- another workload-evidence abstraction;
+- another operational workload identity;
+- duplicate evidence classes.
+
+### Architectural Owner
+
+The operational-workload evidence contract family SHALL have exactly one
+architectural owner:
+
+**Domain Architecture — Operational Workload Provenance Evidence**
+
+The producer components remain responsible for producing the evidence
+instances defined by the Domain contract.
+
+Contract ownership SHALL NOT transfer workload execution, orchestration
+or lifecycle authority into Domain Architecture.
+
+Domain owns the immutable information contract.
+
+Existing application and orchestration components retain their accepted
+behavioral responsibilities.
+
+### ARCH-001 Layer Clarification
+
+The term:
+
+`Domain Architecture`
+
+in RFC-067 describes architectural ownership and the canonical namespace
+for behavior-neutral information contracts.
+
+It SHALL NOT be interpreted as a new primary PlantMind architectural
+layer.
+
+RFC-067 introduces no seventh ARCH-001 layer.
+
+ARCH-001 remains authoritative for the six primary architectural layers
+and dependency direction.
+
+Placement under:
+
+`app.domain`
+
+expresses contract ownership and dependency neutrality only.
+
+### Distinction from Existing Engineering Evidence
+
+RFC-067 SHALL NOT merge operational-workload provenance evidence with:
+
+`app.domain.evidence`
+
+The existing:
+
+- `Evidence`;
+- `EvidenceType`;
+
+represent engineering evidence consumed by reasoning and intelligence
+components.
+
+They are a separate Domain concept.
+
+RFC-067 SHALL NOT modify:
+
+`backend/app/domain/evidence.py`
+
+and SHALL NOT reinterpret engineering evidence as operational-workload
+provenance evidence.
+
+### Canonical Contract Schema
+
+RFC-067 SHALL preserve the existing AD-032 schema exactly.
+
+#### ApplicationFacadeEntryEvidence
+
+Canonical structure:
+
+`workload_id: UUID`
+
+It SHALL remain an immutable:
+
+`@dataclass(frozen=True, slots=True)`
+
+RFC-067 SHALL NOT:
+
+- add fields;
+- remove fields;
+- rename fields;
+- change the UUID type;
+- make the constructor keyword-only;
+- introduce an EntityId;
+- add behavioral responsibilities.
+
+#### WorkflowExecutionStartEvidence
+
+Canonical structure:
+
+`workload_id: UUID`
+
+It SHALL remain an immutable:
+
+`@dataclass(frozen=True, slots=True)`
+
+RFC-067 SHALL NOT:
+
+- add fields;
+- remove fields;
+- rename fields;
+- change the UUID type;
+- make the constructor keyword-only;
+- introduce an EntityId;
+- add behavioral responsibilities.
+
+#### OperationalWorkloadEvidence
+
+Canonical structure:
+
+- `facade_entry: ApplicationFacadeEntryEvidence`;
+- `execution_start: WorkflowExecutionStartEvidence`.
+
+It SHALL remain an immutable:
+
+`@dataclass(frozen=True, slots=True)`
+
+Construction SHALL continue to reject mismatched workload identities with:
+
+`ValueError`
+
+The accepted failure message SHALL remain:
+
+`Operational workload evidence requires matching workload identities.`
+
+RFC-067 SHALL NOT introduce additional correlation policy, validation
+policy, identity generation or business behavior.
+
+### Workload Identity Semantics
+
+AD-032 remains authoritative.
+
+Each canonical `ApplicationFacade.analyze(...)` invocation SHALL continue
+to generate exactly one workload UUID.
+
+That same workload identity SHALL continue to propagate unchanged through:
+
+`ApplicationFacade`
+→ `IntegrationGateway`
+→ `OrchestrationService`
+→ `WorkflowExecutor`
+
+Intermediate components SHALL NOT regenerate or replace the workload
+identity.
+
+RFC-067 changes only the module from which the evidence contract classes
+are imported.
+
+### Producer Ownership
+
+RFC-067 SHALL preserve producer ownership exactly.
+
+`ApplicationFacade` SHALL remain the canonical producer of:
+
+`ApplicationFacadeEntryEvidence`
+
+`WorkflowExecutor` SHALL remain the canonical producer of:
+
+`WorkflowExecutionStartEvidence`
+
+and of the correlated:
+
+`OperationalWorkloadEvidence`
+
+when canonical facade-entry evidence was supplied.
+
+RFC-067 SHALL NOT move evidence production into:
+
+- Core;
+- Runtime;
+- `OperationalTransitionCoordinator`;
+- `OperationalTransitionEvidence`;
+- `OperationalTransitionApplicationService`;
+- CompositionRoot;
+- API transport;
+- Domain factory services.
+
+### Propagation Semantics
+
+`IntegrationGateway` SHALL continue forwarding the exact supplied
+`ApplicationFacadeEntryEvidence` unchanged.
+
+`OrchestrationService` SHALL continue forwarding the exact supplied
+`ApplicationFacadeEntryEvidence` unchanged.
+
+`WorkflowExecutor` SHALL continue constructing execution-start evidence
+from the exact propagated workload identity.
+
+Direct internal workflow invocation without canonical facade-entry
+evidence SHALL continue to produce:
+
+`operational_workload_evidence = None`
+
+No synthetic canonical workload provenance SHALL be fabricated.
+
+### WorkflowExecution Boundary
+
+The accepted `WorkflowExecution` contract SHALL remain unchanged.
+
+It SHALL continue to expose:
+
+`operational_workload_evidence: OperationalWorkloadEvidence | None`
+
+RFC-067 SHALL NOT modify:
+
+- workflow result semantics;
+- workflow stages;
+- completion semantics;
+- ordinary workload execution behavior.
+
+### Evidence Object Identity
+
+AD-033, AD-036 and AD-037 identity-preservation semantics remain
+authoritative.
+
+Consumers SHALL receive the exact produced `OperationalWorkloadEvidence`
+object.
+
+RFC-067 SHALL NOT:
+
+- copy it;
+- wrap it;
+- normalize it;
+- reconstruct it;
+- subclass it;
+- translate it into another workload-evidence type.
+
+The same object shall continue to flow from canonical workload execution
+into operational-transition coordination.
+
+### Canonical Import Boundary
+
+After accepted technical remediation, all maintained non-test Python
+consumers of this contract family SHALL import from:
+
+`app.domain.operational_workload_evidence`
+
+This includes the current consumers in:
+
+- `app.services.application_facade`;
+- `app.services.integration_gateway`;
+- `app.services.orchestration.orchestration_service`;
+- `app.services.orchestration.workflow`;
+- `app.services.orchestration.workflow_executor`;
+- `app.core.operational_transition_evidence`;
+- `app.core.operational_transition_coordinator`.
+
+The exact implementation review SHALL verify the complete import graph
+again before technical acceptance.
+
+### Core Dependency Remediation
+
+After RFC-067 remediation:
+
+`app.core.operational_transition_evidence`
+
+and:
+
+`app.core.operational_transition_coordinator`
+
+SHALL NOT import operational-workload evidence from:
+
+`app.services.*`
+
+Both SHALL consume the canonical Domain contract.
+
+RFC-067 SHALL NOT establish a general exception permitting Core to depend
+on Services.
+
+RFC-067 removes the identified exception-shaped package coupling rather
+than legitimizing it.
+
+### Legacy Import Compatibility Boundary
+
+The existing module:
+
+`app.services.orchestration.workload_evidence`
+
+SHALL remain temporarily available as a compatibility import boundary.
+
+It SHALL cease owning independent class definitions.
+
+It SHALL re-export the exact three canonical Domain classes:
+
+- `ApplicationFacadeEntryEvidence`;
+- `WorkflowExecutionStartEvidence`;
+- `OperationalWorkloadEvidence`.
+
+The legacy module SHALL NOT:
+
+- define duplicate dataclasses;
+- subclass canonical evidence classes;
+- wrap canonical evidence classes;
+- introduce conversion functions;
+- introduce factories;
+- introduce validation;
+- introduce state;
+- introduce I/O;
+- introduce orchestration behavior.
+
+### Exact Python Type Identity
+
+Legacy compatibility SHALL preserve exact Python class identity.
+
+For each canonical contract:
+
+`LegacyClass is CanonicalClass`
+
+SHALL evaluate to:
+
+`True`
+
+Objects imported through the legacy module SHALL therefore remain valid
+for canonical `isinstance(...)` checks.
+
+RFC-067 SHALL NOT maintain two Python class definitions representing the
+same architectural contract.
+
+### Canonical Module Provenance
+
+After remediation, the canonical class definitions SHALL physically
+reside in:
+
+`app.domain.operational_workload_evidence`
+
+The canonical classes' Python module provenance may therefore identify the
+new Domain module.
+
+That module-path provenance change is intentional and is limited to
+correcting architectural ownership.
+
+The legacy import path remains available through exact re-export
+compatibility.
+
+RFC-067 does not establish compatibility guarantees for undocumented
+string comparisons against historical `__module__` values.
+
+### Compatibility Removal Boundary
+
+RFC-067 SHALL NOT remove:
+
+`app.services.orchestration.workload_evidence`
+
+Removal of the compatibility module requires a separate reviewed
+breaking-change decision after:
+
+1. all maintained in-repository consumers use the canonical Domain path;
+2. maintained tests no longer depend on the legacy path except explicit
+   compatibility verification;
+3. any relevant supported external Python consumers have been assessed;
+4. backward-compatibility impact has been explicitly reviewed.
+
+No automatic deprecation-removal date is introduced by RFC-067.
+
+### Internal Test Import Migration
+
+Maintained tests that validate canonical contract behavior SHALL use:
+
+`app.domain.operational_workload_evidence`
+
+as their canonical import path.
+
+A narrow dedicated compatibility verification MAY continue importing the
+legacy Services path solely to prove exact re-export identity.
+
+Tests SHALL NOT preserve obsolete Services ownership merely to keep old
+test imports unchanged.
+
+### Canonical Domain Dependency Contract
+
+`backend/app/domain/operational_workload_evidence.py`
+
+SHALL remain dependency-light.
+
+Its implementation dependencies SHALL be limited to Python standard
+library facilities required by the existing contract semantics, currently:
+
+- `dataclasses.dataclass`;
+- `uuid.UUID`;
+- `__future__.annotations`.
+
+The canonical module SHALL NOT import:
+
+- `app.services`;
+- `app.core`;
+- `app.infrastructure`;
+- `app.api`;
+- `app.engines`;
+- repositories;
+- connectors;
+- databases;
+- frameworks;
+- logging systems;
+- Runtime;
+- CompositionRoot.
+
+### Domain Package Public Surface
+
+RFC-067 SHALL NOT require a broad re-export from:
+
+`app.domain.__init__`
+
+Canonical consumption SHALL use the explicit module path:
+
+`app.domain.operational_workload_evidence`
+
+unless a separately reviewed Domain public-API policy later establishes
+another export boundary.
+
+### AD-032 Preservation
+
+RFC-067 SHALL NOT amend the accepted semantic responsibilities of AD-032.
+
+The following remain unchanged:
+
+- one UUID per canonical facade invocation;
+- exact workload identity propagation;
+- facade-entry evidence ownership;
+- workflow-execution-start evidence ownership;
+- correlation validation;
+- direct-internal-invocation behavior;
+- `WorkflowExecution` evidence exposure;
+- failure boundaries;
+- Runtime separation;
+- Composition separation.
+
+RFC-067 changes physical contract ownership and import placement only.
+
+### AD-033 Preservation
+
+RFC-067 SHALL NOT amend AD-033 operational-transition evidence
+aggregation semantics.
+
+`OperationalTransitionEvidence` SHALL continue to consume existing
+validated `OperationalWorkloadEvidence`.
+
+It SHALL continue to preserve the exact supplied object.
+
+It SHALL NOT recreate workload provenance or repeat workload-correlation
+validation.
+
+### AD-036 Preservation
+
+RFC-067 SHALL NOT amend AD-036 coordination semantics.
+
+`OperationalTransitionCoordinator.request_operational(...)`
+
+SHALL continue to accept:
+
+`OperationalWorkloadEvidence | None`
+
+The coordinator SHALL continue to:
+
+- observe capabilities exactly as already accepted;
+- evaluate mandatory-capability coverage exactly as already accepted;
+- construct one `OperationalTransitionEvidence`;
+- preserve exact evidence identity;
+- invoke `Runtime.request_operational(...)` exactly as already accepted.
+
+Runtime remains the sole lifecycle-transition authority.
+
+### AD-037 Preservation
+
+RFC-067 SHALL NOT amend AD-037 application-use-case semantics.
+
+`OperationalTransitionApplicationService` SHALL continue obtaining
+workload evidence only from:
+
+`WorkflowExecution.operational_workload_evidence`
+
+and SHALL forward the exact value, including `None`, unchanged to the
+canonical coordinator.
+
+It SHALL NOT construct, reconstruct or independently validate operational
+workload evidence.
+
+### Prior ADR Amendment Determination
+
+RFC-067 explicitly reviewed the accepted contracts established by:
+
+- AD-032;
+- AD-033;
+- AD-036;
+- AD-037.
+
+Those accepted decisions define workload-evidence meaning, ownership of
+production, propagation, aggregation, coordination, object-identity and
+Runtime-authority semantics.
+
+They do not normatively require the operational-workload evidence classes
+to remain physically defined under:
+
+`app.services.orchestration.workload_evidence`
+
+The RFC-067 package relocation therefore does not require historical
+amendment of AD-032, AD-033, AD-036 or AD-037.
+
+Their historical accepted text SHALL remain unchanged.
+
+AD-053, if later accepted, SHALL be the new architecture decision that
+explicitly authorizes the canonical Domain placement and temporary legacy
+re-export compatibility boundary.
+
+RFC-067 SHALL NOT silently reinterpret any accepted prior ADR.
+
+If later review identifies a prior accepted requirement that fixes the old
+physical package location, implementation SHALL stop and that prior
+contract change SHALL be reviewed explicitly before proceeding.
+
+### Adjacent OperationalTransitionEvidence Placement Boundary
+
+The current:
+
+`OperationalTransitionEvidence`
+
+class remains physically located under:
+
+`app.core.operational_transition_evidence`
+
+RFC-067 SHALL NOT relocate that class.
+
+RFC-067 SHALL NOT claim that its physical placement has been reviewed,
+remediated or certified as fully compliant with ARCH-003.
+
+Its accepted AD-033 aggregation semantics remain unchanged.
+
+Whether its physical package placement requires separate remediation is an
+adjacent pre-existing architecture question outside the selected RFC-067
+workstream.
+
+That question MAY be considered only through a future evidence-based
+architecture review and workstream-selection process.
+
+RFC-067 does not preselect that future work.
+
+### ARCH-003 Contract Governance
+
+RFC-067 recognizes the operational-workload evidence family as an
+existing Evidence Contract family governed by ARCH-003.
+
+RFC-067 SHALL NOT enlarge the accepted runtime schema merely to perform a
+package-placement remediation.
+
+For architecture-documentation purposes, RFC-067 SHALL record the
+preserved existing schema as:
+
+- documentation contract version: `1.0`;
+- architectural owner:
+  `Domain Architecture — Operational Workload Provenance Evidence`.
+
+The `1.0` declaration documents the existing preserved contract shape.
+
+It SHALL NOT:
+
+- add a runtime version field;
+- imply that an earlier runtime versioning mechanism existed;
+- change any accepted AD-032 field or behavior;
+- establish a schema-version migration mechanism.
+
+RFC-067 SHALL NOT assign a new information-security classification to the
+contract family.
+
+Security classification can affect storage, transport, access and audit
+policy and therefore requires separately reviewed security context rather
+than an assumption inside a package-placement remediation.
+
+RFC-067 SHALL NOT add runtime fields for:
+
+- contract version;
+- security classification;
+- producer metadata;
+- timestamps;
+- serialization metadata.
+
+RFC-067 introduces no:
+
+- transport serializer;
+- protocol adapter;
+- persistence representation;
+- schema registry;
+- contract translation service.
+
+RFC-067 does not claim that previously unverified ARCH-003 serialization,
+security-classification or publication-readiness requirements have been
+completed merely by relocating the contract.
+
+Any such pre-existing governance gap remains separately governed.
+
+A future serialization, classification, schema-version or additional
+metadata decision requires separate architecture review.
+
+RFC-067 does not establish a general exemption from ARCH-003.
+
+If AD-053 is later accepted, its authority SHALL be limited to the
+placement, compatibility and preservation decisions expressly defined by
+RFC-067.
+
+### Runtime Boundary
+
+Runtime SHALL remain the sole authoritative owner of platform lifecycle
+state.
+
+RFC-067 SHALL NOT:
+
+- modify Runtime state;
+- add Runtime states;
+- change `Runtime.request_operational(...)`;
+- modify readiness;
+- modify request admission;
+- create automatic operational transitions;
+- change operational eligibility.
+
+Operational-workload evidence remains evidence only.
+
+### Composition Boundary
+
+RFC-067 SHALL NOT modify default `CompositionRoot` responsibilities.
+
+No new:
+
+- service instance;
+- registry entry;
+- provider;
+- factory;
+- runtime dependency;
+- composition lifecycle object;
+
+is required merely because an immutable contract changes canonical
+package ownership.
+
+Existing composed component identity SHALL remain unchanged.
+
+### Bootstrap and Health Boundaries
+
+RFC-067 SHALL NOT modify:
+
+- BootstrapManager;
+- service startup;
+- shutdown;
+- HealthCapability;
+- readiness evaluation;
+- mandatory-capability policy.
+
+No startup or health behavior shall be coupled to contract relocation.
+
+### API and Transport Boundary
+
+RFC-067 SHALL NOT modify:
+
+- FastAPI routes;
+- request schemas;
+- response schemas;
+- request-admission ownership;
+- client-visible operational-transition semantics.
+
+External clients SHALL continue to be unable to supply trusted internal
+operational-workload evidence.
+
+RFC-067 introduces no public transport representation of the evidence
+contract.
+
+### Persistence and Transaction Boundary
+
+RFC-067 introduces no:
+
+- repository;
+- persistence adapter;
+- database table;
+- relational mapping;
+- Alembic revision;
+- transaction coordinator;
+- commit;
+- rollback;
+- evidence history;
+- evidence store.
+
+Existing RFC-060, RFC-064 and RFC-065 transaction semantics remain
+unchanged.
+
+Canonical Alembic authority remains unchanged.
+
+### State Boundary
+
+RFC-067 introduces no:
+
+- mutable evidence registry;
+- global workload-evidence collector;
+- evidence cache;
+- evidence queue;
+- evidence history;
+- singleton evidence object.
+
+The relocated evidence contracts remain immutable per-execution values.
+
+### Security Boundary
+
+RFC-067 SHALL NOT establish or claim:
+
+- authentication;
+- authorization;
+- RBAC;
+- Active Directory integration;
+- cryptographic attestation;
+- distributed trace authentication;
+- external identity verification;
+- Cybersecurity approval;
+- production security readiness.
+
+RFC-067 assigns no information-security classification to this
+contract family.
+
+No absence of a classification shall be interpreted as authorization,
+reduced sensitivity or production-security readiness.
+
+Any future information-security classification requires separately
+reviewed security context and does not alter authentication,
+authorization or access-control authority merely by being documented.
+
+### Explicit Non-Goals
+
+RFC-067 SHALL NOT implement or redesign:
+
+- workload execution behavior;
+- workflow stages;
+- reasoning;
+- operational-transition eligibility;
+- capability availability semantics;
+- mandatory-capability coverage semantics;
+- Runtime lifecycle semantics;
+- request admission;
+- persistence;
+- database schema;
+- Document architecture;
+- Knowledge architecture;
+- Document Content architecture;
+- parser or OCR;
+- vector search;
+- graph behavior;
+- RAG;
+- LLM behavior;
+- PI production connectivity;
+- Neo4j production integration;
+- authentication or RBAC;
+- deployment architecture.
+
+The separate unused Neo4j configuration-hygiene debt remains outside
+RFC-067.
+
+### Expected Technical Change Surface If Accepted
+
+If and only if the RFC-067 / AD-053 architecture contract is accepted,
+committed, pushed and passes the implementation-entry Git gate, the
+expected technical change surface is limited to:
+
+New canonical Domain module:
+
+- `backend/app/domain/operational_workload_evidence.py`.
+
+Legacy compatibility module:
+
+- `backend/app/services/orchestration/workload_evidence.py`.
+
+Current non-test import consumers:
+
+- `backend/app/services/application_facade.py`;
+- `backend/app/services/integration_gateway.py`;
+- `backend/app/services/orchestration/orchestration_service.py`;
+- `backend/app/services/orchestration/workflow.py`;
+- `backend/app/services/orchestration/workflow_executor.py`;
+- `backend/app/core/operational_transition_evidence.py`;
+- `backend/app/core/operational_transition_coordinator.py`.
+
+Maintained tests importing the legacy contract path may require canonical
+import updates.
+
+RFC-067 architecture tests SHALL be added to enforce the accepted
+placement and compatibility boundaries.
+
+The expected RFC-067 technical surface SHALL NOT include relocation or
+redesign of:
+
+`app.core.operational_transition_evidence`
+
+or the `OperationalTransitionEvidence` class.
+
+Any implementation need outside this expected surface SHALL stop for
+architecture review before expansion.
+
+### TDD Entry Contract
+
+Technical implementation SHALL begin with RED tests only after all of the
+following are true:
+
+1. RFC-067 architecture review passes;
+2. matching AD-053 is reviewed;
+3. RFC-067 and AD-053 are confirmed materially and semantically
+   equivalent;
+4. both are Accepted;
+5. the accepted architecture documentation is committed separately from
+   technical implementation;
+6. the accepted contract commit is pushed;
+7. exact local / remote accepted-contract identity is verified;
+8. the working tree is clean.
+
+Before those gates pass:
+
+**NO TDD RED AND NO PRODUCTION IMPLEMENTATION ARE AUTHORIZED.**
+
+### Required RED Evidence
+
+The initial RED verification SHALL prove the current architecture debt
+before remediation.
+
+At minimum it SHALL detect that:
+
+- the canonical Domain module does not yet provide the contract family;
+  and/or
+- Core still imports `OperationalWorkloadEvidence` through
+  `app.services.orchestration.workload_evidence`.
+
+The RED stage SHALL fail for the intended contract-placement reason.
+
+Unrelated regression failures SHALL NOT be accepted as valid RED
+evidence.
+
+### Required GREEN Architecture Guardrails
+
+Technical acceptance SHALL include tests proving at minimum:
+
+1. the canonical Domain module owns all three class definitions;
+2. canonical class schemas remain unchanged;
+3. mismatch validation remains unchanged;
+4. the legacy module re-exports the canonical classes;
+5. legacy and canonical imports have exact class identity;
+6. no duplicate operational-workload evidence class definition exists;
+7. both Core consumers import the Domain contract rather than Services;
+8. maintained non-test Python consumers use the canonical Domain path;
+9. direct internal workflow invocation still produces no fabricated
+   operational-workload evidence;
+10. exact workload-evidence object identity remains preserved through the
+    operational-transition path;
+11. Runtime authority remains unchanged;
+12. CompositionRoot behavior remains unchanged;
+13. `app.domain.evidence` remains separate and unchanged;
+14. the canonical Domain contract module contains no prohibited outward
+    dependency.
+
+### Verification Contract
+
+Technical verification, if later authorized, SHALL include:
+
+- focused RFC-067 contract tests;
+- impacted Core regression;
+- impacted Services / orchestration regression;
+- operational-transition application-service regression;
+- API operational-transition regression;
+- Composition regression;
+- full PlantMind regression;
+- Python compilation verification;
+- dependency/import static verification;
+- `git diff --check`;
+- exact technical-commit local / remote identity;
+- clean working tree after technical push.
+
+No technical acceptance shall be based only on focused tests.
+
+### Documentation and Commit Separation
+
+The RFC-067 / AD-053 architecture-contract commit SHALL remain separate
+from the future technical implementation commit.
+
+Technical implementation SHALL NOT be committed together with contract
+acceptance.
+
+Post-implementation engineering-memory closure SHALL remain a separate
+governed step after technical verification.
+
+### Acceptance Requirements
+
+Before RFC-067 / AD-053 may become Accepted, architecture review SHALL
+confirm:
+
+1. RFC-067 introduces no new ARCH-001 architectural layer and `Domain Architecture` is explicitly an ownership / namespace designation rather than a seventh layer;
+2. RFC-067 creates no new Core Service;
+3. the workstream remains package-placement remediation only;
+4. Domain Architecture becomes the single architectural owner of the
+   operational-workload evidence contract family;
+5. the canonical module is exactly
+   `app.domain.operational_workload_evidence`;
+6. RFC-067 creates no `app.shared` or `app.contracts` package;
+7. the canonical family remains exactly the three accepted evidence
+   classes;
+8. `ApplicationFacadeEntryEvidence` remains exactly one UUID field;
+9. `WorkflowExecutionStartEvidence` remains exactly one UUID field;
+10. `OperationalWorkloadEvidence` remains exactly the accepted two-field
+    correlated aggregate;
+11. all three contracts retain frozen and slotted dataclass semantics;
+12. existing positional / keyword constructor compatibility is preserved
+    and `kw_only` is not introduced;
+13. workload identity remains `UUID`;
+14. mismatch validation remains `ValueError` with accepted semantics;
+15. AD-032 workload-correlation meaning remains unchanged;
+16. `ApplicationFacade` remains facade-entry evidence producer;
+17. `IntegrationGateway` preserves exact evidence propagation;
+18. `OrchestrationService` preserves exact evidence propagation;
+19. `WorkflowExecutor` retains execution-start and correlated-evidence
+    production ownership;
+20. direct internal execution without facade-entry evidence still
+    fabricates no canonical workload evidence;
+21. `WorkflowExecution.operational_workload_evidence` remains unchanged;
+22. exact evidence object-identity semantics remain preserved;
+23. explicit prior-ADR review confirms AD-032, AD-033, AD-036 and
+    AD-037 do not normatively fix the old physical package location and
+    require no historical amendment for RFC-067;
+24. AD-032 and AD-033 accepted semantics remain unchanged;
+25. AD-036 accepted semantics remain unchanged;
+26. AD-037 accepted semantics remain unchanged;
+27. Runtime remains the sole lifecycle-transition authority;
+28. `OperationalTransitionApplicationService` continues forwarding the
+    exact workload-evidence value unchanged;
+29. the legacy Services workload-evidence module remains as a temporary
+    re-export compatibility boundary;
+30. legacy imports resolve to the exact canonical class objects;
+31. no duplicate classes, wrappers, subclasses or translation objects are
+    introduced;
+32. maintained non-test imports migrate to the canonical Domain path;
+33. maintained tests use the canonical path except dedicated compatibility
+    verification;
+34. removal of the legacy compatibility module remains separately
+    governed and outside RFC-067;
+35. the canonical Domain module remains dependency-light and standard
+    library only;
+36. the two identified Core consumers no longer import workload evidence
+    from `app.services.*`;
+37. RFC-067 creates no general Core-to-Services dependency exception;
+38. `app.domain.evidence` remains a distinct unchanged Domain concept
+    and RFC-067 requires no broad `app.domain.__init__` re-export;
+39. `OperationalTransitionEvidence` physical Core placement remains
+    outside RFC-067 and is not declared remediated or ARCH-003 compliant
+    by this workstream;
+40. default CompositionRoot behavior and authority remain unchanged;
+41. Bootstrap, Health and readiness responsibilities remain unchanged;
+42. API transport and request-admission behavior remain unchanged;
+43. no repository, persistence, schema or Alembic change is introduced;
+44. no existing transaction responsibility is changed;
+45. no registry, global evidence collector, cache or mutable evidence
+    state is introduced;
+46. no authentication, authorization, Cybersecurity or production-readiness
+    claim is introduced;
+47. ARCH-003 documentation version and architectural ownership are
+    recorded without changing runtime contract fields, while unverified
+    serialization, security-classification and publication-readiness
+    requirements are explicitly not claimed as completed by RFC-067;
+48. no serializer, protocol adapter, contract translation service or
+    schema-version migration is introduced;
+49. implementation begins with intentional RED evidence only after the
+    accepted-contract Git gate is satisfied;
+50. architecture tests verify canonical ownership, dependency direction
+    and exact legacy re-export identity;
+51. technical acceptance requires focused, impacted, full-regression,
+    compilation and static dependency evidence;
+52. architecture documentation, technical implementation and
+    post-implementation closure remain separate governed commits.
+
+## AD-053 Formal Architecture Review
+
+RFC-067 formal architecture review:
+
+**52 PASS / 0 REFINE / 0 BLOCKED**
+
+AD-053 formal architecture review:
+
+**52 PASS / 0 REFINE / 0 BLOCKED**
+
+Combined RFC-067 / AD-053 semantic-consistency review:
+
+**PASS**
+
+The normative architecture contracts are byte-for-byte equivalent.
+
+The 52 Acceptance Requirements are byte-for-byte equivalent.
+
+No semantic contradiction, architecture expansion, prior-contract
+amendment or unauthorized responsibility transfer was identified.
+
+AD-053 is Accepted together with RFC-067.
+
+Acceptance does not authorize technical implementation until the
+accepted-contract Git gate passes.
+
+## Prior Architecture Preservation
+
+AD-001 through AD-052 remain unchanged.
+
+In particular, the accepted semantics of:
+
+- AD-032;
+- AD-033;
+- AD-036;
+- AD-037;
+
+remain authoritative.
+
+AD-053 authorizes only the package-placement, ownership, compatibility and
+preservation decisions defined by RFC-067.
+
+## Contract Acceptance Review
+
+Status:
+
+**PASSED — RFC-067 / AD-053 ACCEPTED**
+
+Formal AD-053 architecture review:
+
+**52 PASS / 0 REFINE / 0 BLOCKED**
+
+Combined RFC-067 / AD-053 semantic-consistency review:
+
+**PASS**
+
+The review verified:
+
+1. exact normative-contract equivalence;
+2. exact 52-requirement equivalence;
+3. canonical Domain ownership and namespace;
+4. preservation of workload identity and evidence identity;
+5. preservation of producer and propagation responsibilities;
+6. removal of the identified Core-to-Services contract-placement debt;
+7. exact legacy re-export compatibility policy;
+8. preservation of ARCH-001, ARCH-003, CORE-002 and CORE-003;
+9. preservation of AD-032, AD-033, AD-036 and AD-037;
+10. preservation of Runtime, Composition, Bootstrap, API, persistence and
+    transaction boundaries.
+
+RFC-067 is Accepted.
+
+AD-053 is Accepted.
+
+Technical implementation remains unauthorized pending the accepted-contract
+Git gate.
+
+## Implementation Authorization
+
+Status:
+
+**NOT AUTHORIZED**
+
+No:
+
+- TDD RED test;
+- production-code modification;
+- package relocation;
+- import migration;
+- compatibility-module implementation;
+
+is authorized by creation of this draft.
+
+Technical implementation may begin only after the accepted RFC-067 /
+AD-053 architecture-contract documentation is:
+
+1. committed;
+2. pushed;
+3. verified at exact local / remote commit identity;
+4. followed by a clean working tree.
+
+## Next Exact Action
+
+Perform the accepted-contract Git gate for RFC-067 / AD-053.
+
+Commit the architecture-contract documentation separately from technical
+implementation.
+
+Then push and verify exact local / remote commit identity and a clean
+working tree.
+
+Only after that gate passes may technical implementation begin with TDD
+RED.
+
+Do not modify production code before the accepted-contract Git gate passes.
