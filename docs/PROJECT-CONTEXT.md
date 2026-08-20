@@ -10,7 +10,9 @@
 | Deployment Model | On-Premise |
 | Development Branch | `feature/engineering-platform` |
 | Last Completed RFC | RFC-066 — Canonical Enterprise Document Content Foundation Boundary — Fully Closed and Source-of-Truth Reconciled |
-| Active RFC | None — Broad Architecture/System Review Pending; No Next RFC Selected |
+| Active RFC | None — Successor Workstream Selection Record Ready for Commit; Five-Document Consistency Review Passed; Architecture Contract Not Yet Authored or Accepted |
+| Selected Architecture Workstream | Operational Workload Evidence Contract Placement Remediation |
+| Selection Baseline | `1d7f09d5106b7714421a1035877ff82a0538d39e` |
 | Test Baseline | 840 passing tests |
 | Technical Baseline Commit | `49080b6c1f6f0607e6ba04ba2476f222dea97155` |
 | Accepted Contract Commit | `fb277fe00a9e606192c795338ab5419f4b9db788` |
@@ -172,6 +174,16 @@ Canonical Enterprise Knowledge Foundation
 Canonical Database Runtime & Schema Lifecycle Foundation
 Canonical Knowledge Relational Persistence Adapter
 Canonical Knowledge Capture Application Boundary
+Canonical Enterprise Document Foundation
+Canonical Enterprise Document Repository
+Canonical Enterprise Document Relational Persistence Adapter
+Canonical Enterprise Document Registration Application Boundary
+Canonical Document-to-Knowledge Lineage Foundation
+Canonical Document-to-Knowledge Lineage Repository
+Canonical Document-to-Knowledge Lineage Relational Persistence Adapter
+Canonical Knowledge-and-Lineage Transaction Coordination Foundation
+Canonical Document-to-Knowledge Ingestion Application Boundary
+Canonical Enterprise Document Content Foundation
 ## 7. Current PI Integration Foundation
 
 The PI integration structure currently includes:
@@ -288,7 +300,7 @@ PlantMind-Core/backend/.venv
 
 The last verified full regression baseline is:
 
-653 passed
+840 passed
 
 ## 11. Git State at This Context Version
 
@@ -298,43 +310,71 @@ Branch:
 
 Last completed technical RFC:
 
-`RFC-060 — Canonical Enterprise Document Registration Application Boundary`
+`RFC-066 — Canonical Enterprise Document Content Foundation Boundary`
 
-RFC-060 contract commit:
+RFC-066 accepted contract commit:
 
-`cda5e57eeabfa3699f960586982899cdf0ff9757`
+`fb277fe00a9e606192c795338ab5419f4b9db788`
 
-Technical baseline commit:
+RFC-066 technical implementation commit:
 
-`c3ffb25849d6ae7b3fe26264cdf326ae5b3f86c7`
+`49080b6c1f6f0607e6ba04ba2476f222dea97155`
+
+RFC-066 engineering closure commit:
+
+`1ddc46c00680aac4718e6d3d76127857acbd4532`
+
+RFC-066 post-closure reconciliation commit:
+
+`9dee653e32b8c22fabdf85a719985ed22a9e8459`
+
+Current post-RFC-066 broad-review / successor-selection baseline:
+
+`1d7f09d5106b7714421a1035877ff82a0538d39e`
 
 Remote:
 
 `origin/feature/engineering-platform`
 
+Exact local / remote identity at the broad-review baseline:
+
+verified
+
 Verified full regression baseline:
 
-`653 passed`
+`840 passed`
+
+Python in-memory compile audit:
+
+`342 files compiled; 0 failures`
 
 Canonical Alembic head:
 
-`0003`
+`0004`
 
 Canonical migration chain:
 
-`0001 → 0002 → 0003`
+`0001 → 0002 → 0003 → 0004`
 
-RFC-059 remote technical push:
+Final `CompositionRoot.build()` smoke verification:
 
-verified
+passed
 
-Exact local/remote technical commit identity:
-
-verified
-
-Working tree after the verified RFC-059 technical push:
+Working tree at completion of the broad post-RFC-066 review:
 
 clean
+
+Broad post-RFC-066 architecture/system judgment:
+
+**PASS WITH REGISTERED NON-BLOCKING DEBT**
+
+No next RFC is active.
+
+The selected successor architecture workstream is:
+
+**Operational Workload Evidence Contract Placement Remediation**
+
+Its architecture contract has not yet been authored or accepted.
 
 ## 12. Current Architectural Review
 
@@ -1795,17 +1835,118 @@ Working tree after reconciliation push: clean.
 
 RFC-066 is fully closed and Source-of-Truth reconciled.
 
-No next RFC has been selected or authorized.
+### Broad Post-RFC-066 Architecture/System Review
+
+The required broad architecture and system evidence review is complete.
+
+Final judgment:
+
+**PASS WITH REGISTERED NON-BLOCKING DEBT**
+
+Final integrity evidence includes:
+
+- full PlantMind regression: 840 passed;
+- Python in-memory compile audit: 342 files compiled with zero failures;
+- `git diff --check`: passed;
+- canonical Alembic lineage remains exactly
+  `0001 -> 0002 -> 0003 -> 0004`;
+- canonical Alembic head remains `0004`;
+- `CompositionRoot.build()` smoke verification: passed;
+- exact local / remote Git identity verified at
+  `1d7f09d5106b7714421a1035877ff82a0538d39e`;
+- working tree clean at completion of the review;
+- Domain dependency direction remains clean;
+- Infrastructure contains no identified upward dependency violation;
+- accepted RFC-064 / RFC-065 persistence and transaction ownership remains
+  coherent;
+- RFC-066 Document Content remains isolated from persistence, binary
+  storage, retrieval, parsing, OCR, vector, graph, RAG, LLM and default
+  Composition;
+- deferred prototype capabilities remain contained and are not production
+  authorities;
+- production PostgreSQL connectivity and Cybersecurity readiness remain
+  separately gated and are not claimed by this review.
+
+Registered non-blocking debt:
+
+1. `OperationalWorkloadEvidence` is physically located under
+   `app.services.orchestration`, while two canonical Core transition
+   modules import that contract;
+2. unused legacy Neo4j URI / username / password defaults remain in
+   `app.config` as separate configuration-hygiene debt.
+
+The first item is an architecture package-placement and dependency-direction
+debt.
+
+No functional, Runtime-authority, persistence, transaction or accepted
+operational-transition semantic defect was identified in the
+`OperationalWorkloadEvidence` behavior itself.
+
+The Neo4j defaults are not consumed by canonical Neo4j runtime or
+Composition wiring and do not establish production Neo4j connectivity.
+
+No architecture blocker or required platform redesign was identified.
+
+### Successor Architecture Workstream Selection
+
+The evidence-based successor architecture workstream is:
+
+**Operational Workload Evidence Contract Placement Remediation**
+
+Selection baseline:
+
+`1d7f09d5106b7714421a1035877ff82a0538d39e`
+
+Selection state:
+
+**DRAFT — Architecture Contract Not Yet Authored or Accepted**
+
+The selected workstream shall determine the minimum architecture-safe
+placement of the canonical `OperationalWorkloadEvidence` contract so Core
+transition components no longer depend outward on `app.services.*`.
+
+The workstream shall preserve accepted semantics and authority established
+through AD-032, AD-033, AD-036 and AD-037.
+
+Selection does not authorize:
+
+- production implementation;
+- workload-behavior changes;
+- operational-transition semantic changes;
+- Runtime-authority changes;
+- default Composition behavior changes;
+- persistence or migration changes;
+- Document Content access/storage work;
+- parser, OCR, search, vector, graph, RAG or LLM implementation;
+- Neo4j production integration;
+- production-security or Cybersecurity-readiness claims.
+
+No next RFC is active or authorized.
+
+Draft propagation of the successor-workstream selection across all five
+required Source-of-Truth documents is complete.
+
+The complete five-document successor-selection consistency review passed.
+
+The prior automated clean-working-tree finding was verified as a checker
+false negative. The required clean-working-tree gate is present in the
+architecture-governance record and no Source-of-Truth correction was
+required for that finding.
+
+The reviewed selection documentation has not yet been committed.
 
 ### Next Exact Action
 
-Perform the broad post-RFC-066 architecture and system evidence review.
+Open the successor-selection documentation commit gate.
 
-The review SHALL examine the maintained Source-of-Truth, accepted
-architecture contracts, current implementation responsibilities, tests,
-dependency boundaries, persistence and transaction boundaries, and
-explicitly deferred capabilities for cross-system consistency and
-remaining architecture risk.
+Stage and review exactly the five maintained Source-of-Truth documents.
 
-Evidence-based selection of another architecture workstream may begin
-only after that broad architecture/system review passes.
+Do not create the selection commit unless the staged diff preserves the
+reviewed successor-selection state and contains no other file.
+
+After the reviewed selection commit is created and pushed, verify exact
+local / remote selection identity and a clean working tree.
+
+Only then may architecture-contract drafting begin.
+
+Technical implementation remains prohibited.

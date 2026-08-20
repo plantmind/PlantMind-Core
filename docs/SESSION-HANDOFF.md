@@ -7,7 +7,10 @@
 | Project | PlantMind PM-001 |
 | Branch | `feature/engineering-platform` |
 | Last Completed RFC | RFC-066 — Canonical Enterprise Document Content Foundation Boundary — Fully Closed and Source-of-Truth Reconciled |
-| Active RFC | None — Broad Architecture/System Review Pending; No Next RFC Selected |
+| Active RFC | None — Successor Workstream Selection Record Ready for Commit; Five-Document Consistency Review Passed; Architecture Contract Not Yet Authored or Accepted |
+| Selected Architecture Workstream | Operational Workload Evidence Contract Placement Remediation |
+| Selection Baseline | `1d7f09d5106b7714421a1035877ff82a0538d39e` |
+| Broad Review Judgment | PASS WITH REGISTERED NON-BLOCKING DEBT |
 | Technical Baseline Commit | `49080b6c1f6f0607e6ba04ba2476f222dea97155` |
 | Architecture Baseline Commit | `fb277fe00a9e606192c795338ab5419f4b9db788` |
 | Engineering Closure Commit | `1ddc46c00680aac4718e6d3d76127857acbd4532` |
@@ -63,6 +66,12 @@
 - RFC-058 — Canonical Enterprise Document Repository Foundation Boundary
 - RFC-059 — Canonical Document Relational Persistence Adapter Boundary
 - RFC-060 — Canonical Enterprise Document Registration Application Boundary
+- RFC-061 — Canonical Document-to-Knowledge Lineage Foundation Boundary
+- RFC-062 — Canonical Document-to-Knowledge Lineage Repository Foundation Boundary
+- RFC-063 — Canonical Document-to-Knowledge Lineage Relational Persistence Adapter Boundary
+- RFC-064 — Canonical Knowledge-and-Lineage Transaction Coordination Foundation Boundary
+- RFC-065 — Canonical Document-to-Knowledge Ingestion Application Boundary
+- RFC-066 — Canonical Enterprise Document Content Foundation Boundary
 
 ## RFC-036 Outcome
 
@@ -2020,17 +2029,126 @@ The verified reconciliation preserved:
 
 RFC-066 is fully closed and Source-of-Truth reconciled.
 
-No next RFC has been selected or authorized.
+## Broad Post-RFC-066 Architecture/System Review Handoff
+
+The required broad post-RFC-066 architecture and system evidence review
+is complete.
+
+Final judgment:
+
+**PASS WITH REGISTERED NON-BLOCKING DEBT**
+
+Final integrity evidence:
+
+- full PlantMind regression: 840 passed;
+- Python in-memory compile audit: 342 files compiled with zero failures;
+- `git diff --check`: passed;
+- canonical Alembic lineage remains
+  `0001 → 0002 → 0003 → 0004`;
+- canonical Alembic head remains `0004`;
+- `CompositionRoot.build()` smoke verification: passed;
+- exact local / remote Git identity verified at
+  `1d7f09d5106b7714421a1035877ff82a0538d39e`;
+- working tree was clean at completion of the broad review;
+- Domain dependency direction remains clean;
+- Infrastructure contains no identified upward dependency violation;
+- RFC-064 / RFC-065 persistence and transaction ownership remains
+  coherent;
+- RFC-066 Document Content remains isolated from persistence, binary
+  storage, retrieval, parsing, OCR, vector, graph, RAG, LLM and default
+  Composition;
+- deferred prototypes remain contained and are not production
+  authorities;
+- PostgreSQL production integration verification and Cybersecurity
+  readiness remain separately gated and are not claimed by this review.
+
+Registered non-blocking debt:
+
+1. `OperationalWorkloadEvidence` is physically located under
+   `app.services.orchestration`, while exactly two canonical Core
+   transition modules import that contract;
+2. unused legacy Neo4j URI / username / password defaults remain in
+   `app.config` as separate configuration-hygiene debt.
+
+The first item is an isolated package-placement and dependency-direction
+architecture debt.
+
+No functional, Runtime-authority, persistence, transaction or accepted
+operational-transition semantic defect was identified in
+`OperationalWorkloadEvidence` itself.
+
+The Neo4j defaults are not consumed by canonical Neo4j Runtime or
+Composition wiring and do not establish production Neo4j connectivity.
+
+No architecture blocker or required platform redesign was identified.
+
+## Successor Architecture Workstream Handoff
+
+The evidence-based successor architecture workstream is:
+
+**Operational Workload Evidence Contract Placement Remediation**
+
+Selection baseline:
+
+`1d7f09d5106b7714421a1035877ff82a0538d39e`
+
+Selection state:
+
+**DRAFT — Architecture Contract Not Yet Authored or Accepted**
+
+The remediation workstream shall determine the minimum architecture-safe
+placement for canonical `OperationalWorkloadEvidence` so Core transition
+components no longer depend outward on `app.services.*`.
+
+The workstream shall preserve the accepted semantics and authority
+established through:
+
+- AD-032;
+- AD-033;
+- AD-036;
+- AD-037.
+
+The selection does not authorize:
+
+- technical implementation;
+- workload-execution behavior changes;
+- operational-transition semantic changes;
+- Runtime lifecycle-authority changes;
+- default Composition behavior changes;
+- persistence, transaction or Alembic changes;
+- Document Content access or storage work;
+- parser, OCR, search, vector, graph, RAG or LLM implementation;
+- Neo4j production integration;
+- authentication, authorization, RBAC or Active Directory work;
+- Cybersecurity approval or production-readiness claims.
+
+No next RFC is active or authorized.
+
+Draft propagation of the successor-workstream selection across all five
+required Source-of-Truth documents is complete.
+
+The complete five-document successor-selection consistency review passed.
+
+The prior automated clean-working-tree finding was verified as a checker
+false negative. The required clean-working-tree gate is present in the
+architecture-governance record and no Source-of-Truth correction was
+required for that finding.
+
+The reviewed selection documentation has not yet been committed.
 
 ### Next Exact Action
 
-Perform the broad post-RFC-066 architecture and system evidence review.
+Open the successor-selection documentation commit gate.
 
-The review SHALL examine the maintained Source-of-Truth, accepted
-architecture contracts, current implementation, test evidence,
-dependency boundaries, persistence and transaction boundaries,
-composition authority and explicitly deferred capabilities for
-cross-system consistency and remaining architecture risk.
+Stage and review exactly the five maintained Source-of-Truth documents.
 
-Evidence-based selection of another architecture workstream may begin
-only after that broad architecture/system review passes.
+Do not create the selection commit unless the staged diff preserves the
+reviewed successor-selection state and contains no other file.
+
+After the reviewed selection commit is created and pushed:
+
+1. verify exact local / remote selection identity;
+2. verify the working tree is clean;
+3. only then begin architecture-contract drafting.
+
+Technical implementation remains prohibited.

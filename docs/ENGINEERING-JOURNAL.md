@@ -5012,3 +5012,425 @@ cross-system consistency and remaining architecture risk.
 
 Evidence-based selection of another architecture workstream may begin
 only after that broad architecture/system review passes.
+
+---
+
+## 2026-08-20 — Broad Post-RFC-066 Architecture/System Review Completion and Successor Workstream Selection
+
+### Review Completion
+
+The required broad post-RFC-066 architecture and system evidence review
+has been completed.
+
+Final judgment:
+
+**PASS WITH REGISTERED NON-BLOCKING DEBT**
+
+No architecture blocker, accepted-contract violation or required platform
+redesign was identified.
+
+### Final Integrity Evidence
+
+The final broad-review integrity gate verified:
+
+- branch `feature/engineering-platform`;
+- exact local / remote baseline identity at
+  `1d7f09d5106b7714421a1035877ff82a0538d39e`;
+- clean working tree at completion of the review;
+- `git diff --check`: passed;
+- full PlantMind regression: **840 passed**;
+- Python in-memory compile audit:
+  **342 files compiled; 0 failures**;
+- canonical Alembic lineage:
+  `0001 → 0002 → 0003 → 0004`;
+- canonical Alembic head: `0004`;
+- `CompositionRoot.build()` smoke verification: passed.
+
+### Architecture Review Findings
+
+The evidence review confirmed:
+
+- Domain dependency direction remains clean;
+- Infrastructure contains no identified upward dependency violation;
+- accepted Composition and Runtime authority remain preserved;
+- RFC-064 / RFC-065 persistence and transaction ownership remains
+  coherent;
+- RFC-066 Document Content remains isolated from persistence, binary
+  storage, content retrieval, parsing, OCR, vector, graph, RAG, LLM and
+  default Composition;
+- `DocumentSource.source_reference` remains external traceability and is
+  not used as canonical content location, path, URI, storage key,
+  identity or deduplication key;
+- deferred Knowledge Graph, semantic-search, vector, RAG, memory, agent
+  and related prototype seams remain non-production capabilities;
+- current PI implementation remains pre-production / mock-oriented and
+  does not establish production PI Web API connectivity;
+- current `SecurityManager` does not establish enterprise authentication,
+  authorization, RBAC, Active Directory, LDAP, MFA or Cybersecurity
+  readiness;
+- production PostgreSQL integration verification remains separately
+  required before production relational-persistence readiness may be
+  claimed;
+- Cybersecurity approval and production deployment readiness remain
+  separately gated.
+
+### Registered Non-Blocking Debt
+
+The broad review identified two concrete debt items.
+
+#### 1. Operational Workload Evidence Contract Placement
+
+Canonical Core transition components currently import
+`OperationalWorkloadEvidence` from:
+
+`app.services.orchestration.workload_evidence`
+
+The two identified Core consumers are:
+
+- `app.core.operational_transition_coordinator`;
+- `app.core.operational_transition_evidence`.
+
+The accepted semantics established through AD-032, AD-033, AD-036 and
+AD-037 remain correct.
+
+No functional, Runtime-authority, persistence, transaction or accepted
+operational-transition semantic defect was identified.
+
+The issue is an isolated physical package-placement and
+dependency-direction architecture debt.
+
+#### 2. Legacy Neo4j Configuration Hygiene
+
+`app.config` contains legacy default Neo4j URI / username / password
+values.
+
+Repository evidence confirms those Neo4j values are not consumed by a
+canonical Neo4j Runtime path or default Composition wiring.
+
+They therefore do not establish production Neo4j connectivity.
+
+The values remain separate configuration/security-hygiene debt and shall
+not be interpreted as production credentials or production readiness.
+
+### Successor Workstream Selection
+
+The evidence-based successor architecture workstream is:
+
+**Operational Workload Evidence Contract Placement Remediation**
+
+Selection baseline:
+
+`1d7f09d5106b7714421a1035877ff82a0538d39e`
+
+Selection state:
+
+**DRAFT — Architecture Contract Not Yet Authored or Accepted**
+
+No next RFC is active.
+
+The selected remediation workstream shall determine the minimum
+architecture-safe placement of canonical
+`OperationalWorkloadEvidence` so Core transition components no longer
+depend outward on `app.services.*`.
+
+### Preserved Accepted Responsibilities
+
+The selection shall preserve:
+
+- `OperationalWorkloadEvidence` semantics;
+- `ApplicationFacade`;
+- `IntegrationGateway`;
+- `OrchestrationService`;
+- `WorkflowExecutor`;
+- `OperationalTransitionEvidence`;
+- `OperationalTransitionCoordinator`;
+- `OperationalTransitionApplicationService`;
+- mandatory-capability availability, policy and coverage ownership;
+- Runtime as the authoritative operational-transition lifecycle owner;
+- Bootstrap authority;
+- request-admission ownership;
+- default `CompositionRoot`;
+- ARCH-001;
+- CORE-002;
+- CORE-003;
+- AD-032;
+- AD-033;
+- AD-036;
+- AD-037.
+
+If remediation requires alteration of an accepted prior contract, that
+change must be identified and reviewed explicitly before implementation.
+
+### Explicit Non-Authorization
+
+This selection does not authorize:
+
+- technical or production implementation;
+- workload-execution behavior changes;
+- operational-transition semantic changes;
+- new Runtime lifecycle authority;
+- new application facade, gateway, orchestration or workflow authority;
+- a new Core Service;
+- a seventh ARCH-001 layer;
+- persistence, transaction, schema or Alembic changes;
+- Document Content access or binary-storage implementation;
+- Document Library implementation;
+- parser, PDF extraction, OCR or chunking;
+- semantic search or indexing;
+- embeddings or vector persistence;
+- graph persistence or Neo4j production integration;
+- RAG or LLM execution;
+- PI production connectivity;
+- authentication, authorization, RBAC or Active Directory implementation;
+- Cybersecurity approval;
+- production-readiness claims.
+
+### Source-of-Truth Propagation State
+
+The successor-workstream selection is being propagated through the
+maintained Source-of-Truth documents before any architecture contract is
+opened.
+
+Current draft propagation includes:
+
+- `ROADMAP-004-Active-Work-Register.md`;
+- `PROJECT-CONTEXT.md`;
+- `SESSION-HANDOFF.md`;
+- this append-only `ENGINEERING-JOURNAL.md` entry.
+
+`ARCHITECTURE-DECISIONS.md` remains to be reviewed for the required
+current selection-state update.
+
+Historical Engineering Journal entries remain unchanged.
+
+### Next Exact Action
+
+Review this append-only Journal entry.
+
+Then review and reconcile `ARCHITECTURE-DECISIONS.md` as the remaining
+Source-of-Truth document for successor-workstream selection state.
+
+After all required Source-of-Truth selection records are consistent:
+
+1. perform the complete selection-consistency review;
+2. commit the selection documentation separately from any architecture
+   contract;
+3. push the selection commit;
+4. verify exact local / remote selection identity;
+5. verify the working tree is clean;
+6. only then begin architecture-contract drafting.
+
+Technical implementation remains prohibited.
+
+---
+
+## 2026-08-20 — Successor Workstream Five-Document Propagation Completion
+
+### Propagation Result
+
+Draft Source-of-Truth propagation for the selected successor architecture
+workstream is complete across all five maintained engineering-memory
+documents in the current working tree.
+
+Selected workstream:
+
+**Operational Workload Evidence Contract Placement Remediation**
+
+Selection baseline:
+
+`1d7f09d5106b7714421a1035877ff82a0538d39e`
+
+Selection state:
+
+**DRAFT — Architecture Contract Not Yet Authored or Accepted**
+
+No RFC number has been assigned.
+
+No new Architecture Decision number has been assigned.
+
+### Five-Document State
+
+The successor-selection state is now represented in:
+
+- `ROADMAP-004-Active-Work-Register.md`;
+- `PROJECT-CONTEXT.md`;
+- `SESSION-HANDOFF.md`;
+- append-only `ENGINEERING-JOURNAL.md`;
+- `ARCHITECTURE-DECISIONS.md`.
+
+`ARCHITECTURE-DECISIONS.md` was reviewed and received a non-decision
+architecture-governance record only.
+
+AD-001 through AD-052 remain unchanged.
+
+The Engineering Journal remains append-only.
+
+Historical Engineering Journal entries remain unchanged.
+
+### Current Architecture State
+
+The broad post-RFC-066 architecture/system review remains:
+
+**PASS WITH REGISTERED NON-BLOCKING DEBT**
+
+The registered debt remains:
+
+1. canonical Core transition components depend physically on
+   `OperationalWorkloadEvidence` under
+   `app.services.orchestration.workload_evidence`;
+2. unused legacy Neo4j configuration defaults remain separate
+   configuration/security-hygiene debt.
+
+The selected successor workstream addresses only the first debt item.
+
+Accepted operational workload and transition semantics established through
+AD-032, AD-033, AD-036 and AD-037 remain authoritative.
+
+No functional, Runtime-authority, persistence or transaction defect has
+been identified in those accepted semantics.
+
+### Current Gate
+
+Five-document propagation is complete.
+
+The successor-selection record has not yet passed the complete
+five-document consistency review.
+
+The selection documentation has not yet been committed.
+
+Architecture-contract drafting has not begun.
+
+Technical implementation remains prohibited.
+
+### Next Exact Action
+
+Perform the complete five-document successor-workstream selection
+consistency review.
+
+That review shall verify:
+
+- exact workstream-name consistency;
+- exact selection-baseline consistency;
+- selection-state consistency;
+- registered-debt consistency;
+- preservation of accepted responsibilities;
+- explicit non-authorization boundaries;
+- AD-001 through AD-052 history preservation;
+- Engineering Journal append-only history preservation;
+- absence of production-code changes;
+- clean `git diff --check`;
+- correct selection commit and architecture-contract gates.
+
+Only if that review passes may the separate successor-selection
+documentation commit be created.
+
+After that commit is pushed, exact local / remote identity is verified and
+the working tree is clean, architecture-contract drafting may begin.
+
+Technical implementation remains prohibited until a future architecture
+contract is reviewed, accepted, committed, pushed and its
+implementation-entry Git gate is satisfied.
+
+---
+
+## 2026-08-21 — Successor Selection Consistency Review Pass and Commit Gate Opening
+
+### Review Result
+
+The complete five-document successor-workstream selection consistency
+review is complete.
+
+Final result:
+
+**PASS**
+
+Selected successor architecture workstream:
+
+**Operational Workload Evidence Contract Placement Remediation**
+
+Selection baseline:
+
+`1d7f09d5106b7714421a1035877ff82a0538d39e`
+
+The review confirmed consistent successor-selection state across:
+
+- `ROADMAP-004-Active-Work-Register.md`;
+- `PROJECT-CONTEXT.md`;
+- `SESSION-HANDOFF.md`;
+- append-only `ENGINEERING-JOURNAL.md`;
+- the non-decision current architecture-governance record in
+  `ARCHITECTURE-DECISIONS.md`.
+
+### Verified Governance State
+
+The review verified:
+
+- the selected workstream name is consistent;
+- the selection baseline is consistent;
+- the registered package-placement debt is consistent;
+- the separate legacy Neo4j configuration-hygiene debt remains separate;
+- AD-032, AD-033, AD-036 and AD-037 semantics remain authoritative;
+- accepted operational workload and transition behavior remains unchanged;
+- Runtime authority remains unchanged;
+- default Composition authority remains unchanged;
+- committed AD-001 through AD-052 history remains preserved;
+- committed Engineering Journal history remains preserved;
+- the Engineering Journal remains append-only;
+- no production-code or test-file change is part of the selection record;
+- `git diff --check` is clean;
+- no RFC number has been assigned;
+- no new Architecture Decision number has been assigned;
+- no architecture contract has been authored or accepted;
+- technical implementation remains prohibited.
+
+### Checker Correction
+
+The earlier automated consistency checker reported one
+clean-working-tree-gate failure for `ARCHITECTURE-DECISIONS.md`.
+
+Independent verification confirmed this was a checker false negative.
+
+The architecture-governance record already contained the required gate:
+
+`verify a clean working tree`
+
+before architecture-contract drafting.
+
+No Source-of-Truth correction was required for that checker finding.
+
+### Selection Commit Gate
+
+The reviewed successor-selection documentation is now ready for the
+separate selection commit gate.
+
+The commit gate shall stage and review exactly these five documents:
+
+1. `docs/ARCHITECTURE-DECISIONS.md`;
+2. `docs/ENGINEERING-JOURNAL.md`;
+3. `docs/PROJECT-CONTEXT.md`;
+4. `docs/ROADMAP-004-Active-Work-Register.md`;
+5. `docs/SESSION-HANDOFF.md`.
+
+The staged diff shall contain no production-code or test-file change.
+
+The selection commit shall remain separate from any future architecture
+contract.
+
+### Next Exact Action
+
+Open the successor-selection documentation commit gate.
+
+Stage exactly the five maintained Source-of-Truth documents and perform a
+final staged-diff review before creating the commit.
+
+Only if that staged review passes may the selection commit be created.
+
+After the selection commit is pushed:
+
+1. verify exact local / remote selection identity;
+2. verify the working tree is clean;
+3. only then begin architecture-contract drafting.
+
+Technical implementation remains prohibited until the future architecture
+contract is reviewed, accepted, committed, pushed and its
+implementation-entry Git gate is satisfied.

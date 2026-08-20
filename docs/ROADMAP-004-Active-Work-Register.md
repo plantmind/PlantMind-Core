@@ -35,6 +35,251 @@ No item may be marked complete until:
 
 ---
 
+## Selected Architecture Workstream — Operational Workload Evidence Contract Placement Remediation
+
+### Status
+
+Selection Record Ready for Commit — Five-Document Source-of-Truth
+Propagation Complete; Selection Consistency Review Passed; Architecture
+Contract Not Yet Authored or Accepted.
+
+This section records the evidence-based successor-workstream selection
+following completion of the broad post-RFC-066 architecture and system
+review.
+
+This selection does not constitute RFC contract acceptance, implementation
+authorization, production-readiness approval or permission to change
+accepted operational-transition semantics.
+
+Selection baseline:
+
+`1d7f09d5106b7714421a1035877ff82a0538d39e`
+
+### Selection Evidence
+
+The broad post-RFC-066 architecture and system review established:
+
+- RFC-066 is fully closed and Source-of-Truth reconciled;
+- local and remote Git identity are exact at the selection baseline;
+- the working tree is clean;
+- full PlantMind regression is **840 passed**;
+- **342** Python files compile with zero failures;
+- Alembic lineage remains exactly `0001 -> 0002 -> 0003 -> 0004`;
+- `CompositionRoot.build()` passes its final smoke verification;
+- Domain dependency direction remains clean;
+- Infrastructure does not contain an identified upward dependency violation;
+- persistence and RFC-064 / RFC-065 transaction ownership remain coherent;
+- RFC-066 Document Content remains isolated from persistence, retrieval,
+  parsing, OCR, vector, graph, RAG, LLM and default Composition;
+- deferred prototypes remain contained and are not production authorities;
+- the current Neo4j URI / username / password defaults are unused legacy
+  configuration and remain a separate configuration-hygiene debt;
+- outside the approved composition boundary, the broad dependency audit
+  identified exactly two Core imports of
+  `app.services.orchestration.workload_evidence`;
+- those imports occur in:
+  `app.core.operational_transition_coordinator` and
+  `app.core.operational_transition_evidence`;
+- AD-032, AD-033, AD-036 and AD-037 establish and preserve the accepted
+  `OperationalWorkloadEvidence` semantics and operational-transition
+  evidence flow;
+- no functional, Runtime-authority or transaction defect was identified in
+  those accepted semantics;
+- the remaining issue is therefore an isolated physical package-placement
+  and dependency-direction architecture debt.
+
+Broad-review judgment:
+
+**PASS WITH REGISTERED NON-BLOCKING DEBT**
+
+### Selection Rationale
+
+Accepted operational-transition semantics require Core transition
+coordination and evidence aggregation to consume canonical
+`OperationalWorkloadEvidence`.
+
+The current physical location of that contract under
+`app.services.orchestration` causes Core modules to depend outward on a
+Services package.
+
+The semantic contract is accepted and working, but allowing this physical
+dependency to remain as the platform expands would weaken dependency
+direction, make package ownership less explicit and create a precedent for
+future Core-to-Service coupling.
+
+The minimum architecture-remediation workstream is therefore:
+
+**Operational Workload Evidence Contract Placement Remediation**
+
+The exact replacement package, namespace and compatibility strategy are not
+decided by this selection. They require a reviewed architecture contract.
+
+### Objective
+
+Define the minimum architecture change required so canonical Core
+operational-transition components can consume
+`OperationalWorkloadEvidence` without depending outward on
+`app.services.*`, while preserving all accepted workload, transition,
+Runtime and composition semantics.
+
+### Required Architecture Questions
+
+The architecture contract for this workstream shall explicitly resolve:
+
+1. which architectural responsibility canonically owns
+   `OperationalWorkloadEvidence`;
+2. the correct persistence-neutral and behavior-neutral package namespace
+   for that contract;
+3. whether remediation requires relocation, extraction or another narrowly
+   justified contract-placement mechanism;
+4. how exact `OperationalWorkloadEvidence` type and object-identity
+   semantics remain preserved;
+5. how AD-032, AD-033, AD-036 and AD-037 remain authoritative;
+6. whether any accepted prior ADR requires explicit amendment rather than
+   silent reinterpretation;
+7. whether temporary import compatibility is required and, if so, its exact
+   removal boundary;
+8. which imports and tests may change;
+9. which imports and responsibilities shall remain unchanged;
+10. how CORE-002 and CORE-003 dependency rules are enforced after
+    remediation;
+11. how `ApplicationFacade`, `IntegrationGateway`,
+    `OrchestrationService` and `WorkflowExecutor` responsibilities remain
+    unchanged;
+12. how `OperationalTransitionCoordinator`,
+    `OperationalTransitionEvidence` and
+    `OperationalTransitionApplicationService` semantics remain unchanged;
+13. how Runtime remains the sole operational-transition authority;
+14. how default `CompositionRoot` behavior remains unchanged;
+15. which architecture tests shall prevent recurrence of Core-to-Service
+    contract-placement leakage;
+16. the exact TDD RED/GREEN and full-regression evidence required before
+    implementation may be accepted.
+
+### Existing Responsibilities That Shall Be Preserved
+
+Selection of this workstream does not authorize silent redesign of:
+
+- `OperationalWorkloadEvidence`;
+- `ApplicationFacade`;
+- `IntegrationGateway`;
+- `OrchestrationService`;
+- `WorkflowExecutor`;
+- `OperationalTransitionEvidence`;
+- `OperationalTransitionCoordinator`;
+- `OperationalTransitionApplicationService`;
+- mandatory-capability availability, policy and coverage responsibilities;
+- Runtime transition authority;
+- Bootstrap authority;
+- default `CompositionRoot`;
+- request-admission ownership;
+- ARCH-001;
+- CORE-002;
+- CORE-003;
+- AD-032;
+- AD-033;
+- AD-036;
+- AD-037.
+
+If remediation requires changing an accepted prior contract, that change
+must be identified and reviewed explicitly before implementation.
+
+### Explicit Non-Goals
+
+This selection does not authorize:
+
+- production implementation;
+- behavioral changes to operational workload execution;
+- new operational-transition eligibility semantics;
+- new Runtime lifecycle state;
+- new application facade, gateway, orchestrator or workflow executor;
+- new Core Service;
+- a seventh ARCH-001 layer;
+- persistence changes;
+- schema or Alembic changes;
+- Document Content persistence or retrieval;
+- Document Library implementation;
+- parser, OCR or chunking implementation;
+- vector, graph, RAG or LLM implementation;
+- PI production connectivity;
+- Neo4j production integration;
+- remediation of the separate unused Neo4j configuration defaults;
+- authentication, authorization, RBAC or Active Directory implementation;
+- Cybersecurity approval;
+- production-readiness claims.
+
+### Completed Work
+
+- RFC-066 technical implementation completed and verified;
+- RFC-066 engineering closure completed and verified;
+- RFC-066 Source-of-Truth reconciliation completed and verified;
+- broad post-RFC-066 architecture/system review completed;
+- dependency-direction audit completed;
+- persistence and transaction audit completed;
+- deferred-capability and prototype-containment audit completed;
+- configuration/security-hygiene audit completed;
+- final repository integrity gate completed;
+- successor architecture debt prioritized from repository evidence;
+- Operational Workload Evidence Contract Placement Remediation selected;
+- ROADMAP successor-workstream selection record reviewed;
+- draft successor-selection state propagated through all five required
+  Source-of-Truth documents in the current working tree;
+- committed AD-001 through AD-052 history preserved while adding the
+  non-decision architecture-governance record;
+- committed Engineering Journal history preserved while adding the
+  successor-selection record append-only.
+
+### Remaining Work
+
+- commit the reviewed successor-selection documentation separately from
+  any future architecture contract;
+- push the selection commit;
+- verify exact local / remote selection commit identity;
+- verify the working tree is clean;
+- only then begin architecture-contract drafting for the selected
+  remediation workstream.
+
+### Dependencies
+
+This workstream depends on the accepted operational workload and transition
+architecture established through AD-032, AD-033, AD-036 and AD-037.
+
+Those semantic prerequisites are satisfied.
+
+The workstream also depends on completion of the broad post-RFC-066
+architecture/system review.
+
+That review is complete and passed with registered non-blocking debt.
+
+### Resume Condition
+
+Draft Source-of-Truth propagation is complete.
+
+The complete five-document successor-selection consistency review passed.
+
+The prior automated clean-working-tree failure was verified as a checker
+false negative; the required gate is present in the architecture record and
+no Source-of-Truth correction was required for that finding.
+
+Technical implementation remains prohibited.
+
+Architecture-contract drafting shall not begin until the reviewed selection
+record is committed and pushed, exact local / remote selection identity is
+verified and the working tree is clean.
+
+### Next Exact Action
+
+Open the successor-selection documentation commit gate.
+
+Stage and review exactly the five maintained Source-of-Truth documents
+before creating the selection commit.
+
+Do not begin architecture-contract drafting before the separate selection
+commit is pushed, exact local / remote identity is verified and the working
+tree is clean.
+
+---
+
 ## Selected Architecture Workstream — Canonical Enterprise Document Content Foundation Boundary
 
 ### Status
