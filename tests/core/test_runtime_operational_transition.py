@@ -11,7 +11,7 @@ from app.core.capability_coverage import (
 from app.core.operational_transition_evidence import OperationalTransitionEvidence
 from app.core.runtime import Runtime
 from app.core.runtime_state import RuntimeState
-from app.services.orchestration.workload_evidence import (
+from app.domain.operational_workload_evidence import (
     ApplicationFacadeEntryEvidence,
     OperationalWorkloadEvidence,
     WorkflowExecutionStartEvidence,

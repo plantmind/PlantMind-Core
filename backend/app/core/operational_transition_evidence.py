@@ -6,7 +6,7 @@ from app.core.capability_coverage import (
     MandatoryCapabilityCoverageResult,
     MandatoryCapabilityCoverageState,
 )
-from app.services.orchestration.workload_evidence import (
+from app.domain.operational_workload_evidence import (
     OperationalWorkloadEvidence,
 )
 

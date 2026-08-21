@@ -4,7 +4,7 @@ from app.core.availability import CapabilityAvailabilityObserver
 from app.core.capability_coverage import MandatoryCapabilityCoverageEvaluator
 from app.core.operational_transition_evidence import OperationalTransitionEvidence
 from app.core.runtime import Runtime
-from app.services.orchestration.workload_evidence import OperationalWorkloadEvidence
+from app.domain.operational_workload_evidence import OperationalWorkloadEvidence
 
 
 class OperationalTransitionCoordinator:

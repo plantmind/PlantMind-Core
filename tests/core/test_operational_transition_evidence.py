@@ -14,7 +14,7 @@ from app.core.operational_transition_evidence import (
     OperationalTransitionEvidence,
 )
 from app.core.runtime import Runtime
-from app.services.orchestration.workload_evidence import (
+from app.domain.operational_workload_evidence import (
     ApplicationFacadeEntryEvidence,
     OperationalWorkloadEvidence,
     WorkflowExecutionStartEvidence,

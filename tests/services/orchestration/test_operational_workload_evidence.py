@@ -13,7 +13,7 @@ from app.services.orchestration.workflow import (
     WorkflowStage,
 )
 from app.services.orchestration.workflow_executor import WorkflowExecutor
-from app.services.orchestration.workload_evidence import (
+from app.domain.operational_workload_evidence import (
     ApplicationFacadeEntryEvidence,
     OperationalWorkloadEvidence,
     WorkflowExecutionStartEvidence,

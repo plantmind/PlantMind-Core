@@ -7,7 +7,7 @@ from app.services.orchestration.orchestration_service import (
     OrchestrationService,
 )
 from app.services.orchestration.workflow import WorkflowExecution
-from app.services.orchestration.workload_evidence import (
+from app.domain.operational_workload_evidence import (
     ApplicationFacadeEntryEvidence,
 )
 

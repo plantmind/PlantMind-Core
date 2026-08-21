@@ -13,7 +13,7 @@ from app.services.operational_transition_application_service import (
     OperationalTransitionApplicationService,
 )
 from app.services.orchestration.workflow import WorkflowExecution, WorkflowStage
-from app.services.orchestration.workload_evidence import (
+from app.domain.operational_workload_evidence import (
     ApplicationFacadeEntryEvidence,
     OperationalWorkloadEvidence,
     WorkflowExecutionStartEvidence,

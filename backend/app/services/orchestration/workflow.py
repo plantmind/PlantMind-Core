@@ -5,7 +5,7 @@ from __future__ import annotations
 from dataclasses import dataclass
 from enum import StrEnum
 
-from app.services.orchestration.workload_evidence import OperationalWorkloadEvidence
+from app.domain.operational_workload_evidence import OperationalWorkloadEvidence
 
 
 class WorkflowStage(StrEnum):

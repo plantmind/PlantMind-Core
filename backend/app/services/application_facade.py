@@ -7,7 +7,7 @@ from uuid import uuid4
 from app.domain.observation import Observation
 from app.services.integration_gateway import IntegrationGateway
 from app.services.orchestration.workflow import WorkflowExecution
-from app.services.orchestration.workload_evidence import (
+from app.domain.operational_workload_evidence import (
     ApplicationFacadeEntryEvidence,
 )
 
