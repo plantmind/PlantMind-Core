@@ -5434,3 +5434,195 @@ After the selection commit is pushed:
 Technical implementation remains prohibited until the future architecture
 contract is reviewed, accepted, committed, pushed and its
 implementation-entry Git gate is satisfied.
+
+---
+
+## 2026-08-21 — RFC-067 Technical Completion and Engineering-Memory Closure Propagation
+
+### Technical Completion State
+
+RFC-067 — Operational Workload Evidence Contract Placement Remediation
+is technically complete under accepted:
+
+`AD-053 — Operational Workload Evidence Contract Placement Remediation`
+
+Successor-selection baseline:
+
+`1d7f09d5106b7714421a1035877ff82a0538d39e`
+
+Successor-selection documentation commit:
+
+`4ed69096aff2f201f6c5aa8d96c4ec96d43e4122`
+
+Accepted RFC-067 / AD-053 architecture-contract commit:
+
+`d5f743fc0d6d416a5e52d21a6aba0b0108cd7b08`
+
+Verified technical implementation commit:
+
+`48f245b1064a5f0f203ae0705556bb86628f7403`
+
+The implementation-entry Git gate was satisfied before intentional TDD RED
+and production implementation began.
+
+### Implemented Architecture State
+
+Canonical ownership of the operational-workload evidence contract family
+is now:
+
+`app.domain.operational_workload_evidence`
+
+Canonical physical implementation:
+
+`backend/app/domain/operational_workload_evidence.py`
+
+The canonical family remains exactly:
+
+- `ApplicationFacadeEntryEvidence`;
+- `WorkflowExecutionStartEvidence`;
+- `OperationalWorkloadEvidence`.
+
+The accepted pre-RFC class definitions were preserved byte-for-byte when
+moved to the canonical Domain module.
+
+The previous Services path:
+
+`app.services.orchestration.workload_evidence`
+
+remains only as a temporary exact-class-identity compatibility re-export
+boundary and owns no duplicate contract class definitions.
+
+All maintained non-test backend consumers now use the canonical Domain
+import path.
+
+The two Core consumers identified by the post-RFC-066 architecture review:
+
+- `app.core.operational_transition_evidence`;
+- `app.core.operational_transition_coordinator`;
+
+no longer import operational-workload evidence from `app.services.*`.
+
+### Technical Verification Evidence
+
+RFC-067 verification evidence:
+
+- intentional RED: 2 expected failures;
+- RED failures matched the accepted package-placement debt;
+- focused GREEN: 101 passed;
+- full PlantMind regression: 850 passed;
+- Python compilation: passed;
+- static dependency / import integrity: passed;
+- exact legacy / canonical Python class identity: verified;
+- duplicate backend contract definitions: none;
+- `app.domain.evidence`: byte-for-byte unchanged;
+- `CompositionRoot.build()`: passed;
+- Runtime authority: unchanged;
+- Bootstrap and Health boundaries: unchanged;
+- API and request-admission boundaries: unchanged;
+- Infrastructure and relational migration surfaces: unchanged;
+- canonical Alembic head remains `0004`;
+- `git diff --check`: passed.
+
+Technical Git verification:
+
+- push: verified;
+- exact local / remote technical identity:
+  `48f245b1064a5f0f203ae0705556bb86628f7403`;
+- working tree after technical push: clean.
+
+### Accepted Architecture Preservation
+
+RFC-067 preserves the accepted semantics of:
+
+- AD-032;
+- AD-033;
+- AD-036;
+- AD-037.
+
+It changes physical contract ownership and imports only.
+
+RFC-067 introduces no:
+
+- seventh ARCH-001 layer;
+- new Core Service;
+- workload-execution redesign;
+- operational-transition semantic redesign;
+- Runtime authority change;
+- default CompositionRoot expansion;
+- persistence or transaction change;
+- database schema or Alembic change;
+- authentication or authorization;
+- RBAC or Active Directory integration;
+- production-security or Cybersecurity-readiness claim;
+- new information-security classification;
+- Document or Knowledge redesign;
+- parser, OCR, vector, graph, RAG or LLM behavior;
+- PI or DCS production connectivity.
+
+The adjacent physical placement of:
+
+`OperationalTransitionEvidence`
+
+under:
+
+`app.core.operational_transition_evidence`
+
+remains outside RFC-067 and is not declared remediated or fully
+ARCH-003 compliant.
+
+### Engineering-Memory Closure Propagation State
+
+RFC-067 technical implementation:
+
+**COMPLETE — VERIFIED AND COMMITTED**
+
+Reviewed engineering-memory closure drafts now exist in:
+
+1. `docs/ROADMAP-004-Active-Work-Register.md`;
+2. `docs/PROJECT-CONTEXT.md`;
+3. `docs/SESSION-HANDOFF.md`.
+
+This append-only Engineering Journal entry is the fourth maintained
+Source-of-Truth closure record.
+
+Historical Engineering Journal content preceding this entry remains
+byte-for-byte unchanged.
+
+Engineering-memory closure:
+
+**IN PROGRESS**
+
+Closure commit:
+
+**PENDING**
+
+Post-closure Source-of-Truth reconciliation:
+
+**NOT YET PERFORMED**
+
+`docs/ARCHITECTURE-DECISIONS.md` remains the final maintained
+Source-of-Truth document to review for RFC-067 closure before the
+five-document closure consistency review.
+
+### Next Exact Action
+
+Review this append-only RFC-067 Engineering Journal entry.
+
+If it passes, review:
+
+`docs/ARCHITECTURE-DECISIONS.md`
+
+as the fifth and final maintained Source-of-Truth closure document.
+
+Do not create the closure commit until:
+
+1. all five closure records are complete;
+2. five-document closure consistency review passes;
+3. historical Journal bytes are verified unchanged;
+4. historical Architecture Decision records are verified unchanged;
+5. `git diff --check` passes;
+6. the staged closure diff contains documentation only.
+
+Do not select or begin another RFC or architecture workstream until the
+RFC-067 closure commit is pushed and verified and post-closure
+Source-of-Truth reconciliation is complete.

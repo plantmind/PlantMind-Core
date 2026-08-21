@@ -11351,3 +11351,239 @@ Only after that gate passes may technical implementation begin with TDD
 RED.
 
 Do not modify production code before the accepted-contract Git gate passes.
+
+---
+
+## Current Architecture Governance State — RFC-067 Technical Completion and Engineering-Memory Closure
+
+**Record Classification: Non-Decision Current Architecture-Governance State**
+
+This section is not a new Architecture Decision.
+
+It does not create:
+
+- AD-054;
+- an amendment to AD-053;
+- an amendment to AD-001 through AD-052;
+- a new architecture contract;
+- a new technical authorization.
+
+AD-001 through AD-053 preceding this record remain historical accepted
+Architecture Decisions and are preserved byte-for-byte.
+
+### Historical AD-053 Procedural-State Clarification
+
+AD-053 contains procedural-state language written during its architecture
+contract acceptance and implementation-entry sequence.
+
+That historical language includes pre-implementation statements concerning:
+
+- Draft / acceptance transition state;
+- implementation authorization;
+- the accepted-contract Git gate;
+- the requirement to begin implementation with TDD RED only after that
+  gate passed.
+
+Those statements remain preserved as historical decision-process evidence.
+
+They SHALL NOT be read as the current RFC-067 execution state.
+
+The authoritative current RFC-067 state is recorded below without rewriting
+AD-053 history.
+
+### Current RFC-067 Architecture State
+
+RFC-067:
+
+`Operational Workload Evidence Contract Placement Remediation`
+
+Matching Architecture Decision:
+
+`AD-053 — Operational Workload Evidence Contract Placement Remediation`
+
+Architecture contract state:
+
+**ACCEPTED**
+
+Successor-selection baseline:
+
+`1d7f09d5106b7714421a1035877ff82a0538d39e`
+
+Successor-selection documentation commit:
+
+`4ed69096aff2f201f6c5aa8d96c4ec96d43e4122`
+
+Accepted RFC-067 / AD-053 architecture-contract commit:
+
+`d5f743fc0d6d416a5e52d21a6aba0b0108cd7b08`
+
+Verified technical implementation commit:
+
+`48f245b1064a5f0f203ae0705556bb86628f7403`
+
+The accepted-contract implementation-entry Git gate passed before
+intentional TDD RED and production implementation began.
+
+### Verified Implementation State
+
+RFC-067 technical implementation is:
+
+**COMPLETE — VERIFIED AND COMMITTED**
+
+Canonical contract ownership is:
+
+`app.domain.operational_workload_evidence`
+
+Canonical physical module:
+
+`backend/app/domain/operational_workload_evidence.py`
+
+The legacy import path:
+
+`app.services.orchestration.workload_evidence`
+
+remains only as the accepted temporary exact-class-identity compatibility
+re-export boundary.
+
+The legacy module owns no independent workload-evidence contract class
+definitions.
+
+All maintained non-test backend consumers use the canonical Domain import.
+
+The two Core consumers identified by the post-RFC-066 review no longer
+depend on the Services-owned workload-evidence contract package.
+
+### Verified Technical Evidence
+
+RFC-067 technical verification established:
+
+- intentional RED: 2 expected failures;
+- RED failures matched the accepted package-placement debt;
+- focused GREEN: 101 passed;
+- full PlantMind regression: 850 passed;
+- Python compilation: passed;
+- static dependency / import integrity: passed;
+- exact canonical / legacy Python class identity: verified;
+- duplicate backend workload-evidence contract definitions: none;
+- `app.domain.evidence`: byte-for-byte unchanged;
+- `CompositionRoot.build()`: passed;
+- Runtime authority: unchanged;
+- Bootstrap and Health boundaries: unchanged;
+- API and request-admission boundaries: unchanged;
+- Infrastructure and relational migration surfaces: unchanged;
+- canonical Alembic head remains `0004`;
+- `git diff --check`: passed.
+
+Technical Git verification:
+
+- push: verified;
+- exact local / remote technical identity:
+  `48f245b1064a5f0f203ae0705556bb86628f7403`;
+- working tree after technical push: clean.
+
+### Architecture Preservation State
+
+RFC-067 implementation conforms to accepted AD-053.
+
+The accepted semantics and responsibilities of:
+
+- AD-032;
+- AD-033;
+- AD-036;
+- AD-037;
+
+remain unchanged.
+
+RFC-067 changes physical contract ownership and import placement only.
+
+Runtime remains the sole lifecycle-transition authority.
+
+Default CompositionRoot authority remains unchanged.
+
+RFC-067 introduced no:
+
+- seventh ARCH-001 layer;
+- new Core Service;
+- workload-execution redesign;
+- operational-transition semantic redesign;
+- persistence or transaction change;
+- database schema or Alembic change;
+- authentication or authorization;
+- RBAC or Active Directory integration;
+- new information-security classification;
+- production-security readiness;
+- Cybersecurity approval;
+- Document or Knowledge redesign;
+- parser or OCR;
+- vector, graph, RAG or LLM behavior;
+- PI or DCS production connectivity.
+
+The separate legacy Neo4j configuration-hygiene debt remains outside
+RFC-067.
+
+The physical placement of:
+
+`OperationalTransitionEvidence`
+
+under:
+
+`app.core.operational_transition_evidence`
+
+also remains outside RFC-067 and is not declared remediated or fully
+ARCH-003 compliant by this workstream.
+
+### Engineering-Memory Closure State
+
+Reviewed RFC-067 closure drafts now exist in all five maintained
+Source-of-Truth documents:
+
+1. `docs/ROADMAP-004-Active-Work-Register.md`;
+2. `docs/PROJECT-CONTEXT.md`;
+3. `docs/SESSION-HANDOFF.md`;
+4. append-only `docs/ENGINEERING-JOURNAL.md`;
+5. this non-decision current governance record in
+   `docs/ARCHITECTURE-DECISIONS.md`.
+
+Engineering-memory closure is:
+
+**IN PROGRESS — FIVE-DOCUMENT CONSISTENCY REVIEW PENDING**
+
+Closure commit:
+
+**PENDING**
+
+Post-closure Source-of-Truth reconciliation:
+
+**NOT YET PERFORMED**
+
+No new RFC or architecture workstream is selected by this closure record.
+
+### Next Exact Action
+
+Perform the complete RFC-067 five-document engineering-memory closure
+consistency review.
+
+That review SHALL verify:
+
+- exact RFC-067 identity and workstream-name consistency;
+- exact selection baseline and selection commit consistency;
+- exact accepted-contract commit consistency;
+- exact technical implementation commit consistency;
+- consistent 850-test technical baseline;
+- consistent canonical Domain ownership;
+- consistent legacy compatibility-boundary semantics;
+- preservation of AD-032, AD-033, AD-036 and AD-037;
+- historical Engineering Journal byte preservation;
+- historical AD-001 through AD-053 byte preservation;
+- absence of AD-054 creation;
+- documentation-only closure scope;
+- clean `git diff --check`;
+- no staged or technical-code changes.
+
+Only after that review passes may the separate RFC-067 engineering-memory
+closure commit gate open.
+
+Do not select or begin another RFC or architecture workstream until the
+closure commit is pushed, exact local / remote closure identity is verified,
+the working tree is clean and post-closure Source-of-Truth reconciliation
+is complete.

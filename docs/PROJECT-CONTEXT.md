@@ -2,23 +2,24 @@
 
 ## Document Control
 
-| Property | Value |
+| Field | Value |
 |---|---|
 | Project | PlantMind Core |
 | Project ID | PM-001 |
 | Status | Active Development |
 | Deployment Model | On-Premise |
 | Development Branch | `feature/engineering-platform` |
-| Last Completed RFC | RFC-066 — Canonical Enterprise Document Content Foundation Boundary — Fully Closed and Source-of-Truth Reconciled |
-| Active RFC | None — Successor Workstream Selection Record Ready for Commit; Five-Document Consistency Review Passed; Architecture Contract Not Yet Authored or Accepted |
+| Last Fully Closed RFC | RFC-066 — Canonical Enterprise Document Content Foundation Boundary — Fully Closed and Source-of-Truth Reconciled |
+| Active RFC | RFC-067 — Operational Workload Evidence Contract Placement Remediation — Technical Implementation Verified and Committed; Engineering-Memory Closure In Progress |
 | Selected Architecture Workstream | Operational Workload Evidence Contract Placement Remediation |
 | Selection Baseline | `1d7f09d5106b7714421a1035877ff82a0538d39e` |
-| Test Baseline | 840 passing tests |
-| Technical Baseline Commit | `49080b6c1f6f0607e6ba04ba2476f222dea97155` |
-| Accepted Contract Commit | `fb277fe00a9e606192c795338ab5419f4b9db788` |
-| Engineering Closure Commit | `1ddc46c00680aac4718e6d3d76127857acbd4532` |
-| Reconciliation Commit | `9dee653e32b8c22fabdf85a719985ed22a9e8459` |
-| Reconciliation State | Complete and Verified |
+| Selection Commit | `4ed69096aff2f201f6c5aa8d96c4ec96d43e4122` |
+| Test Baseline | 850 passing tests |
+| Technical Baseline Commit | `48f245b1064a5f0f203ae0705556bb86628f7403` |
+| Accepted Contract Commit | `d5f743fc0d6d416a5e52d21a6aba0b0108cd7b08` |
+| Engineering Closure Commit | Pending — RFC-067 |
+| Reconciliation Commit | Pending — RFC-067 |
+| Reconciliation State | Engineering-Memory Closure In Progress; Post-Closure Source-of-Truth Reconciliation Not Yet Performed |
 | Alembic Head | `0004` |
 | Purpose | Authoritative context for continuing PlantMind development across engineering sessions |
 
@@ -304,77 +305,81 @@ The last verified full regression baseline is:
 
 ## 11. Git State at This Context Version
 
-Branch:
+Development branch:
 
 `feature/engineering-platform`
-
-Last completed technical RFC:
-
-`RFC-066 — Canonical Enterprise Document Content Foundation Boundary`
-
-RFC-066 accepted contract commit:
-
-`fb277fe00a9e606192c795338ab5419f4b9db788`
-
-RFC-066 technical implementation commit:
-
-`49080b6c1f6f0607e6ba04ba2476f222dea97155`
-
-RFC-066 engineering closure commit:
-
-`1ddc46c00680aac4718e6d3d76127857acbd4532`
-
-RFC-066 post-closure reconciliation commit:
-
-`9dee653e32b8c22fabdf85a719985ed22a9e8459`
-
-Current post-RFC-066 broad-review / successor-selection baseline:
-
-`1d7f09d5106b7714421a1035877ff82a0538d39e`
 
 Remote:
 
 `origin/feature/engineering-platform`
 
-Exact local / remote identity at the broad-review baseline:
+Last fully closed RFC:
 
-verified
+`RFC-066 — Canonical Enterprise Document Content Foundation Boundary`
 
-Verified full regression baseline:
+Active RFC:
 
-`840 passed`
+`RFC-067 — Operational Workload Evidence Contract Placement Remediation`
 
-Python in-memory compile audit:
+RFC-067 successor-selection baseline:
 
-`342 files compiled; 0 failures`
+`1d7f09d5106b7714421a1035877ff82a0538d39e`
 
-Canonical Alembic head:
+RFC-067 successor-selection documentation commit:
+
+`4ed69096aff2f201f6c5aa8d96c4ec96d43e4122`
+
+RFC-067 accepted architecture-contract commit:
+
+`d5f743fc0d6d416a5e52d21a6aba0b0108cd7b08`
+
+RFC-067 verified technical implementation commit:
+
+`48f245b1064a5f0f203ae0705556bb86628f7403`
+
+Architecture decision:
+
+`AD-053 — Operational Workload Evidence Contract Placement Remediation`
+
+Current RFC-067 technical verification:
+
+- intentional TDD RED: 2 expected failures;
+- focused GREEN: 101 passed;
+- full PlantMind regression: 850 passed;
+- Python compilation: passed;
+- static dependency / import integrity: passed;
+- `CompositionRoot.build()`: passed;
+- `git diff --check`: passed;
+- technical push: verified;
+- exact local / remote technical commit identity: verified;
+- working tree after technical push: clean.
+
+Canonical RFC-067 contract location:
+
+`app.domain.operational_workload_evidence`
+
+Legacy compatibility location:
+
+`app.services.orchestration.workload_evidence`
+
+The legacy Services module is retained only as an exact-identity
+compatibility re-export boundary.
+
+Canonical Alembic head remains:
 
 `0004`
 
-Canonical migration chain:
+RFC-067 engineering-memory closure:
 
-`0001 → 0002 → 0003 → 0004`
+**IN PROGRESS**
 
-Final `CompositionRoot.build()` smoke verification:
+RFC-067 post-closure Source-of-Truth reconciliation:
 
-passed
+**NOT YET PERFORMED**
 
-Working tree at completion of the broad post-RFC-066 review:
-
-clean
-
-Broad post-RFC-066 architecture/system judgment:
-
-**PASS WITH REGISTERED NON-BLOCKING DEBT**
-
-No next RFC is active.
-
-The selected successor architecture workstream is:
-
-**Operational Workload Evidence Contract Placement Remediation**
-
-Its architecture contract has not yet been authored or accepted.
+No successor RFC or architecture workstream may be selected or started
+until RFC-067 engineering-memory closure, closure Git verification and
+post-closure Source-of-Truth reconciliation are complete.
 
 ## 12. Current Architectural Review
 
@@ -1950,3 +1955,133 @@ local / remote selection identity and a clean working tree.
 Only then may architecture-contract drafting begin.
 
 Technical implementation remains prohibited.
+
+---
+
+## RFC-067 Technical Completion and Engineering-Closure Entry
+
+RFC-067 — Operational Workload Evidence Contract Placement Remediation
+is technically complete under accepted AD-053.
+
+Accepted architecture-contract commit:
+
+`d5f743fc0d6d416a5e52d21a6aba0b0108cd7b08`
+
+Technical implementation commit:
+
+`48f245b1064a5f0f203ae0705556bb86628f7403`
+
+The RFC-067 implementation-entry Git gate was satisfied before intentional
+TDD RED and production implementation began.
+
+The implementation established the canonical Domain Architecture contract
+module:
+
+`backend/app/domain/operational_workload_evidence.py`
+
+with canonical import path:
+
+`app.domain.operational_workload_evidence`
+
+The canonical contract family remains exactly:
+
+- `ApplicationFacadeEntryEvidence`;
+- `WorkflowExecutionStartEvidence`;
+- `OperationalWorkloadEvidence`.
+
+The pre-RFC contract definitions were preserved byte-for-byte when moved
+to the canonical Domain module.
+
+The previous Services path:
+
+`app.services.orchestration.workload_evidence`
+
+remains temporarily available only as an exact-class-identity compatibility
+re-export boundary.
+
+The legacy module owns no duplicate evidence-class definitions.
+
+All maintained non-test backend consumers now use the canonical Domain
+import path.
+
+The two previously identified Core consumers:
+
+- `app.core.operational_transition_evidence`;
+- `app.core.operational_transition_coordinator`;
+
+no longer import operational-workload evidence from `app.services.*`.
+
+RFC-067 verification evidence:
+
+- intentional RED verification: 2 expected failures;
+- RED failure reason matched the accepted package-placement debt;
+- focused GREEN verification: 101 passed;
+- full PlantMind regression: 850 passed;
+- Python compilation: passed;
+- static dependency / import integrity: passed;
+- exact legacy / canonical Python class identity: verified;
+- duplicate backend contract definitions: none;
+- `app.domain.evidence`: byte-for-byte unchanged;
+- default CompositionRoot behavior: unchanged;
+- Runtime authority: unchanged;
+- Bootstrap and Health boundaries: unchanged;
+- API and request-admission boundaries: unchanged;
+- Infrastructure and relational migration surfaces: unchanged;
+- canonical Alembic head: `0004`;
+- `git diff --check`: passed.
+
+Technical Git verification:
+
+- technical push: verified;
+- exact local / remote technical commit identity:
+  `48f245b1064a5f0f203ae0705556bb86628f7403`;
+- working tree after technical push: clean.
+
+RFC-067 does not introduce or claim:
+
+- authentication or authorization;
+- RBAC or Active Directory integration;
+- production-security readiness;
+- Cybersecurity approval;
+- a new information-security classification;
+- persistence or schema changes;
+- Document or Knowledge redesign;
+- parser, OCR, vector, graph, RAG or LLM behavior;
+- PI or DCS production connectivity.
+
+The adjacent physical placement of:
+
+`OperationalTransitionEvidence`
+
+under `app.core.operational_transition_evidence`
+
+remains outside RFC-067 and is not declared remediated or ARCH-003
+compliant by this workstream.
+
+RFC-067 technical implementation conforms to the accepted RFC-067 /
+AD-053 architecture contract.
+
+Engineering-memory and Source-of-Truth closure:
+
+**IN PROGRESS**
+
+Closure commit:
+
+**PENDING**
+
+Post-closure Source-of-Truth reconciliation:
+
+**NOT YET PERFORMED**
+
+RFC-067 is therefore technically complete but is not yet fully closed.
+
+The next exact action is to continue RFC-067 engineering-memory closure
+across the remaining governed Source-of-Truth documents.
+
+Do not select or begin another RFC or architecture workstream until:
+
+1. RFC-067 engineering-memory closure is complete;
+2. the closure documentation is committed and pushed;
+3. exact local / remote closure identity is verified;
+4. the working tree is clean;
+5. post-closure Source-of-Truth reconciliation is complete and verified.
