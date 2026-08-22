@@ -10,16 +10,16 @@
 | Deployment Model | On-Premise |
 | Development Branch | `feature/engineering-platform` |
 | Last Fully Closed RFC | RFC-066 — Canonical Enterprise Document Content Foundation Boundary — Fully Closed and Source-of-Truth Reconciled |
-| Active RFC | RFC-067 — Operational Workload Evidence Contract Placement Remediation — Technical Implementation Verified and Committed; Engineering-Memory Closure In Progress |
+| Active RFC | RFC-067 — Operational Workload Evidence Contract Placement Remediation — Engineering-Memory Closure Complete and Verified; Post-Closure Source-of-Truth Reconciliation In Progress |
 | Selected Architecture Workstream | Operational Workload Evidence Contract Placement Remediation |
 | Selection Baseline | `1d7f09d5106b7714421a1035877ff82a0538d39e` |
 | Selection Commit | `4ed69096aff2f201f6c5aa8d96c4ec96d43e4122` |
 | Test Baseline | 850 passing tests |
 | Technical Baseline Commit | `48f245b1064a5f0f203ae0705556bb86628f7403` |
 | Accepted Contract Commit | `d5f743fc0d6d416a5e52d21a6aba0b0108cd7b08` |
-| Engineering Closure Commit | Pending — RFC-067 |
+| Engineering Closure Commit | `76e59a3fe37628f8c60ba0243995ddd5a44bf0a6` |
 | Reconciliation Commit | Pending — RFC-067 |
-| Reconciliation State | Engineering-Memory Closure In Progress; Post-Closure Source-of-Truth Reconciliation Not Yet Performed |
+| Reconciliation State | Engineering-Memory Closure Complete, Committed, Pushed and Verified; Post-Closure Source-of-Truth Reconciliation In Progress |
 | Alembic Head | `0004` |
 | Purpose | Authoritative context for continuing PlantMind development across engineering sessions |
 
@@ -337,6 +337,10 @@ RFC-067 verified technical implementation commit:
 
 `48f245b1064a5f0f203ae0705556bb86628f7403`
 
+RFC-067 verified engineering-memory closure commit:
+
+`76e59a3fe37628f8c60ba0243995ddd5a44bf0a6`
+
 Architecture decision:
 
 `AD-053 — Operational Workload Evidence Contract Placement Remediation`
@@ -371,15 +375,15 @@ Canonical Alembic head remains:
 
 RFC-067 engineering-memory closure:
 
-**IN PROGRESS**
+**COMPLETE — COMMITTED, PUSHED AND VERIFIED**
 
 RFC-067 post-closure Source-of-Truth reconciliation:
 
-**NOT YET PERFORMED**
+**IN PROGRESS**
 
 No successor RFC or architecture workstream may be selected or started
-until RFC-067 engineering-memory closure, closure Git verification and
-post-closure Source-of-Truth reconciliation are complete.
+until RFC-067 post-closure Source-of-Truth reconciliation is complete,
+committed, pushed and verified.
 
 ## 12. Current Architectural Review
 
@@ -2061,27 +2065,42 @@ compliant by this workstream.
 RFC-067 technical implementation conforms to the accepted RFC-067 /
 AD-053 architecture contract.
 
-Engineering-memory and Source-of-Truth closure:
+Engineering-memory closure:
 
-**IN PROGRESS**
+**COMPLETE — COMMITTED, PUSHED AND VERIFIED**
 
 Closure commit:
 
-**PENDING**
+`76e59a3fe37628f8c60ba0243995ddd5a44bf0a6`
+
+Closure Git verification:
+
+- closure commit creation: **PASS**;
+- closure push: **PASS**;
+- exact local / remote closure identity: **PASS**;
+- working tree after closure push: **clean**.
 
 Post-closure Source-of-Truth reconciliation:
 
-**NOT YET PERFORMED**
+**IN PROGRESS**
 
-RFC-067 is therefore technically complete but is not yet fully closed.
+Reconciliation commit:
 
-The next exact action is to continue RFC-067 engineering-memory closure
-across the remaining governed Source-of-Truth documents.
+**PENDING**
+
+RFC-067 technical implementation and engineering-memory closure are complete
+and verified, but RFC-067 post-closure Source-of-Truth reconciliation is not
+yet complete.
+
+The next exact action is to perform RFC-067 post-closure Source-of-Truth
+reconciliation across the maintained engineering-memory documents without
+altering historical records or selecting a successor workstream.
 
 Do not select or begin another RFC or architecture workstream until:
 
-1. RFC-067 engineering-memory closure is complete;
-2. the closure documentation is committed and pushed;
-3. exact local / remote closure identity is verified;
-4. the working tree is clean;
-5. post-closure Source-of-Truth reconciliation is complete and verified.
+1. all maintained Source-of-Truth reconciliation records are reviewed;
+2. combined reconciliation-consistency verification passes;
+3. the reconciliation documentation commit is created separately;
+4. the reconciliation commit is pushed;
+5. exact local / remote reconciliation identity is verified;
+6. the working tree is clean.

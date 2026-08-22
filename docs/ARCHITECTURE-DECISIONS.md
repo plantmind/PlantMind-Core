@@ -11587,3 +11587,126 @@ Do not select or begin another RFC or architecture workstream until the
 closure commit is pushed, exact local / remote closure identity is verified,
 the working tree is clean and post-closure Source-of-Truth reconciliation
 is complete.
+
+
+---
+
+## Current Architecture Governance State — RFC-067 Post-Closure Source-of-Truth Reconciliation
+
+**Record Classification: Non-Decision Current Architecture-Governance State**
+
+This section is not a new Architecture Decision.
+
+It does not create:
+
+- AD-054;
+- a successor RFC;
+- a successor architecture workstream;
+- an amendment to AD-053;
+- an amendment to AD-001 through AD-052.
+
+All architecture-decision content preceding this governance record is
+preserved exactly as committed by the verified RFC-067 engineering-memory
+closure.
+
+### Verified RFC-067 Engineering Closure
+
+RFC-067 — Operational Workload Evidence Contract Placement Remediation
+completed engineering-memory closure at:
+
+`76e59a3fe37628f8c60ba0243995ddd5a44bf0a6`
+
+Closure Git verification:
+
+- closure commit creation: **PASS**;
+- closure push: **PASS**;
+- exact local / remote closure identity: **PASS**;
+- working tree after closure push: **clean**.
+
+Engineering-memory closure is:
+
+**COMPLETE — COMMITTED, PUSHED AND VERIFIED**
+
+AD-053 remains the final accepted Architecture Decision.
+
+No AD-054 Architecture Decision exists.
+
+### Architecture Preservation
+
+The reconciliation preserves:
+
+- AD-032;
+- AD-033;
+- AD-036;
+- AD-037;
+- AD-053;
+- ARCH-001;
+- ARCH-003;
+- CORE-002;
+- CORE-003;
+- Runtime lifecycle authority;
+- Bootstrap and Health boundaries;
+- API and request-admission boundaries;
+- persistence and transaction boundaries;
+- canonical Alembic head `0004`.
+
+Canonical RFC-067 contract ownership remains:
+
+`app.domain.operational_workload_evidence`
+
+Legacy compatibility remains only at:
+
+`app.services.orchestration.workload_evidence`
+
+as a temporary exact-class-identity re-export boundary.
+
+The physical placement of:
+
+`OperationalTransitionEvidence`
+
+under:
+
+`app.core.operational_transition_evidence`
+
+remains outside RFC-067 and is not declared remediated or fully ARCH-003
+compliant by this reconciliation.
+
+### Post-Closure Source-of-Truth Reconciliation
+
+Status:
+
+**IN PROGRESS**
+
+Reconciliation commit:
+
+**PENDING**
+
+The five maintained Source-of-Truth reconciliation surfaces are:
+
+1. `docs/ROADMAP-004-Active-Work-Register.md`;
+2. `docs/PROJECT-CONTEXT.md`;
+3. `docs/SESSION-HANDOFF.md`;
+4. append-only `docs/ENGINEERING-JOURNAL.md`;
+5. this non-decision reconciliation governance record in
+   `docs/ARCHITECTURE-DECISIONS.md`.
+
+### Governance Gate
+
+Post-closure Source-of-Truth reconciliation SHALL NOT be declared complete
+until:
+
+1. the complete five-document reconciliation diff is reviewed;
+2. historical Engineering Journal bytes are verified unchanged;
+3. historical AD-001 through AD-053 bytes are verified unchanged;
+4. no `# AD-054` Architecture Decision exists;
+5. RFC-067 identity, commits and 850-test baseline are consistent;
+6. the accepted RFC-067 / AD-053 architecture contract is preserved;
+7. `git diff --check` passes;
+8. the reconciliation diff is documentation-only;
+9. the reconciliation documentation commit is created separately;
+10. the reconciliation commit is pushed;
+11. exact local / remote reconciliation identity is verified;
+12. the working tree is clean.
+
+No successor RFC or architecture workstream is selected or authorized by
+this governance record.
