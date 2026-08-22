@@ -11,10 +11,11 @@
 | Development Branch | `feature/engineering-platform` |
 | Last Fully Closed RFC | RFC-068 — Canonical Document Content Repository Foundation Boundary — Fully Closed and Source-of-Truth Reconciled |
 | Active RFC | None — RFC-068 Fully Closed and Source-of-Truth Reconciled |
-| Selected Architecture Workstream | None — RFC-068 Completed; Successor Workstream Not Yet Selected |
-| Proposed Successor RFC | None — Separate Evidence-Based Successor Selection Not Yet Performed |
-| Selection Baseline | `ed7106c1c232d18c04319559cc2c899e2ebfb61a` |
-| Selection Commit | `287f3328f49627ce1e19a20d55d56f8bfbb76c58` |
+| Selected Architecture Workstream | Canonical Document Content Relational Persistence Adapter Boundary — Selected in Draft |
+| Proposed Successor RFC | RFC-069 — Numbering Candidate Only; Not Active |
+| Post-RFC-068 Selection Baseline | `bd52f9f74a2cff3138fbf08b13c21e8c1201547a` |
+| RFC-068 Selection Baseline | `ed7106c1c232d18c04319559cc2c899e2ebfb61a` |
+| RFC-068 Selection Commit | `287f3328f49627ce1e19a20d55d56f8bfbb76c58` |
 | Architecture Decision | AD-054 — Accepted |
 | RFC-068 Contract Draft Baseline | `287f3328f49627ce1e19a20d55d56f8bfbb76c58` |
 | Contract Acceptance Review | Passed — 52 PASS / 0 REFINE / 0 BLOCKED |
@@ -2314,3 +2315,67 @@ Alembic head `0004`.
 
 No production-readiness, production-security or Cybersecurity-approval
 claim is introduced.
+
+
+---
+
+## Post-RFC-068 Successor Workstream Selection Draft
+
+The completed post-RFC-068 evidence review selects, in draft:
+
+**Canonical Document Content Relational Persistence Adapter Boundary**
+
+Selection baseline:
+
+`bd52f9f74a2cff3138fbf08b13c21e8c1201547a`
+
+Proposed numbering:
+
+**RFC-069 — NUMBERING CANDIDATE ONLY; NOT ACTIVE**
+
+RFC-068 remains fully closed and Source-of-Truth reconciled.
+
+The selection is based on the current repository architecture:
+
+- canonical Document Content Domain semantics already exist;
+- canonical persistence-neutral `DocumentContentRepository` already exists;
+- canonical relational persistence infrastructure already exists for
+  Enterprise Document, Knowledge and Document-to-Knowledge Lineage;
+- no canonical `app.infrastructure.document_content` adapter exists;
+- no Document Content relational schema or Alembic successor to `0004`
+  currently exists;
+- descriptor persistence remains intentionally separate from raw binary
+  payload storage/access.
+
+Candidate priority determined by this review:
+
+1. **Canonical Document Content Relational Persistence Adapter Boundary — SELECTED IN DRAFT**;
+2. Canonical Binary Document Content Store / Access Foundation — deferred to
+   the next evidence-based review;
+3. Document Content establishment / registration application boundary —
+   separately governed; it must explicitly decide whether it coordinates
+   descriptor persistence alone or also future binary payload persistence,
+   including cross-boundary failure and atomicity semantics;
+4. Document Library, parser, OCR and chunking — premature until accepted
+   binary content access/store architecture exists;
+5. Search, Vector, Graph, RAG and LLM — higher-level dependent capability;
+6. PI Connector, logging, Session Memory, Neo4j configuration hygiene and
+   legacy compatibility maintenance — valid but lower dependency-unlock
+   priority.
+
+This selection chooses relational persistence only for the canonical
+Document Content descriptor metadata boundary.
+
+It does **not** authorize binary payload storage in PostgreSQL or any other
+binary-storage technology.
+
+This draft creates no AD-055.
+
+It does not accept an RFC-069 architecture contract.
+
+It authorizes no production implementation.
+
+Next exact action:
+
+Review the complete five-document successor-selection diff before any
+staging or commit.

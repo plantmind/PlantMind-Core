@@ -8,10 +8,11 @@
 | Branch | `feature/engineering-platform` |
 | Last Fully Closed RFC | RFC-068 — Canonical Document Content Repository Foundation Boundary — Fully Closed and Source-of-Truth Reconciled |
 | Active RFC | None — RFC-068 Fully Closed and Source-of-Truth Reconciled |
-| Selected Architecture Workstream | None — RFC-068 Completed; Successor Workstream Not Yet Selected |
-| Proposed Successor RFC | None — Separate Evidence-Based Successor Selection Not Yet Performed |
-| Selection Baseline | `ed7106c1c232d18c04319559cc2c899e2ebfb61a` |
-| Selection Commit | `287f3328f49627ce1e19a20d55d56f8bfbb76c58` |
+| Selected Architecture Workstream | Canonical Document Content Relational Persistence Adapter Boundary — Selected in Draft |
+| Proposed Successor RFC | RFC-069 — Numbering Candidate Only; Not Active |
+| Post-RFC-068 Selection Baseline | `bd52f9f74a2cff3138fbf08b13c21e8c1201547a` |
+| RFC-068 Selection Baseline | `ed7106c1c232d18c04319559cc2c899e2ebfb61a` |
+| RFC-068 Selection Commit | `287f3328f49627ce1e19a20d55d56f8bfbb76c58` |
 | RFC-068 Contract Draft Baseline | `287f3328f49627ce1e19a20d55d56f8bfbb76c58` |
 | Contract Acceptance Review | Passed — 52 PASS / 0 REFINE / 0 BLOCKED |
 | RFC-068 Implementation Authorization | Completed — Accepted Contract Git Gate Passed; Technical Implementation Verified |
@@ -27,7 +28,7 @@
 | Engineering Closure Commit | `bcf2fc8b20c866584db8596341c8abdb965358ea` |
 | Post-Closure Reconciliation | Complete, Pushed and Verified |
 | Reconciliation Commit | `074e534e0d97a927b6434341ad5d1c8671bfa381` |
-| Successor RFC Selection | None — Separate Evidence-Based Selection Not Yet Performed |
+| Successor RFC Selection | Draft — RFC-069 Numbering Candidate Only; Not Active |
 
 ## Recent Engineering Sequence
 
@@ -2548,3 +2549,39 @@ evidence-based successor-workstream selection.
 
 No production-readiness, production-security or Cybersecurity-approval
 claim is introduced.
+
+
+---
+
+## Post-RFC-068 Successor Workstream Selection Handoff
+
+Evidence-based successor selection has produced the following draft:
+
+**Canonical Document Content Relational Persistence Adapter Boundary**
+
+Selection baseline:
+
+`bd52f9f74a2cff3138fbf08b13c21e8c1201547a`
+
+Proposed numbering:
+
+**RFC-069 — NUMBERING CANDIDATE ONLY; NOT ACTIVE**
+
+RFC-068 remains fully closed and Source-of-Truth reconciled.
+
+AD-054 remains the latest Accepted Architecture Decision.
+
+No AD-055 exists.
+
+No RFC-069 architecture contract is accepted.
+
+No implementation is authorized.
+
+The selected workstream shall determine the minimum canonical relational
+adapter required to implement the accepted descriptor-only
+`DocumentContentRepository` while preserving binary payload storage/access
+as a separate future architecture boundary.
+
+Next exact action:
+
+Review the complete five-document successor-selection diff.

@@ -6324,3 +6324,68 @@ reconciliation or final-verification record.
 
 After that gate passes, successor-workstream selection may begin only as a
 separate governed activity.
+
+
+---
+
+## 2026-08-22 — Post-RFC-068 Successor Workstream Selection Draft
+
+### Baseline
+
+Selection baseline:
+
+`bd52f9f74a2cff3138fbf08b13c21e8c1201547a`
+
+RFC-068 is fully closed and Source-of-Truth reconciled.
+
+Active RFC before this selection:
+
+**None**
+
+### Evidence-Based Selection Judgment
+
+Selected successor workstream in draft:
+
+**Canonical Document Content Relational Persistence Adapter Boundary**
+
+Proposed numbering:
+
+**RFC-069 — NUMBERING CANDIDATE ONLY; NOT ACTIVE**
+
+The review found that the canonical Document Content Domain and
+persistence-neutral repository are complete, but no canonical Infrastructure
+adapter currently implements that repository.
+
+Existing Enterprise Document, Knowledge and Lineage relational adapter
+patterns provide the nearest accepted architecture precedent.
+
+The review therefore selects descriptor relational persistence ahead of:
+
+- binary payload store/access;
+- Document Content establishment application coordination;
+- Document Library;
+- parser/OCR/chunking;
+- Search/Vector/Graph/RAG/LLM;
+- lower-priority maintenance debt.
+
+Binary payload storage/access remains explicitly separate from descriptor
+metadata persistence.
+
+### Governance
+
+AD-054 remains the latest Accepted Architecture Decision.
+
+No AD-055 is created.
+
+RFC-069 is not active.
+
+No RFC-069 architecture contract is accepted.
+
+No implementation is authorized.
+
+### Next Exact Action
+
+Review the complete five-document successor-selection diff.
+
+Only after that review passes may the successor-selection documentation
+commit gate be opened.

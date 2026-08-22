@@ -12929,3 +12929,69 @@ Source-of-Truth update.
 
 After that gate passes, evidence-based successor-workstream selection may
 proceed only as a separate governed activity.
+
+
+---
+
+## Current Architecture Governance State — Post-RFC-068 Successor Workstream Selection Draft
+
+**Record Classification: Non-Decision Successor-Selection Governance Record**
+
+This record creates no new Architecture Decision.
+
+AD-054 remains the latest Accepted Architecture Decision.
+
+RFC-068 remains fully closed and Source-of-Truth reconciled.
+
+Selection baseline:
+
+`bd52f9f74a2cff3138fbf08b13c21e8c1201547a`
+
+Draft selected successor workstream:
+
+**Canonical Document Content Relational Persistence Adapter Boundary**
+
+Proposed successor numbering:
+
+**RFC-069 — NUMBERING CANDIDATE ONLY; NOT ACTIVE**
+
+### Architecture Basis
+
+The accepted RFC-068 / AD-054 repository foundation now provides the
+canonical descriptor-only persistence-neutral `DocumentContentRepository`.
+
+Current repository evidence contains canonical relational adapters for:
+
+- Enterprise Document;
+- Knowledge;
+- Document-to-Knowledge Lineage.
+
+No canonical Document Content Infrastructure persistence adapter currently
+exists.
+
+The selected draft therefore addresses the missing descriptor-persistence
+adapter before higher Document Intelligence capability is promoted.
+
+Binary content store/access remains a distinct future responsibility.
+
+Parser/OCR remains dependent on a separately accepted binary content
+access/store boundary.
+
+### Governance Restrictions
+
+No AD-055 is created.
+
+No RFC-069 architecture contract is accepted.
+
+No production implementation is authorized.
+
+No binary payload persistence technology is selected by this record.
+
+No BLOB, filesystem, object-store or network-file-store behavior is
+authorized.
+
+No Document Library, parser, OCR, chunking, Search, Vector, Graph, RAG or
+LLM implementation is authorized.
+
+The complete five-document successor-selection diff must be reviewed before
+staging or commit.

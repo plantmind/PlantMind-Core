@@ -35,7 +35,62 @@ No item may be marked complete until:
 
 ---
 
-## Selected Architecture Workstream — Canonical Document Content Repository Foundation Boundary
+## Active Successor-Selection Workstream — Canonical Document Content Relational Persistence Adapter Boundary
+
+### Status
+
+**SELECTION DRAFT — RFC-069 NUMBERING CANDIDATE ONLY; NOT ACTIVE**
+
+Selection baseline:
+
+`bd52f9f74a2cff3138fbf08b13c21e8c1201547a`
+
+### Evidence-Based Direction
+
+The next minimum dependency-completing architecture workstream is:
+
+**Canonical Document Content Relational Persistence Adapter Boundary**
+
+Repository evidence confirms:
+
+- `app.document_content.repository` now exists and is authoritative;
+- the descriptor repository remains persistence-neutral;
+- `app.infrastructure.document_content` does not yet exist;
+- canonical relational adapters already exist for Enterprise Document,
+  Knowledge and Document-to-Knowledge Lineage;
+- canonical Alembic head remains `0004`;
+- no binary payload store/access capability exists.
+
+The selected draft concerns descriptor metadata persistence only.
+
+It SHALL NOT combine descriptor relational persistence with raw binary
+payload storage or streaming.
+
+No AD-055 is created.
+
+No RFC-069 architecture contract is accepted.
+
+No implementation is authorized.
+
+### Candidate Ranking
+
+1. **Canonical Document Content Relational Persistence Adapter Boundary — SELECTED IN DRAFT**
+2. Binary Document Content Store / Access Foundation
+3. Document Content establishment application boundary
+4. Document Library / parser / OCR / chunking
+5. Search / Vector / Graph / RAG / LLM
+6. Deferred maintenance and configuration-hygiene work
+
+### Current Next Exact Action
+
+Review the complete five-document successor-selection Source-of-Truth diff.
+
+Do not stage, commit, activate RFC-069, create AD-055 or begin technical
+implementation until that review passes.
+
+---
+
+## Historical RFC-068 Closed Workstream State Before Final Verification Push
 
 ### Status
 
@@ -87,9 +142,9 @@ RFC-068 is therefore:
 
 **FULLY CLOSED AND SOURCE-OF-TRUTH RECONCILED**
 
-The final verification Source-of-Truth record itself remains uncommitted.
+At that historical stage, the final verification Source-of-Truth record itself remained uncommitted.
 
-### Current Next Governed Activity
+### Historical Next Governed Activity at That Stage
 
 RFC-068 has no remaining architecture, implementation, closure or
 Source-of-Truth reconciliation work item.
