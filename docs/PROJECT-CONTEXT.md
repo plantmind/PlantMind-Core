@@ -10,21 +10,21 @@
 | Deployment Model | On-Premise |
 | Development Branch | `feature/engineering-platform` |
 | Last Fully Closed RFC | RFC-067 — Operational Workload Evidence Contract Placement Remediation — Fully Closed and Source-of-Truth Reconciled |
-| Active RFC | RFC-068 — Contract Accepted; Implementation Gate Pending |
-| Selected Architecture Workstream | Canonical Document Content Repository Foundation Boundary — Contract Accepted |
-| Proposed Successor RFC | RFC-068 — Selected and Active; Contract Accepted |
+| Active RFC | RFC-068 — Technical Implementation Complete; Engineering-Memory Closure Pending |
+| Selected Architecture Workstream | Canonical Document Content Repository Foundation Boundary — Technical Implementation Complete |
+| Proposed Successor RFC | None — Successor Selection Prohibited Until RFC-068 Closure and Reconciliation Complete |
 | Selection Baseline | `ed7106c1c232d18c04319559cc2c899e2ebfb61a` |
 | Selection Commit | `287f3328f49627ce1e19a20d55d56f8bfbb76c58` |
 | Architecture Decision | AD-054 — Accepted |
 | RFC-068 Contract Draft Baseline | `287f3328f49627ce1e19a20d55d56f8bfbb76c58` |
 | Contract Acceptance Review | Passed — 52 PASS / 0 REFINE / 0 BLOCKED |
-| RFC-068 Implementation Authorization | Prohibited — Accepted Contract Git Gate Pending |
-| Test Baseline | 850 passing tests |
-| Technical Baseline Commit | `48f245b1064a5f0f203ae0705556bb86628f7403` |
-| Accepted Contract Commit | Pending — RFC-068 / AD-054 Accepted Contract Commit |
-| Engineering Closure Commit | `76e59a3fe37628f8c60ba0243995ddd5a44bf0a6` |
-| Reconciliation Commit | `33a10d287111539d63c1042948233597b6ab4ed7` |
-| Reconciliation State | Complete, Pushed and Verified — RFC-067 Fully Closed and Source-of-Truth Reconciled |
+| RFC-068 Implementation Authorization | Completed — Accepted Contract Git Gate Passed; Technical Implementation Verified |
+| Test Baseline | 866 passing tests |
+| Technical Baseline Commit | `a88f046567b2b56795f590a4852dbd144b7c2fde` |
+| Accepted Contract Commit | `6ac09336e223cfb18e049528d62d10b4753e8ee3` |
+| Engineering Closure Commit | Pending — RFC-068 Engineering-Memory Closure |
+| Reconciliation Commit | Pending — RFC-068 |
+| Reconciliation State | RFC-068 Not Started — Engineering-Memory Closure Pending |
 | Alembic Head | `0004` |
 | Purpose | Authoritative context for continuing PlantMind development across engineering sessions |
 
@@ -2176,3 +2176,45 @@ staged and committed separately.
 
 After the accepted-contract commit is pushed, exact local / remote identity
 and a clean working tree must be verified before TDD RED begins.
+
+
+---
+
+## RFC-068 Technical Implementation Completion State
+
+RFC-068 — Canonical Document Content Repository Foundation Boundary has
+completed technical implementation.
+
+Architecture Decision:
+
+**AD-054 — Accepted**
+
+Accepted-contract commit:
+
+`6ac09336e223cfb18e049528d62d10b4753e8ee3`
+
+Technical implementation commit:
+
+`a88f046567b2b56795f590a4852dbd144b7c2fde`
+
+Verified technical baseline:
+
+- focused tests: **16 passed**;
+- impacted regression: **91 passed**;
+- full regression: **866 passed**;
+- Python compilation: **PASS**;
+- Alembic head: **0004**;
+- technical push and exact local / remote identity: **verified**;
+- working tree: **clean**.
+
+Engineering-memory closure remains pending.
+
+RFC-067 remains the last fully closed and Source-of-Truth reconciled RFC.
+
+RFC-068 must first complete the engineering-memory closure gate and then the
+separate post-closure Source-of-Truth reconciliation gate.
+
+RFC-068 SHALL NOT be declared fully closed and Source-of-Truth reconciled,
+and no successor workstream may be selected, until both gates are committed,
+pushed, exact local / remote identity is verified and the working tree is
+clean.

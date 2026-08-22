@@ -39,7 +39,53 @@ No item may be marked complete until:
 
 ### Status
 
-**SELECTION COMMITTED, PUSHED AND VERIFIED — RFC-068 CONTRACT ACCEPTED; IMPLEMENTATION GATE PENDING**
+**TECHNICAL IMPLEMENTATION COMPLETE, PUSHED AND VERIFIED — ENGINEERING-MEMORY CLOSURE PENDING**
+
+### Current Technical State
+
+Accepted-contract commit:
+
+`6ac09336e223cfb18e049528d62d10b4753e8ee3`
+
+Technical implementation commit:
+
+`a88f046567b2b56795f590a4852dbd144b7c2fde`
+
+Technical verification:
+
+- focused RFC-068 contract suite: **16 passed**;
+- impacted Document / Document Content regression: **91 passed**;
+- full PlantMind regression: **866 passed**;
+- Python compilation: **PASS**;
+- canonical Alembic head: **0004**;
+- technical commit push: **PASS**;
+- exact local / tracking / remote technical identity: **PASS**;
+- working tree after technical verification: **clean**.
+
+RFC-068 technical implementation is complete.
+
+RFC-068 is **not yet fully closed or Source-of-Truth reconciled**.
+
+Engineering-memory closure must be completed and verified first. A separate
+post-closure Source-of-Truth reconciliation must then be completed and
+verified.
+
+### Current Next Exact Action
+
+Review the complete five-document RFC-068 engineering-memory closure diff.
+
+Do not stage or commit the closure until that review passes.
+
+Do not select or begin a successor RFC until both the closure and subsequent
+reconciliation commits are pushed, their exact local / remote identities are
+verified and the working tree is clean.
+
+### Historical Stage Records
+
+The selection and architecture-acceptance chronology below is retained as
+historical stage evidence. Earlier implementation prohibitions describe the
+state at those earlier gates and do not supersede this current technical
+completion state.
 
 This section records the evidence-based successor-workstream selection
 following full closure and Source-of-Truth reconciliation of RFC-067.
@@ -216,43 +262,43 @@ The future architecture contract SHALL preserve unless explicitly reviewed:
 - default Composition behavior;
 - current security and production-readiness non-claims.
 
-### Governance State
+### Historical Governance State Before the Accepted-Contract Git Gate
 
-Successor-workstream selection is complete.
+At that stage, successor-workstream selection was complete.
 
 Selection commit:
 
 `287f3328f49627ce1e19a20d55d56f8bfbb76c58`
 
-The selection commit is pushed and exact local / remote identity has been
-verified.
+The selection commit had been pushed and exact local / remote identity had
+been verified.
 
-`RFC-068` is now the active architecture workstream.
+`RFC-068` had become the active architecture workstream.
 
 Architecture Decision:
 
 **AD-054 — ACCEPTED**
 
-No production implementation is authorized.
+At that stage, production implementation was not yet authorized.
 
-### Next Exact Action
+### Historical Next Exact Action Before TDD RED
 
-Review the complete RFC-068 / AD-054 five-document acceptance-propagation
-diff.
+The next action at that stage was to review the complete RFC-068 / AD-054
+five-document acceptance-propagation diff.
 
-If and only if the review passes:
+The required sequence at that stage was:
 
 1. stage exactly the five maintained Source-of-Truth documents;
-2. verify staged blobs match the reviewed working tree;
+2. verify staged blobs matched the reviewed working tree;
 3. preserve Engineering Journal and historical Architecture Decision history;
-4. verify no backend or test file is staged;
+4. verify no backend or test file was staged;
 5. create the accepted architecture-contract documentation commit separately;
 6. push it;
 7. verify exact local / remote accepted-contract commit identity;
 8. verify a clean working tree.
 
-Technical implementation and TDD RED remain prohibited until those gates
-pass.
+Technical implementation and TDD RED were prohibited at that historical
+stage until those gates passed.
 
 ---
 
@@ -260,7 +306,7 @@ pass.
 
 ### Status
 
-**CONTRACT ACCEPTED — IMPLEMENTATION GATE PENDING**
+**TECHNICAL IMPLEMENTATION COMPLETE — ENGINEERING-MEMORY CLOSURE PENDING**
 
 Selection commit:
 
@@ -1079,9 +1125,9 @@ confirm:
 52. RFC-068 introduces no production-readiness, production-security or
     Cybersecurity-approval claim.
 
-### Contract Acceptance State
+### Historical Contract Acceptance State Before Implementation Entry
 
-Status:
+Status at that stage:
 
 **PASSED — RFC-068 / AD-054 ACCEPTED**
 
@@ -1112,11 +1158,12 @@ AD-054 is Accepted.
 
 RFC-068 architecture contract is Accepted.
 
-Technical implementation remains prohibited until the accepted architecture
-documentation is committed separately, pushed, exact local / remote accepted
-contract identity is verified and the working tree is clean.
+At that historical contract-acceptance stage, technical implementation
+remained prohibited until the accepted architecture documentation was
+committed separately, pushed, exact local / remote accepted-contract identity
+was verified and the working tree was clean.
 
-No implementation-entry Git gate is open yet.
+No implementation-entry Git gate was open at that stage.
 
 
 ---

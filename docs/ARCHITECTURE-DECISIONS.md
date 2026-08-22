@@ -12734,3 +12734,66 @@ Only after those Git gates pass may RFC-068 TDD RED begin.
 
 Production implementation remains prohibited until the implementation-entry
 gate is satisfied.
+
+
+## Current Architecture Governance State — RFC-068 Technical Completion and Engineering-Memory Closure Pending
+
+**Record Classification: Non-Decision Current Architecture-Governance State**
+
+This section is not a new Architecture Decision.
+
+It does not amend or supersede AD-054.
+
+AD-054 remains the latest Accepted Architecture Decision.
+
+RFC-068 accepted-contract commit:
+
+`6ac09336e223cfb18e049528d62d10b4753e8ee3`
+
+RFC-068 technical implementation commit:
+
+`a88f046567b2b56795f590a4852dbd144b7c2fde`
+
+Technical verification established:
+
+- focused RFC-068 repository contract tests: **16 passed**;
+- impacted Document / Document Content regression: **91 passed**;
+- full PlantMind regression: **866 passed**;
+- Python compilation: **PASS**;
+- canonical Alembic head: **0004**;
+- `git diff --check`: **PASS**;
+- technical push: **PASS**;
+- exact local / tracking / remote technical commit identity: **PASS**;
+- working tree after technical verification: **clean**.
+
+The accepted descriptor-only persistence-neutral repository boundary is now
+technically implemented.
+
+No Infrastructure persistence adapter, binary store, parser, OCR, Document
+Library, search, vector, graph, RAG, LLM, Composition expansion, Runtime
+expansion or Bootstrap expansion was introduced by RFC-068.
+
+RFC-068 engineering-memory closure remains:
+
+**PENDING**
+
+The separate five-document RFC-068 engineering-memory closure must first
+be reviewed, committed, pushed, exact local / remote closure identity
+verified and the working tree verified clean.
+
+After that gate passes, a separate post-closure Source-of-Truth
+reconciliation remains required.
+
+RFC-068 SHALL NOT be declared fully closed and Source-of-Truth reconciled,
+and no successor RFC or architecture workstream may be selected, until the
+reconciliation commit is pushed, exact local / remote reconciliation
+identity is verified and the working tree is clean.
+
+This record makes no production-readiness, production-security or
+Cybersecurity-approval claim.
+
+### Next Exact Action
+
+Review the complete five-document RFC-068 engineering-memory closure diff.
+
+Do not stage or commit until that review passes.
