@@ -2585,3 +2585,62 @@ as a separate future architecture boundary.
 Next exact action:
 
 Review the complete five-document successor-selection diff.
+
+---
+
+## RFC-069 Architecture Contract Accepted Handoff
+
+RFC-069 is the active architecture workstream.
+
+Verified selection commit and acceptance baseline:
+
+`5d7794352029576e0b62c2ac8cbfa248fe11961d`
+
+Architecture Decision:
+
+**AD-055 — ACCEPTED**
+
+Final refined contract review:
+
+**PASS — NO REMAINING REFINE / NO BLOCKED ITEM**
+
+Accepted contract direction:
+
+- canonical namespace `app.infrastructure.document_content`;
+- `DocumentContentDescriptorRow`;
+- table `document_content_descriptors`;
+- `document_id` as sole relational identity;
+- descriptor metadata only;
+- no surrogate content ID;
+- no digest uniqueness;
+- no Enterprise Document foreign key;
+- explicit Domain-to-row and row-to-Domain mapping;
+- `SQLAlchemyDocumentContentRepository`;
+- injected `Callable[[], Session]`;
+- exact duplicate classification using SQLSTATE `23505` plus
+  `pk_document_content_descriptors`;
+- explicit rollback and close failure precedence;
+- read-only exact `get()` semantics;
+- existing `DatabaseBase.metadata` remains authoritative;
+- `DatabaseRuntime` remains unchanged;
+- current Alembic head remains `0004`;
+- accepted future linear migration is `0005` after `0004`;
+- Alembic metadata registration of `DocumentContentDescriptorRow` must occur
+  before `target_metadata` is bound.
+
+Binary payload persistence/access remains explicitly outside RFC-069.
+
+Cross-boundary Document / descriptor / future payload coordination and
+atomicity remain separately governed.
+
+No implementation, schema migration, application service, Composition,
+Runtime or Bootstrap expansion is authorized yet.
+
+Next exact action:
+
+Review the complete five-document RFC-069 / AD-055 acceptance-propagation diff.
+
+Do not stage or commit until that review passes. Do not begin TDD RED or
+technical implementation until the accepted contract has been committed,
+pushed, exact local / tracking / remote identity verified, the working tree is
+clean and the separate implementation-entry Git gate passes.

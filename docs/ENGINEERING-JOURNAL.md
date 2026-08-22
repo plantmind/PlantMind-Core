@@ -6389,3 +6389,143 @@ Review the complete five-document successor-selection diff.
 
 Only after that review passes may the successor-selection documentation
 commit gate be opened.
+
+---
+
+## 2026-08-22 — RFC-069 / AD-055 Architecture Contract Draft
+
+### Entry Baseline
+
+Verified RFC-069 workstream-selection commit:
+
+`5d7794352029576e0b62c2ac8cbfa248fe11961d`
+
+The selection was committed, pushed and exact local / tracking / remote
+identity was verified before architecture-contract drafting began.
+
+### Architecture Judgment
+
+Evidence supports a minimum descriptor-only relational adapter as the next
+dependency-completing step.
+
+The draft selects `app.infrastructure.document_content`,
+`DocumentContentDescriptorRow`, `document_content_descriptors`,
+`document_id` as sole primary key, media type/byte length/digest as descriptor
+metadata, no surrogate content identity, no digest uniqueness, no Enterprise
+Document foreign key, explicit Domain/row mapping, injected-session SQLAlchemy
+repository behavior, exact PK duplicate classification, existing
+`DatabaseBase.metadata` and proposed linear Alembic successor `0005` from
+`0004`.
+
+### Boundary Judgment
+
+The absence of an Enterprise Document foreign key is intentional. RFC-069
+shall not decide cross-boundary existence, lifecycle or atomicity semantics.
+
+Binary payload store/access remains separate from descriptor metadata
+persistence.
+
+A future application / transaction boundary must explicitly decide any
+atomicity requirements involving Enterprise Document registration, descriptor
+persistence and future binary payload persistence.
+
+### Governance State
+
+AD-054 remains the latest **Accepted** Architecture Decision.
+
+AD-055 now exists only as:
+
+**DRAFT — REVIEW GATE; NOT ACCEPTED**
+
+RFC-069 technical implementation remains unauthorized.
+
+No production-code, test, schema or migration change is authorized by this
+architecture-contract drafting step.
+
+### Next Exact Action
+
+Review the complete five-document RFC-069 / AD-055 architecture-contract draft
+before staging or acceptance.
+
+### RFC-069 Contract Review Refinement — 2026-08-22
+
+Formal contract review result:
+
+**REFINE — NOT BLOCKED**
+
+Three refinements were applied before AD-055 acceptance:
+
+1. the current RFC-069 Active Work control item is placed at the top of
+   ROADMAP-004, consistent with the register's completion discipline;
+2. Alembic metadata registration is mandatory: `DocumentContentDescriptorRow`
+   must be imported/registered before `target_metadata` is bound;
+3. repository failure lifecycle now explicitly preserves the accepted
+   rollback/close exception-precedence semantics.
+
+AD-055 remains **DRAFT — NOT ACCEPTED**.
+
+RFC-069 implementation remains unauthorized.
+
+Next exact action:
+
+Review the refined five-document RFC-069 / AD-055 architecture contract.
+
+---
+
+## 2026-08-22 — RFC-069 / AD-055 Final Architecture Contract Review and Acceptance
+
+### Review Result
+
+The refined five-document RFC-069 / AD-055 architecture-contract review is:
+
+**PASS — NO REMAINING REFINE / NO BLOCKED ITEM**
+
+The prior review's three refinement findings are verified resolved:
+
+1. the current RFC-069 Active Work control item is maintained at the top of
+   ROADMAP-004;
+2. Alembic metadata registration is mandatory before `target_metadata` binding;
+3. repository rollback/close failure precedence is explicit and aligned with
+   accepted relational-adapter precedent.
+
+### Architecture Decision
+
+**AD-055 — ACCEPTED**
+
+The accepted boundary is descriptor-metadata relational persistence only.
+
+It preserves:
+
+- canonical `DocumentContentDescriptor` Domain semantics;
+- canonical persistence-neutral `DocumentContentRepository`;
+- `document_id` as the sole relational identity;
+- no surrogate content ID;
+- no digest uniqueness;
+- no Enterprise Document foreign key;
+- no binary payload storage/access;
+- no cross-boundary transaction-coordination decision;
+- existing `DatabaseBase.metadata` authority;
+- unchanged `DatabaseRuntime`;
+- current canonical Alembic head `0004`.
+
+### Governance State
+
+Acceptance is an architecture state only.
+
+Technical implementation remains:
+
+**NOT AUTHORIZED — ACCEPTED-CONTRACT GIT GATE PENDING**
+
+No production code, test, schema or migration change is authorized by this
+acceptance-propagation step.
+
+### Next Exact Action
+
+Review the complete five-document RFC-069 / AD-055 acceptance-propagation diff.
+
+Only after that review passes may the five Source-of-Truth documents be staged
+and committed as the accepted architecture contract.
+
+After commit and push, exact local / tracking / remote identity and a clean
+working tree must be verified before a separate implementation-entry Git gate
+may authorize TDD RED.

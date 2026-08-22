@@ -12995,3 +12995,146 @@ LLM implementation is authorized.
 
 The complete five-document successor-selection diff must be reviewed before
 staging or commit.
+
+---
+
+## AD-055 — Canonical Document Content Relational Persistence Adapter Boundary
+
+### Status
+
+**ACCEPTED**
+
+### Related RFC
+
+**RFC-069 — Canonical Document Content Relational Persistence Adapter Boundary**
+
+### Acceptance Baseline
+
+`5d7794352029576e0b62c2ac8cbfa248fe11961d`
+
+### Context
+
+AD-054 established the canonical descriptor-only persistence-neutral
+`DocumentContentRepository`.
+
+The accepted repository exposes canonical `add()` and `get()` behavior, but
+no canonical Document Content Infrastructure adapter or relational schema
+exists. Existing Enterprise Document, Knowledge and
+Document-to-Knowledge Lineage relational adapters provide the nearest accepted
+architecture precedent. Binary payload storage/access remains outside the
+descriptor repository boundary.
+
+### Decision
+
+PlantMind SHALL introduce a canonical SQLAlchemy relational adapter under
+`app.infrastructure.document_content` for descriptor metadata only.
+
+The Infrastructure model SHALL be `DocumentContentDescriptorRow` mapped to
+`document_content_descriptors` with exactly:
+
+- `document_id`: PostgreSQL UUID, non-null;
+- `media_type`: String, non-null;
+- `byte_length`: BigInteger, non-null;
+- `digest`: String, non-null.
+
+`document_id` SHALL be the sole primary key under
+`pk_document_content_descriptors`.
+
+No surrogate content identity SHALL be introduced. Digest remains an integrity
+descriptor and SHALL NOT become relational identity or a unique key. No
+foreign key to Enterprise Document SHALL be introduced by AD-055.
+
+No additional relational identity or uniqueness rule is authorized.
+
+This keeps the persistence adapter independent of cross-boundary existence,
+lifecycle and transaction-coordination policy. Those semantics remain
+separately governed.
+
+### Repository Runtime
+
+The concrete adapter SHALL be `SQLAlchemyDocumentContentRepository`,
+implementing `DocumentContentRepository` through an injected session factory.
+
+Standalone `add()` SHALL use one explicit session, add one row and commit once
+on success. It SHALL perform no pre-read duplicate check and no Enterprise
+Document repository lookup.
+
+On persistence failure it SHALL attempt rollback and SHALL close the session
+on all paths.
+
+Failure precedence SHALL preserve the accepted relational-adapter semantics:
+
+- successful rollback preserves the original persistence failure unless close
+  itself fails;
+- rollback failure is raised from the original persistence failure;
+- close failure propagates with any earlier active operation failure retained
+  in exception context.
+
+`get()` SHALL be read-only, use exact `document_id`, perform no commit, return
+`None` when missing, reconstruct the canonical Domain descriptor when present
+and close the session on all paths.
+
+Only SQLSTATE `23505` combined with `pk_document_content_descriptors` SHALL
+translate to `DocumentContentAlreadyExistsError`.
+
+No pre-read duplicate detection, message-text classification or Enterprise
+Document repository lookup is permitted. Other integrity/database failures
+remain unclassified and propagate.
+
+### Database and Migration
+
+The existing `DatabaseBase.metadata` remains the sole relational metadata
+authority. `DatabaseRuntime` remains unchanged.
+
+After separate implementation authorization, Alembic SHALL append
+`0005_document_content_descriptors.py` with revision `0005` and down revision
+`0004`.
+
+The migration SHALL create only the accepted descriptor table and SHALL
+introduce no foreign key, BLOB/binary payload field or unrelated schema change.
+
+Alembic `env.py` SHALL import/register `DocumentContentDescriptorRow` before
+`target_metadata = DatabaseBase.metadata` is bound. This is metadata
+registration only and does not expand `DatabaseRuntime` ownership or runtime
+lifecycle responsibility.
+
+The current canonical Alembic head remains `0004` until technical
+implementation is separately authorized and completed.
+
+### Deferred Responsibilities
+
+AD-055 does not authorize raw binary payload persistence/access,
+filesystem/object/network storage, byte streaming/download APIs,
+`DocumentContentStore`, application-level content establishment,
+cross-boundary transaction coordination, Document Library, parser/OCR/chunking,
+Search/Vector/Graph/RAG/LLM, Composition/Runtime/Bootstrap expansion or
+production-readiness/security/Cybersecurity claims.
+
+### Consequence
+
+PlantMind gains an accepted canonical boundary for future durable relational
+persistence of Document Content descriptor metadata while preserving binary
+content storage/access and cross-boundary atomicity as separate future
+architecture responsibilities.
+
+### Final Contract Review
+
+The refined five-document RFC-069 / AD-055 architecture-contract review is:
+
+**PASS — NO REMAINING REFINE / NO BLOCKED ITEM**
+
+The three prior refinement findings are resolved:
+
+1. RFC-069 current Active Work control is maintained at the top of ROADMAP-004;
+2. Alembic metadata registration is mandatory before `target_metadata` binding;
+3. repository rollback/close failure precedence is explicit and aligned with
+   accepted relational-adapter precedent.
+
+### Implementation Authorization
+
+**NONE — ACCEPTED-CONTRACT GIT GATE PENDING**
+
+Technical implementation remains prohibited until this accepted
+five-document contract is reviewed as an acceptance-propagation diff,
+committed, pushed, exact local / tracking / remote commit identity is verified,
+the working tree is clean, and a separate implementation-entry Git gate passes.

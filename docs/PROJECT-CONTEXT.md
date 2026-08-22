@@ -2379,3 +2379,76 @@ Next exact action:
 
 Review the complete five-document successor-selection diff before any
 staging or commit.
+
+---
+
+## RFC-069 Architecture Contract Accepted State
+
+Workstream:
+
+**RFC-069 — Canonical Document Content Relational Persistence Adapter Boundary**
+
+Verified workstream-selection commit:
+
+`5d7794352029576e0b62c2ac8cbfa248fe11961d`
+
+Current governance phase:
+
+**ARCHITECTURE CONTRACT ACCEPTED — ACCEPTED-CONTRACT GIT GATE PENDING**
+
+Architecture Decision:
+
+**AD-055 — ACCEPTED**
+
+Final refined contract review:
+
+**PASS — NO REMAINING REFINE / NO BLOCKED ITEM**
+
+The accepted boundary authorizes architecture only for future relational
+persistence of the existing canonical `DocumentContentDescriptor`.
+
+Accepted canonical Infrastructure ownership:
+
+`app.infrastructure.document_content`
+
+Accepted relational representation:
+
+- row: `DocumentContentDescriptorRow`;
+- table: `document_content_descriptors`;
+- sole identity: `document_id`;
+- persisted metadata: `document_id`, `media_type`, `byte_length`, `digest`;
+- no surrogate content identity;
+- no digest identity or uniqueness;
+- no Enterprise Document foreign key;
+- no binary/storage-location field.
+
+The accepted repository adapter direction is
+`SQLAlchemyDocumentContentRepository(DocumentContentRepository)` with an
+injected `Callable[[], Session]`, exact PK duplicate classification, explicit
+rollback/close failure precedence and read-only exact `get()` behavior.
+
+`DatabaseBase.metadata` remains authoritative. `DatabaseRuntime` remains
+unchanged.
+
+The current canonical Alembic head remains `0004`.
+
+After the accepted-contract Git gate and separate implementation authorization,
+the accepted linear successor is
+`0005_document_content_descriptors.py`, revising `0004`, and Alembic `env.py`
+must register `DocumentContentDescriptorRow` before `target_metadata` is bound.
+
+Binary payload persistence/access, cross-boundary atomicity, application
+coordination, Document Library, parser/OCR/chunking, Search/Vector/Graph/RAG/LLM
+and production-security/Cybersecurity claims remain outside RFC-069.
+
+No technical implementation is authorized yet.
+
+Next exact action:
+
+Review the complete five-document RFC-069 / AD-055 acceptance-propagation diff.
+
+Only after that review passes may the accepted contract be staged and committed
+separately. Technical implementation remains prohibited until the accepted
+contract is committed, pushed, exact local / tracking / remote identity is
+verified, the working tree is clean and the implementation-entry Git gate
+passes.

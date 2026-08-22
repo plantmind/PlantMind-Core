@@ -35,60 +35,58 @@ No item may be marked complete until:
 
 ---
 
-## Active Successor-Selection Workstream — Canonical Document Content Relational Persistence Adapter Boundary
+## Active Architecture Workstream — RFC-069 — Canonical Document Content Relational Persistence Adapter Boundary
 
 ### Status
 
-**SELECTION DRAFT — RFC-069 NUMBERING CANDIDATE ONLY; NOT ACTIVE**
+**ARCHITECTURE CONTRACT ACCEPTED — ACCEPTED-CONTRACT GIT GATE PENDING; IMPLEMENTATION NOT AUTHORIZED**
 
-Selection baseline:
+Verified workstream-selection commit:
 
-`bd52f9f74a2cff3138fbf08b13c21e8c1201547a`
+`5d7794352029576e0b62c2ac8cbfa248fe11961d`
 
-### Evidence-Based Direction
+Architecture Decision:
 
-The next minimum dependency-completing architecture workstream is:
+**AD-055 — ACCEPTED**
 
-**Canonical Document Content Relational Persistence Adapter Boundary**
+Final refined contract review:
 
-Repository evidence confirms:
+**PASS — NO REMAINING REFINE / NO BLOCKED ITEM**
 
-- `app.document_content.repository` now exists and is authoritative;
-- the descriptor repository remains persistence-neutral;
-- `app.infrastructure.document_content` does not yet exist;
-- canonical relational adapters already exist for Enterprise Document,
-  Knowledge and Document-to-Knowledge Lineage;
-- canonical Alembic head remains `0004`;
-- no binary payload store/access capability exists.
+### Current Contract Direction
 
-The selected draft concerns descriptor metadata persistence only.
+RFC-069 accepts only the minimum canonical relational Infrastructure adapter
+boundary required to implement the descriptor-only
+`DocumentContentRepository`.
 
-It SHALL NOT combine descriptor relational persistence with raw binary
-payload storage or streaming.
+The accepted contract preserves:
 
-No AD-055 is created.
+- `document_id` as the sole descriptor identity;
+- descriptor metadata persistence only;
+- no surrogate content identity;
+- no digest uniqueness;
+- no Enterprise Document foreign key;
+- binary payload store/access as a separate future boundary;
+- cross-boundary existence, lifecycle and atomicity as separately governed;
+- explicit rollback/close failure precedence;
+- mandatory Alembic model registration before `target_metadata` binding;
+- existing `DatabaseBase.metadata` authority;
+- unchanged `DatabaseRuntime`;
+- current canonical Alembic head `0004`;
+- accepted future linear successor `0005_document_content_descriptors.py` only
+  after accepted-contract Git verification and separate implementation
+  authorization.
 
-No RFC-069 architecture contract is accepted.
-
-No implementation is authorized.
-
-### Candidate Ranking
-
-1. **Canonical Document Content Relational Persistence Adapter Boundary — SELECTED IN DRAFT**
-2. Binary Document Content Store / Access Foundation
-3. Document Content establishment application boundary
-4. Document Library / parser / OCR / chunking
-5. Search / Vector / Graph / RAG / LLM
-6. Deferred maintenance and configuration-hygiene work
+No technical implementation is authorized.
 
 ### Current Next Exact Action
 
-Review the complete five-document successor-selection Source-of-Truth diff.
+Review the complete five-document RFC-069 / AD-055 acceptance-propagation diff.
 
-Do not stage, commit, activate RFC-069, create AD-055 or begin technical
-implementation until that review passes.
-
----
+Do not stage or commit until that review passes. Technical implementation
+remains prohibited until the accepted contract is committed, pushed, exact
+local / tracking / remote identity is verified, the working tree is clean and
+the separate implementation-entry Git gate passes.
 
 ## Historical RFC-068 Closed Workstream State Before Final Verification Push
 
@@ -14883,3 +14881,201 @@ begin only as a separate governed activity.
 
 No production-readiness, production-security or Cybersecurity-approval
 claim is introduced.
+
+---
+
+## RFC-069 Architecture Contract Accepted State
+
+**Canonical Document Content Relational Persistence Adapter Boundary**
+
+Verified workstream-selection commit:
+
+`5d7794352029576e0b62c2ac8cbfa248fe11961d`
+
+Current phase:
+
+**ARCHITECTURE CONTRACT ACCEPTED — ACCEPTED-CONTRACT GIT GATE PENDING; IMPLEMENTATION NOT AUTHORIZED**
+
+Architecture Decision:
+
+**AD-055 — ACCEPTED**
+
+Final refined contract review:
+
+**PASS — NO REMAINING REFINE / NO BLOCKED ITEM**
+
+### Contract Objective
+
+Introduce only the minimum canonical relational Infrastructure adapter required
+to implement the accepted descriptor-only `DocumentContentRepository`.
+
+The existing Domain and persistence-neutral repository contracts remain
+authoritative and unchanged.
+
+### Accepted Canonical Infrastructure Ownership
+
+`app.infrastructure.document_content`
+
+Accepted production surface after separate implementation authorization:
+
+- `backend/app/infrastructure/document_content/__init__.py`
+- `backend/app/infrastructure/document_content/duplicate_classification.py`
+- `backend/app/infrastructure/document_content/mapping.py`
+- `backend/app/infrastructure/document_content/models.py`
+- `backend/app/infrastructure/document_content/repository.py`
+
+The package initializer remains empty.
+
+### Accepted Relational Contract
+
+Row:
+
+`DocumentContentDescriptorRow`
+
+Table:
+
+`document_content_descriptors`
+
+Exact descriptor columns:
+
+1. `document_id`
+   - PostgreSQL UUID with `as_uuid=True`;
+   - non-null;
+   - sole primary-key identity.
+
+2. `media_type`
+   - SQLAlchemy `String`;
+   - non-null.
+
+3. `byte_length`
+   - SQLAlchemy `BigInteger`;
+   - non-null.
+
+4. `digest`
+   - SQLAlchemy `String`;
+   - non-null.
+
+Primary-key constraint:
+
+`pk_document_content_descriptors`
+
+The accepted contract introduces no surrogate `id`, no `DocumentContentId`,
+no digest identity or uniqueness, no additional unique constraint, no
+Enterprise Document foreign key, no cascade rule, no database-generated
+identity, no revision/version column and no binary/storage-location column.
+
+The absence of an Enterprise Document foreign key is intentional. RFC-069 does
+not decide cross-boundary existence, lifecycle or transaction-coordination
+semantics.
+
+### Accepted Mapping Contract
+
+Explicit mapping SHALL reconstruct and preserve the canonical:
+
+- `EntityId`;
+- `DocumentContentMediaType`;
+- `DocumentContentDigest`;
+- `DocumentContentDescriptor`.
+
+The relational representation SHALL NOT replace Domain validation.
+
+### Accepted Repository Adapter Contract
+
+Concrete adapter:
+
+`SQLAlchemyDocumentContentRepository`
+
+Implements:
+
+`DocumentContentRepository`
+
+Session dependency:
+
+`Callable[[], Session]`
+
+`add(descriptor)` SHALL create one session, map and add one row, commit once on
+success, perform no pre-read duplicate check and perform no Enterprise Document
+repository lookup.
+
+On persistence failure, the adapter SHALL attempt rollback and SHALL close the
+session on all paths.
+
+Failure precedence SHALL match accepted relational-adapter precedent:
+
+- if persistence fails and rollback succeeds, the original persistence failure
+  remains authoritative unless session close itself fails;
+- if rollback fails, the rollback failure SHALL be raised from the original
+  persistence failure;
+- if session close fails while an earlier failure is active, the close failure
+  SHALL propagate with that earlier failure preserved in exception context.
+
+RFC-069 SHALL NOT silently replace, swallow or text-classify unrelated database
+failures.
+
+Only the exact combination of SQLSTATE `23505` and constraint
+`pk_document_content_descriptors` SHALL translate to
+`DocumentContentAlreadyExistsError`.
+
+Other integrity/database failures remain unclassified and propagate.
+Human-readable database messages SHALL NOT be used for duplicate
+classification.
+
+`get(document_id)` SHALL create one session, use exact `document_id` identity,
+perform no commit, return `None` when missing, reconstruct the canonical
+descriptor when present and close the session on all paths.
+
+### Database and Alembic Contract
+
+The existing `DatabaseBase.metadata` remains the sole relational metadata
+authority.
+
+`DatabaseRuntime` remains unchanged.
+
+Current canonical Alembic head:
+
+`0004`
+
+After accepted-contract Git verification and separate implementation
+authorization, accepted migration:
+
+`backend/migrations/versions/0005_document_content_descriptors.py`
+
+with revision `0005`, down revision `0004`, one linear canonical head, only the
+accepted descriptor table, no foreign key, no BLOB/binary field and no
+unrelated schema change.
+
+Alembic `env.py` SHALL import/register `DocumentContentDescriptorRow` before
+`target_metadata = DatabaseBase.metadata` is bound so the canonical table is
+present in Alembic metadata discovery.
+
+This registration is metadata visibility only and SHALL NOT expand
+`DatabaseRuntime` ownership or runtime lifecycle responsibility.
+
+### Explicitly Deferred
+
+RFC-069 does not authorize raw bytes, BLOB/filesystem/object/network storage,
+byte stream/open/read/download APIs, `DocumentContentStore`, Document Content
+establishment application service, cross-repository transaction coordination,
+Enterprise Document + descriptor + future payload atomicity, Document Library,
+parser, OCR, chunking, Search, Vector, Graph, RAG, LLM, Composition, Runtime,
+Bootstrap or production-security/Cybersecurity claims.
+
+### Future Technical Verification Requirements
+
+After separate implementation authorization, RFC-069 SHALL require focused
+contracts for Infrastructure boundaries, exact model/table/constraint shape,
+Domain/row round trip, duplicate classification, repository lifecycle,
+Alembic lineage/metadata registration, absence of FK/binary fields, unchanged
+Domain/repository contracts, impacted regression, full regression, Python
+compilation, `git diff --check` and one canonical Alembic head.
+
+### Current Next Exact Action
+
+Review the complete five-document RFC-069 / AD-055 acceptance-propagation diff.
+
+Do not stage or commit until that review passes.
+
+After the accepted-contract commit is pushed and exact local / tracking /
+remote identity plus a clean working tree are verified, open a separate
+implementation-entry Git gate before TDD RED or any production/schema/migration
+change.
