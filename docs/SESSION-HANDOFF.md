@@ -6,10 +6,10 @@
 |---|---|
 | Project | PlantMind PM-001 |
 | Branch | `feature/engineering-platform` |
-| Last Fully Closed RFC | RFC-067 — Operational Workload Evidence Contract Placement Remediation — Fully Closed and Source-of-Truth Reconciled |
-| Active RFC | RFC-068 — Engineering-Memory Closure Complete; Post-Closure Reconciliation Pending |
-| Selected Architecture Workstream | Canonical Document Content Repository Foundation Boundary — Engineering-Memory Closure Complete |
-| Proposed Successor RFC | None — Successor Selection Prohibited Until RFC-068 Closure and Reconciliation Complete |
+| Last Fully Closed RFC | RFC-068 — Canonical Document Content Repository Foundation Boundary — Fully Closed and Source-of-Truth Reconciled |
+| Active RFC | None — RFC-068 Fully Closed and Source-of-Truth Reconciled |
+| Selected Architecture Workstream | None — RFC-068 Completed; Successor Workstream Not Yet Selected |
+| Proposed Successor RFC | None — Separate Evidence-Based Successor Selection Not Yet Performed |
 | Selection Baseline | `ed7106c1c232d18c04319559cc2c899e2ebfb61a` |
 | Selection Commit | `287f3328f49627ce1e19a20d55d56f8bfbb76c58` |
 | RFC-068 Contract Draft Baseline | `287f3328f49627ce1e19a20d55d56f8bfbb76c58` |
@@ -23,11 +23,11 @@
 | Authoritative Environment | `PlantMind-Core/.venv` |
 | RFC-068 Technical Push | Verified |
 | Local / Remote Technical Identity | Verified |
-| Current Closure State | RFC-068 Engineering-Memory Closure Complete, Pushed and Verified |
+| Current Closure State | RFC-068 Fully Closed and Source-of-Truth Reconciled |
 | Engineering Closure Commit | `bcf2fc8b20c866584db8596341c8abdb965358ea` |
-| Post-Closure Reconciliation | Pending — Reconciliation Draft / Review Gate |
-| Reconciliation Commit | Pending — RFC-068 |
-| Successor RFC Selection | Not Authorized — RFC-068 Reconciliation Pending |
+| Post-Closure Reconciliation | Complete, Pushed and Verified |
+| Reconciliation Commit | `074e534e0d97a927b6434341ad5d1c8671bfa381` |
+| Successor RFC Selection | None — Separate Evidence-Based Selection Not Yet Performed |
 
 ## Recent Engineering Sequence
 
@@ -2457,7 +2457,7 @@ was completed and verified.
 
 ---
 
-## RFC-068 Post-Closure Reconciliation Handoff
+## RFC-068 Historical Post-Closure Reconciliation Handoff Before Final Verification
 
 Verified engineering-memory closure commit:
 
@@ -2471,25 +2471,80 @@ Working tree after closure push:
 
 **clean**
 
-RFC-068 post-closure Source-of-Truth reconciliation is:
+At that historical handoff, RFC-068 post-closure Source-of-Truth
+reconciliation was:
 
 **PENDING — DRAFT / REVIEW GATE**
 
-The reconciliation must preserve:
+That state is superseded by verified reconciliation commit:
+
+`074e534e0d97a927b6434341ad5d1c8671bfa381`
+
+whose parent is engineering-memory closure commit:
+
+`bcf2fc8b20c866584db8596341c8abdb965358ea`
+
+Reconciliation push and exact local / tracking / remote identity are
+verified, and the working tree after verification is clean.
+
+The preserved architecture and technical baseline remains:
 
 - AD-054 as the latest Accepted Architecture Decision;
-- accepted-contract commit `6ac09336e223cfb18e049528d62d10b4753e8ee3`;
-- technical implementation commit `a88f046567b2b56795f590a4852dbd144b7c2fde`;
 - full regression baseline **866 passed**;
 - canonical Alembic head `0004`;
-- RFC-068 descriptor-only persistence-neutral repository semantics;
+- descriptor-only persistence-neutral repository semantics;
 - all separately deferred binary-store, Infrastructure, parsing, OCR,
-  Document Library, Search, Vector, Graph, RAG, LLM and security boundaries;
-- absence of successor-RFC selection.
+  Document Library, Search, Vector, Graph, RAG, LLM and security boundaries.
 
-Next exact action:
+No successor RFC was selected by that reconciliation.
 
-Review the complete five-document reconciliation diff.
 
-Do not stage, commit, push or select a successor until the reconciliation
-review gate passes.
+---
+
+## RFC-068 Final Source-of-Truth Reconciliation Verification Handoff
+
+RFC-068 — Canonical Document Content Repository Foundation Boundary is:
+
+**FULLY CLOSED AND SOURCE-OF-TRUTH RECONCILED**
+
+Engineering-memory closure commit:
+
+`bcf2fc8b20c866584db8596341c8abdb965358ea`
+
+Post-closure Source-of-Truth reconciliation commit:
+
+`074e534e0d97a927b6434341ad5d1c8671bfa381`
+
+Final reconciliation Git verification:
+
+- reconciliation commit parent: `bcf2fc8b20c866584db8596341c8abdb965358ea`;
+- reconciliation push: **PASS**;
+- exact local / tracking / remote reconciliation identity: **PASS**;
+- working tree after reconciliation push: **clean**;
+- staged changes after reconciliation push: none;
+- unstaged changes after reconciliation push: none.
+
+AD-054 remains the latest Accepted Architecture Decision.
+
+Verified technical baseline remains:
+
+- full PlantMind regression: **866 passed**;
+- canonical Alembic head: `0004`.
+
+No successor RFC or architecture workstream is selected or preselected.
+
+No successor RFC or architecture workstream is selected by this handoff.
+
+Before separate evidence-based successor-workstream selection begins, the
+Final Verification record Git gate SHALL be externally verified: review,
+commit, push, exact local / tracking / remote identity and a clean working
+tree.
+
+That external Git gate requires no additional RFC-068 Source-of-Truth
+reconciliation commit.
+
+The next governed activity after that Git gate passes is separate
+evidence-based successor-workstream selection.
+
+No production-readiness, production-security or Cybersecurity-approval
+claim is introduced.
