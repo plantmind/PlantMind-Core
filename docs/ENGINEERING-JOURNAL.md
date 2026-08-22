@@ -5793,3 +5793,84 @@ Evidence-based successor-workstream selection is now permitted.
 Any future technical implementation remains prohibited until its own
 architecture contract is reviewed, accepted, committed, pushed and its
 implementation-entry Git gate is satisfied.
+
+
+---
+
+## 2026-08-22 — Post-RFC-067 Successor Workstream Selection Draft
+
+### Baseline
+
+Selection review baseline:
+
+`ed7106c1c232d18c04319559cc2c899e2ebfb61a`
+
+RFC-067 is fully closed and Source-of-Truth reconciled.
+
+Active RFC before this selection draft:
+
+**None**
+
+### Evidence-Based Selection Judgment
+
+Selected successor workstream in draft:
+
+**Canonical Document Content Repository Foundation Boundary**
+
+Proposed numbering:
+
+**RFC-068 — NUMBERING CANDIDATE ONLY; NOT ACTIVE**
+
+The selection follows review of maintained Source-of-Truth, accepted
+architecture, deferred capabilities, current implementation inventory,
+dependency-direction signals, test-suite signals, compatibility debt and
+remaining platform dependency gaps.
+
+### Why This Workstream
+
+RFC-066 established canonical Document Content semantics but intentionally
+did not establish content repository/store, binary persistence, file I/O or
+content retrieval.
+
+Document Library, upload/download, parsing, PDF extraction, OCR, chunking,
+revision lifecycle, semantic/vector/graph retrieval, RAG and LLM therefore
+remain intentionally deferred.
+
+The repository foundation is selected because it is the lowest-level
+dependency-completing boundary needed before those higher-level capabilities
+can safely consume canonical Document Content without coupling Domain or
+application logic directly to storage technology.
+
+### Alternatives Not Selected
+
+- `OperationalTransitionEvidence` placement review: current evidence records
+  the placement as outside RFC-067 but does not establish an immediate
+  architecture defect.
+- workload-evidence legacy compatibility removal: requires separate
+  breaking-change and external-consumer assessment.
+- Neo4j configuration hygiene: valid but non-blocking cleanup debt.
+- PI connector / logging / Session Memory maintenance: valid separately
+  deferred maintenance.
+- OCR / search / vector / graph / RAG / agents: premature before canonical
+  Document Content repository/access foundations.
+
+### Governance
+
+This Journal record is a draft selection record only.
+
+It does not:
+
+- activate `RFC-068`;
+- accept an architecture contract;
+- create an Architecture Decision;
+- authorize production implementation;
+- authorize tests for a new RFC;
+- select storage technology;
+- claim production security or Cybersecurity readiness.
+
+The complete five-document selection diff must be reviewed before staging or
+commit.
+
+Architecture-contract drafting may begin only after the reviewed selection
+commit is pushed, exact local / remote selection identity is verified and
+the working tree is clean.

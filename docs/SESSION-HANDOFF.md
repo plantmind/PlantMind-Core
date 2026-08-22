@@ -7,10 +7,11 @@
 | Project | PlantMind PM-001 |
 | Branch | `feature/engineering-platform` |
 | Last Fully Closed RFC | RFC-067 — Operational Workload Evidence Contract Placement Remediation — Fully Closed and Source-of-Truth Reconciled |
-| Active RFC | None — Evidence-Based Successor Workstream Selection Not Yet Performed |
-| Selected Architecture Workstream | None — RFC-067 Fully Closed; Successor Selection Pending |
-| Selection Baseline | `1d7f09d5106b7714421a1035877ff82a0538d39e` |
-| Selection Commit | `4ed69096aff2f201f6c5aa8d96c4ec96d43e4122` |
+| Active RFC | None — Successor Workstream Selection Draft Under Review |
+| Selected Architecture Workstream | Canonical Document Content Repository Foundation Boundary — Draft Selection Record Under Review |
+| Proposed Successor RFC | RFC-068 — Numbering Candidate Only; Not Active |
+| Selection Baseline | `ed7106c1c232d18c04319559cc2c899e2ebfb61a` |
+| Selection Commit | Pending — RFC-068 Successor Selection |
 | Architecture Decision | AD-053 — Accepted |
 | Accepted Contract Commit | `d5f743fc0d6d416a5e52d21a6aba0b0108cd7b08` |
 | Technical Implementation Commit | `48f245b1064a5f0f203ae0705556bb86628f7403` |
@@ -23,7 +24,7 @@
 | Engineering Closure Commit | `76e59a3fe37628f8c60ba0243995ddd5a44bf0a6` |
 | Post-Closure Reconciliation | Complete, Pushed and Verified |
 | Reconciliation Commit | `33a10d287111539d63c1042948233597b6ab4ed7` |
-| Successor RFC Selection | Not Yet Performed — Evidence-Based Selection Required |
+| Successor RFC Selection | Draft Selected — Canonical Document Content Repository Foundation Boundary; RFC-068 Not Active; Five-Document Review Pending |
 
 ## Recent Engineering Sequence
 
@@ -2327,16 +2328,52 @@ RFC-067 is:
 
 **FULLY CLOSED AND SOURCE-OF-TRUTH RECONCILED**
 
+## Post-RFC-067 Successor Workstream Selection Draft
+
+The completed architecture evidence review selects, in draft:
+
+**Canonical Document Content Repository Foundation Boundary**
+
+Selection baseline:
+
+`ed7106c1c232d18c04319559cc2c899e2ebfb61a`
+
+Proposed numbering:
+
+**RFC-068 — NUMBERING CANDIDATE ONLY; NOT ACTIVE**
+
+The selection is based on the dependency-completing requirement to establish
+a persistence-neutral Document Content repository boundary before promoting
+Document Library, binary persistence/access, parsing, OCR, chunking,
+retrieval, vector, graph, RAG or LLM capability.
+
+This selection does not authorize:
+
+- an Infrastructure persistence adapter;
+- filesystem, database or object-storage technology;
+- Document Library behavior;
+- upload or download;
+- Document revision / supersession;
+- parser, PDF extraction, OCR or chunking;
+- semantic search, embeddings or vector persistence;
+- graph persistence or Neo4j production integration;
+- RAG or LLM behavior;
+- authentication, authorization, RBAC or Active Directory;
+- production-security or Cybersecurity-readiness claims.
+
 ### Next Exact Action
 
-Perform evidence-based successor-workstream selection from the current
-repository, project charter, accepted architecture, registered debt and
-maintained Source-of-Truth.
+Review the complete five-document successor-selection Source-of-Truth diff.
 
-No successor RFC or architecture workstream is preselected by this closure.
+Do not stage or commit the selection unless the review confirms exact
+cross-document consistency and no unrelated change.
 
-Technical implementation of any future RFC remains prohibited until its own
-architecture contract is reviewed, accepted, committed, pushed and its
+Do not begin architecture-contract drafting until the reviewed selection
+commit is pushed, exact local / remote selection identity is verified and
+the working tree is clean.
+
+Technical implementation remains prohibited until the future architecture
+contract is separately reviewed, accepted, committed, pushed and its
 implementation-entry Git gate is satisfied.
 
 Repository code, tests and committed engineering records remain the

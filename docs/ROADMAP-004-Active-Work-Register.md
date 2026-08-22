@@ -35,6 +35,222 @@ No item may be marked complete until:
 
 ---
 
+## Selected Architecture Workstream — Canonical Document Content Repository Foundation Boundary
+
+### Status
+
+**DRAFT SELECTION RECORD — FIVE-DOCUMENT SOURCE-OF-TRUTH REVIEW PENDING**
+
+This section records the evidence-based successor-workstream selection
+following full closure and Source-of-Truth reconciliation of RFC-067.
+
+Selection baseline:
+
+`ed7106c1c232d18c04319559cc2c899e2ebfb61a`
+
+Proposed successor numbering:
+
+**RFC-068 — NUMBERING CANDIDATE ONLY; NOT ACTIVE**
+
+This selection does not constitute:
+
+- architecture-contract acceptance;
+- implementation authorization;
+- production-readiness approval;
+- storage-technology selection;
+- security or Cybersecurity approval.
+
+### Evidence Review Result
+
+The post-RFC-067 review confirms:
+
+- RFC-067 is fully closed and Source-of-Truth reconciled;
+- the current branch and remote are identical at `ed7106c1c232d18c04319559cc2c899e2ebfb61a`;
+- the working tree was clean at selection baseline;
+- the verified full PlantMind regression baseline remains **850 passed**;
+- canonical Alembic head remains `0004`;
+- RFC-067 removed the identified Core-to-Services workload-evidence
+  dependency-direction debt;
+- maintained non-test consumers use the canonical
+  `app.domain.operational_workload_evidence` contract path;
+- the legacy workload-evidence Services module remains only a temporary
+  exact-class-identity compatibility boundary;
+- no Domain-to-Services, Domain-to-Infrastructure or Domain-to-API
+  dependency violation was identified by the post-RFC-067 static review;
+- no test skip / xfail / TODO signal was identified by that review;
+- the adjacent `OperationalTransitionEvidence` Core placement remains
+  outside RFC-067, but current evidence does not establish that placement
+  as a defect requiring immediate remediation;
+- unused Neo4j URI / username / password defaults remain a separate
+  non-blocking configuration-hygiene debt;
+- PI connector migration, logging consolidation and Session Memory naming
+  remain separately deferred maintenance items;
+- RFC-066 established canonical Document Content semantics while explicitly
+  deferring content repository/store, binary persistence and retrieval;
+- Document Library, upload/download, source synchronization, parsing, PDF
+  extraction, OCR, chunking, revision lifecycle, semantic retrieval,
+  embeddings, vector persistence, graph persistence, RAG and LLM remain
+  separately deferred;
+- those higher-level Document Intelligence capabilities require a canonical
+  lower-level content access/persistence-neutral repository boundary before
+  they can be promoted safely.
+
+### Candidate Ranking
+
+1. **Canonical Document Content Repository Foundation Boundary — SELECTED IN DRAFT**
+2. `OperationalTransitionEvidence` Placement Review — not selected;
+   insufficient evidence currently establishes a placement defect.
+3. Operational Workload Evidence Legacy Compatibility Removal — not
+   selected; breaking-change review is required and product unlock is lower.
+4. Neo4j Legacy Configuration Hygiene — not selected; valid cleanup debt but
+   not the highest dependency-completing platform foundation.
+5. PI Connector / Logging / Session Memory maintenance — not selected;
+   separately deferred maintenance work.
+6. OCR / Search / Vector / Graph / RAG / Agents — not selected; these remain
+   dependent on lower-level Document Content access and persistence
+   foundations.
+
+### Selection Rationale
+
+PlantMind already has canonical:
+
+- Enterprise Document identity;
+- Enterprise Document repository semantics;
+- relational Enterprise Document persistence;
+- Document registration application semantics;
+- Knowledge identity and capture semantics;
+- Knowledge relational persistence;
+- Document-to-Knowledge lineage identity;
+- lineage repository semantics;
+- relational lineage persistence;
+- coordinated Knowledge / lineage transaction semantics;
+- Document-to-Knowledge ingestion application semantics;
+- canonical Document Content Domain semantics.
+
+The next minimum dependency-completing architecture foundation is therefore
+a persistence-neutral repository boundary for canonical Document Content.
+
+This continues the established PlantMind progression:
+
+**Domain contract → persistence-neutral repository contract → Infrastructure
+adapter → application capability**
+
+rather than allowing Document Library, parser/OCR, search or AI layers to
+depend directly on storage technology.
+
+### Objective
+
+Review and define the minimum canonical persistence-neutral repository
+foundation for RFC-066 Document Content associated with an existing canonical
+`EnterpriseDocument`.
+
+The architecture contract must determine, without prematurely implementing:
+
+1. architectural ownership of the repository port;
+2. repository responsibility and dependency direction;
+3. canonical Document identity used for content association/access;
+4. content-presence and not-found semantics;
+5. retrieval semantics required by future Infrastructure and application
+   consumers;
+6. whether write/register semantics belong in this repository foundation or
+   a later application boundary;
+7. atomicity and failure boundaries without changing RFC-064 / RFC-065
+   responsibilities;
+8. compatibility with future Document revision / supersession semantics;
+9. how RFC-066 content immutability and digest semantics remain authoritative;
+10. whether a future persistence adapter requires schema/Alembic work or a
+    non-relational binary/content store;
+11. how storage-neutral Domain/Application layers remain free of filesystem,
+    object-store and database-specific behavior;
+12. exact tests needed to enforce architectural ownership and dependency
+    direction.
+
+### Explicitly Not Decided by Selection
+
+This draft selection does not choose:
+
+- repository method names or exact Python signatures;
+- relational vs filesystem vs object-storage persistence;
+- database schema;
+- Alembic migration;
+- binary persistence representation;
+- filesystem layout;
+- object-store bucket/key layout;
+- Document Library behavior;
+- upload/download API;
+- source synchronization;
+- revision / supersession model;
+- parser implementation;
+- PDF extraction;
+- OCR engine;
+- chunking strategy;
+- semantic-search implementation;
+- embedding model;
+- vector database;
+- graph persistence;
+- Neo4j production wiring;
+- RAG orchestration;
+- LLM provider/model;
+- production authentication or authorization;
+- RBAC or Active Directory;
+- production-security or Cybersecurity readiness.
+
+### Preserved Boundaries
+
+The future architecture contract SHALL preserve unless explicitly reviewed:
+
+- RFC-057 canonical Enterprise Document identity;
+- RFC-058 repository semantics;
+- RFC-059 relational Document persistence;
+- RFC-060 Document Registration application semantics;
+- RFC-064 transaction-coordination semantics;
+- RFC-065 Document-to-Knowledge ingestion semantics;
+- RFC-066 canonical Document Content semantics;
+- RFC-067 workload-evidence ownership and compatibility boundaries;
+- Runtime lifecycle authority;
+- Bootstrap authority;
+- default Composition behavior;
+- current security and production-readiness non-claims.
+
+### Governance State
+
+The selected workstream is currently a **draft Source-of-Truth selection**.
+
+`RFC-068` is a numbering candidate only.
+
+`Active RFC` remains:
+
+**None**
+
+No new Architecture Decision has been created.
+
+AD-053 remains the final accepted Architecture Decision.
+
+No production code or test change is authorized by this selection draft.
+
+### Next Exact Action
+
+Review the complete five-document successor-selection diff.
+
+If and only if the review passes:
+
+1. stage exactly the five maintained Source-of-Truth documents;
+2. verify staged blobs match the reviewed working tree;
+3. verify historical Journal and Architecture Decision prefixes remain
+   preserved;
+4. verify no production-code or test file is staged;
+5. create the successor-selection documentation commit separately;
+6. push it;
+7. verify exact local / remote selection identity;
+8. verify a clean working tree.
+
+Only after those gates pass may `RFC-068` architecture-contract
+drafting begin.
+
+Technical implementation remains prohibited.
+
+---
+
 ## Selected Architecture Workstream — Operational Workload Evidence Contract Placement Remediation
 
 ### Status

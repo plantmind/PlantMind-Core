@@ -11773,3 +11773,79 @@ preselected by this record.
 
 Evidence-based successor-workstream selection may proceed only as a separate
 governed activity.
+
+
+---
+
+## Current Architecture Governance State — Post-RFC-067 Successor Workstream Selection Draft
+
+**Record Classification: Non-Decision Successor-Selection Governance Record**
+
+This record does not create a new Architecture Decision.
+
+AD-053 remains the final accepted Architecture Decision.
+
+RFC-067 remains fully closed and Source-of-Truth reconciled.
+
+Selection baseline:
+
+`ed7106c1c232d18c04319559cc2c899e2ebfb61a`
+
+Draft selected successor workstream:
+
+**Canonical Document Content Repository Foundation Boundary**
+
+Proposed successor numbering:
+
+**RFC-068 — NUMBERING CANDIDATE ONLY; NOT ACTIVE**
+
+### Architecture Basis
+
+The selection recognizes that RFC-066 established canonical Document Content
+Domain semantics while deliberately deferring repository/store, persistence,
+binary access and retrieval responsibilities.
+
+The next architecture review shall therefore determine the minimum
+persistence-neutral repository boundary required before storage adapters,
+Document Library behavior, parser/OCR, retrieval, vector, graph, RAG or LLM
+capabilities are promoted.
+
+### Preserved Authority
+
+This draft selection does not modify or reinterpret accepted Architecture
+Decisions.
+
+In particular it preserves:
+
+- AD-043 Enterprise Document foundation;
+- AD-044 Enterprise Document repository foundation;
+- AD-045 Document relational persistence;
+- AD-046 Document Registration application boundary;
+- AD-050 Knowledge/lineage transaction coordination;
+- AD-051 Document-to-Knowledge ingestion application boundary;
+- AD-052 Canonical Enterprise Document Content Foundation Boundary;
+- AD-053 Operational Workload Evidence Contract Placement Remediation;
+- Runtime, Bootstrap, Composition and API authority boundaries;
+- current security and production-readiness non-claims.
+
+### Governance Restrictions
+
+No AD-054 Architecture Decision is created by this record.
+
+No `RFC-068` architecture contract is accepted.
+
+No production implementation is authorized.
+
+No storage technology is selected.
+
+No schema or Alembic change is authorized.
+
+No Document Library, upload/download, parser/OCR, search, vector, graph,
+RAG or LLM implementation is authorized.
+
+The complete five-document successor-selection Source-of-Truth diff must be
+reviewed before any staging or commit.
+
+Only after the selection record is committed, pushed, exact local / remote
+selection identity is verified and the working tree is clean may
+architecture-contract drafting begin.

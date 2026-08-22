@@ -10,10 +10,11 @@
 | Deployment Model | On-Premise |
 | Development Branch | `feature/engineering-platform` |
 | Last Fully Closed RFC | RFC-067 — Operational Workload Evidence Contract Placement Remediation — Fully Closed and Source-of-Truth Reconciled |
-| Active RFC | None — Evidence-Based Successor Workstream Selection Not Yet Performed |
-| Selected Architecture Workstream | None — RFC-067 Fully Closed; Successor Selection Pending |
-| Selection Baseline | `1d7f09d5106b7714421a1035877ff82a0538d39e` |
-| Selection Commit | `4ed69096aff2f201f6c5aa8d96c4ec96d43e4122` |
+| Active RFC | None — Successor Workstream Selection Draft Under Review |
+| Selected Architecture Workstream | Canonical Document Content Repository Foundation Boundary — Draft Selection Record Under Review |
+| Proposed Successor RFC | RFC-068 — Numbering Candidate Only; Not Active |
+| Selection Baseline | `ed7106c1c232d18c04319559cc2c899e2ebfb61a` |
+| Selection Commit | Pending — RFC-068 Successor Selection |
 | Test Baseline | 850 passing tests |
 | Technical Baseline Commit | `48f245b1064a5f0f203ae0705556bb86628f7403` |
 | Accepted Contract Commit | `d5f743fc0d6d416a5e52d21a6aba0b0108cd7b08` |
@@ -2099,13 +2100,36 @@ RFC-067 is therefore:
 
 **FULLY CLOSED AND SOURCE-OF-TRUTH RECONCILED**
 
-No successor RFC or architecture workstream has been selected or authorized
-by RFC-067 closure.
+RFC-067 closure itself selected no successor workstream.
 
-The next exact action is an evidence-based successor-workstream selection
-review using the current repository, accepted architecture, project charter,
-registered debt and maintained Source-of-Truth.
+The completed post-RFC-067 architecture evidence review identifies the draft
+successor workstream as:
 
-Technical implementation of any future RFC remains prohibited until its own
-architecture contract is reviewed, accepted, committed, pushed and its
+**Canonical Document Content Repository Foundation Boundary**
+
+Proposed successor numbering:
+
+**RFC-068 — NUMBERING CANDIDATE ONLY; NOT ACTIVE**
+
+Selection baseline:
+
+`ed7106c1c232d18c04319559cc2c899e2ebfb61a`
+
+This selection draft does not constitute architecture-contract acceptance,
+implementation authorization, production-readiness approval or permission
+to introduce storage technology.
+
+### Next Exact Action
+
+Review the complete five-document successor-selection Source-of-Truth diff.
+
+Only after that review passes may the successor-selection documentation be
+staged, committed and pushed.
+
+Architecture-contract drafting remains prohibited until the reviewed
+selection commit is pushed, exact local / remote selection identity is
+verified and the working tree is clean.
+
+Technical implementation remains prohibited until the future architecture
+contract is separately reviewed, accepted, committed, pushed and its
 implementation-entry Git gate is satisfied.
