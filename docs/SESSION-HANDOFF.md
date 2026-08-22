@@ -7,13 +7,16 @@
 | Project | PlantMind PM-001 |
 | Branch | `feature/engineering-platform` |
 | Last Fully Closed RFC | RFC-067 — Operational Workload Evidence Contract Placement Remediation — Fully Closed and Source-of-Truth Reconciled |
-| Active RFC | None — Successor Workstream Selection Draft Under Review |
-| Selected Architecture Workstream | Canonical Document Content Repository Foundation Boundary — Draft Selection Record Under Review |
-| Proposed Successor RFC | RFC-068 — Numbering Candidate Only; Not Active |
+| Active RFC | RFC-068 — Contract Accepted; Implementation Gate Pending |
+| Selected Architecture Workstream | Canonical Document Content Repository Foundation Boundary — Contract Accepted |
+| Proposed Successor RFC | RFC-068 — Selected and Active; Contract Accepted |
 | Selection Baseline | `ed7106c1c232d18c04319559cc2c899e2ebfb61a` |
-| Selection Commit | Pending — RFC-068 Successor Selection |
-| Architecture Decision | AD-053 — Accepted |
-| Accepted Contract Commit | `d5f743fc0d6d416a5e52d21a6aba0b0108cd7b08` |
+| Selection Commit | `287f3328f49627ce1e19a20d55d56f8bfbb76c58` |
+| RFC-068 Contract Draft Baseline | `287f3328f49627ce1e19a20d55d56f8bfbb76c58` |
+| Contract Acceptance Review | Passed — 52 PASS / 0 REFINE / 0 BLOCKED |
+| RFC-068 Implementation Authorization | Prohibited — Accepted Contract Git Gate Pending |
+| Architecture Decision | AD-054 — Accepted |
+| Accepted Contract Commit | Pending — RFC-068 / AD-054 Accepted Contract Commit |
 | Technical Implementation Commit | `48f245b1064a5f0f203ae0705556bb86628f7403` |
 | Test Baseline | 850 passed |
 | Alembic Head | `0004` |
@@ -24,7 +27,7 @@
 | Engineering Closure Commit | `76e59a3fe37628f8c60ba0243995ddd5a44bf0a6` |
 | Post-Closure Reconciliation | Complete, Pushed and Verified |
 | Reconciliation Commit | `33a10d287111539d63c1042948233597b6ab4ed7` |
-| Successor RFC Selection | Draft Selected — Canonical Document Content Repository Foundation Boundary; RFC-068 Not Active; Five-Document Review Pending |
+| Successor RFC Selection | Complete — RFC-068 Selected; Selection Commit `287f3328f49627ce1e19a20d55d56f8bfbb76c58` Pushed and Verified |
 
 ## Recent Engineering Sequence
 
@@ -2361,20 +2364,48 @@ This selection does not authorize:
 - authentication, authorization, RBAC or Active Directory;
 - production-security or Cybersecurity-readiness claims.
 
+### RFC-068 Architecture Contract Accepted State
+
+Successor selection is complete and verified at:
+
+`287f3328f49627ce1e19a20d55d56f8bfbb76c58`
+
+Active architecture workstream:
+
+**RFC-068 — Canonical Document Content Repository Foundation Boundary**
+
+Architecture Decision:
+
+**AD-054 — ACCEPTED**
+
+The accepted contract establishes a descriptor-only persistence-neutral repository.
+
+Binary payload store/access, Infrastructure persistence, application
+registration, parsing and higher Document Intelligence remain separately
+governed.
+
+### Contract Acceptance Review
+
+Formal RFC-068 / AD-054 architecture review:
+
+**PASSED — 52 PASS / 0 REFINE / 0 BLOCKED**
+
+RFC-068 architecture contract is Accepted.
+
+AD-054 is Accepted.
+
+The accepted-contract commit has not yet been created.
+
 ### Next Exact Action
 
-Review the complete five-document successor-selection Source-of-Truth diff.
+Review the complete five-document acceptance-propagation diff.
 
-Do not stage or commit the selection unless the review confirms exact
-cross-document consistency and no unrelated change.
+If and only if that review passes, stage exactly the five Source-of-Truth
+documents and open the accepted-contract commit gate.
 
-Do not begin architecture-contract drafting until the reviewed selection
-commit is pushed, exact local / remote selection identity is verified and
-the working tree is clean.
-
-Technical implementation remains prohibited until the future architecture
-contract is separately reviewed, accepted, committed, pushed and its
-implementation-entry Git gate is satisfied.
+Do not begin TDD RED or production implementation until the accepted contract
+is committed, pushed, exact local / remote identity is verified and the
+working tree is clean.
 
 Repository code, tests and committed engineering records remain the
 authoritative Source of Truth.

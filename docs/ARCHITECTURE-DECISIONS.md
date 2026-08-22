@@ -11849,3 +11849,888 @@ reviewed before any staging or commit.
 Only after the selection record is committed, pushed, exact local / remote
 selection identity is verified and the working tree is clean may
 architecture-contract drafting begin.
+
+
+---
+
+# AD-054 — Canonical Document Content Repository Foundation Boundary
+
+## Status
+
+Accepted.
+
+AD-054 is the latest Accepted Architecture Decision.
+
+AD-053 remains Accepted and historically preserved.
+
+RFC-068 selection commit:
+
+`287f3328f49627ce1e19a20d55d56f8bfbb76c58`
+
+No production implementation is authorized.
+
+### Context
+
+RFC-066 / AD-052 established the canonical immutable Document Content Domain
+foundation:
+
+- `DocumentContentMediaType`;
+- `DocumentContentDigest`;
+- `DocumentContentDescriptor`.
+
+The canonical content association is:
+
+`EnterpriseDocument.id -> zero-or-one DocumentContentDescriptor`
+
+RFC-066 deliberately introduced no repository, content store, persistence,
+binary storage, retrieval or application-registration responsibility.
+
+Its accepted contract explicitly required a later architecture workstream to
+define persistence-neutral content persistence/access semantics.
+
+The RFC-068 successor-selection review determined that the next minimum
+dependency-completing foundation is a canonical persistence-neutral Document
+Content repository boundary.
+
+### Architecture Resolution
+
+RFC-068 SHALL establish the repository for canonical
+`DocumentContentDescriptor` persistence and exact retrieval.
+
+RFC-068 SHALL NOT combine that descriptor repository with binary payload
+storage or byte streaming.
+
+This is an explicit responsibility split.
+
+The canonical descriptor repository and future binary content store/access
+boundary are related prerequisites but are not the same architectural
+responsibility.
+
+Combining them now would prematurely decide payload transport, resource
+lifecycle, storage technology and large-content loading behavior without
+sufficient evidence.
+
+### Canonical Namespace
+
+RFC-068 SHALL establish:
+
+`app.document_content.repository`
+
+implemented at:
+
+`backend/app/document_content/repository.py`
+
+The package:
+
+`app.document_content`
+
+shall be established with:
+
+`backend/app/document_content/__init__.py`
+
+The package initializer SHALL remain empty under RFC-068.
+
+It SHALL NOT create a package-level re-export API.
+
+### Canonical Repository Surface
+
+The repository module SHALL expose exactly:
+
+- `DocumentContentAlreadyExistsError`;
+- `DocumentContentRepository`.
+
+`DocumentContentRepository`
+
+SHALL be an abstract persistence-neutral repository port.
+
+Its canonical operations SHALL be exactly:
+
+`add(descriptor: DocumentContentDescriptor) -> None`
+
+and:
+
+`get(document_id: EntityId) -> DocumentContentDescriptor | None`
+
+No generic CRUD interface is authorized.
+
+### Repository Conflict Semantics
+
+`DocumentContentAlreadyExistsError`
+
+SHALL represent a repository-level conflict.
+
+It SHALL derive from:
+
+`Exception`
+
+and SHALL NOT derive from:
+
+`DomainException`.
+
+The repository duplicate identity SHALL be exactly:
+
+`DocumentContentDescriptor.document_id`
+
+which references canonical:
+
+`EnterpriseDocument.id`.
+
+Because RFC-066 establishes zero-or-one canonical content descriptor per
+canonical Document identity, a repository cannot accept a second descriptor
+for the same `document_id`.
+
+Re-adding the exact same descriptor SHALL raise
+`DocumentContentAlreadyExistsError`.
+
+Adding a different descriptor carrying the same `document_id` SHALL also
+raise `DocumentContentAlreadyExistsError`.
+
+The repository SHALL NOT silently overwrite.
+
+The repository SHALL NOT treat duplicate add as successful idempotency.
+
+### Identity Preservation
+
+RFC-068 SHALL NOT introduce:
+
+- `DocumentContentId`;
+- content entity identity;
+- digest identity;
+- source-reference identity;
+- media-type identity;
+- byte-length identity;
+- storage-location identity.
+
+Canonical Document Content association remains anchored to:
+
+`EnterpriseDocument.id`
+
+through:
+
+`DocumentContentDescriptor.document_id`.
+
+`DocumentContentDigest`
+
+continues to describe SHA-256 integrity only.
+
+It SHALL NOT become:
+
+- repository key beyond being descriptor data;
+- uniqueness identity;
+- deduplication identity;
+- idempotency identity;
+- lookup identity.
+
+RFC-068 SHALL NOT introduce:
+
+`get_by_digest(...)`
+
+or equivalent digest lookup.
+
+### Exact Retrieval Semantics
+
+`get(document_id: EntityId)`
+
+SHALL perform exact canonical Document identity lookup only.
+
+When canonical content descriptor exists, it SHALL return the canonical:
+
+`DocumentContentDescriptor`.
+
+When no descriptor exists, it SHALL return:
+
+`None`.
+
+No repository-level not-found exception is required.
+
+Absence remains valid because RFC-066 explicitly allows an
+`EnterpriseDocument` to exist without canonical content.
+
+Exact identity lookup is not Search capability.
+
+### Cardinality Preservation
+
+RFC-066 remains authoritative:
+
+`EnterpriseDocument.id -> zero-or-one DocumentContentDescriptor`
+
+RFC-068 repository semantics SHALL preserve that rule.
+
+The repository SHALL NOT establish:
+
+- attachments;
+- alternate renditions;
+- multiple independent content artifacts;
+- revision-specific content multiplicity.
+
+Repository storage capability SHALL NOT be interpreted as authorization for
+future revision or multi-artifact policy.
+
+### Canonical Domain Ownership
+
+Canonical content validation remains owned exclusively by:
+
+`app.domain.document_content`.
+
+RFC-068 SHALL consume existing:
+
+- `EntityId`;
+- `DocumentContentDescriptor`.
+
+The repository SHALL NOT:
+
+- generate Document identity;
+- generate content identity;
+- reconstruct descriptor values from unrelated primitive inputs;
+- normalize media type;
+- calculate SHA-256;
+- validate digest format;
+- validate byte length;
+- mutate canonical descriptor values;
+- duplicate RFC-066 Domain rules.
+
+RFC-068 implementation SHALL NOT modify:
+
+`backend/app/domain/document_content.py`.
+
+RFC-068 implementation SHALL NOT modify:
+
+`backend/app/domain/document.py`.
+
+### Enterprise Document Existence Boundary
+
+The repository port SHALL NOT depend on:
+
+`EnterpriseDocumentRepository`.
+
+It SHALL NOT perform cross-repository existence validation.
+
+It SHALL store and retrieve already-constructed canonical
+`DocumentContentDescriptor` values only.
+
+AD-052 remains authoritative that a future application boundary which
+establishes persisted canonical content SHALL verify that the referenced
+canonical:
+
+`EnterpriseDocument.id`
+
+exists before treating content establishment as successful.
+
+RFC-068 therefore establishes no orphan-content application policy.
+
+### Source Reference Boundary
+
+`DocumentSource.source_reference`
+
+remains external/source-system traceability only.
+
+RFC-068 SHALL NOT interpret it as:
+
+- repository identity;
+- repository alternate key;
+- filesystem path;
+- URI;
+- content locator;
+- storage locator;
+- object-store key;
+- binary-store key;
+- deduplication identity.
+
+The repository SHALL introduce no source-reference lookup.
+
+### Raw Payload and Binary Store Boundary
+
+RFC-068 repository operations SHALL persist and retrieve canonical descriptor
+semantics only.
+
+The repository contract SHALL contain no:
+
+- raw `bytes`;
+- `bytearray`;
+- memory buffer;
+- stream;
+- file handle;
+- filesystem path;
+- URI;
+- storage key.
+
+RFC-068 SHALL NOT introduce:
+
+- `DocumentContentStore`;
+- `read_bytes(...)`;
+- `read(...)`;
+- `open(...)`;
+- `stream(...)`;
+- download;
+- byte range;
+- resource lifecycle.
+
+Binary content access/storage remains a separately governed future
+architecture workstream.
+
+That future workstream must consume RFC-066 descriptor semantics and SHALL
+not reinterpret `source_reference` as canonical content access.
+
+### Persistence Technology Boundary
+
+RFC-068 is persistence-neutral.
+
+It SHALL NOT introduce:
+
+- SQLAlchemy;
+- PostgreSQL-specific behavior;
+- relational row/model;
+- database BLOB;
+- filesystem adapter;
+- network filesystem adapter;
+- object-storage adapter;
+- file-server adapter;
+- Infrastructure repository implementation.
+
+A future persistence adapter may implement the accepted repository contract
+only after separate evidence-based architecture authorization.
+
+RFC-068 itself SHALL NOT decide whether descriptor persistence eventually
+uses relational storage or another technology.
+
+### DatabaseRuntime, Schema and Alembic Boundary
+
+RFC-068 SHALL NOT own or modify:
+
+- `DatabaseRuntime`;
+- engine construction;
+- Session factory;
+- canonical SQLAlchemy metadata;
+- migration lifecycle.
+
+RFC-068 introduces:
+
+- no new table;
+- no new column;
+- no new foreign key;
+- no new index;
+- no new uniqueness constraint;
+- no Alembic revision.
+
+Canonical Alembic head remains:
+
+`0004`.
+
+### Mutation and Revision Boundary
+
+RFC-068 SHALL NOT introduce:
+
+- update;
+- replace;
+- delete;
+- upsert;
+- mutation;
+- revision;
+- supersession;
+- current/latest pointer.
+
+RFC-066 descriptor immutability remains authoritative.
+
+If future Document revision architecture changes the zero-or-one assumption,
+RFC-066 and RFC-068 SHALL both be explicitly reviewed.
+
+### Transaction and Atomicity Boundary
+
+RFC-068 establishes no application transaction.
+
+It SHALL NOT define atomicity across:
+
+- Enterprise Document registration;
+- Document Content descriptor persistence;
+- binary payload persistence;
+- Document-to-Knowledge ingestion.
+
+RFC-068 SHALL NOT modify:
+
+- RFC-060 Document Registration;
+- RFC-064 Knowledge / lineage transaction coordination;
+- RFC-065 Document-to-Knowledge ingestion.
+
+The repository foundation SHALL NOT introduce:
+
+- Session ownership;
+- commit;
+- rollback;
+- transaction coordinator;
+- distributed transaction;
+- compensation;
+- outbox;
+- retry.
+
+Future content-registration/application architecture must explicitly decide
+cross-boundary failure and atomicity behavior.
+
+### Application Boundary
+
+RFC-068 SHALL NOT introduce a Document Content registration application
+service.
+
+It SHALL NOT modify:
+
+- `EnterpriseDocumentRegistrationApplicationService`;
+- `DocumentKnowledgeIngestionApplicationService`;
+- `KnowledgeCaptureApplicationService`;
+- `KnowledgeLineageTransactionCoordinator`.
+
+The future application boundary responsible for establishing canonical
+Document Content remains separately governed.
+
+### Parser and Extraction Boundary
+
+RFC-068 SHALL NOT implement:
+
+- PDF parsing;
+- OCR;
+- DOCX extraction;
+- spreadsheet extraction;
+- text extraction;
+- character-encoding detection;
+- metadata extraction;
+- chunking.
+
+Future parser architecture still requires an accepted binary content
+access/store boundary.
+
+A parser SHALL NOT open:
+
+`DocumentSource.source_reference`
+
+as canonical content access.
+
+### Document Library Boundary
+
+RFC-068 is not a Document Library.
+
+It SHALL NOT implement:
+
+- upload;
+- download;
+- browse;
+- catalogue;
+- folder hierarchy;
+- source synchronization;
+- retention;
+- permissions;
+- approval workflow;
+- revision history.
+
+### Search, Vector, Graph and AI Boundary
+
+RFC-068 SHALL NOT establish:
+
+- keyword search;
+- semantic search;
+- full-text indexing;
+- embeddings;
+- vector persistence;
+- Qdrant;
+- graph persistence;
+- Neo4j production integration;
+- RAG;
+- LLM;
+- AI Agent behavior.
+
+Repository identity lookup SHALL NOT be represented as Search capability.
+
+### Composition, Runtime and Bootstrap Boundary
+
+RFC-068 SHALL NOT modify default:
+
+- `CompositionRoot`;
+- `ServiceContainer`;
+- `PlatformComposition`;
+- `ApplicationFacade`.
+
+RFC-068 SHALL NOT modify:
+
+- Runtime lifecycle;
+- Bootstrap;
+- Health;
+- readiness;
+- request admission;
+- operational-transition authority;
+- mandatory-capability policy.
+
+The existence of a repository interface SHALL NOT make content persistence a
+mandatory default Runtime capability.
+
+### Security and Trust Boundary
+
+RFC-068 SHALL NOT establish:
+
+- authentication;
+- authorization;
+- RBAC;
+- Active Directory;
+- LDAP;
+- MFA;
+- actor identity;
+- actor audit;
+- Document permission policy;
+- source authenticity;
+- malware scanning;
+- content approval;
+- Document approval;
+- trust classification;
+- compliance approval;
+- Cybersecurity approval;
+- production-security readiness.
+
+A persisted descriptor or SHA-256 digest SHALL NOT imply trust.
+
+### Dependency Boundary
+
+The repository contract SHALL depend only on the minimum canonical contracts
+required to express its interface.
+
+The expected imports are limited to:
+
+- Python standard-library abstraction support;
+- `app.domain.base.EntityId`;
+- `app.domain.document_content.DocumentContentDescriptor`.
+
+It SHALL NOT depend on:
+
+- `app.domain.document`;
+- `app.document.repository`;
+- `app.services`;
+- `app.infrastructure`;
+- SQLAlchemy;
+- FastAPI;
+- Pydantic;
+- filesystem libraries;
+- network clients;
+- parser;
+- OCR;
+- vector infrastructure;
+- graph infrastructure;
+- RAG;
+- LLM.
+
+ARCH-001, ARCH-003, CORE-002 and CORE-003 remain authoritative.
+
+### Existing Responsibilities Preserved
+
+RFC-068 SHALL NOT silently redesign:
+
+- `EntityId`;
+- `DomainEntity`;
+- `EnterpriseDocument`;
+- `DocumentType`;
+- `DocumentSourceType`;
+- `DocumentSource`;
+- `EnterpriseDocumentRepository`;
+- canonical Enterprise Document relational persistence;
+- `EnterpriseDocumentRegistrationApplicationService`;
+- `DocumentContentMediaType`;
+- `DocumentContentDigest`;
+- `DocumentContentDescriptor`;
+- `KnowledgeRecord`;
+- `KnowledgeRecordRepository`;
+- `KnowledgeCaptureApplicationService`;
+- `DocumentKnowledgeLineage`;
+- `DocumentKnowledgeLineageRepository`;
+- `KnowledgeLineageTransactionCoordinator`;
+- `DocumentKnowledgeIngestionApplicationService`;
+- `DatabaseRuntime`;
+- canonical SQLAlchemy metadata authority;
+- canonical Alembic lifecycle;
+- `ApplicationFacade`;
+- default `CompositionRoot`;
+- Runtime;
+- Bootstrap.
+
+### Expected Technical Change Surface If Accepted
+
+If and only if RFC-068 / AD-054 is accepted, committed, pushed and the
+implementation-entry Git gate passes, the expected production-code change
+surface is limited to new files:
+
+- `backend/app/document_content/__init__.py`;
+- `backend/app/document_content/repository.py`.
+
+The package initializer SHALL remain empty.
+
+Expected verification changes may include new focused repository-contract and
+architecture-guardrail tests.
+
+No modification is expected to:
+
+- `backend/app/domain/document_content.py`;
+- `backend/app/domain/document.py`;
+- existing Document repository;
+- existing relational Document persistence;
+- existing application services;
+- Composition;
+- Runtime;
+- Bootstrap;
+- migrations.
+
+Any implementation need outside the accepted technical surface SHALL stop for
+architecture review before expansion.
+
+### TDD Entry Contract
+
+Technical implementation SHALL begin with RED tests only after all of the
+following are true:
+
+1. RFC-068 architecture review passes;
+2. AD-054 architecture review passes;
+3. RFC-068 and AD-054 are confirmed materially and semantically equivalent;
+4. both are Accepted;
+5. accepted architecture documentation is committed separately;
+6. accepted contract commit is pushed;
+7. exact local / remote accepted-contract identity is verified;
+8. working tree is clean.
+
+Before those gates pass:
+
+**NO TDD RED AND NO PRODUCTION IMPLEMENTATION ARE AUTHORIZED.**
+
+Initial RED evidence SHALL fail because the accepted canonical repository
+package/module/contracts do not yet exist.
+
+Unrelated regression failure SHALL NOT count as valid RED evidence.
+
+### Required GREEN Architecture Guardrails
+
+Technical acceptance SHALL include tests proving at minimum:
+
+1. canonical repository ownership is
+   `app.document_content.repository`;
+2. the repository family contains exactly
+   `DocumentContentAlreadyExistsError` and `DocumentContentRepository`;
+3. the package initializer remains empty;
+4. repository public operations remain exactly `add()` and `get()`;
+5. exact signatures remain canonical;
+6. duplicate identity is `document_id` only;
+7. duplicate add cannot silently overwrite;
+8. exact missing lookup returns `None`;
+9. digest/source reference/media type/byte length are not alternate keys;
+10. no raw binary payload or byte-access operation enters the repository;
+11. no `DocumentContentStore` is introduced;
+12. no generic CRUD/search/list API is introduced;
+13. no Enterprise Document existence lookup enters the repository;
+14. RFC-066 Domain module remains unchanged;
+15. RFC-057 Document Domain module remains unchanged;
+16. repository dependencies remain persistence-neutral;
+17. no Infrastructure/service/SQLAlchemy/FastAPI/Pydantic dependency enters;
+18. no file/network I/O enters;
+19. no migration/schema change occurs;
+20. default Composition, Runtime and Bootstrap remain unchanged.
+
+### Verification Contract
+
+Technical verification, if later authorized, SHALL include:
+
+- focused RFC-068 repository contract tests;
+- Document Content Domain regression;
+- canonical Document repository regression;
+- Document / Knowledge / lineage boundary regression;
+- architecture guardrails;
+- full PlantMind regression;
+- Python compilation verification;
+- dependency/import static verification;
+- canonical Alembic-head verification;
+- `git diff --check`;
+- exact technical-commit local / remote identity;
+- clean working tree after technical push.
+
+No technical acceptance shall rely only on focused tests.
+
+### Documentation and Commit Separation
+
+RFC-068 / AD-054 architecture-contract acceptance SHALL be committed
+separately from future technical implementation.
+
+Technical implementation SHALL NOT be committed together with contract
+acceptance.
+
+Post-implementation engineering-memory closure SHALL remain a separate
+governed step after technical verification.
+
+### Acceptance Requirements
+
+Before RFC-068 / AD-054 may become Accepted, architecture review SHALL
+confirm:
+
+1. RFC-068 introduces no new ARCH-001 architectural layer;
+2. the canonical repository namespace is exactly
+   `app.document_content.repository`;
+3. the technical package is exactly `app.document_content` and its
+   `__init__.py` remains empty under RFC-068;
+4. the canonical repository module introduces exactly
+   `DocumentContentAlreadyExistsError` and `DocumentContentRepository`;
+5. `DocumentContentAlreadyExistsError` derives from `Exception`, not
+   `DomainException`;
+6. `DocumentContentRepository` is a persistence-neutral abstract repository
+   port;
+7. the repository exposes exactly two canonical operations: `add()` and
+   `get()`;
+8. `add()` has the canonical contract
+   `add(descriptor: DocumentContentDescriptor) -> None`;
+9. `get()` has the canonical contract
+   `get(document_id: EntityId) -> DocumentContentDescriptor | None`;
+10. RFC-068 introduces no `DocumentContentId` or other independent content
+    identity;
+11. canonical content association remains anchored only to existing
+    `EnterpriseDocument.id`;
+12. repository duplicate identity is exactly
+    `DocumentContentDescriptor.document_id`;
+13. re-adding an identical descriptor for the same Document identity raises
+    `DocumentContentAlreadyExistsError`;
+14. adding a different descriptor for an already-associated Document identity
+    also raises `DocumentContentAlreadyExistsError`;
+15. repository `add()` never silently overwrites existing canonical content
+    association;
+16. RFC-068 introduces no upsert or repository-level idempotent-success
+    semantics;
+17. SHA-256 digest remains integrity description only and never becomes
+    repository identity, uniqueness identity, lookup identity, deduplication
+    identity or idempotency identity;
+18. media type, byte length and `DocumentSource.source_reference` do not
+    become repository identities or alternate keys;
+19. RFC-066 zero-or-one content-descriptor cardinality per canonical Document
+    identity is preserved;
+20. an Enterprise Document may continue to exist with no canonical content
+    descriptor;
+21. exact identity lookup returns `None` when no canonical descriptor exists;
+22. RFC-068 introduces no repository-level not-found exception for `get()`;
+23. no list, find, search, filter, query, pagination, ranking or
+    `get_by_digest()` operation is introduced;
+24. repository behavior consumes the existing canonical
+    `DocumentContentDescriptor` without duplicating its Domain validation;
+25. `app.domain.document_content` remains unchanged by RFC-068 implementation;
+26. RFC-057 `app.domain.document` and canonical `EnterpriseDocument` remain
+    unchanged;
+27. `DocumentContentRepository` does not depend on
+    `EnterpriseDocumentRepository`;
+28. the repository performs no cross-repository Enterprise Document existence
+    lookup;
+29. a future application boundary establishing persisted canonical content
+    remains responsible for verifying that `EnterpriseDocument.id` exists;
+30. RFC-068 does not authorize orphan-content application semantics;
+31. no raw `bytes`, `bytearray`, memory buffer, file handle, path, URI,
+    stream or storage key enters the repository contract;
+32. RFC-068 introduces no byte-read, content-read, streaming, download or
+    resource-lifecycle operation;
+33. RFC-068 introduces no `DocumentContentStore` or binary-store contract;
+34. binary payload access/storage remains a separately governed future
+    persistence-neutral contract;
+35. no filesystem, network filesystem, database BLOB, object store, file
+    server or other binary-storage technology is selected;
+36. the repository module performs no filesystem I/O or network I/O;
+37. RFC-068 introduces no SQLAlchemy or Infrastructure persistence adapter;
+38. RFC-068 introduces no relational schema, table, column, index, constraint
+    or Alembic revision and canonical Alembic head remains `0004`;
+39. RFC-068 introduces no Session ownership, commit, rollback, transaction
+    coordinator, distributed transaction, compensation, outbox or retry
+    policy;
+40. RFC-060 Document Registration, RFC-064 Knowledge/lineage transaction
+    coordination and RFC-065 Document-to-Knowledge ingestion responsibilities
+    remain unchanged;
+41. RFC-068 introduces no content-registration application service;
+42. default `CompositionRoot`, `ServiceContainer`, `PlatformComposition` and
+    `ApplicationFacade` remain unchanged;
+43. Runtime, Bootstrap, Health, readiness, request admission and
+    operational-transition authority remain unchanged;
+44. update, replace, delete, revision, supersession and mutable-content
+    lifecycle semantics remain deferred;
+45. parser, PDF extraction, OCR, text extraction, character-encoding
+    detection and chunking remain deferred;
+46. Document Library, upload, download, browse, catalogue, source
+    synchronization, retention, permissions and approval workflow remain
+    deferred;
+47. search, embeddings, vector persistence, graph persistence, Neo4j, RAG,
+    LLM and AI Agent behavior remain deferred;
+48. authentication, authorization, RBAC, Active Directory, trust, approval,
+    malware scanning, compliance and Cybersecurity approval remain outside
+    RFC-068;
+49. dependency direction remains explicit, acyclic and compatible with
+    ARCH-001, ARCH-003, CORE-002 and CORE-003;
+50. TDD RED begins only after RFC-068 / AD-054 are accepted, committed,
+    pushed, exact local / remote accepted-contract identity is verified and
+    the working tree is clean;
+51. technical verification, if later authorized, includes focused contract
+    tests, architecture guardrails, impacted regression, full PlantMind
+    regression, Python compilation and `git diff --check`;
+52. RFC-068 introduces no production-readiness, production-security or
+    Cybersecurity-approval claim.
+
+### Contract Acceptance State
+
+Status:
+
+**PASSED — RFC-068 / AD-054 ACCEPTED**
+
+Formal Contract Acceptance Review completed successfully.
+
+Review result:
+
+- Gate 0 — Reviewed Git State: PASS;
+- Gate 1 — Governance & Decision State: PASS;
+- Gate 2 — RFC / AD Contract Equivalence: PASS;
+- Gate 3 — Ownership / Namespace / Public Surface: PASS;
+- Gate 4 — Identity / Cardinality / Conflict: PASS;
+- Gate 5 — Descriptor / Binary Responsibility Separation: PASS;
+- Gate 6 — Application / Existence / Transaction Boundaries: PASS;
+- Gate 7 — Persistence / Database / Alembic: PASS;
+- Gate 8 — Existing Implementation Compatibility: PASS;
+- Gate 9 — Deferred Capabilities: PASS;
+- Gate 10 — Composition / Runtime / Security: PASS;
+- Gate 11 — Dependency Direction / Change Surface: PASS;
+- Gate 12 — TDD / Git Governance: PASS;
+- Gate 13 — Acceptance Requirement Disposition: PASS;
+- Final Static Contract Review: PASS;
+- Semantic Contradiction Scan: PASS;
+- RFC / AD Material Equivalence: PASS;
+- Acceptance Requirements: **52 PASS / 0 REFINE / 0 BLOCKED**.
+
+AD-054 is Accepted.
+
+RFC-068 architecture contract is Accepted.
+
+Technical implementation remains prohibited until the accepted architecture
+documentation is committed separately, pushed, exact local / remote accepted
+contract identity is verified and the working tree is clean.
+
+No implementation-entry Git gate is open yet.
+
+
+## Decision State
+
+AD-054 is **Accepted**.
+
+RFC-068 is **Active — Contract Accepted; Implementation Gate Pending**.
+
+Formal architecture-contract acceptance review passed:
+
+**52 PASS / 0 REFINE / 0 BLOCKED**
+
+No accepted-contract commit exists yet.
+
+No implementation-entry Git gate is open.
+
+Technical implementation remains prohibited.
+
+## Next Exact Action
+
+Review the complete five-document accepted-contract Source-of-Truth diff.
+
+If and only if that review passes, commit the accepted RFC-068 / AD-054
+architecture documentation separately from technical implementation.
+
+Then push the accepted-contract commit and verify:
+
+- exact local / remote commit identity;
+- clean working tree.
+
+Only after those Git gates pass may RFC-068 TDD RED begin.
+
+Production implementation remains prohibited until the implementation-entry
+gate is satisfied.

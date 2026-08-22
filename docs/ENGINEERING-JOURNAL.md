@@ -5874,3 +5874,172 @@ commit.
 Architecture-contract drafting may begin only after the reviewed selection
 commit is pushed, exact local / remote selection identity is verified and
 the working tree is clean.
+
+
+---
+
+## 2026-08-22 — RFC-068 Architecture Contract Draft Authored
+
+### Baseline
+
+RFC-068 successor selection commit:
+
+`287f3328f49627ce1e19a20d55d56f8bfbb76c58`
+
+Exact local / remote selection identity was verified and the working tree was
+clean before architecture-contract drafting began.
+
+### Active Architecture Workstream
+
+**RFC-068 — Canonical Document Content Repository Foundation Boundary**
+
+Proposed Architecture Decision:
+
+**AD-054 — NOT ACCEPTED**
+
+### Evidence Synthesis
+
+Architecture review confirmed:
+
+- RFC-066 / AD-052 established canonical immutable
+  `DocumentContentDescriptor`;
+- canonical content association remains based on
+  `EnterpriseDocument.id`;
+- current semantic cardinality remains zero-or-one descriptor per canonical
+  Document identity;
+- RFC-066 deliberately deferred repository/store/persistence/retrieval;
+- existing Enterprise Document and lineage repository foundations establish
+  the accepted minimal `add()` / `get()` persistence-neutral pattern;
+- binary payload access introduces separate storage, streaming, resource
+  lifecycle and technology concerns that should not be silently combined
+  with descriptor repository semantics.
+
+### Draft Architecture Resolution
+
+The draft contract therefore proposes:
+
+- namespace: `app.document_content.repository`;
+- repository: `DocumentContentRepository`;
+- conflict: `DocumentContentAlreadyExistsError`;
+- `add(descriptor: DocumentContentDescriptor) -> None`;
+- `get(document_id: EntityId) -> DocumentContentDescriptor | None`;
+- duplicate identity: canonical `document_id` only;
+- missing lookup: `None`;
+- no silent overwrite;
+- no digest identity;
+- no generic CRUD/search;
+- no raw bytes;
+- no binary store/read/stream API;
+- no SQLAlchemy or Infrastructure adapter;
+- no schema/Alembic change;
+- no application service;
+- no transaction expansion;
+- no default Composition/Runtime/Bootstrap change.
+
+Binary content storage/access remains separately governed.
+
+### Governance
+
+This record documents contract drafting only.
+
+RFC-068 / AD-054 are not Accepted.
+
+No TDD RED is authorized.
+
+No production implementation is authorized.
+
+The complete five-document draft diff must pass formal architecture review
+before staging or commit.
+
+
+---
+
+## 2026-08-22 — RFC-068 / AD-054 Formal Contract Acceptance
+
+### Reviewed Baseline
+
+RFC-068 selection commit:
+
+`287f3328f49627ce1e19a20d55d56f8bfbb76c58`
+
+The architecture-contract draft was reviewed while local and remote remained
+identical at the selection commit and with exactly the five maintained
+Source-of-Truth documents modified.
+
+### Formal Review Result
+
+RFC-068 / AD-054 Contract Acceptance Review:
+
+**PASS**
+
+All formal gates passed:
+
+- reviewed Git state;
+- governance and decision state;
+- RFC / AD material equivalence;
+- ownership, namespace and public surface;
+- identity, cardinality and conflict semantics;
+- descriptor / binary responsibility separation;
+- application, existence and transaction boundaries;
+- persistence, database and Alembic boundaries;
+- existing implementation compatibility;
+- deferred capability preservation;
+- Composition, Runtime and security boundaries;
+- dependency direction and expected technical surface;
+- TDD and Git governance.
+
+Acceptance requirement disposition:
+
+**52 PASS / 0 REFINE / 0 BLOCKED**
+
+Final Static Contract Review:
+
+**PASS**
+
+Semantic Contradiction Scan:
+
+**PASS**
+
+RFC / AD Material Equivalence:
+
+**PASS**
+
+### Accepted Architecture State
+
+RFC-068 architecture contract:
+
+**Accepted**
+
+AD-054:
+
+**Accepted**
+
+Canonical RFC-068 repository contract:
+
+- namespace: `app.document_content.repository`;
+- `DocumentContentAlreadyExistsError`;
+- `DocumentContentRepository`;
+- `add(descriptor: DocumentContentDescriptor) -> None`;
+- `get(document_id: EntityId) -> DocumentContentDescriptor | None`;
+- duplicate identity: `document_id` only;
+- missing exact lookup: `None`;
+- no independent content identity;
+- no raw binary payload;
+- no binary store/read/stream API;
+- no Infrastructure adapter;
+- no schema or Alembic change;
+- no application-service or transaction expansion;
+- no default Composition, Runtime or Bootstrap change.
+
+Binary payload storage/access remains separately governed.
+
+### Implementation Gate
+
+The accepted-contract commit has not yet been created.
+
+Therefore:
+
+**NO TDD RED AND NO PRODUCTION IMPLEMENTATION ARE AUTHORIZED YET.**
+
+The next gate is review and separate commit/push verification of the accepted
+architecture documentation.

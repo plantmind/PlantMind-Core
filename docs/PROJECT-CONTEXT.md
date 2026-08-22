@@ -10,14 +10,18 @@
 | Deployment Model | On-Premise |
 | Development Branch | `feature/engineering-platform` |
 | Last Fully Closed RFC | RFC-067 — Operational Workload Evidence Contract Placement Remediation — Fully Closed and Source-of-Truth Reconciled |
-| Active RFC | None — Successor Workstream Selection Draft Under Review |
-| Selected Architecture Workstream | Canonical Document Content Repository Foundation Boundary — Draft Selection Record Under Review |
-| Proposed Successor RFC | RFC-068 — Numbering Candidate Only; Not Active |
+| Active RFC | RFC-068 — Contract Accepted; Implementation Gate Pending |
+| Selected Architecture Workstream | Canonical Document Content Repository Foundation Boundary — Contract Accepted |
+| Proposed Successor RFC | RFC-068 — Selected and Active; Contract Accepted |
 | Selection Baseline | `ed7106c1c232d18c04319559cc2c899e2ebfb61a` |
-| Selection Commit | Pending — RFC-068 Successor Selection |
+| Selection Commit | `287f3328f49627ce1e19a20d55d56f8bfbb76c58` |
+| Architecture Decision | AD-054 — Accepted |
+| RFC-068 Contract Draft Baseline | `287f3328f49627ce1e19a20d55d56f8bfbb76c58` |
+| Contract Acceptance Review | Passed — 52 PASS / 0 REFINE / 0 BLOCKED |
+| RFC-068 Implementation Authorization | Prohibited — Accepted Contract Git Gate Pending |
 | Test Baseline | 850 passing tests |
 | Technical Baseline Commit | `48f245b1064a5f0f203ae0705556bb86628f7403` |
-| Accepted Contract Commit | `d5f743fc0d6d416a5e52d21a6aba0b0108cd7b08` |
+| Accepted Contract Commit | Pending — RFC-068 / AD-054 Accepted Contract Commit |
 | Engineering Closure Commit | `76e59a3fe37628f8c60ba0243995ddd5a44bf0a6` |
 | Reconciliation Commit | `33a10d287111539d63c1042948233597b6ab4ed7` |
 | Reconciliation State | Complete, Pushed and Verified — RFC-067 Fully Closed and Source-of-Truth Reconciled |
@@ -2119,17 +2123,56 @@ This selection draft does not constitute architecture-contract acceptance,
 implementation authorization, production-readiness approval or permission
 to introduce storage technology.
 
+## RFC-068 Architecture Contract Accepted State
+
+Successor selection is complete, committed and pushed.
+
+Selection commit:
+
+`287f3328f49627ce1e19a20d55d56f8bfbb76c58`
+
+RFC-068 is now the active architecture workstream.
+
+Architecture Decision:
+
+**AD-054 — Canonical Document Content Repository Foundation Boundary — Accepted**
+
+The architecture contract is **ACCEPTED — IMPLEMENTATION GATE PENDING**.
+
+The accepted repository contract is intentionally descriptor-only:
+
+- `DocumentContentRepository`;
+- `DocumentContentAlreadyExistsError`;
+- `add(descriptor: DocumentContentDescriptor) -> None`;
+- `get(document_id: EntityId) -> DocumentContentDescriptor | None`.
+
+Binary payload storage/access remains separately deferred.
+
+No technical implementation is authorized.
+
+### Contract Acceptance Review
+
+Formal RFC-068 / AD-054 Contract Acceptance Review:
+
+**PASSED**
+
+Acceptance Requirements:
+
+**52 PASS / 0 REFINE / 0 BLOCKED**
+
+AD-054 is Accepted.
+
+RFC-068 architecture contract is Accepted.
+
+Implementation authorization remains prohibited because the accepted-contract
+Git gate has not yet been satisfied.
+
 ### Next Exact Action
 
-Review the complete five-document successor-selection Source-of-Truth diff.
+Review the complete five-document acceptance-propagation diff.
 
-Only after that review passes may the successor-selection documentation be
-staged, committed and pushed.
+Only after that review passes may the accepted architecture documentation be
+staged and committed separately.
 
-Architecture-contract drafting remains prohibited until the reviewed
-selection commit is pushed, exact local / remote selection identity is
-verified and the working tree is clean.
-
-Technical implementation remains prohibited until the future architecture
-contract is separately reviewed, accepted, committed, pushed and its
-implementation-entry Git gate is satisfied.
+After the accepted-contract commit is pushed, exact local / remote identity
+and a clean working tree must be verified before TDD RED begins.
