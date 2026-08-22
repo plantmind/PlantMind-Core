@@ -6127,3 +6127,97 @@ reconciliation gates are complete.
 
 No production-readiness, production-security or Cybersecurity-approval
 claim is made.
+
+
+---
+
+## 2026-08-22 — RFC-068 Post-Closure Source-of-Truth Reconciliation
+
+**Append-Only Reconciliation Record — Current Governance State**
+
+### Verified Closure Baseline
+
+Engineering-memory closure commit:
+
+`bcf2fc8b20c866584db8596341c8abdb965358ea`
+
+Closure push:
+
+**PASS**
+
+Exact local / tracking / remote closure identity:
+
+**PASS**
+
+Working tree after closure push:
+
+**clean**
+
+Accepted-contract commit:
+
+`6ac09336e223cfb18e049528d62d10b4753e8ee3`
+
+Technical implementation commit:
+
+`a88f046567b2b56795f590a4852dbd144b7c2fde`
+
+Technical baseline preserved:
+
+- focused RFC-068 repository tests: **16 passed**;
+- impacted regression: **91 passed**;
+- full PlantMind regression: **866 passed**;
+- Python compilation: **PASS**;
+- canonical Alembic head: **0004**.
+
+### Reconciliation Scope
+
+The reconciliation updates maintained current-state engineering memory to
+the verified post-closure Git state.
+
+It introduces no production-code or test-file change.
+
+It preserves:
+
+1. AD-054 as Accepted and unchanged;
+2. RFC-068 canonical repository ownership;
+3. descriptor-only persistence-neutral repository semantics;
+4. technical commit `a88f046567b2b56795f590a4852dbd144b7c2fde`;
+5. closure commit `bcf2fc8b20c866584db8596341c8abdb965358ea`;
+6. full regression baseline **866 passed**;
+7. Alembic head `0004`;
+8. no binary-store or byte-access capability;
+9. no Infrastructure persistence adapter;
+10. no parser, OCR, Document Library, Search, Vector, Graph, RAG or LLM
+    promotion;
+11. no production-readiness, security or Cybersecurity approval claim;
+12. no successor RFC or architecture-workstream selection.
+
+### Reconciliation State
+
+Post-closure Source-of-Truth reconciliation is currently:
+
+**PENDING — DRAFT / REVIEW GATE**
+
+RFC-068 is not yet fully closed and Source-of-Truth reconciled.
+
+### Remaining Gate
+
+Before reconciliation may be declared complete:
+
+1. review the complete five-document reconciliation diff;
+2. preserve the committed Engineering Journal historical prefix;
+3. preserve committed Architecture Decision history;
+4. confirm exactly the five maintained Source-of-Truth documents changed;
+5. confirm no backend or test file changed;
+6. run `git diff --check`;
+7. stage exactly the reviewed five documents;
+8. verify staged blobs equal the reviewed working tree;
+9. commit reconciliation separately;
+10. push reconciliation;
+11. verify exact local / remote reconciliation identity;
+12. verify a clean working tree.
+
+Only after those gates pass may final reconciliation verification declare
+RFC-068 fully closed and Source-of-Truth reconciled.
+
+No successor RFC is preselected by this record.

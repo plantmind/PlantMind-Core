@@ -39,7 +39,7 @@ No item may be marked complete until:
 
 ### Status
 
-**TECHNICAL IMPLEMENTATION COMPLETE, PUSHED AND VERIFIED — ENGINEERING-MEMORY CLOSURE PENDING**
+**ENGINEERING-MEMORY CLOSURE COMPLETE, PUSHED AND VERIFIED — POST-CLOSURE SOURCE-OF-TRUTH RECONCILIATION PENDING**
 
 ### Current Technical State
 
@@ -64,21 +64,25 @@ Technical verification:
 
 RFC-068 technical implementation is complete.
 
-RFC-068 is **not yet fully closed or Source-of-Truth reconciled**.
+Engineering-memory closure is complete, pushed and verified.
 
-Engineering-memory closure must be completed and verified first. A separate
-post-closure Source-of-Truth reconciliation must then be completed and
-verified.
+Engineering closure commit:
+
+`bcf2fc8b20c866584db8596341c8abdb965358ea`
+
+RFC-068 is **not yet fully closed or Source-of-Truth reconciled** because the
+separate post-closure reconciliation gate remains pending.
 
 ### Current Next Exact Action
 
-Review the complete five-document RFC-068 engineering-memory closure diff.
+Review the complete five-document RFC-068 post-closure Source-of-Truth
+reconciliation diff.
 
-Do not stage or commit the closure until that review passes.
+Do not stage or commit the reconciliation until that review passes.
 
-Do not select or begin a successor RFC until both the closure and subsequent
-reconciliation commits are pushed, their exact local / remote identities are
-verified and the working tree is clean.
+Do not select or begin a successor RFC until the reconciliation commit is
+pushed, exact local / remote reconciliation identity is verified and the
+working tree is clean.
 
 ### Historical Stage Records
 
@@ -306,7 +310,7 @@ stage until those gates passed.
 
 ### Status
 
-**TECHNICAL IMPLEMENTATION COMPLETE — ENGINEERING-MEMORY CLOSURE PENDING**
+**ENGINEERING-MEMORY CLOSURE COMPLETE — POST-CLOSURE SOURCE-OF-TRUTH RECONCILIATION PENDING**
 
 Selection commit:
 

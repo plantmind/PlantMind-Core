@@ -10,8 +10,8 @@
 | Deployment Model | On-Premise |
 | Development Branch | `feature/engineering-platform` |
 | Last Fully Closed RFC | RFC-067 — Operational Workload Evidence Contract Placement Remediation — Fully Closed and Source-of-Truth Reconciled |
-| Active RFC | RFC-068 — Technical Implementation Complete; Engineering-Memory Closure Pending |
-| Selected Architecture Workstream | Canonical Document Content Repository Foundation Boundary — Technical Implementation Complete |
+| Active RFC | RFC-068 — Engineering-Memory Closure Complete; Post-Closure Reconciliation Pending |
+| Selected Architecture Workstream | Canonical Document Content Repository Foundation Boundary — Engineering-Memory Closure Complete |
 | Proposed Successor RFC | None — Successor Selection Prohibited Until RFC-068 Closure and Reconciliation Complete |
 | Selection Baseline | `ed7106c1c232d18c04319559cc2c899e2ebfb61a` |
 | Selection Commit | `287f3328f49627ce1e19a20d55d56f8bfbb76c58` |
@@ -22,9 +22,9 @@
 | Test Baseline | 866 passing tests |
 | Technical Baseline Commit | `a88f046567b2b56795f590a4852dbd144b7c2fde` |
 | Accepted Contract Commit | `6ac09336e223cfb18e049528d62d10b4753e8ee3` |
-| Engineering Closure Commit | Pending — RFC-068 Engineering-Memory Closure |
+| Engineering Closure Commit | `bcf2fc8b20c866584db8596341c8abdb965358ea` |
 | Reconciliation Commit | Pending — RFC-068 |
-| Reconciliation State | RFC-068 Not Started — Engineering-Memory Closure Pending |
+| Reconciliation State | RFC-068 Post-Closure Source-of-Truth Reconciliation Pending |
 | Alembic Head | `0004` |
 | Purpose | Authoritative context for continuing PlantMind development across engineering sessions |
 
@@ -2180,7 +2180,7 @@ and a clean working tree must be verified before TDD RED begins.
 
 ---
 
-## RFC-068 Technical Implementation Completion State
+## RFC-068 Historical Technical Completion State Before Engineering-Memory Closure
 
 RFC-068 — Canonical Document Content Repository Foundation Boundary has
 completed technical implementation.
@@ -2207,14 +2207,53 @@ Verified technical baseline:
 - technical push and exact local / remote identity: **verified**;
 - working tree: **clean**.
 
-Engineering-memory closure remains pending.
+At that historical technical-completion stage, engineering-memory closure
+remained pending.
 
-RFC-067 remains the last fully closed and Source-of-Truth reconciled RFC.
+RFC-067 was therefore still the last fully closed and Source-of-Truth
+reconciled RFC at that stage.
 
-RFC-068 must first complete the engineering-memory closure gate and then the
-separate post-closure Source-of-Truth reconciliation gate.
+The required sequence from that historical state was engineering-memory
+closure followed by separate post-closure Source-of-Truth reconciliation.
 
-RFC-068 SHALL NOT be declared fully closed and Source-of-Truth reconciled,
-and no successor workstream may be selected, until both gates are committed,
-pushed, exact local / remote identity is verified and the working tree is
-clean.
+That historical state is superseded by the current RFC-068 Post-Closure
+Source-of-Truth Reconciliation State recorded below.
+
+
+---
+
+## RFC-068 Post-Closure Source-of-Truth Reconciliation State
+
+RFC-068 engineering-memory closure is complete, pushed and verified.
+
+Engineering closure commit:
+
+`bcf2fc8b20c866584db8596341c8abdb965358ea`
+
+Accepted-contract commit:
+
+`6ac09336e223cfb18e049528d62d10b4753e8ee3`
+
+Technical implementation commit:
+
+`a88f046567b2b56795f590a4852dbd144b7c2fde`
+
+Verified technical baseline remains:
+
+- focused RFC-068 tests: **16 passed**;
+- impacted regression: **91 passed**;
+- full PlantMind regression: **866 passed**;
+- Python compilation: **PASS**;
+- canonical Alembic head: **0004**.
+
+Post-closure Source-of-Truth reconciliation is now the active governance
+gate and remains pending.
+
+RFC-067 remains the last RFC that may currently be described as fully closed
+and Source-of-Truth reconciled.
+
+No successor RFC or architecture workstream is selected, assumed or
+pre-authorized by this reconciliation draft.
+
+No production-readiness, production-security or Cybersecurity-approval
+claim is introduced.

@@ -7,8 +7,8 @@
 | Project | PlantMind PM-001 |
 | Branch | `feature/engineering-platform` |
 | Last Fully Closed RFC | RFC-067 — Operational Workload Evidence Contract Placement Remediation — Fully Closed and Source-of-Truth Reconciled |
-| Active RFC | RFC-068 — Technical Implementation Complete; Engineering-Memory Closure Pending |
-| Selected Architecture Workstream | Canonical Document Content Repository Foundation Boundary — Technical Implementation Complete |
+| Active RFC | RFC-068 — Engineering-Memory Closure Complete; Post-Closure Reconciliation Pending |
+| Selected Architecture Workstream | Canonical Document Content Repository Foundation Boundary — Engineering-Memory Closure Complete |
 | Proposed Successor RFC | None — Successor Selection Prohibited Until RFC-068 Closure and Reconciliation Complete |
 | Selection Baseline | `ed7106c1c232d18c04319559cc2c899e2ebfb61a` |
 | Selection Commit | `287f3328f49627ce1e19a20d55d56f8bfbb76c58` |
@@ -23,11 +23,11 @@
 | Authoritative Environment | `PlantMind-Core/.venv` |
 | RFC-068 Technical Push | Verified |
 | Local / Remote Technical Identity | Verified |
-| Current Closure State | RFC-068 Technical Implementation Complete; Engineering-Memory Closure Pending |
-| Engineering Closure Commit | Pending — RFC-068 Engineering-Memory Closure |
-| Post-Closure Reconciliation | Not Started — RFC-068 Engineering-Memory Closure Pending |
+| Current Closure State | RFC-068 Engineering-Memory Closure Complete, Pushed and Verified |
+| Engineering Closure Commit | `bcf2fc8b20c866584db8596341c8abdb965358ea` |
+| Post-Closure Reconciliation | Pending — Reconciliation Draft / Review Gate |
 | Reconciliation Commit | Pending — RFC-068 |
-| Successor RFC Selection | Complete — RFC-068 Selected; Selection Commit `287f3328f49627ce1e19a20d55d56f8bfbb76c58` Pushed and Verified |
+| Successor RFC Selection | Not Authorized — RFC-068 Reconciliation Pending |
 
 ## Recent Engineering Sequence
 
@@ -2413,7 +2413,7 @@ authoritative Source of Truth.
 
 ---
 
-## RFC-068 Technical Completion Handoff
+## RFC-068 Historical Technical Completion Handoff Before Engineering-Memory Closure
 
 Current HEAD before engineering-memory closure drafting:
 
@@ -2439,20 +2439,57 @@ Verification baseline:
 - exact technical local / remote identity: **verified**;
 - working tree before closure drafting: **clean**.
 
-Current phase:
+Historical phase at that stage:
 
 **ENGINEERING-MEMORY CLOSURE PENDING**
 
+Historical next exact action at that stage:
+
+Review the complete five-document closure diff and complete the separate
+closure Git gate.
+
+That historical handoff is superseded by the current RFC-068 Post-Closure
+Reconciliation Handoff recorded below.
+
+Successor selection remained prohibited until the later reconciliation gate
+was completed and verified.
+
+
+---
+
+## RFC-068 Post-Closure Reconciliation Handoff
+
+Verified engineering-memory closure commit:
+
+`bcf2fc8b20c866584db8596341c8abdb965358ea`
+
+Closure push and exact local / tracking / remote identity:
+
+**PASS**
+
+Working tree after closure push:
+
+**clean**
+
+RFC-068 post-closure Source-of-Truth reconciliation is:
+
+**PENDING — DRAFT / REVIEW GATE**
+
+The reconciliation must preserve:
+
+- AD-054 as the latest Accepted Architecture Decision;
+- accepted-contract commit `6ac09336e223cfb18e049528d62d10b4753e8ee3`;
+- technical implementation commit `a88f046567b2b56795f590a4852dbd144b7c2fde`;
+- full regression baseline **866 passed**;
+- canonical Alembic head `0004`;
+- RFC-068 descriptor-only persistence-neutral repository semantics;
+- all separately deferred binary-store, Infrastructure, parsing, OCR,
+  Document Library, Search, Vector, Graph, RAG, LLM and security boundaries;
+- absence of successor-RFC selection.
+
 Next exact action:
 
-Review the complete five-document closure diff.
+Review the complete five-document reconciliation diff.
 
-Do not stage or commit the closure until its review gate passes.
-
-Post-closure Source-of-Truth reconciliation may begin only after the
-engineering-memory closure commit is pushed, exact local / remote closure
-identity is verified and the working tree is clean.
-
-Do not select a successor RFC until the subsequent reconciliation commit is
-also pushed, exact local / remote reconciliation identity is verified and
-the working tree is clean.
+Do not stage, commit, push or select a successor until the reconciliation
+review gate passes.
