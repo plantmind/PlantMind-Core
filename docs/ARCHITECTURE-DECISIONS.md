@@ -13390,3 +13390,94 @@ This final governance record is intentionally non-self-referential: it
 records the verified reconciliation commit and does not reference the future
 Git commit that persists this record. External Git verification of this
 record's persistence does not create another RFC-069 governance record.
+
+---
+
+## Current Architecture Governance State — Post-RFC-069 Successor Workstream Selection Draft
+
+**Record Classification: Non-Decision Successor-Selection Governance Record**
+
+This record creates no new Architecture Decision.
+
+AD-055 remains the latest Accepted Architecture Decision.
+
+RFC-069 remains fully closed and Source-of-Truth reconciled.
+
+Selection baseline:
+
+`ffd0ec9c6df3d117792a72b394ee9532eb64de8d`
+
+Draft selected successor workstream:
+
+**Canonical Binary Document Content Store / Access Foundation**
+
+Proposed successor numbering:
+
+**RFC-070 — NUMBERING CANDIDATE ONLY; NOT ACTIVE**
+
+### Architecture Basis
+
+RFC-066 / AD-052 established canonical immutable Document Content descriptor
+semantics.
+
+RFC-068 / AD-054 established the descriptor-only persistence-neutral
+`DocumentContentRepository`.
+
+RFC-069 / AD-055 established the relational Infrastructure adapter for
+descriptor metadata.
+
+The canonical chain therefore now ends at durable descriptor metadata.
+
+Binary content payload storage/access remains a distinct missing architecture
+responsibility.
+
+Current canonical code contains no accepted `DocumentContentStore`,
+byte-access contract, stream/open contract or binary resource-lifecycle
+contract.
+
+The future binary workstream must consume existing Document Content semantics
+without merging descriptor persistence with raw payload responsibility.
+
+`DocumentSource.source_reference` shall remain external traceability and shall
+not be reinterpreted as canonical content access.
+
+The evidence also confirms:
+
+- future Document Content establishment/application coordination remains
+  separately governed;
+- that future application boundary must explicitly decide descriptor/binary
+  failure and atomicity behavior;
+- parser/OCR/chunking remain dependent on a separately accepted binary
+  content access/store boundary;
+- Document Library remains downstream;
+- Search/Vector/Graph/RAG/LLM remain higher-level dependent capabilities.
+
+### Governance Restrictions
+
+No AD-056 is created.
+
+No RFC-070 architecture contract is accepted.
+
+RFC-070 is not active.
+
+No production implementation is authorized.
+
+No storage technology is selected.
+
+No PostgreSQL BLOB, filesystem, network filesystem, object store or file
+server is authorized.
+
+No byte-access method signature, streaming protocol or resource lifecycle is
+accepted by this selection.
+
+No content-establishment transaction or cross-boundary atomicity policy is
+accepted.
+
+No Document Library, parser, OCR, chunking, Search, Vector, Graph, RAG, LLM
+or AI Agent implementation is authorized.
+
+No production-readiness, production-security or Cybersecurity-approval claim
+is introduced.
+
+The complete five-document successor-selection diff must be reviewed before
+staging or commit.

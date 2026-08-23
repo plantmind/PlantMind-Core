@@ -35,6 +35,82 @@ No item may be marked complete until:
 
 ---
 
+## Post-RFC-069 Successor Architecture Workstream Selection Draft
+
+### Status
+
+**DRAFT SELECTION — REVIEW / GIT GATE PENDING**
+
+Selection baseline:
+
+`ffd0ec9c6df3d117792a72b394ee9532eb64de8d`
+
+RFC-069:
+
+**FULLY CLOSED AND SOURCE-OF-TRUTH RECONCILED**
+
+Draft selected successor workstream:
+
+**Canonical Binary Document Content Store / Access Foundation**
+
+Proposed numbering:
+
+**RFC-070 — NUMBERING CANDIDATE ONLY; NOT ACTIVE**
+
+Latest Accepted Architecture Decision:
+
+**AD-055**
+
+### Evidence
+
+Completed canonical foundations:
+
+- Document Content Domain descriptor semantics;
+- persistence-neutral `DocumentContentRepository`;
+- relational descriptor persistence under
+  `app.infrastructure.document_content`;
+- canonical Alembic head `0005`.
+
+Missing dependency-unlocking foundation:
+
+- canonical binary Document Content store/access contract.
+
+Current canonical backend has no `DocumentContentStore` or accepted raw-byte
+access/read/open/stream contract.
+
+The prior evidence-based ordering placed binary store/access immediately
+after descriptor relational persistence.
+
+Content-establishment/application coordination remains separately governed
+because it must later decide any atomicity involving Enterprise Document,
+descriptor persistence and binary payload persistence.
+
+Document Library, parser/OCR/chunking remain premature until binary
+content-access architecture is accepted.
+
+Search/Vector/Graph/RAG/LLM remain higher-level dependent work.
+
+### Selection Restrictions
+
+This draft does not:
+
+- create AD-056;
+- activate RFC-070;
+- accept an RFC-070 architecture contract;
+- authorize implementation;
+- select binary storage technology;
+- define byte/stream API semantics;
+- define transaction coordination;
+- authorize Document Library/parser/OCR/chunking;
+- authorize Search/Vector/Graph/RAG/LLM;
+- create production-security or Cybersecurity claims.
+
+### Next Exact Action
+
+Review the complete five-document successor-selection diff.
+
+No staging or commit until the review passes.
+
 ## RFC-069 Final Source-of-Truth Reconciliation Verification
 
 ### Status

@@ -11,8 +11,8 @@
 | Development Branch | `feature/engineering-platform` |
 | Last Fully Closed RFC | RFC-069 — Canonical Document Content Relational Persistence Adapter Boundary — Fully Closed and Source-of-Truth Reconciled |
 | Active RFC | None |
-| Selected Architecture Workstream | None |
-| Proposed Successor RFC | None — evidence-based successor selection has not started |
+| Selected Architecture Workstream | Canonical Binary Document Content Store / Access Foundation — Draft Successor Selection; Git Gate Pending |
+| Proposed Successor RFC | RFC-070 — numbering candidate only; not active |
 | RFC-069 Selection Commit | `5d7794352029576e0b62c2ac8cbfa248fe11961d` |
 | Architecture Decision | AD-055 — Accepted |
 | Accepted Contract Commit | `467440b6c5d16e599fbc0d0f5c820d31725fd29b` |
@@ -2723,3 +2723,111 @@ This final verification record deliberately records the already verified
 reconciliation commit and does not predict or reference the future Git commit
 that persists this record. Its own Git durability is verified externally
 without creating another RFC-069 Source-of-Truth record.
+
+---
+
+## Post-RFC-069 Successor Workstream Selection Draft
+
+The completed post-RFC-069 repository and architecture evidence review
+selects, in draft:
+
+**Canonical Binary Document Content Store / Access Foundation**
+
+Selection baseline:
+
+`ffd0ec9c6df3d117792a72b394ee9532eb64de8d`
+
+Proposed numbering:
+
+**RFC-070 — NUMBERING CANDIDATE ONLY; NOT ACTIVE**
+
+RFC-069 remains:
+
+**FULLY CLOSED AND SOURCE-OF-TRUTH RECONCILED**
+
+Active RFC before this selection:
+
+**None**
+
+AD-055 remains the latest Accepted Architecture Decision.
+
+### Evidence-Based Selection Basis
+
+The current canonical Document Content chain now provides:
+
+- immutable canonical `DocumentContentDescriptor` Domain semantics;
+- persistence-neutral `DocumentContentRepository`;
+- canonical relational descriptor persistence through
+  `SQLAlchemyDocumentContentRepository`;
+- canonical descriptor table `document_content_descriptors`;
+- canonical Alembic head `0005`.
+
+The current repository does **not** provide:
+
+- `DocumentContentStore`;
+- canonical raw-byte read/access contract;
+- binary stream/open contract;
+- binary payload persistence contract;
+- binary resource-lifecycle contract.
+
+The prior evidence-based candidate ordering placed the canonical binary
+Document Content Store / Access foundation immediately after descriptor
+relational persistence.
+
+That ordering remains valid after RFC-069 completion.
+
+The future Document Content establishment / registration application boundary
+remains downstream because it must explicitly decide whether and how
+Enterprise Document registration, descriptor persistence and future binary
+payload persistence are coordinated, including cross-boundary failure and
+atomicity semantics.
+
+Document Library, parser, PDF extraction, OCR and chunking remain premature
+until an accepted binary content access/store architecture exists.
+
+Search, embeddings, Vector, Graph, RAG and LLM remain higher-level dependent
+capabilities.
+
+### Selection Scope
+
+The selected successor workstream shall determine the minimum canonical,
+persistence-neutral boundary for binary Document Content storage and access.
+
+The future architecture review must preserve:
+
+- existing `DocumentContentDescriptor` semantics;
+- existing `DocumentContentRepository` responsibility;
+- descriptor/binary responsibility separation;
+- `EnterpriseDocument.id` as the canonical Document Content association;
+- SHA-256 digest as integrity description rather than content identity;
+- `DocumentSource.source_reference` as external traceability rather than
+  canonical content access;
+- current Runtime, Bootstrap, Composition and DatabaseRuntime authority.
+
+### Explicit Non-Authorization
+
+This selection draft does **not**:
+
+- create AD-056;
+- accept an RFC-070 architecture contract;
+- activate RFC-070;
+- authorize production implementation;
+- select PostgreSQL BLOB storage;
+- select filesystem storage;
+- select network filesystem storage;
+- select object storage;
+- select a file-server technology;
+- define byte API method names;
+- define streaming/resource-lifecycle semantics;
+- define content-establishment application coordination;
+- define cross-boundary atomicity;
+- authorize Document Library;
+- authorize parser, OCR or chunking;
+- authorize Search, Vector, Graph, RAG, LLM or AI Agent capability;
+- claim production security or Cybersecurity approval.
+
+### Next Exact Action
+
+Review the complete five-document successor-selection diff.
+
+Do not stage or commit until that review passes.

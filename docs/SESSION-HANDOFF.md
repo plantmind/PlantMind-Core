@@ -8,8 +8,8 @@
 | Branch | `feature/engineering-platform` |
 | Last Fully Closed RFC | RFC-069 — Canonical Document Content Relational Persistence Adapter Boundary — Fully Closed and Source-of-Truth Reconciled |
 | Active RFC | None |
-| Selected Architecture Workstream | None |
-| Proposed Successor RFC | None — evidence-based selection has not started |
+| Selected Architecture Workstream | Canonical Binary Document Content Store / Access Foundation — Draft Successor Selection; Git Gate Pending |
+| Proposed Successor RFC | RFC-070 — numbering candidate only; not active |
 | Architecture Decision | AD-055 — Accepted |
 | RFC-069 Selection Commit | `5d7794352029576e0b62c2ac8cbfa248fe11961d` |
 | Accepted Contract Commit | `467440b6c5d16e599fbc0d0f5c820d31725fd29b` |
@@ -22,7 +22,7 @@
 | Alembic Head | `0005` |
 | Authoritative Environment | `PlantMind-Core/.venv` |
 | RFC-069 State | Fully Closed and Source-of-Truth Reconciled |
-| Successor RFC Selection | Not started — separate evidence-based governance activity |
+| Successor RFC Selection | Draft selected — Canonical Binary Document Content Store / Access Foundation; review / Git gate pending |
 
 ## Recent Engineering Sequence
 
@@ -2813,3 +2813,59 @@ activity.
 This handoff is non-self-referential: it records the verified reconciliation
 commit and does not contain the future commit identity that persists this
 final verification record.
+
+---
+
+## Post-RFC-069 Successor Workstream Selection Handoff
+
+Verified selection baseline:
+
+`ffd0ec9c6df3d117792a72b394ee9532eb64de8d`
+
+RFC-069 remains fully closed and Source-of-Truth reconciled.
+
+Draft selected successor workstream:
+
+**Canonical Binary Document Content Store / Access Foundation**
+
+Proposed numbering:
+
+**RFC-070 — NUMBERING CANDIDATE ONLY; NOT ACTIVE**
+
+AD-055 remains the latest Accepted Architecture Decision.
+
+No AD-056 exists.
+
+No RFC-070 architecture contract is accepted.
+
+No implementation is authorized.
+
+### Selection Rationale
+
+The canonical Document Content stack now has:
+
+- Domain descriptor semantics;
+- descriptor repository;
+- relational descriptor persistence.
+
+The missing dependency-unlocking foundation is canonical binary payload
+storage/access.
+
+Current canonical code contains no `DocumentContentStore` and no accepted
+byte read/open/stream contract.
+
+The future content-establishment application boundary remains separately
+governed and must later decide coordination and atomicity involving descriptor
+and binary persistence.
+
+Parser/OCR/chunking remain dependent on an accepted binary content
+access/store boundary.
+
+Document Library and Search/Vector/Graph/RAG/LLM remain downstream.
+
+### Next Exact Action
+
+Review the complete five-document successor-selection diff.
+
+Do not stage, commit, author AD-056 or begin implementation until the
+selection review and Git gate are complete.

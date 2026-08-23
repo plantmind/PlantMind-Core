@@ -6848,3 +6848,82 @@ record.
 Verification of this record's own commit, push, exact branch identity and
 clean working tree is an external Git gate and does not require another
 RFC-069 Source-of-Truth record.
+
+---
+
+## 2026-08-23 — Post-RFC-069 Successor Workstream Selection Draft
+
+### Baseline
+
+Selection baseline:
+
+`ffd0ec9c6df3d117792a72b394ee9532eb64de8d`
+
+RFC-069 is fully closed and Source-of-Truth reconciled.
+
+Active RFC before this selection:
+
+**None**
+
+### Evidence-Based Selection Judgment
+
+Selected successor workstream in draft:
+
+**Canonical Binary Document Content Store / Access Foundation**
+
+Proposed numbering:
+
+**RFC-070 — NUMBERING CANDIDATE ONLY; NOT ACTIVE**
+
+The evidence review establishes the following dependency state:
+
+1. canonical Document Content Domain semantics are complete;
+2. the persistence-neutral descriptor repository is complete;
+3. relational descriptor persistence is complete under RFC-069 / AD-055;
+4. no canonical binary `DocumentContentStore` exists;
+5. no canonical raw-byte access/read/open/stream responsibility exists;
+6. binary payload storage/access remains explicitly separate from descriptor
+   persistence;
+7. the future content-establishment application boundary must later decide
+   any descriptor/binary coordination and atomicity semantics;
+8. parser/OCR/chunking require an accepted binary content access/store
+   boundary first;
+9. Document Library remains downstream;
+10. Search/Vector/Graph/RAG/LLM remain higher-level dependent capabilities.
+
+The dependency-unlocking successor is therefore:
+
+**Canonical Binary Document Content Store / Access Foundation**
+
+### Governance
+
+AD-055 remains the latest Accepted Architecture Decision.
+
+No AD-056 is created.
+
+RFC-070 is not active.
+
+No RFC-070 architecture contract is accepted.
+
+No technical implementation is authorized.
+
+No binary storage technology is selected.
+
+No filesystem, database BLOB, object-store, network-filesystem or file-server
+technology is authorized by this selection.
+
+No byte API shape, streaming behavior or resource lifecycle is accepted by
+this selection.
+
+No content-establishment application coordination or cross-boundary atomicity
+contract is accepted.
+
+No Document Library, parser, OCR, chunking, Search, Vector, Graph, RAG or LLM
+implementation is authorized.
+
+### Next Exact Action
+
+Review the complete five-document successor-selection diff.
+
+Only after that review passes may the successor-selection documentation
+staging gate be opened.
