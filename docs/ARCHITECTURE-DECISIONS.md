@@ -13138,3 +13138,95 @@ Technical implementation remains prohibited until this accepted
 five-document contract is reviewed as an acceptance-propagation diff,
 committed, pushed, exact local / tracking / remote commit identity is verified,
 the working tree is clean, and a separate implementation-entry Git gate passes.
+
+---
+
+## Current Architecture Governance State — RFC-069 Technical Completion and Engineering-Memory Closure Pending
+
+**Record Classification: Non-Decision Current Architecture-Governance State**
+
+This section is not a new Architecture Decision.
+
+It does not amend, replace or supersede AD-055.
+
+AD-055 remains:
+
+**ACCEPTED**
+
+RFC-069 selection commit:
+
+`5d7794352029576e0b62c2ac8cbfa248fe11961d`
+
+RFC-069 accepted-contract commit:
+
+`467440b6c5d16e599fbc0d0f5c820d31725fd29b`
+
+RFC-069 technical implementation commit:
+
+`4572b40cedecc263577453b95ca63ecab6e61428`
+
+Technical verification established:
+
+- focused RFC-069 verification: **46 passed**;
+- impacted regression: **151 passed**;
+- full PlantMind regression: **912 passed**;
+- canonical Alembic chain: `0003 -> 0004 -> 0005`;
+- canonical Alembic single head: **0005**;
+- `git diff --check`: **PASS**;
+- technical push: **PASS**;
+- exact local / tracking / remote technical commit identity: **PASS**;
+- working tree after technical verification: **clean**.
+
+The accepted AD-055 descriptor-metadata relational persistence adapter is now
+technically implemented.
+
+The implementation establishes:
+
+- canonical `app.infrastructure.document_content`;
+- `DocumentContentDescriptorRow`;
+- `document_content_descriptors`;
+- sole primary-key identity `document_id`;
+- `pk_document_content_descriptors`;
+- explicit Domain/row mapping;
+- `SQLAlchemyDocumentContentRepository`;
+- exact structured duplicate classification;
+- explicit session rollback/close failure semantics;
+- read-only exact `get()` behavior;
+- Alembic revision `0005` after `0004`;
+- Alembic metadata registration before `target_metadata` binding.
+
+No surrogate content identity, digest uniqueness, Enterprise Document foreign
+key, CheckConstraint, binary payload field or storage-location field was
+introduced.
+
+No raw binary store/access, cross-repository transaction coordination,
+application-service expansion, Composition/Runtime/Bootstrap expansion,
+Document Library, parser, OCR, chunking, Search, Vector, Graph, RAG or LLM
+capability is authorized or implied by technical completion.
+
+Historical RFC-063 / RFC-064 / RFC-065 current-head assertions were reconciled
+to durable revision-history invariants after repository-wide audit. This did
+not change their original architecture responsibilities.
+
+RFC-069 engineering-memory closure remains:
+
+**PENDING — DRAFT / REVIEW GATE**
+
+The separate five-document engineering-memory closure must be reviewed,
+committed, pushed, exact local / tracking / remote closure identity verified
+and the working tree verified clean.
+
+A separate post-closure Source-of-Truth reconciliation remains required.
+
+RFC-069 SHALL NOT be declared fully closed and Source-of-Truth reconciled, and
+no successor RFC or architecture workstream may be selected, until those gates
+complete.
+
+This record introduces no production-readiness, production-security or
+Cybersecurity-approval claim.
+
+### Next Exact Action
+
+Review the complete five-document RFC-069 engineering-memory closure diff.
+
+Do not stage or commit until that review passes.

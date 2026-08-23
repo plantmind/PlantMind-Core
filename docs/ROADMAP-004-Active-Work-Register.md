@@ -39,7 +39,7 @@ No item may be marked complete until:
 
 ### Status
 
-**ARCHITECTURE CONTRACT ACCEPTED — ACCEPTED-CONTRACT GIT GATE PENDING; IMPLEMENTATION NOT AUTHORIZED**
+**TECHNICAL IMPLEMENTATION COMPLETE — COMMITTED, PUSHED AND VERIFIED; ENGINEERING-MEMORY CLOSURE REVIEW PENDING**
 
 Verified workstream-selection commit:
 
@@ -49,44 +49,82 @@ Architecture Decision:
 
 **AD-055 — ACCEPTED**
 
-Final refined contract review:
+Accepted-contract commit:
 
-**PASS — NO REMAINING REFINE / NO BLOCKED ITEM**
+`467440b6c5d16e599fbc0d0f5c820d31725fd29b`
 
-### Current Contract Direction
+Technical implementation commit:
 
-RFC-069 accepts only the minimum canonical relational Infrastructure adapter
-boundary required to implement the descriptor-only
-`DocumentContentRepository`.
+`4572b40cedecc263577453b95ca63ecab6e61428`
 
-The accepted contract preserves:
+### Completed Work
 
-- `document_id` as the sole descriptor identity;
-- descriptor metadata persistence only;
-- no surrogate content identity;
+RFC-069 has completed the accepted descriptor-metadata relational
+Infrastructure adapter boundary.
+
+Verified technical evidence:
+
+- focused RFC-069 verification: **46 passed**;
+- impacted regression: **151 passed**;
+- full PlantMind regression: **912 passed**;
+- canonical Alembic chain: `0003 -> 0004 -> 0005`;
+- canonical Alembic single head: **0005**;
+- `git diff --check`: **PASS**;
+- technical push: **PASS**;
+- exact local / tracking / remote technical identity: **PASS**;
+- working tree after technical push: **clean**.
+
+Implemented canonical surface:
+
+- `app.infrastructure.document_content`;
+- `DocumentContentDescriptorRow`;
+- `document_content_descriptors`;
+- `SQLAlchemyDocumentContentRepository`;
+- explicit Domain/row mapping;
+- exact PK duplicate classification;
+- Alembic revision `0005`;
+- Alembic descriptor-model metadata registration.
+
+Preserved accepted boundaries:
+
+- descriptor metadata only;
+- `document_id` sole relational identity;
+- no surrogate content ID;
 - no digest uniqueness;
 - no Enterprise Document foreign key;
-- binary payload store/access as a separate future boundary;
-- cross-boundary existence, lifecycle and atomicity as separately governed;
-- explicit rollback/close failure precedence;
-- mandatory Alembic model registration before `target_metadata` binding;
-- existing `DatabaseBase.metadata` authority;
+- no CheckConstraint;
+- no binary/storage-location field;
 - unchanged `DatabaseRuntime`;
-- current canonical Alembic head `0004`;
-- accepted future linear successor `0005_document_content_descriptors.py` only
-  after accepted-contract Git verification and separate implementation
-  authorization.
+- no cross-repository transaction coordination;
+- no application-service or default-composition expansion;
+- no parser/OCR/Document Library/Search/Vector/Graph/RAG/LLM promotion;
+- no production-security or Cybersecurity-readiness claim.
 
-No technical implementation is authorized.
+### Remaining Work
+
+Engineering-memory closure is not yet complete.
+
+Required sequence:
+
+1. review the complete five-document closure diff;
+2. stage exactly the reviewed five Source-of-Truth documents;
+3. commit the closure separately;
+4. push the closure commit;
+5. verify exact local / tracking / remote closure identity;
+6. verify a clean working tree;
+7. begin a separate post-closure Source-of-Truth reconciliation;
+8. complete and externally verify reconciliation before successor selection.
+
+### Resume Condition
+
+RFC-069 technical implementation must remain unchanged while the
+documentation-only closure gate is reviewed.
 
 ### Current Next Exact Action
 
-Review the complete five-document RFC-069 / AD-055 acceptance-propagation diff.
+Review the complete five-document RFC-069 engineering-memory closure diff.
 
-Do not stage or commit until that review passes. Technical implementation
-remains prohibited until the accepted contract is committed, pushed, exact
-local / tracking / remote identity is verified, the working tree is clean and
-the separate implementation-entry Git gate passes.
+Do not stage or commit until that review passes.
 
 ## Historical RFC-068 Closed Workstream State Before Final Verification Push
 
@@ -15079,3 +15117,54 @@ After the accepted-contract commit is pushed and exact local / tracking /
 remote identity plus a clean working tree are verified, open a separate
 implementation-entry Git gate before TDD RED or any production/schema/migration
 change.
+
+---
+
+## RFC-069 Technical Completion and Engineering-Memory Closure Pending
+
+### Current Governance State
+
+RFC-069 technical implementation commit:
+
+`4572b40cedecc263577453b95ca63ecab6e61428`
+
+Technical push and exact local / tracking / remote identity:
+
+**PASS**
+
+Working tree after technical push:
+
+**clean**
+
+Full regression baseline:
+
+**912 passed**
+
+Canonical Alembic head:
+
+`0005`
+
+Architecture Decision:
+
+**AD-055 — ACCEPTED**
+
+Engineering-memory closure:
+
+**PENDING — DRAFT / REVIEW GATE**
+
+Post-closure Source-of-Truth reconciliation:
+
+**NOT STARTED**
+
+Successor RFC / architecture workstream:
+
+**NONE SELECTED OR PRESELECTED**
+
+### Next Gate
+
+Review the five-document engineering-memory closure diff.
+
+No staging or commit is authorized until that review passes.
+
+No successor selection is authorized until RFC-069 closure and separate
+Source-of-Truth reconciliation are complete, pushed and verified.

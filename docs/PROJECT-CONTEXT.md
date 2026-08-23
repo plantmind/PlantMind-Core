@@ -10,23 +10,21 @@
 | Deployment Model | On-Premise |
 | Development Branch | `feature/engineering-platform` |
 | Last Fully Closed RFC | RFC-068 — Canonical Document Content Repository Foundation Boundary — Fully Closed and Source-of-Truth Reconciled |
-| Active RFC | None — RFC-068 Fully Closed and Source-of-Truth Reconciled |
-| Selected Architecture Workstream | Canonical Document Content Relational Persistence Adapter Boundary — Selected in Draft |
-| Proposed Successor RFC | RFC-069 — Numbering Candidate Only; Not Active |
-| Post-RFC-068 Selection Baseline | `bd52f9f74a2cff3138fbf08b13c21e8c1201547a` |
-| RFC-068 Selection Baseline | `ed7106c1c232d18c04319559cc2c899e2ebfb61a` |
-| RFC-068 Selection Commit | `287f3328f49627ce1e19a20d55d56f8bfbb76c58` |
-| Architecture Decision | AD-054 — Accepted |
-| RFC-068 Contract Draft Baseline | `287f3328f49627ce1e19a20d55d56f8bfbb76c58` |
-| Contract Acceptance Review | Passed — 52 PASS / 0 REFINE / 0 BLOCKED |
-| RFC-068 Implementation Authorization | Completed — Accepted Contract Git Gate Passed; Technical Implementation Verified |
-| Test Baseline | 866 passing tests |
-| Technical Baseline Commit | `a88f046567b2b56795f590a4852dbd144b7c2fde` |
-| Accepted Contract Commit | `6ac09336e223cfb18e049528d62d10b4753e8ee3` |
-| Engineering Closure Commit | `bcf2fc8b20c866584db8596341c8abdb965358ea` |
-| Reconciliation Commit | `074e534e0d97a927b6434341ad5d1c8671bfa381` |
-| Reconciliation State | Complete, Pushed and Verified — RFC-068 Fully Closed and Source-of-Truth Reconciled |
-| Alembic Head | `0004` |
+| Active RFC | RFC-069 — Canonical Document Content Relational Persistence Adapter Boundary — Technical Complete; Engineering-Memory Closure Pending |
+| Selected Architecture Workstream | RFC-069 — Canonical Document Content Relational Persistence Adapter Boundary |
+| Proposed Successor RFC | None — successor selection prohibited until RFC-069 closure and reconciliation gates complete |
+| RFC-069 Selection Commit | `5d7794352029576e0b62c2ac8cbfa248fe11961d` |
+| Architecture Decision | AD-055 — Accepted |
+| Contract Acceptance Review | PASS — No Remaining Refine / No Blocked Item |
+| RFC-069 Implementation Authorization | Completed — accepted-contract Git gate and implementation-entry gate passed |
+| Test Baseline | 912 passing tests |
+| Technical Baseline Commit | `4572b40cedecc263577453b95ca63ecab6e61428` |
+| Accepted Contract Commit | `467440b6c5d16e599fbc0d0f5c820d31725fd29b` |
+| Technical Push | Committed, Pushed and Verified |
+| Engineering Closure Commit | Pending — not yet created |
+| Post-Closure Reconciliation | Not started — engineering-memory closure Git gate required first |
+| Reconciliation Commit | Not yet created |
+| Alembic Head | `0005` |
 | Purpose | Authoritative context for continuing PlantMind development across engineering sessions |
 
 ---
@@ -2452,3 +2450,108 @@ separately. Technical implementation remains prohibited until the accepted
 contract is committed, pushed, exact local / tracking / remote identity is
 verified, the working tree is clean and the implementation-entry Git gate
 passes.
+
+---
+
+## RFC-069 Technical Completion State Before Engineering-Memory Closure
+
+RFC-069 — Canonical Document Content Relational Persistence Adapter Boundary
+has completed technical implementation under accepted AD-055.
+
+Architecture Decision:
+
+**AD-055 — Accepted**
+
+Verified workstream-selection commit:
+
+`5d7794352029576e0b62c2ac8cbfa248fe11961d`
+
+Accepted-contract commit:
+
+`467440b6c5d16e599fbc0d0f5c820d31725fd29b`
+
+Technical implementation commit:
+
+`4572b40cedecc263577453b95ca63ecab6e61428`
+
+Technical commit push:
+
+**PASS**
+
+Exact local / tracking / remote technical identity:
+
+**PASS**
+
+Verified technical baseline:
+
+- focused RFC-069 verification: **46 passed**;
+- impacted regression: **151 passed**;
+- full PlantMind regression: **912 passed**;
+- changed Python syntax checks: **PASS**;
+- `git diff --check`: **PASS**;
+- canonical Alembic chain: `0003 -> 0004 -> 0005`;
+- canonical Alembic single head: `0005`;
+- reviewed RFC-069 RED tests remained unchanged through implementation;
+- working tree after technical push: **clean**.
+
+Implemented canonical Infrastructure ownership:
+
+`app.infrastructure.document_content`
+
+Implemented relational contract:
+
+- `DocumentContentDescriptorRow`;
+- table `document_content_descriptors`;
+- exactly `document_id`, `media_type`, `byte_length`, `digest`;
+- `document_id` as sole primary-key identity;
+- primary-key constraint `pk_document_content_descriptors`;
+- no surrogate content identity;
+- no digest uniqueness;
+- no Enterprise Document foreign key;
+- no database CheckConstraint introduced;
+- no binary payload or storage-location field.
+
+Implemented repository adapter:
+
+`SQLAlchemyDocumentContentRepository(DocumentContentRepository)`
+
+The adapter preserves injected session ownership, explicit add/commit/rollback/close
+semantics, read-only exact `get()` behavior and duplicate translation only for
+SQLSTATE `23505` plus `pk_document_content_descriptors`.
+
+Alembic revision `0005_document_content_descriptors.py` extends `0004`, and
+`DocumentContentDescriptorRow` is registered in Alembic metadata before
+`target_metadata` binding.
+
+Historical RFC-063 / RFC-064 / RFC-065 tests were reconciled from temporary
+"0004 must remain current head" assumptions to durable revision-history
+invariants. Full regression after that reconciliation is **912 passed**.
+
+RFC-069 introduced no raw binary payload persistence/access, no
+`DocumentContentStore`, no Enterprise Document foreign key, no cross-repository
+transaction coordination, no content-establishment application boundary, no
+Document Library, parser, OCR, chunking, Search, Vector, Graph, RAG or LLM
+promotion, no Composition/Runtime/Bootstrap expansion and no
+production-readiness, production-security or Cybersecurity-approval claim.
+
+Engineering-memory closure is currently:
+
+**PENDING — DRAFT / REVIEW GATE**
+
+RFC-069 is not yet fully closed or Source-of-Truth reconciled.
+
+The engineering-memory closure must be reviewed, committed, pushed, exact
+local / tracking / remote closure identity verified and the working tree
+verified clean.
+
+Only after that gate passes may separate post-closure Source-of-Truth
+reconciliation begin.
+
+No successor RFC or architecture workstream may be selected before closure
+and reconciliation gates are completed and verified.
+
+Next exact action:
+
+Review the complete five-document RFC-069 engineering-memory closure diff.
+
+Do not stage or commit until that review passes.

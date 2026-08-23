@@ -6529,3 +6529,112 @@ and committed as the accepted architecture contract.
 After commit and push, exact local / tracking / remote identity and a clean
 working tree must be verified before a separate implementation-entry Git gate
 may authorize TDD RED.
+
+---
+
+## 2026-08-23 — RFC-069 Technical Implementation Verified; Engineering-Memory Closure Pending
+
+### Accepted Architecture Baseline
+
+Architecture Decision:
+
+**AD-055 — Accepted**
+
+Selection commit:
+
+`5d7794352029576e0b62c2ac8cbfa248fe11961d`
+
+Accepted-contract commit:
+
+`467440b6c5d16e599fbc0d0f5c820d31725fd29b`
+
+### Technical Implementation
+
+Technical implementation commit:
+
+`4572b40cedecc263577453b95ca63ecab6e61428`
+
+Technical push:
+
+**PASS**
+
+Exact local / tracking / remote technical identity:
+
+**PASS**
+
+Working tree after technical push:
+
+**clean**
+
+### Technical Verification
+
+Verified evidence:
+
+- RFC-069 focused verification: **46 passed**;
+- impacted regression: **151 passed**;
+- full PlantMind regression: **912 passed**;
+- canonical Alembic chain: `0003 -> 0004 -> 0005`;
+- canonical Alembic single head: **0005**;
+- changed Python syntax verification: **PASS**;
+- `git diff --check`: **PASS**;
+- reviewed RED tests remained unchanged;
+- stale `0004` current-head assertions after historical-test reconciliation: **0**.
+
+The implementation introduced the accepted canonical
+`app.infrastructure.document_content` adapter surface, explicit mapping,
+relational descriptor row, repository adapter, Alembic metadata registration
+and append-only migration `0005_document_content_descriptors.py`.
+
+The three historical Alembic tests in RFC-063 / RFC-064 / RFC-065 were
+reconciled only where they incorrectly froze `0004` as the current head.
+They now preserve `0004` as canonical history with down revision `0003`.
+The full PlantMind regression subsequently passed at **912 tests**.
+
+### Preserved Architecture Boundaries
+
+RFC-069 preserves:
+
+- canonical Domain `DocumentContentDescriptor`;
+- persistence-neutral `DocumentContentRepository`;
+- `document_id` as sole descriptor relational identity;
+- no surrogate content ID;
+- no digest uniqueness;
+- no Enterprise Document foreign key;
+- no database CheckConstraint added;
+- no raw binary payload or storage-location persistence;
+- no cross-repository transaction coordination;
+- unchanged `DatabaseRuntime`;
+- `DatabaseBase.metadata` as sole relational metadata authority;
+- no Document Content establishment application service;
+- no Composition, Runtime or Bootstrap expansion;
+- no Document Library, parser, OCR, chunking, Search, Vector, Graph, RAG or
+  LLM promotion;
+- no production-readiness, production-security or Cybersecurity-approval claim.
+
+### Closure State
+
+RFC-069 technical implementation is:
+
+**COMPLETE — COMMITTED, PUSHED AND VERIFIED**
+
+RFC-069 engineering-memory closure is:
+
+**PENDING — DRAFT / REVIEW GATE**
+
+RFC-069 is not yet fully closed or Source-of-Truth reconciled.
+
+The engineering-memory closure must be reviewed and committed separately,
+then pushed and verified against exact local / tracking / remote identity
+with a clean working tree.
+
+A separate post-closure Source-of-Truth reconciliation remains required after
+that gate.
+
+No successor RFC or architecture workstream may be selected until those
+governance gates are complete.
+
+### Next Exact Action
+
+Review the complete five-document RFC-069 engineering-memory closure diff.
+
+Do not stage or commit until that review passes.
