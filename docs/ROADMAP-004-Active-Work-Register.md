@@ -35,19 +35,23 @@ No item may be marked complete until:
 
 ---
 
-## Active Architecture Workstream — RFC-069 — Canonical Document Content Relational Persistence Adapter Boundary
+## RFC-069 Final Source-of-Truth Reconciliation Verification
 
 ### Status
 
-**ENGINEERING-MEMORY CLOSURE COMPLETE — COMMITTED, PUSHED AND VERIFIED; POST-CLOSURE SOURCE-OF-TRUTH RECONCILIATION REVIEW PENDING**
+**FULLY CLOSED AND SOURCE-OF-TRUTH RECONCILED**
 
-Verified workstream-selection commit:
+Selected workstream:
 
-`5d7794352029576e0b62c2ac8cbfa248fe11961d`
+RFC-069 — Canonical Document Content Relational Persistence Adapter Boundary
 
 Architecture Decision:
 
 **AD-055 — ACCEPTED**
+
+Selection commit:
+
+`5d7794352029576e0b62c2ac8cbfa248fe11961d`
 
 Accepted-contract commit:
 
@@ -61,74 +65,57 @@ Engineering-memory closure commit:
 
 `63790de5312c69c709e2249b56e91995a00426b6`
 
-### Completed Work
+Post-closure Source-of-Truth reconciliation commit:
 
-RFC-069 technical implementation and engineering-memory closure are complete.
+`231e0cc66862c797e299fdb71ff20da8a39e8ae2`
 
-Verified technical evidence remains:
+### Final Reconciliation Git Verification
+
+- reconciliation commit parent: `63790de5312c69c709e2249b56e91995a00426b6`;
+- reconciliation push: **PASS**;
+- exact local / tracking / remote reconciliation identity: **PASS**;
+- working tree after reconciliation push: **clean**;
+- reconciliation surface: exactly five maintained Source-of-Truth documents;
+- production-code changes in reconciliation: none;
+- test-file changes in reconciliation: none.
+
+### Verified Technical Baseline
 
 - focused RFC-069 verification: **46 passed**;
 - impacted regression: **151 passed**;
 - full PlantMind regression: **912 passed**;
 - canonical Alembic chain: `0003 -> 0004 -> 0005`;
-- canonical Alembic single head: **0005**;
-- technical push: **PASS**;
-- closure push: **PASS**;
-- exact local / tracking / remote closure identity: **PASS**;
-- working tree after closure push: **clean**.
+- canonical Alembic head: **0005**.
 
-The closure commit changed exactly the five maintained Source-of-Truth
-documents and introduced no backend or test-file change.
+### Preserved Boundary
 
-Preserved accepted boundaries:
+RFC-069 remains limited to the accepted relational descriptor persistence
+adapter boundary.
 
-- descriptor metadata persistence only;
-- `document_id` sole relational identity;
-- no surrogate content ID;
-- no digest uniqueness;
-- no Enterprise Document foreign key;
-- no CheckConstraint;
-- no binary/storage-location persistence;
-- unchanged `DatabaseRuntime`;
-- no cross-repository transaction coordination;
-- no application-service or default-composition expansion;
-- no Document Library/parser/OCR/Search/Vector/Graph/RAG/LLM promotion;
-- no production-security or Cybersecurity-readiness claim.
+It does not authorize:
 
-### Remaining Work
+- raw binary payload storage/access;
+- Enterprise Document foreign-key ownership;
+- surrogate content identity;
+- digest uniqueness;
+- a new CheckConstraint;
+- cross-repository transaction coordination;
+- application-service/default-composition expansion;
+- Document Library, parser, OCR, chunking, Search, Vector, Graph, RAG or LLM
+  promotion;
+- production-readiness, production-security or Cybersecurity-approval claims.
 
-Post-closure Source-of-Truth reconciliation is:
+### Governed State After RFC-069
 
-**PENDING — DRAFT / REVIEW GATE**
+There is no active RFC or selected successor architecture workstream.
 
-Required sequence:
+Successor-workstream selection has not started.
 
-1. review the complete five-document reconciliation diff;
-2. preserve committed Engineering Journal history;
-3. preserve committed Architecture Decision history;
-4. confirm exactly five Source-of-Truth documents changed;
-5. confirm no backend/test changes;
-6. pass `git diff --check`;
-7. stage exactly the reviewed five documents;
-8. commit reconciliation separately;
-9. push reconciliation;
-10. verify exact local / tracking / remote reconciliation identity;
-11. verify a clean working tree;
-12. create and externally verify the separate final reconciliation record.
+Any successor must be selected separately from current repository,
+architecture, project-charter and technical evidence.
 
-### Resume Condition
-
-RFC-069 production code, tests and accepted AD-055 architecture must remain
-unchanged during the documentation-only reconciliation gate.
-
-### Current Next Exact Action
-
-Review the complete five-document RFC-069 post-closure reconciliation diff.
-
-Do not stage or commit until that review passes.
-
-No successor RFC or architecture workstream may be selected until
-reconciliation and final verification are complete and verified.
+This final RFC-069 state is non-self-referential and records only already
+verified commits through reconciliation commit `231e0cc66862c797e299fdb71ff20da8a39e8ae2`.
 
 ## Historical RFC-068 Closed Workstream State Before Final Verification Push
 
@@ -15218,3 +15205,48 @@ No staging or commit is authorized until that review passes.
 After reconciliation is committed, pushed and exact identity is verified,
 a separate final reconciliation verification record remains required before
 successor-workstream selection.
+
+---
+
+## RFC-069 Final Verified Closure and Source-of-Truth Reconciliation Record
+
+RFC-069 is:
+
+**FULLY CLOSED AND SOURCE-OF-TRUTH RECONCILED**
+
+Verified engineering-memory closure commit:
+
+`63790de5312c69c709e2249b56e91995a00426b6`
+
+Verified post-closure Source-of-Truth reconciliation commit:
+
+`231e0cc66862c797e299fdb71ff20da8a39e8ae2`
+
+Reconciliation push:
+
+**PASS**
+
+Exact local / tracking / remote reconciliation identity:
+
+**PASS**
+
+Working tree after reconciliation push:
+
+**clean**
+
+The reconciliation changed exactly the five maintained Source-of-Truth
+documents and introduced no backend or test-file change.
+
+AD-055 remains Accepted.
+
+Full regression baseline remains **912 passed**.
+
+Canonical Alembic head remains `0005`.
+
+No successor RFC or architecture workstream is selected or preselected by
+this record.
+
+Successor selection is a separate evidence-based governed activity.
+
+This record does not contain or predict its own future Git commit identity and
+does not require a recursive RFC-069 verification record.

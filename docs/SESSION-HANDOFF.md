@@ -6,25 +6,23 @@
 |---|---|
 | Project | PlantMind PM-001 |
 | Branch | `feature/engineering-platform` |
-| Last Fully Closed RFC | RFC-068 — Canonical Document Content Repository Foundation Boundary — Fully Closed and Source-of-Truth Reconciled |
-| Active RFC | RFC-069 — Canonical Document Content Relational Persistence Adapter Boundary — Engineering-Memory Closure Complete; Post-Closure Reconciliation Pending |
-| Selected Architecture Workstream | RFC-069 — Canonical Document Content Relational Persistence Adapter Boundary |
-| Proposed Successor RFC | None — not selected or preselected |
-| RFC-069 Selection Commit | `5d7794352029576e0b62c2ac8cbfa248fe11961d` |
+| Last Fully Closed RFC | RFC-069 — Canonical Document Content Relational Persistence Adapter Boundary — Fully Closed and Source-of-Truth Reconciled |
+| Active RFC | None |
+| Selected Architecture Workstream | None |
+| Proposed Successor RFC | None — evidence-based selection has not started |
 | Architecture Decision | AD-055 — Accepted |
-| Contract Acceptance Review | PASS — No Remaining Refine / No Blocked Item |
+| RFC-069 Selection Commit | `5d7794352029576e0b62c2ac8cbfa248fe11961d` |
 | Accepted Contract Commit | `467440b6c5d16e599fbc0d0f5c820d31725fd29b` |
 | Technical Implementation Commit | `4572b40cedecc263577453b95ca63ecab6e61428` |
+| Engineering Closure Commit | `63790de5312c69c709e2249b56e91995a00426b6` |
+| Reconciliation Commit | `231e0cc66862c797e299fdb71ff20da8a39e8ae2` |
+| Reconciliation Push | Verified |
+| Local / Tracking / Remote Reconciliation Identity | Verified |
 | Test Baseline | 912 passed |
 | Alembic Head | `0005` |
 | Authoritative Environment | `PlantMind-Core/.venv` |
-| RFC-069 Technical Push | Verified |
-| Engineering Closure Commit | `63790de5312c69c709e2249b56e91995a00426b6` |
-| Engineering Closure State | Complete, Pushed and Verified |
-| Local / Tracking / Remote Closure Identity | Verified |
-| Post-Closure Reconciliation | Pending — Draft / Review Gate |
-| Reconciliation Commit | Pending — not yet created |
-| Successor RFC Selection | Prohibited until reconciliation and final verification gates complete |
+| RFC-069 State | Fully Closed and Source-of-Truth Reconciled |
+| Successor RFC Selection | Not started — separate evidence-based governance activity |
 
 ## Recent Engineering Sequence
 
@@ -2761,3 +2759,57 @@ Next exact action:
 Review the complete five-document RFC-069 post-closure reconciliation diff.
 
 Do not stage or commit until that review passes.
+
+---
+
+## RFC-069 Final Source-of-Truth Reconciliation Verification Handoff
+
+RFC-069 — Canonical Document Content Relational Persistence Adapter Boundary
+is:
+
+**FULLY CLOSED AND SOURCE-OF-TRUTH RECONCILED**
+
+Engineering-memory closure commit:
+
+`63790de5312c69c709e2249b56e91995a00426b6`
+
+Post-closure Source-of-Truth reconciliation commit:
+
+`231e0cc66862c797e299fdb71ff20da8a39e8ae2`
+
+Final reconciliation Git verification:
+
+- reconciliation commit parent: `63790de5312c69c709e2249b56e91995a00426b6`;
+- reconciliation push: **PASS**;
+- exact local / tracking / remote reconciliation identity: **PASS**;
+- working tree after reconciliation push: **clean**;
+- reconciliation surface: exactly five maintained Source-of-Truth documents;
+- production-code changes: none;
+- test-file changes: none.
+
+Preserved technical state:
+
+- AD-055: **Accepted**;
+- accepted-contract commit `467440b6c5d16e599fbc0d0f5c820d31725fd29b`;
+- technical implementation commit `4572b40cedecc263577453b95ca63ecab6e61428`;
+- focused RFC-069 verification: **46 passed**;
+- impacted regression: **151 passed**;
+- full PlantMind regression: **912 passed**;
+- canonical Alembic head: `0005`;
+- canonical `app.infrastructure.document_content` ownership;
+- canonical `DocumentContentDescriptorRow`;
+- canonical `document_content_descriptors`;
+- canonical `SQLAlchemyDocumentContentRepository`;
+- all AD-055 deferred boundaries remain deferred.
+
+No active RFC exists after RFC-069 closure.
+
+No successor RFC or architecture workstream is selected or preselected by
+this handoff.
+
+Successor selection, when begun, must be a separate evidence-based governed
+activity.
+
+This handoff is non-self-referential: it records the verified reconciliation
+commit and does not contain the future commit identity that persists this
+final verification record.
