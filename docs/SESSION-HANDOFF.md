@@ -7,7 +7,7 @@
 | Project | PlantMind PM-001 |
 | Branch | `feature/engineering-platform` |
 | Last Fully Closed RFC | RFC-068 — Canonical Document Content Repository Foundation Boundary — Fully Closed and Source-of-Truth Reconciled |
-| Active RFC | RFC-069 — Canonical Document Content Relational Persistence Adapter Boundary — Technical Complete; Engineering-Memory Closure Pending |
+| Active RFC | RFC-069 — Canonical Document Content Relational Persistence Adapter Boundary — Engineering-Memory Closure Complete; Post-Closure Reconciliation Pending |
 | Selected Architecture Workstream | RFC-069 — Canonical Document Content Relational Persistence Adapter Boundary |
 | Proposed Successor RFC | None — not selected or preselected |
 | RFC-069 Selection Commit | `5d7794352029576e0b62c2ac8cbfa248fe11961d` |
@@ -19,12 +19,12 @@
 | Alembic Head | `0005` |
 | Authoritative Environment | `PlantMind-Core/.venv` |
 | RFC-069 Technical Push | Verified |
-| Local / Tracking / Remote Technical Identity | Verified |
-| Current Closure State | Engineering-Memory Closure Pending Review |
-| Engineering Closure Commit | Not yet created |
-| Post-Closure Reconciliation | Not started |
-| Reconciliation Commit | Not yet created |
-| Successor RFC Selection | Prohibited until RFC-069 closure and reconciliation gates complete |
+| Engineering Closure Commit | `63790de5312c69c709e2249b56e91995a00426b6` |
+| Engineering Closure State | Complete, Pushed and Verified |
+| Local / Tracking / Remote Closure Identity | Verified |
+| Post-Closure Reconciliation | Pending — Draft / Review Gate |
+| Reconciliation Commit | Pending — not yet created |
+| Successor RFC Selection | Prohibited until reconciliation and final verification gates complete |
 
 ## Recent Engineering Sequence
 
@@ -2705,3 +2705,59 @@ Review the complete five-document RFC-069 engineering-memory closure diff.
 
 Only after that review passes may the closure documents be staged and
 committed separately.
+
+---
+
+## RFC-069 Post-Closure Source-of-Truth Reconciliation Handoff
+
+Verified engineering-memory closure commit:
+
+`63790de5312c69c709e2249b56e91995a00426b6`
+
+Closure push and exact local / tracking / remote identity:
+
+**PASS**
+
+Working tree after closure push:
+
+**clean**
+
+RFC-069 engineering-memory closure is:
+
+**COMPLETE — COMMITTED, PUSHED AND VERIFIED**
+
+Preserved technical state:
+
+- AD-055: **Accepted**;
+- accepted-contract commit: `467440b6c5d16e599fbc0d0f5c820d31725fd29b`;
+- technical implementation commit: `4572b40cedecc263577453b95ca63ecab6e61428`;
+- full PlantMind regression: **912 passed**;
+- canonical Alembic head: `0005`;
+- canonical Infrastructure namespace:
+  `app.infrastructure.document_content`;
+- descriptor table: `document_content_descriptors`;
+- canonical repository adapter:
+  `SQLAlchemyDocumentContentRepository`;
+- descriptor-metadata persistence only;
+- all AD-055 deferred binary, coordination, Document Intelligence and
+  production-security boundaries remain deferred.
+
+Post-closure Source-of-Truth reconciliation is:
+
+**PENDING — DRAFT / REVIEW GATE**
+
+Reconciliation commit:
+
+**NOT YET CREATED**
+
+No successor RFC or architecture workstream is selected or preselected.
+
+RFC-069 must not be described as fully closed and Source-of-Truth reconciled
+until the reconciliation Git gate and subsequent final-verification record
+gate are complete.
+
+Next exact action:
+
+Review the complete five-document RFC-069 post-closure reconciliation diff.
+
+Do not stage or commit until that review passes.
