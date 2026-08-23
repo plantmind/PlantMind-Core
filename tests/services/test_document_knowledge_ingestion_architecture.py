@@ -198,8 +198,12 @@ def test_ingestion_service_remains_synchronous_and_local() -> None:
     assert violations == []
 
 
-def test_rfc065_introduces_no_new_alembic_revision() -> None:
+def test_rfc065_schema_baseline_remains_in_alembic_history() -> None:
     config = Config(str(ALEMBIC_INI))
     scripts = ScriptDirectory.from_config(config)
 
-    assert scripts.get_current_head() == "0004"
+    revision = scripts.get_revision("0004")
+
+    assert revision is not None
+    assert revision.revision == "0004"
+    assert revision.down_revision == "0003"

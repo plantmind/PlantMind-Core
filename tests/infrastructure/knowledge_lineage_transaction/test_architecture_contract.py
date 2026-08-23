@@ -273,20 +273,12 @@ def test_transaction_coordination_remains_synchronous_and_local() -> None:
     assert violations == []
 
 
-def test_rfc064_introduces_no_new_alembic_revision() -> None:
+def test_rfc064_schema_baseline_remains_in_alembic_history() -> None:
     config = Config(str(ALEMBIC_INI))
     scripts = ScriptDirectory.from_config(config)
 
-    assert scripts.get_current_head() == "0004"
+    revision = scripts.get_revision("0004")
 
-    revisions = tuple(
-        revision.revision
-        for revision in scripts.walk_revisions()
-    )
-
-    assert revisions == (
-        "0004",
-        "0003",
-        "0002",
-        "0001",
-    )
+    assert revision is not None
+    assert revision.revision == "0004"
+    assert revision.down_revision == "0003"
