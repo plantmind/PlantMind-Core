@@ -59,6 +59,7 @@ def test_package_contains_only_contract_python_files() -> None:
     assert python_files == {
         "__init__.py",
         "repository.py",
+        "store.py",
     }
 
 
