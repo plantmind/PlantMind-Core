@@ -35,162 +35,59 @@ No item may be marked complete until:
 
 ---
 
-## Active Architecture Workstream — RFC-070 — Canonical Binary Document Content Store / Access Foundation
+## RFC-070 Final Source-of-Truth Reconciliation Verification
 
 ### Status
 
-**ENGINEERING CLOSURE COMPLETE — COMMITTED, PUSHED AND VERIFIED; POST-CLOSURE SOURCE-OF-TRUTH RECONCILIATION REVIEW PENDING**
+**FULLY CLOSED AND SOURCE-OF-TRUTH RECONCILED**
 
-Verified selection commit:
+Selected workstream:
 
-`13cfccc08d8c0a3b891990d38edaf9fc48874a5e`
-
-Selection Git gate:
-
-**COMMITTED / PUSHED / EXACT IDENTITY VERIFIED**
+RFC-070 — Canonical Binary Document Content Store / Access Foundation
 
 Architecture Decision:
 
 **AD-056 — ACCEPTED**
 
-Latest Accepted Architecture Decision:
+Verified commit chain:
 
-**AD-056**
+- selection: `13cfccc08d8c0a3b891990d38edaf9fc48874a5e`;
+- accepted contract: `cfd45d35144574d27a40e0f350b571a6298afd59`;
+- technical implementation: `389ce20b9e01b99cf9b7c1a066a0e9a55bc71223`;
+- engineering closure: `ab4438b02a8f34f83b462e3d8a86b4b5ab5d1092`;
+- post-closure reconciliation: `4fc3e86bf495bbf93158d8e575645e4d556eda39`.
 
-RFC-069 remains fully closed and Source-of-Truth reconciled.
+### Final Reconciliation Git Verification
 
-### Accepted Foundation
+- reconciliation parent: `ab4438b02a8f34f83b462e3d8a86b4b5ab5d1092`;
+- reconciliation push: **PASS**;
+- exact local / tracking / remote reconciliation identity: **PASS**;
+- working tree after reconciliation push: **clean**;
+- exact five Source-of-Truth document surface: **PASS**;
+- production-code changes: none;
+- test-file changes: none.
 
-AD-056 establishes the minimum persistence-neutral binary content boundary:
+### Verified Technical Baseline
 
-- canonical module `app.document_content.store`;
-- `DocumentContentStore`;
-- `DocumentContentPayloadAlreadyExistsError`;
-- immutable `add(document_id, source)` behavior;
-- exact `open(document_id)` access;
-- context-managed binary read lifecycle;
-- store-local atomic visibility;
-- no silent overwrite;
-- no descriptor ownership;
-- no storage technology selection.
-
-### Preserved Boundaries
-
-RFC-070 does not authorize:
-
-- Infrastructure storage adapter;
-- PostgreSQL BLOB or schema work;
-- filesystem/network filesystem/object-store/file-server selection;
-- Alembic revision beyond current head `0005`;
-- descriptor/application transaction coordination;
-- Document Library;
-- parser/OCR/chunking;
-- Search/Vector/Graph/RAG/LLM;
-- Runtime/Bootstrap/Composition expansion;
-- production-security/Cybersecurity claims.
-
-### Contract Review Acceptance Basis
-
-AD-056 acceptance incorporates the following reviewed requirements:
-
-- confirmed-absence versus operational-failure separation;
-- valid zero-byte payload semantics;
-- explicit failed-write caller-source position semantics;
-- same-document concurrent-add race safety;
-- independent repeated read contexts and exceptional-exit cleanup;
-- separate foundation and future-adapter verification gates.
-
-No concrete storage behavior may be reported PASS while RFC-070 contains no
-concrete storage adapter.
-
-Concrete adapter behavior remains NOT YET APPLICABLE / BLOCKED until its own
-future architecture and implementation gates pass.
-
-Internal physical storage addressing/deduplication remains outside RFC-070
-canonical identity semantics.
-
-### Technical Implementation Evidence
-
-Verified accepted-contract commit:
-
-`cfd45d35144574d27a40e0f350b571a6298afd59`
-
-Verified technical implementation commit:
-
-`389ce20b9e01b99cf9b7c1a066a0e9a55bc71223`
-
-Technical implementation Git gate:
-
-**COMMITTED / PUSHED / EXACT IDENTITY VERIFIED**
-
-Full regression at the pushed technical baseline:
-
-**928 passed**
-
-Production implementation remains restricted to
-`backend/app/document_content/store.py`.
-
-No Infrastructure adapter, schema migration, storage technology, application
-service or Runtime / Bootstrap / Composition expansion was introduced.
+- full PlantMind regression: **928 passed**;
+- canonical Alembic head: **0005**;
+- canonical boundary: `app.document_content.store`;
+- production surface: `backend/app/document_content/store.py`.
 
 Concrete-adapter behavioral conformance remains:
 
 **NOT YET APPLICABLE / BLOCKED BY ABSENCE OF CONCRETE ADAPTER**
 
-Engineering closure commit:
+### Governed State After RFC-070
 
-`ab4438b02a8f34f83b462e3d8a86b4b5ab5d1092`
+There is no active RFC or selected successor workstream.
 
-Closure push:
+Successor-workstream selection has not started.
 
-**PASS**
+Any successor must be selected separately through evidence-based governance.
 
-Exact local / tracking / remote closure identity:
-
-**PASS**
-
-Working tree after closure push:
-
-**clean**
-
-Post-closure Source-of-Truth reconciliation:
-
-**PENDING — DRAFT / REVIEW GATE**
-
-### Current Gate
-
-Engineering closure:
-
-**COMPLETE — COMMITTED, PUSHED AND VERIFIED**
-
-Post-closure Source-of-Truth reconciliation:
-
-**PENDING — DRAFT / REVIEW GATE**
-
-Reconciliation commit:
-
-**NOT YET CREATED**
-
-The reconciliation remains documentation-only.
-
-Architecture Decisions history remains preserved.
-
-Engineering Journal history remains append-only.
-
-No backend or test-file change is authorized.
-
-A separate final reconciliation verification record remains required after
-the reconciliation Git gate completes.
-
-RFC-070 remains active until reconciliation and final verification complete.
-
-No successor RFC or architecture workstream is selected or authorized.
-
-### Current Next Exact Action
-
-Review the complete five-document RFC-070 post-closure reconciliation diff.
-
-Do not stage or commit until that review passes.
+This state is intentionally non-self-referential and records only already
+verified commits through reconciliation commit `4fc3e86bf495bbf93158d8e575645e4d556eda39`.
 
 ## Post-RFC-069 Successor Architecture Workstream Selection Draft
 
