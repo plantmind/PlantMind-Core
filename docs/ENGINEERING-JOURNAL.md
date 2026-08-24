@@ -7574,3 +7574,72 @@ already verified reconciliation commit `4fc3e86bf495bbf93158d8e575645e4d556eda39
 
 Its own Git durability is verified externally without creating another
 RFC-070 governance record.
+
+---
+
+## 2026-08-24 — RFC-071 Successor Workstream Selection
+
+**Append-Only Governance Record**
+
+Baseline:
+
+`3a57f02167e9b69aafee7261b5901b64fe894446`
+
+RFC-070 is fully closed and Source-of-Truth reconciled.
+
+The post-RFC-070 evidence review found no active RFC and no previously selected
+successor.
+
+### Selection
+
+Chief Architect decision:
+
+**RFC-071 — Canonical Binary Document Content Infrastructure Adapter Boundary**
+
+is selected as the minimum dependency-completing successor workstream.
+
+### Evidence Basis
+
+- canonical `DocumentContentStore` now exists;
+- no concrete Infrastructure implementation of that port exists;
+- current `app.infrastructure.document_content` remains descriptor-focused;
+- concrete-adapter behavioral conformance remains blocked by adapter absence;
+- AD-056 requires separate adapter architecture authorization;
+- descriptor/payload coordination remains future application-level work;
+- Document Library/parser/OCR and intelligence capabilities remain downstream.
+
+### Rejected / Deferred Alternatives
+
+1. descriptor/payload atomic coordination — deferred until real binary
+   persistence exists;
+2. content-establishment application orchestration — deferred so Application
+   does not absorb Infrastructure responsibility;
+3. Document Library/parser/OCR/chunking — deferred as higher-level capability.
+
+### Current Governance State
+
+Selection documentation:
+
+**REVIEWED — PASS**
+
+Selection commit:
+
+**NOT YET CREATED**
+
+Selection push:
+
+**NOT PERFORMED**
+
+AD-057:
+
+**NOT CREATED**
+
+RFC-071 implementation:
+
+**NOT AUTHORIZED**
+
+### Next Exact Action
+
+Stage exactly the five maintained Source-of-Truth documents for the RFC-071 selection staging review.
+
+Do not commit, push or begin architecture-contract drafting until the staging review passes.

@@ -15380,3 +15380,67 @@ Successor selection is a separate evidence-based governed activity.
 
 This record does not contain or predict its own future Git commit identity and
 does not require a recursive RFC-069 verification record.
+
+---
+
+## Selected Successor Architecture Workstream — RFC-071 — Canonical Binary Document Content Infrastructure Adapter Boundary
+
+### Status
+
+**CHIEF ARCHITECT SELECTED — SELECTION REVIEW PASS / STAGING PENDING**
+
+Selection baseline:
+
+`3a57f02167e9b69aafee7261b5901b64fe894446`
+
+Last fully closed RFC:
+
+**RFC-070 — Canonical Binary Document Content Store / Access Foundation**
+
+### Selection Evidence
+
+RFC-070 completed the persistence-neutral binary content port but deliberately
+introduced no concrete Infrastructure storage adapter.
+
+Current repository evidence shows:
+
+- `DocumentContentStore` exists;
+- descriptor persistence exists;
+- binary adapter implementation does not exist;
+- concrete behavioral conformance remains blocked by adapter absence.
+
+The selected minimum next dependency is therefore:
+
+**RFC-071 — Canonical Binary Document Content Infrastructure Adapter Boundary**
+
+### Dependency Ordering
+
+1. **Now:** concrete binary Document Content Infrastructure adapter boundary.
+2. **Later:** descriptor/payload coordination and establishment semantics.
+3. **Later:** application-level Document Content workflows.
+4. **Downstream:** Document Library and parser/OCR/chunking.
+5. **Higher-level:** Search/Vector/Graph/RAG/LLM.
+
+### Architecture Contract Required
+
+Selection does not choose the physical storage technology.
+
+The RFC-071 architecture contract must decide the concrete adapter technology,
+namespace, physical addressing, publication atomicity, failure contract,
+durability, configuration, migration implications and verification model.
+
+### Prohibited Before Selection Git Gate
+
+- AD-057 authoring;
+- implementation;
+- Infrastructure storage files;
+- schema/migration changes;
+- application coordination;
+- Document Library/parser work;
+- Runtime/Composition wiring.
+
+### Next Exact Action
+
+Stage exactly the five Source-of-Truth documents for a staging-only review.
+
+Do not commit or push until that staging review passes.

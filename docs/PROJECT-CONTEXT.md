@@ -10,12 +10,12 @@
 | Deployment Model | On-Premise |
 | Development Branch | `feature/engineering-platform` |
 | Last Fully Closed RFC | RFC-070 — Canonical Binary Document Content Store / Access Foundation — Fully Closed and Source-of-Truth Reconciled |
-| Active RFC | None |
-| Selected Architecture Workstream | None |
-| Proposed Successor RFC | None — evidence-based successor selection has not started |
+| Active RFC | None — RFC-071 selection Git gate not yet complete |
+| Selected Architecture Workstream | RFC-071 — Canonical Binary Document Content Infrastructure Adapter Boundary — Chief Architect selected; selection Git gate pending |
+| Proposed Successor RFC | RFC-071 — Canonical Binary Document Content Infrastructure Adapter Boundary |
 | RFC-069 Selection Commit | `5d7794352029576e0b62c2ac8cbfa248fe11961d` |
 | RFC-070 Selection Commit | `13cfccc08d8c0a3b891990d38edaf9fc48874a5e` |
-| Architecture Decision | AD-056 — Accepted |
+| Architecture Decision | AD-056 — Accepted; AD-057 not created |
 | RFC-069 Accepted Contract Commit | `467440b6c5d16e599fbc0d0f5c820d31725fd29b` |
 | RFC-070 Accepted Contract Commit | `cfd45d35144574d27a40e0f350b571a6298afd59` — committed / pushed / exact identity verified |
 | RFC-070 Technical Commit | `389ce20b9e01b99cf9b7c1a066a0e9a55bc71223` — committed / pushed / exact identity verified |
@@ -30,6 +30,8 @@
 | RFC-070 Reconciliation Commit | `4fc3e86bf495bbf93158d8e575645e4d556eda39` |
 | RFC-070 Reconciliation Verification | PASS — Committed, Pushed, Exact Local / Tracking / Remote Identity Verified |
 | RFC-070 State | Fully Closed and Source-of-Truth Reconciled |
+| RFC-071 Selection Baseline | `3a57f02167e9b69aafee7261b5901b64fe894446` |
+| RFC-071 Selection State | Review PASS — Staging Gate Pending |
 | Alembic Head | `0005` |
 | Purpose | Authoritative context for continuing PlantMind development across engineering sessions |
 
@@ -3357,3 +3359,64 @@ Successor selection is a separate evidence-based governance activity.
 
 This record is non-self-referential and records reconciliation commit
 `4fc3e86bf495bbf93158d8e575645e4d556eda39` only. Its own Git durability is verified externally.
+
+---
+
+## RFC-071 Successor Workstream Selection State
+
+Selected successor:
+
+**RFC-071 — Canonical Binary Document Content Infrastructure Adapter Boundary**
+
+Selection baseline:
+
+`3a57f02167e9b69aafee7261b5901b64fe894446`
+
+RFC-070 remains fully closed and Source-of-Truth reconciled.
+
+### Why RFC-071 Is Next
+
+The canonical binary content port now exists but has no concrete Infrastructure
+implementation.
+
+The current Infrastructure Document Content package persists descriptor
+metadata only.
+
+Therefore the minimum missing prerequisite is the adapter that implements the
+accepted `DocumentContentStore` semantics without pushing physical storage
+responsibility into Domain, Application, Document Library or parser layers.
+
+### Deferred Until Later
+
+- descriptor/payload atomic coordination;
+- content-establishment application workflow;
+- Document Library;
+- parser/OCR/chunking;
+- Search/Vector/Graph/RAG/LLM;
+- production Composition wiring;
+- production security claims.
+
+### Current Gate
+
+Selection documentation:
+
+**REVIEWED — PASS**
+
+Selection staging:
+
+**PENDING**
+
+Selection commit:
+
+**NOT YET CREATED**
+
+AD-057:
+
+**NOT CREATED**
+
+Implementation:
+
+**NOT AUTHORIZED**
+
+Architecture-contract drafting must wait until the separate selection commit is
+pushed and exact local / tracking / remote identity is verified.

@@ -14244,3 +14244,180 @@ the future Git commit that persists this record.
 Verification of this record's own commit, push, exact branch identity and
 clean working tree is an external Git durability gate and does not require
 another RFC-070 Source-of-Truth record.
+
+---
+
+## Current Architecture Governance State — RFC-071 Successor Workstream Selection
+
+**Record Classification: Non-Decision Successor-Selection Governance Record**
+
+Selection baseline:
+
+`3a57f02167e9b69aafee7261b5901b64fe894446`
+
+Last fully closed workstream:
+
+**RFC-070 — Canonical Binary Document Content Store / Access Foundation**
+
+RFC-070 remains:
+
+**FULLY CLOSED AND SOURCE-OF-TRUTH RECONCILED**
+
+No Architecture Decision is created by this selection record.
+
+AD-056 remains the latest Accepted Architecture Decision.
+
+### Chief Architect Selection
+
+The selected successor architecture workstream is:
+
+**RFC-071 — Canonical Binary Document Content Infrastructure Adapter Boundary**
+
+Selection status:
+
+**SELECTED — REVIEW PASS / STAGING GATE PENDING**
+
+Architecture-contract status:
+
+**NOT YET AUTHORED**
+
+Architecture Decision:
+
+**NOT YET CREATED**
+
+Implementation authorization:
+
+**NO**
+
+### Evidence
+
+Repository and architecture evidence establish:
+
+1. RFC-070 now provides the canonical persistence-neutral
+   `DocumentContentStore` port.
+2. The canonical port exposes immutable `add(document_id, source)` and exact
+   context-managed `open(document_id)` behavior.
+3. `app.infrastructure.document_content` currently implements
+   descriptor persistence only.
+4. No concrete binary `DocumentContentStore` Infrastructure adapter exists.
+5. Concrete-adapter behavioral conformance remains blocked specifically by
+   absence of a concrete adapter.
+6. AD-056 explicitly requires a separately authorized adapter architecture
+   before concrete storage behavior may be claimed.
+7. Descriptor/payload cross-boundary consistency remains a separate future
+   application/coordination responsibility.
+8. Document Content establishment/orphan-prevention policy remains a future
+   application boundary.
+9. Document Library, parser, OCR, chunking, Search, Vector, Graph, RAG and LLM
+   remain downstream capabilities.
+10. Selecting a higher layer now would leave the canonical binary port without
+    a real persistence implementation underneath it.
+
+### Selection Decision
+
+The minimum dependency-completing successor is therefore the Infrastructure
+adapter boundary that implements the accepted RFC-070
+`DocumentContentStore` contract.
+
+The selection does **not** yet decide:
+
+- filesystem versus network filesystem;
+- PostgreSQL binary/large-object storage;
+- object storage;
+- file server;
+- internal physical locator/key structure;
+- transparent physical deduplication;
+- temporary-file/atomic-publication mechanism;
+- durability/fsync policy;
+- provider-specific failure translation;
+- schema or migration requirements;
+- default Runtime/Composition wiring.
+
+Those are architecture-contract questions for RFC-071.
+
+### Required RFC-071 Architecture Questions
+
+The future architecture contract shall explicitly determine:
+
+1. the concrete on-premise binary storage technology;
+2. the canonical Infrastructure namespace and adapter class;
+3. how the adapter implements `DocumentContentStore`;
+4. how external canonical identity remains strictly `document_id`;
+5. internal physical addressing rules, if any;
+6. duplicate same-document write enforcement;
+7. concurrent same-document add race behavior;
+8. failed-write partial-publication prevention;
+9. zero-byte payload persistence;
+10. byte fidelity and ordering;
+11. independent `open()` read contexts;
+12. normal and exceptional resource cleanup;
+13. operational/provider failure propagation;
+14. caller-owned source lifecycle preservation;
+15. whether an Infrastructure-specific failure hierarchy is justified;
+16. crash/durability semantics required for successful `add()`;
+17. configuration injection required by the adapter;
+18. whether any schema or Alembic change is necessary;
+19. whether `DatabaseRuntime` remains completely untouched;
+20. whether default `CompositionRoot` remains unwired;
+21. exact architecture and behavioral conformance tests;
+22. full-regression evidence required for implementation acceptance.
+
+### Explicitly Deferred Candidates
+
+The following candidates are not selected now:
+
+**Document Content / Descriptor Atomic Coordination Boundary**
+
+Deferred because concrete binary persistence is not yet implemented and the
+accepted architecture keeps descriptor/payload coordination separate.
+
+**Document Content Establishment / Retrieval Application Boundary**
+
+Deferred because application orchestration shall not absorb or simulate a
+missing Infrastructure binary-storage implementation.
+
+**Document Library / Parser / OCR / Chunking Entry Boundary**
+
+Deferred because these are higher-level consumers of canonical binary content
+access and shall not become the mechanism that selects or owns storage.
+
+### Non-Goals
+
+RFC-071 selection does not authorize:
+
+- implementation;
+- modification of `DocumentContentStore`;
+- modification of `DocumentContentRepository`;
+- descriptor model changes;
+- descriptor/payload transaction coordination;
+- Document Content establishment application services;
+- Enterprise Document workflow changes;
+- Document Library;
+- upload/download API or UI;
+- parser/PDF/OCR/DOCX/spreadsheet extraction;
+- chunking;
+- Search/Vector/Graph/RAG/LLM;
+- Runtime/Bootstrap/Composition expansion;
+- authentication/authorization/RBAC/Active Directory;
+- Cybersecurity approval;
+- production-readiness claims.
+
+### Selection Git Gate
+
+This selection is not durable until:
+
+1. the complete five-document selection diff is reviewed;
+2. exactly the five maintained Source-of-Truth documents are staged;
+3. the selection commit is created separately;
+4. the selection commit is pushed;
+5. exact local / tracking / remote identity is verified;
+6. the working tree is clean.
+
+Architecture-contract drafting for RFC-071 shall not begin before that Git
+gate is complete.
+
+### Next Exact Action
+
+Stage exactly the five maintained Source-of-Truth documents for a staging-only review.
+
+Do not commit, push or author AD-057 until the staging review passes.

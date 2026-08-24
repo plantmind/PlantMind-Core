@@ -7,10 +7,10 @@
 | Project | PlantMind PM-001 |
 | Branch | `feature/engineering-platform` |
 | Last Fully Closed RFC | RFC-070 — Canonical Binary Document Content Store / Access Foundation — Fully Closed and Source-of-Truth Reconciled |
-| Active RFC | None |
-| Selected Architecture Workstream | None |
-| Proposed Successor RFC | None — evidence-based successor selection has not started |
-| Architecture Decision | AD-056 — Accepted |
+| Active RFC | None — RFC-071 selection Git gate not yet complete |
+| Selected Architecture Workstream | RFC-071 — Canonical Binary Document Content Infrastructure Adapter Boundary — Chief Architect selected; selection Git gate pending |
+| Proposed Successor RFC | RFC-071 — Canonical Binary Document Content Infrastructure Adapter Boundary |
+| Architecture Decision | AD-056 — Accepted; AD-057 not created |
 | RFC-069 Selection Commit | `5d7794352029576e0b62c2ac8cbfa248fe11961d` |
 | RFC-070 Selection Commit | `13cfccc08d8c0a3b891990d38edaf9fc48874a5e` |
 | RFC-069 Accepted Contract Commit | `467440b6c5d16e599fbc0d0f5c820d31725fd29b` |
@@ -30,10 +30,12 @@
 | RFC-070 Reconciliation Push | Verified |
 | RFC-070 Local / Tracking / Remote Reconciliation Identity | Verified |
 | RFC-070 State | Fully Closed and Source-of-Truth Reconciled |
+| RFC-071 Selection Baseline | `3a57f02167e9b69aafee7261b5901b64fe894446` |
+| RFC-071 Selection State | Review PASS — Staging Gate Pending |
 | Alembic Head | `0005` |
 | Authoritative Environment | `PlantMind-Core/.venv` |
 | RFC-069 State | Fully Closed and Source-of-Truth Reconciled |
-| Successor RFC Selection | Not started — separate evidence-based governance activity |
+| Successor RFC Selection | RFC-071 selected — durability gate pending |
 ## Recent Engineering Sequence
 
 - RFC-025 — Core Plugin Framework
@@ -3117,3 +3119,67 @@ Successor selection must be a separate evidence-based governance activity.
 
 This handoff is intentionally non-self-referential and records reconciliation
 commit `4fc3e86bf495bbf93158d8e575645e4d556eda39` without predicting the commit that persists this record.
+
+---
+
+## RFC-071 Successor Workstream Selection Handoff
+
+Chief Architect selected:
+
+**RFC-071 — Canonical Binary Document Content Infrastructure Adapter Boundary**
+
+Selection baseline:
+
+`3a57f02167e9b69aafee7261b5901b64fe894446`
+
+### Evidence
+
+The RFC-070 persistence-neutral `DocumentContentStore` foundation is complete.
+
+No concrete binary Infrastructure adapter currently implements that port.
+
+The current Infrastructure Document Content package remains responsible for
+descriptor relational persistence.
+
+Concrete adapter conformance remains blocked by absence of that adapter.
+
+Therefore RFC-071 is the nearest missing prerequisite.
+
+### Deferred
+
+Do not start:
+
+- descriptor/payload transaction coordination;
+- content-establishment application orchestration;
+- Document Library;
+- parser/OCR/chunking;
+- Search/Vector/Graph/RAG/LLM;
+- default production composition.
+
+### Current State
+
+RFC-071 selection draft:
+
+**AUTHORED**
+
+Selection review:
+
+**PASS**
+
+Selection commit/push:
+
+**NOT PERFORMED**
+
+AD-057:
+
+**NOT CREATED**
+
+Implementation:
+
+**NOT AUTHORIZED**
+
+### Next Exact Action
+
+Stage exactly the five maintained Source-of-Truth documents for the RFC-071 selection staging review.
+
+Do not commit, push or author the RFC-071 architecture contract until the staging review passes.
