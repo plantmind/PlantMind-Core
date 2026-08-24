@@ -10,12 +10,12 @@
 | Deployment Model | On-Premise |
 | Development Branch | `feature/engineering-platform` |
 | Last Fully Closed RFC | RFC-070 — Canonical Binary Document Content Store / Access Foundation — Fully Closed and Source-of-Truth Reconciled |
-| Active RFC | None — RFC-071 selection Git gate not yet complete |
-| Selected Architecture Workstream | RFC-071 — Canonical Binary Document Content Infrastructure Adapter Boundary — Chief Architect selected; selection Git gate pending |
-| Proposed Successor RFC | RFC-071 — Canonical Binary Document Content Infrastructure Adapter Boundary |
+| Active RFC | RFC-071 — Canonical Binary Document Content Infrastructure Adapter Boundary — Architecture Contract Accepted / Git Gate Pending |
+| Selected Architecture Workstream | RFC-071 — Canonical Binary Document Content Infrastructure Adapter Boundary — Selection Durable |
+| Proposed Successor RFC | None — RFC-071 is active |
 | RFC-069 Selection Commit | `5d7794352029576e0b62c2ac8cbfa248fe11961d` |
 | RFC-070 Selection Commit | `13cfccc08d8c0a3b891990d38edaf9fc48874a5e` |
-| Architecture Decision | AD-056 — Accepted; AD-057 not created |
+| Architecture Decision | AD-057 — Accepted; Accepted-Contract Git Gate Pending; Implementation Not Authorized |
 | RFC-069 Accepted Contract Commit | `467440b6c5d16e599fbc0d0f5c820d31725fd29b` |
 | RFC-070 Accepted Contract Commit | `cfd45d35144574d27a40e0f350b571a6298afd59` — committed / pushed / exact identity verified |
 | RFC-070 Technical Commit | `389ce20b9e01b99cf9b7c1a066a0e9a55bc71223` — committed / pushed / exact identity verified |
@@ -31,7 +31,9 @@
 | RFC-070 Reconciliation Verification | PASS — Committed, Pushed, Exact Local / Tracking / Remote Identity Verified |
 | RFC-070 State | Fully Closed and Source-of-Truth Reconciled |
 | RFC-071 Selection Baseline | `3a57f02167e9b69aafee7261b5901b64fe894446` |
-| RFC-071 Selection State | Review PASS — Staging Gate Pending |
+| RFC-071 Selection State | Durable — Committed, Pushed and Exact Identity Verified |
+| RFC-071 Selection Commit | `92fc4196f24c84d49846ee9825aba9eeb1b03d8b` — committed / pushed / exact identity verified |
+| RFC-071 Architecture Contract State | Accepted — Acceptance-State Review Pending / Git Durability Pending |
 | Alembic Head | `0005` |
 | Purpose | Authoritative context for continuing PlantMind development across engineering sessions |
 
@@ -3420,3 +3422,93 @@ Implementation:
 
 Architecture-contract drafting must wait until the separate selection commit is
 pushed and exact local / tracking / remote identity is verified.
+
+---
+
+## RFC-071 / AD-057 Architecture Contract Accepted State
+
+Verified selection commit:
+
+`92fc4196f24c84d49846ee9825aba9eeb1b03d8b`
+
+Active workstream:
+
+**RFC-071 — Canonical Binary Document Content Infrastructure Adapter Boundary**
+
+Accepted Architecture Decision:
+
+**AD-057 — Canonical Filesystem-Backed Binary Document Content Infrastructure Adapter Boundary**
+
+### Accepted Direction
+
+Accepted adapter:
+
+`FilesystemDocumentContentStore`
+
+Module:
+
+`app.infrastructure.document_content.filesystem_store`
+
+Storage root:
+
+explicitly injected absolute `pathlib.Path`.
+
+Physical addressing is derived only from canonical `document_id`.
+
+### Publication Model
+
+temporary file → incremental write → flush/fsync →
+atomic hard-link create-if-absent → temporary cleanup.
+
+No overwrite-capable publication is authorized.
+
+### Refined Namespace / Failure Semantics
+
+The adapter may create deterministic shard directories beneath the
+already-existing root but shall never recreate the configured root.
+
+Only final hard-link destination conflict maps to canonical payload duplicate.
+
+Missing payload beneath a healthy root returns `None`.
+
+Observable root unavailability remains an operational failure.
+
+### Preserved Boundaries
+
+- canonical store unchanged;
+- descriptor repository unchanged;
+- Domain unchanged;
+- no PostgreSQL binary persistence;
+- no object-storage SDK;
+- no migration;
+- Alembic remains `0005`;
+- DatabaseRuntime unchanged;
+- default CompositionRoot unchanged;
+- application coordination deferred;
+- Document Library/parser/OCR deferred;
+- production readiness/security unclaimed.
+
+### Architecture Acceptance State
+
+Final refined architecture review:
+
+**PASS — NO REMAINING REFINE / NO BLOCKED ITEM**
+
+AD-057:
+
+**ACCEPTED — ACCEPTED-CONTRACT GIT GATE PENDING**
+
+Implementation:
+
+**NOT AUTHORIZED**
+
+Acceptance-state staging / commit / push:
+
+**NONE**
+
+### Current Gate
+
+Review the complete five-document accepted architecture state before staging.
+
+The accepted contract must be committed, pushed and exact Git identity verified
+before any implementation-entry decision.

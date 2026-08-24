@@ -7,10 +7,10 @@
 | Project | PlantMind PM-001 |
 | Branch | `feature/engineering-platform` |
 | Last Fully Closed RFC | RFC-070 — Canonical Binary Document Content Store / Access Foundation — Fully Closed and Source-of-Truth Reconciled |
-| Active RFC | None — RFC-071 selection Git gate not yet complete |
-| Selected Architecture Workstream | RFC-071 — Canonical Binary Document Content Infrastructure Adapter Boundary — Chief Architect selected; selection Git gate pending |
-| Proposed Successor RFC | RFC-071 — Canonical Binary Document Content Infrastructure Adapter Boundary |
-| Architecture Decision | AD-056 — Accepted; AD-057 not created |
+| Active RFC | RFC-071 — Canonical Binary Document Content Infrastructure Adapter Boundary — Architecture Contract Accepted / Git Gate Pending |
+| Selected Architecture Workstream | RFC-071 — Canonical Binary Document Content Infrastructure Adapter Boundary — Selection Durable |
+| Proposed Successor RFC | None — RFC-071 is active |
+| Architecture Decision | AD-057 — Accepted; Accepted-Contract Git Gate Pending; Implementation Not Authorized |
 | RFC-069 Selection Commit | `5d7794352029576e0b62c2ac8cbfa248fe11961d` |
 | RFC-070 Selection Commit | `13cfccc08d8c0a3b891990d38edaf9fc48874a5e` |
 | RFC-069 Accepted Contract Commit | `467440b6c5d16e599fbc0d0f5c820d31725fd29b` |
@@ -31,11 +31,13 @@
 | RFC-070 Local / Tracking / Remote Reconciliation Identity | Verified |
 | RFC-070 State | Fully Closed and Source-of-Truth Reconciled |
 | RFC-071 Selection Baseline | `3a57f02167e9b69aafee7261b5901b64fe894446` |
-| RFC-071 Selection State | Review PASS — Staging Gate Pending |
+| RFC-071 Selection State | Durable — Committed, Pushed and Exact Identity Verified |
+| RFC-071 Selection Commit | `92fc4196f24c84d49846ee9825aba9eeb1b03d8b` — committed / pushed / exact identity verified |
+| RFC-071 Architecture Contract State | Accepted — Acceptance-State Review Pending / Git Durability Pending |
 | Alembic Head | `0005` |
 | Authoritative Environment | `PlantMind-Core/.venv` |
 | RFC-069 State | Fully Closed and Source-of-Truth Reconciled |
-| Successor RFC Selection | RFC-071 selected — durability gate pending |
+| Successor RFC Selection | RFC-071 selected — committed / pushed / exact identity verified |
 ## Recent Engineering Sequence
 
 - RFC-025 — Core Plugin Framework
@@ -3183,3 +3185,101 @@ Implementation:
 Stage exactly the five maintained Source-of-Truth documents for the RFC-071 selection staging review.
 
 Do not commit, push or author the RFC-071 architecture contract until the staging review passes.
+
+---
+
+## RFC-071 / AD-057 Architecture Contract Accepted Handoff
+
+Verified selection commit:
+
+`92fc4196f24c84d49846ee9825aba9eeb1b03d8b`
+
+Active workstream:
+
+**RFC-071 — Canonical Binary Document Content Infrastructure Adapter Boundary**
+
+Architecture Decision:
+
+**AD-057 — Canonical Filesystem-Backed Binary Document Content Infrastructure Adapter Boundary — ACCEPTED**
+
+### Accepted Decision
+
+Adapter:
+
+`FilesystemDocumentContentStore`
+
+Module:
+
+`app.infrastructure.document_content.filesystem_store`
+
+Root:
+
+explicit injected absolute `pathlib.Path`.
+
+Publication:
+
+same-directory temporary payload plus atomic hard-link create-if-absent.
+
+### Important Semantics
+
+- caller owns source;
+- non-seekable input supported;
+- zero-byte payload valid;
+- no overwrite/upsert;
+- concurrent same-document add permits at most one success;
+- missing payload returns `None`;
+- unrelated operational filesystem failures propagate;
+- no generic storage-error hierarchy;
+- post-publication cleanup failure may leave a complete payload established but
+  may never expose partial canonical content.
+
+### Architecture Review Refinement
+
+- configured root is deployment-owned and shall never be recreated by adapter;
+- deterministic shard directories are adapter-owned;
+- only final `os.link(...)` destination conflict maps to payload duplicate;
+- temporary/shard conflicts remain operational;
+- root unavailability does not become `None`;
+- absent shard/final path beneath a healthy root is confirmed absence.
+
+### Preserved Boundaries
+
+Do not begin:
+
+- descriptor/payload coordination;
+- content-establishment service;
+- Document Library;
+- parser/OCR/chunking;
+- Search/Vector/Graph/RAG/LLM;
+- default production composition.
+
+Alembic remains `0005`.
+
+### Architecture Acceptance State
+
+Final refined architecture review:
+
+**PASS — NO REMAINING REFINE / NO BLOCKED ITEM**
+
+AD-057:
+
+**ACCEPTED — ACCEPTED-CONTRACT GIT GATE PENDING**
+
+Implementation:
+
+**NOT AUTHORIZED**
+
+Acceptance-state staging / commit / push:
+
+**NONE**
+
+### Next Exact Action
+
+Review:
+
+`PLANTMIND-RFC071-AD057-ARCHITECTURE-ACCEPTANCE-STATE-REVIEW.txt`
+
+Do not stage before acceptance-state review passes.
+
+Do not implement before accepted-contract Git durability and the separate
+implementation-entry gate both pass.

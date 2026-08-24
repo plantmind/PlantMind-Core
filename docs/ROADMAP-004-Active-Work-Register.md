@@ -15444,3 +15444,118 @@ durability, configuration, migration implications and verification model.
 Stage exactly the five Source-of-Truth documents for a staging-only review.
 
 Do not commit or push until that staging review passes.
+
+---
+
+## Active Architecture Workstream — RFC-071 — Canonical Binary Document Content Infrastructure Adapter Boundary
+
+### Current Status
+
+**ARCHITECTURE CONTRACT ACCEPTED — ACCEPTANCE-STATE REVIEW / GIT GATE PENDING**
+
+Verified selection commit:
+
+`92fc4196f24c84d49846ee9825aba9eeb1b03d8b`
+
+Accepted Architecture Decision:
+
+**AD-057 — Canonical Filesystem-Backed Binary Document Content Infrastructure Adapter Boundary**
+
+### Accepted Concrete Boundary
+
+Adapter:
+
+`FilesystemDocumentContentStore`
+
+Module:
+
+`app.infrastructure.document_content.filesystem_store`
+
+Technology:
+
+**filesystem-backed persistence through an injected absolute storage root**
+
+### Dependency Shape
+
+`DocumentContentStore`
+→
+`FilesystemDocumentContentStore`
+→
+Python standard-library filesystem primitives
+→
+injected filesystem root.
+
+No Domain or Application layer receives a filesystem path.
+
+### Publication Invariant
+
+Same-directory temporary write followed by atomic hard-link
+create-if-absent publication.
+
+This preserves:
+
+- one payload per `document_id`;
+- no overwrite;
+- no partial final publication;
+- race-safe duplicate establishment.
+
+### Refined Infrastructure Ownership
+
+The configured root remains deployment-owned and pre-existing.
+
+The adapter owns only deterministic shard directories beneath that root.
+
+Only final hard-link destination conflict maps to canonical duplicate identity.
+
+Root unavailability remains operational failure.
+
+Confirmed absence is evaluated only beneath a healthy configured root.
+
+### Explicit Deferrals
+
+No:
+
+- PostgreSQL BLOB/large object;
+- object storage;
+- S3/MinIO;
+- direct File Server protocol;
+- NFS/SMB-specific adapter;
+- descriptor/payload coordination;
+- content-establishment service;
+- Document Library/parser/OCR;
+- Search/Vector/Graph/RAG/LLM;
+- default production composition;
+- production-security claim.
+
+### Migration / Runtime
+
+Alembic head remains:
+
+`0005`
+
+`DatabaseRuntime` unchanged.
+
+Default `CompositionRoot` unwired.
+
+### Architecture Acceptance Gate
+
+Final refined architecture review:
+
+**PASS — NO REMAINING REFINE / NO BLOCKED ITEM**
+
+AD-057:
+
+**ACCEPTED — ACCEPTED-CONTRACT GIT GATE PENDING**
+
+Implementation:
+
+**NOT AUTHORIZED**
+
+### Next Exact Action
+
+Review the complete five-document architecture acceptance state.
+
+Do not stage before that review passes.
+
+Do not implement before accepted-contract commit/push/exact-identity
+verification and the separate implementation-entry gate.

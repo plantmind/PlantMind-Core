@@ -14421,3 +14421,784 @@ gate is complete.
 Stage exactly the five maintained Source-of-Truth documents for a staging-only review.
 
 Do not commit, push or author AD-057 until the staging review passes.
+
+---
+
+## AD-057 — Canonical Filesystem-Backed Binary Document Content Infrastructure Adapter Boundary
+
+### Status
+
+**ACCEPTED — ACCEPTED-CONTRACT GIT GATE PENDING; IMPLEMENTATION NOT AUTHORIZED**
+
+### Related RFC
+
+**RFC-071 — Canonical Binary Document Content Infrastructure Adapter Boundary**
+
+### Verified Workstream Selection
+
+RFC-071 selection commit:
+
+`92fc4196f24c84d49846ee9825aba9eeb1b03d8b`
+
+Selection parent:
+
+`3a57f02167e9b69aafee7261b5901b64fe894446`
+
+Selection Git durability:
+
+**PASS — LOCAL / TRACKING / REMOTE IDENTITY VERIFIED**
+
+### Context
+
+RFC-070 / AD-056 established the persistence-neutral binary
+`DocumentContentStore` contract under:
+
+`app.document_content.store`
+
+The canonical operations remain:
+
+`add(document_id: EntityId, source: BinaryIO) -> None`
+
+and:
+
+`open(document_id: EntityId) -> AbstractContextManager[BinaryIO] | None`
+
+AD-056 deliberately selected no physical storage technology.
+
+RFC-071 now governs the first concrete Infrastructure adapter.
+
+Repository evidence establishes:
+
+- no concrete binary Infrastructure adapter currently exists;
+- descriptor persistence remains separately owned by
+  `app.infrastructure.document_content`;
+- no MinIO/S3/object-storage dependency is established;
+- no NFS/SMB-specific dependency or mounted-volume contract is established;
+- no evidence requires raw payloads to be persisted inside PostgreSQL;
+- PlantMind remains enterprise on-premise;
+- production HA, DR, permissions, mounts and Cybersecurity remain separate
+  deployment/integration concerns.
+
+### Accepted Decision
+
+PlantMind SHALL introduce one concrete filesystem-backed implementation of:
+
+`DocumentContentStore`
+
+Canonical Infrastructure namespace:
+
+`app.infrastructure.document_content`
+
+Concrete module:
+
+`app.infrastructure.document_content.filesystem_store`
+
+Concrete class:
+
+`FilesystemDocumentContentStore`
+
+The accepted RFC-070 persistence-neutral port SHALL remain unchanged.
+
+### Storage Technology
+
+RFC-071 selects:
+
+**filesystem-backed binary payload persistence using an explicitly injected
+storage root**
+
+The filesystem root may represent:
+
+- local isolated storage for development/testing; or
+- a separately approved enterprise-mounted filesystem in deployment.
+
+RFC-071 SHALL NOT specifically select or require:
+
+- NFS;
+- SMB;
+- a particular File Server product;
+- Kubernetes PersistentVolume;
+- Kubernetes StorageClass;
+- PostgreSQL BLOB;
+- PostgreSQL large-object storage;
+- relational binary tables;
+- S3;
+- MinIO;
+- object storage;
+- cloud storage;
+- provider-specific storage SDKs.
+
+A mounted enterprise filesystem may host the root only after a separate
+deployment/integration gate proves the required filesystem semantics.
+
+### Storage Root Dependency
+
+The adapter constructor SHALL receive:
+
+`root: pathlib.Path`
+
+through explicit dependency injection.
+
+The supplied root SHALL be:
+
+- absolute;
+- already existing;
+- a directory.
+
+The adapter SHALL NOT:
+
+- read the global `settings` object;
+- read environment variables directly;
+- perform hidden storage discovery;
+- derive storage from `DocumentSource.source_reference`;
+- create or provision the deployment storage root;
+- own Bootstrap or Runtime lifecycle;
+- change `ConfigurationProvider`;
+- change default `CompositionRoot`.
+
+Provisioning, permissions, capacity, quota, backup, restore, replication and
+mount lifecycle remain deployment responsibilities.
+
+### Adapter-Owned Shard Namespace
+
+The injected storage root itself is deployment-owned and SHALL NOT be created,
+recreated or provisioned by the adapter.
+
+The two deterministic UUID shard-directory levels beneath that root are
+adapter-owned Infrastructure structure.
+
+Before an `add()` creates or uses shard directories, the adapter SHALL verify
+that the configured root still exists and is a directory.
+
+The adapter MAY create only:
+
+`<root>/<h0h1>`
+
+and:
+
+`<root>/<h0h1>/<h2h3>`
+
+when those shard directories are absent.
+
+Shard creation SHALL proceed beneath the already-existing root and SHALL NOT use
+recursive parent creation capable of recreating a missing configured root.
+
+Concurrent creation of the same shard directory SHALL be benign when the
+existing object is a directory.
+
+If an expected shard component exists but is not a directory, or shard creation
+fails for permission, I/O or other operational reasons, that failure SHALL
+propagate as an operational filesystem failure.
+
+Shard directories are Infrastructure-private and SHALL NOT become canonical
+identity or application-visible storage semantics.
+
+RFC-071 assumes the configured storage namespace is deployment-controlled.
+It does not claim protection against hostile external mutation, symlink
+substitution or unauthorized filesystem manipulation inside the configured
+root.
+
+Production deployment permissions SHALL prevent untrusted mutation of the
+adapter-owned storage namespace.
+
+### Canonical Identity
+
+Externally observable payload identity SHALL remain only:
+
+`document_id: EntityId`
+
+No path, filename, inode, hard link, temporary name, digest or provider key
+shall become canonical/public identity.
+
+Digest remains integrity metadata only.
+
+### Infrastructure-Private Physical Layout
+
+The final payload path SHALL be derived only from:
+
+`document_id.value.hex`
+
+Accepted layout:
+
+`<root>/<h0h1>/<h2h3>/<uuidhex>.bin`
+
+where:
+
+- `<h0h1>` = first two lowercase UUID hexadecimal characters;
+- `<h2h3>` = next two lowercase UUID hexadecimal characters;
+- `<uuidhex>` = full 32-character lowercase UUID hexadecimal value.
+
+No caller-controlled path fragment participates in this layout.
+
+The layout is Infrastructure-private and SHALL NOT become a public API.
+
+### Write Source Semantics
+
+`add()` SHALL:
+
+- consume from the supplied source's current position through EOF;
+- support non-seekable sources;
+- not require `seek()`;
+- not require `tell()`;
+- not require caller `fileno()`;
+- never close the caller-owned source;
+- provide no rewind/restore guarantee after failure.
+
+### Streaming Boundary
+
+The adapter SHALL copy source bytes incrementally.
+
+It SHALL NOT require complete payload materialization in memory.
+
+Byte order and byte value SHALL be preserved exactly.
+
+A source already at EOF SHALL establish a valid zero-byte payload.
+
+### Temporary Write Boundary
+
+Every new payload SHALL first be written to a uniquely created temporary file.
+
+The temporary file SHALL:
+
+- reside in the same final shard directory;
+- be created exclusively;
+- never be returned by `open()`;
+- never represent canonical payload presence.
+
+### Pre-Publication Flush
+
+Before publication the adapter SHALL:
+
+1. flush the temporary writable stream;
+2. call `os.fsync()` on the temporary file descriptor;
+3. close the temporary writable resource.
+
+### Atomic Create-If-Absent Publication
+
+RFC-071 SHALL NOT use an overwrite-capable final publication primitive.
+
+The complete temporary payload SHALL be published using a same-filesystem
+hard-link create operation equivalent to:
+
+`os.link(temp_path, final_path)`
+
+The final path SHALL be absent for successful publication.
+
+The hard-link creation operation is the authoritative create-if-absent race
+boundary.
+
+### Duplicate Semantics
+
+Only a destination-exists conflict raised by the authoritative final
+publication operation:
+
+`os.link(temp_path, final_path)`
+
+SHALL translate to:
+
+`DocumentContentPayloadAlreadyExistsError`
+
+The translation therefore applies only when the final canonical payload path
+already exists at the publication boundary.
+
+A `FileExistsError` or equivalent conflict occurring during:
+
+- unique temporary-file creation;
+- shard-directory creation;
+- unrelated cleanup;
+- any operation other than final hard-link publication;
+
+SHALL NOT be translated into canonical duplicate-document identity.
+
+Temporary-name collision MAY be retried with a new unique temporary name.
+
+If it is not retried successfully, it remains an operational filesystem
+failure.
+
+Any non-destination-exists `OSError` from `os.link(...)` SHALL remain an
+operational filesystem failure and SHALL propagate.
+
+The same canonical duplicate error applies whether the losing payload bytes are
+identical or different.
+
+No idempotent success, overwrite, update, replace, append or upsert semantics
+shall be introduced.
+
+### Concurrent Same-Document Add
+
+Concurrent `add()` calls for the same `document_id` SHALL produce:
+
+- at most one successful canonical publication;
+- no overwrite;
+- no interleaving;
+- no merge;
+- no append;
+- canonical duplicate failure for each losing writer.
+
+A process-local lock SHALL NOT be required for correctness.
+
+The filesystem create-if-absent publication primitive SHALL remain the
+concurrency authority.
+
+### Pre-Publication Failure
+
+If source reading, temporary writing, flushing, fsync or temporary close fails
+before final publication:
+
+- no final canonical payload SHALL become addressable because of that operation;
+- temporary cleanup SHALL be attempted;
+- the primary operation failure SHALL remain authoritative.
+
+Temporary cleanup failure SHALL NOT transform temporary data into canonical
+payload presence.
+
+### Post-Publication Failure
+
+After successful hard-link publication, the final payload is complete.
+
+If temporary unlink/cleanup then fails:
+
+- the complete final payload MAY remain established;
+- `add()` MAY propagate the cleanup failure;
+- the canonical final payload SHALL NOT be deleted as automatic rollback;
+- no partial final payload may result.
+
+A subsequent add for the same `document_id` SHALL encounter the established
+final payload and resolve through canonical duplicate semantics.
+
+This boundary is explicitly separate from future descriptor/payload
+application-level coordination.
+
+### Cleanup Failure Precedence
+
+Where a primary operation failure already exists, cleanup failure SHOULD remain
+diagnostic context rather than silently replace that primary failure.
+
+If cleanup is the only failure after publication, that operational failure MAY
+propagate while the complete canonical payload remains established.
+
+Cleanup failure SHALL NOT be translated into duplicate identity.
+
+### Successful Add Guarantee
+
+Normal return from `add()` SHALL establish:
+
+- complete source bytes from current position to EOF;
+- pre-publication flush and file fsync;
+- complete final canonical publication;
+- no partial final payload;
+- no overwrite of an existing payload.
+
+### Durability Boundary
+
+RFC-071 establishes code-level durability only through:
+
+- temporary-file flush;
+- temporary-file fsync;
+- complete atomic filesystem namespace publication.
+
+RFC-071 SHALL NOT claim:
+
+- hardware power-loss durability;
+- storage-controller durability;
+- directory-entry persistence under every filesystem;
+- replication durability;
+- HA;
+- DR;
+- cluster durability.
+
+Those remain deployment/integration properties requiring verification against
+the actual approved storage environment.
+
+### Required Filesystem Semantics
+
+A conformant deployment filesystem SHALL support:
+
+- regular binary files;
+- exclusive temporary creation;
+- same-filesystem hard-link creation;
+- atomic destination-exists failure for hard-link publication;
+- independent readable file handles;
+- file fsync;
+- deterministic close and unlink semantics.
+
+If an actual deployment storage technology does not provide these guarantees,
+the adapter SHALL NOT be claimed conformant in that deployment.
+
+No overwrite-based fallback publication algorithm is introduced.
+
+### Open Semantics
+
+`open(document_id)` SHALL derive only the deterministic final path.
+
+Before translating a missing final path into confirmed payload absence, the
+adapter SHALL verify that the configured storage root still exists and is a
+directory.
+
+If the configured root itself is missing or is no longer a directory, that
+condition SHALL be treated as storage unavailability and SHALL propagate as an
+operational filesystem failure.
+
+When the configured root is healthy:
+
+- an absent first-level shard directory means the payload is confirmed absent;
+- an absent second-level shard directory means the payload is confirmed absent;
+- an absent final payload path means the payload is confirmed absent.
+
+Those confirmed-absence conditions SHALL return:
+
+`None`
+
+Permission failures, I/O failures and other observable operational filesystem
+errors SHALL propagate.
+
+They SHALL NOT become `None`.
+
+A mounted filesystem can fail in ways that leave its mount-point path
+syntactically present while exposing a different or empty namespace.
+
+The adapter cannot infer such an externally invisible mount substitution from
+path existence alone.
+
+RFC-071 therefore SHALL NOT claim complete mount-loss detection at code level.
+
+Production deployment conformance SHALL ensure that mount loss or namespace
+substitution is surfaced through deployment health/readiness or otherwise
+prevents requests from being admitted while the configured storage namespace
+is unavailable.
+
+### Read Resource Lifecycle
+
+A present payload SHALL yield an adapter-owned binary readable file through the
+existing context-manager contract.
+
+Each open SHALL:
+
+- begin at byte zero;
+- preserve byte order/value;
+- establish an independent read handle.
+
+Closing one handle SHALL NOT invalidate another.
+
+Normal and exceptional context exit SHALL close the adapter-owned read
+resource.
+
+Consumers SHALL NOT rely on seekability even though the concrete file may be
+seekable.
+
+### Failure Contract
+
+RFC-071 SHALL NOT introduce a generic
+`DocumentContentStorageError` hierarchy.
+
+The only adapter-specific canonical translation is:
+
+destination already exists
+
+→
+
+`DocumentContentPayloadAlreadyExistsError`
+
+Other OS/filesystem failures propagate without conversion into duplicate
+identity or confirmed absence.
+
+### Descriptor and Repository Separation
+
+The adapter SHALL NOT import, accept, persist, mutate or reconstruct:
+
+- `DocumentContentDescriptor`;
+- `DocumentContentMediaType`;
+- `DocumentContentDigest`;
+- descriptor byte length;
+- `DocumentSource`.
+
+It SHALL NOT query:
+
+- `DocumentContentRepository`;
+- `EnterpriseDocumentRepository`;
+- Knowledge repositories;
+- Lineage repositories.
+
+### Database / Migration Boundary
+
+RFC-071 introduces:
+
+- no SQLAlchemy model;
+- no binary relational table;
+- no BLOB;
+- no PostgreSQL large object;
+- no foreign key;
+- no database constraint;
+- no Alembic migration.
+
+Canonical Alembic head remains:
+
+`0005`
+
+`DatabaseRuntime` remains unchanged.
+
+### Dependency Boundary
+
+The adapter SHALL use Python standard-library filesystem primitives.
+
+No new external storage dependency or provider SDK is introduced.
+
+### Runtime / Composition Boundary
+
+RFC-071 SHALL NOT modify or expand:
+
+- `DatabaseRuntime`;
+- Runtime;
+- Bootstrap;
+- readiness;
+- request admission;
+- `ConfigurationProvider`;
+- default `CompositionRoot`;
+- `ServiceContainer`;
+- `PlatformComposition`;
+- `ApplicationFacade`.
+
+RFC-071 SHALL NOT wire a default production
+`FilesystemDocumentContentStore`.
+
+The adapter remains explicitly constructible using an injected root.
+
+### Application / Transaction Boundary
+
+RFC-071 introduces no:
+
+- descriptor/payload transaction coordinator;
+- content-establishment application service;
+- compensation policy;
+- retry policy;
+- outbox;
+- distributed transaction;
+- orphan-prevention workflow.
+
+Existing application and coordination services remain unchanged.
+
+### Document Intelligence Boundary
+
+RFC-071 SHALL NOT introduce:
+
+- Document Library;
+- upload/download API or UI;
+- parser integration;
+- PDF extraction;
+- OCR;
+- DOCX extraction;
+- spreadsheet extraction;
+- text extraction;
+- metadata extraction;
+- chunking;
+- semantic search;
+- embeddings;
+- vector persistence;
+- graph persistence;
+- RAG;
+- LLM;
+- AI Agent behavior.
+
+### Security Boundary
+
+RFC-071 SHALL NOT claim production:
+
+- authentication;
+- authorization;
+- RBAC;
+- Active Directory;
+- malware scanning;
+- retention enforcement;
+- compliance approval;
+- Cybersecurity approval.
+
+Filesystem permissions and access control remain separately governed deployment
+concerns.
+
+### Production Implementation Surface
+
+Only after AD-057 architecture acceptance is separately reviewed, committed,
+pushed and exact local/tracking/remote identity is verified, followed by a
+separate implementation-entry gate, RFC-071 MAY introduce:
+
+`backend/app/infrastructure/document_content/filesystem_store.py`
+
+Focused tests MAY be added under:
+
+`tests/infrastructure/document_content/`
+
+No implementation is authorized by this architecture acceptance.
+
+### Focused Conformance Requirements
+
+Future implementation SHALL verify at minimum:
+
+1. `FilesystemDocumentContentStore` implements `DocumentContentStore`;
+2. absolute injected root contract;
+3. no hidden global configuration;
+4. deterministic document-id physical addressing;
+5. Infrastructure-private physical locator;
+6. source current-position-to-EOF behavior;
+7. non-seekable source support;
+8. caller source not closed;
+9. zero-byte payload support;
+10. byte fidelity/order;
+11. same-document duplicate rejection;
+12. duplicate identical bytes rejection;
+13. duplicate different bytes rejection;
+14. same-document concurrent add allows at most one success;
+15. losing writer receives canonical duplicate error;
+16. no overwrite/append/merge/interleave;
+17. source-read failure publishes no partial final payload;
+18. temporary-write failure publishes no partial final payload;
+19. flush/fsync failure publishes no partial final payload;
+20. existing final payload survives later failed add;
+21. temporary artifacts do not represent canonical payload presence;
+22. missing payload returns `None`;
+23. operational access failure does not become `None`;
+24. repeated open contexts are independent;
+25. normal context exit closes read resource;
+26. exceptional context exit closes read resource;
+27. reads begin at byte zero;
+28. temporary cleanup follows ordinary success;
+29. temporary cleanup follows ordinary pre-publication failure;
+30. create-if-absent publication is concurrency safe;
+31. no descriptor/repository lookup;
+32. no SQLAlchemy/Alembic dependency;
+33. no Runtime/Bootstrap/Composition wiring;
+34. no provider SDK;
+35. Alembic head remains `0005`;
+36. RFC-070 regressions remain passing;
+37. full PlantMind regression remains passing;
+38. Python compilation succeeds;
+39. `git diff --check` succeeds;
+40. the adapter never creates or recreates the configured storage root;
+41. missing shard directories may be created safely beneath a healthy root;
+42. concurrent shard-directory creation is benign;
+43. root disappearance is an operational failure rather than payload absence;
+44. missing shard or final path beneath a healthy root returns `None`;
+45. temporary-file `FileExistsError` is not translated to document duplicate;
+46. only destination-exists conflict from final `os.link(...)` publication maps
+    to `DocumentContentPayloadAlreadyExistsError`;
+47. other `os.link(...)` failures remain operational failures.
+
+### Deployment Conformance Boundary
+
+Code-level RFC-071 acceptance SHALL NOT mean production deployment readiness.
+
+A later approved integration/deployment verification SHALL prove against the
+real configured storage root:
+
+- provisioning;
+- permissions;
+- capacity/quota;
+- same-filesystem temp/final placement;
+- hard-link create-if-absent semantics;
+- concurrent race behavior;
+- file fsync behavior;
+- operational failure propagation;
+- mount-loss behavior where applicable;
+- prevention or reliable detection of namespace substitution beneath a mounted
+  storage root;
+- request-admission/readiness behavior when mounted storage is unavailable;
+- backup/restore;
+- HA where required;
+- DR where required;
+- Cybersecurity-approved access controls.
+
+### Alternatives Considered
+
+#### PostgreSQL BLOB / Large Object
+
+Not selected.
+
+Descriptor metadata already uses PostgreSQL, but raw payload persistence remains
+architecturally separate.
+
+Database binary persistence would expand schema, migration and DatabaseRuntime
+coupling without current evidence requiring it.
+
+#### On-Prem Object Storage
+
+Not selected.
+
+No accepted MinIO/S3 dependency or object-storage deployment contract currently
+exists.
+
+A future adapter may be separately authorized behind the unchanged canonical
+store port.
+
+#### Direct File Server Adapter
+
+Not selected.
+
+File Server exists as an external enterprise integration concept, but there is
+no accepted direct File Server protocol/storage contract for canonical binary
+payload persistence.
+
+An approved enterprise-mounted filesystem may later host this adapter's root if
+its required semantics pass deployment verification.
+
+#### Network-Filesystem-Specific Adapter
+
+Not selected.
+
+No NFS/SMB-specific architecture currently exists.
+
+The adapter depends on filesystem semantics, not a named network product.
+
+### Consequences
+
+PlantMind gains its first concrete binary payload persistence adapter while:
+
+- preserving RFC-070 identity and lifecycle semantics;
+- preserving descriptor/binary separation;
+- avoiding premature PostgreSQL BLOB coupling;
+- avoiding premature object-storage dependencies;
+- supporting isolated local development;
+- allowing future enterprise-mounted storage after verification;
+- allowing future alternative adapters behind the same port;
+- preserving future descriptor/payload coordination as a separate application
+  responsibility.
+
+### Architecture Review State
+
+**ACCEPTED — ACCEPTED-CONTRACT GIT GATE PENDING**
+
+Final refined architecture review:
+
+**PASS — NO REMAINING REFINE / NO BLOCKED ITEM**
+
+AD-057 is accepted as the RFC-071 architecture contract.
+
+Implementation remains:
+
+**NOT AUTHORIZED**
+
+### Acceptance Boundary
+
+Architecture acceptance establishes the reviewed AD-057 contract as the
+current intended Source-of-Truth state.
+
+Acceptance does not itself authorize implementation.
+
+The accepted contract is not externally durable until:
+
+1. the complete five-document acceptance state passes review;
+2. exactly the five Source-of-Truth documents are staged;
+3. the accepted-contract commit is created;
+4. that commit is pushed;
+5. local / tracking / remote identity is exact;
+6. the working tree is clean.
+
+Only after that Git durability gate may the separate RFC-071 implementation
+entry gate be evaluated.
+
+### Next Exact Action
+
+Review the complete five-document RFC-071 / AD-057 architecture acceptance
+state.
+
+Do not stage until that acceptance-state review passes.
+
+Do not implement before the accepted-contract Git durability gate and the
+separate implementation-entry gate both pass.

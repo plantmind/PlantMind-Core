@@ -7643,3 +7643,105 @@ RFC-071 implementation:
 Stage exactly the five maintained Source-of-Truth documents for the RFC-071 selection staging review.
 
 Do not commit, push or begin architecture-contract drafting until the staging review passes.
+
+---
+
+## 2026-08-24 — RFC-071 / AD-057 Architecture Contract Acceptance
+
+**Append-Only Architecture Contract Record**
+
+Verified RFC-071 selection commit:
+
+`92fc4196f24c84d49846ee9825aba9eeb1b03d8b`
+
+Selected workstream:
+
+**RFC-071 — Canonical Binary Document Content Infrastructure Adapter Boundary**
+
+Architecture Decision:
+
+**AD-057 — Canonical Filesystem-Backed Binary Document Content Infrastructure Adapter Boundary**
+
+### Accepted Concrete Adapter
+
+`FilesystemDocumentContentStore`
+
+Module:
+
+`app.infrastructure.document_content.filesystem_store`
+
+Technology:
+
+**filesystem-backed persistence through an explicitly injected absolute root**
+
+### Accepted Publication Model
+
+1. same-directory unique temporary file;
+2. incremental source streaming;
+3. temporary-file flush;
+4. temporary-file `fsync`;
+5. close temporary writer;
+6. atomic hard-link create-if-absent publication;
+7. temporary cleanup.
+
+The hard-link publication primitive is the authoritative duplicate/race
+boundary.
+
+### Architecture Review Refinement
+
+The adapter owns creation of deterministic shard directories beneath the
+already-existing injected root but SHALL NOT create or recreate the root itself.
+
+Only destination-exists conflict from final hard-link publication maps to
+`DocumentContentPayloadAlreadyExistsError`.
+
+Temporary-name and shard conflicts are not canonical duplicate identity.
+
+Confirmed payload absence is distinguished from observable root
+unavailability.
+
+Production mounted-storage health remains a deployment gate.
+
+### Preserved Boundaries
+
+No:
+
+- PostgreSQL BLOB/large object;
+- object-store SDK;
+- NFS-specific adapter;
+- schema migration;
+- DatabaseRuntime expansion;
+- default Composition wiring;
+- generic storage-error hierarchy;
+- descriptor/payload transaction coordination;
+- Document Library/parser/OCR work.
+
+Canonical Alembic head remains `0005`.
+
+### Architecture Contract Acceptance
+
+Final refined architecture review:
+
+**PASS — NO REMAINING REFINE / NO BLOCKED ITEM**
+
+AD-057:
+
+**ACCEPTED — ACCEPTED-CONTRACT GIT GATE PENDING**
+
+Implementation:
+
+**NOT AUTHORIZED**
+
+Acceptance-state staging / commit / push:
+
+**NONE**
+
+The accepted contract remains local Source-of-Truth content until its dedicated
+Git durability gate completes.
+
+### Next Exact Action
+
+Review the complete RFC-071 / AD-057 five-document architecture acceptance
+state.
+
+Do not stage before that review passes.
