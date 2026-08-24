@@ -6927,3 +6927,306 @@ Review the complete five-document successor-selection diff.
 
 Only after that review passes may the successor-selection documentation
 staging gate be opened.
+
+---
+
+## 2026-08-23 — RFC-070 / AD-056 Architecture Contract Draft
+
+### Entry Baseline
+
+Verified RFC-070 successor-selection commit:
+
+`13cfccc08d8c0a3b891990d38edaf9fc48874a5e`
+
+The selection was committed, pushed and exact local / tracking / remote
+identity was verified before Architecture Contract drafting began.
+
+### Architecture Judgment
+
+The next minimum dependency-completing boundary is a persistence-neutral
+binary Document Content store/access contract.
+
+The draft proposes:
+
+- canonical ownership under `app.document_content.store`;
+- `DocumentContentStore`;
+- `DocumentContentPayloadAlreadyExistsError`;
+- `add(document_id: EntityId, source: BinaryIO) -> None`;
+- `open(document_id: EntityId) -> AbstractContextManager[BinaryIO] | None`;
+- immutable one-payload-per-document semantics;
+- no overwrite/update/delete/upsert;
+- exact document identity lookup;
+- context-managed deterministic read-resource closure;
+- non-seekable write-source compatibility;
+- no closure of caller-owned write source;
+- successful-add complete visibility;
+- failed-add no successfully addressable partial payload.
+
+The store-local visibility guarantee does not establish cross-repository
+atomicity.
+
+### Responsibility Separation
+
+The binary store does not absorb descriptor metadata persistence.
+
+It does not accept or own:
+
+- `DocumentContentDescriptor`;
+- media type;
+- descriptor byte length;
+- SHA-256 descriptor metadata;
+- `DocumentSource.source_reference`.
+
+It does not query Enterprise Document or descriptor repositories.
+
+Digest remains integrity metadata, never binary-store identity,
+deduplication identity or lookup identity.
+
+Descriptor/payload integrity coordination remains future application-layer
+responsibility.
+
+### Technology Judgment
+
+No concrete binary persistence technology is selected.
+
+No database BLOB, filesystem, network filesystem, object storage, file
+server, storage path, storage key, SDK, schema change or Alembic revision is
+authorized.
+
+Canonical Alembic head remains `0005`.
+
+### Deferred Boundaries
+
+Document Content establishment/application coordination remains separate.
+
+Document Library, parser, PDF extraction, OCR, DOCX/spreadsheet/text
+extraction, chunking, Search, Vector, Graph, RAG, LLM, AI Agents and
+production-security/Cybersecurity work remain deferred.
+
+### Governance State
+
+AD-055 remains the latest **Accepted** Architecture Decision.
+
+AD-056 now exists only as:
+
+**DRAFT — REVIEW GATE; NOT ACCEPTED**
+
+RFC-070 technical implementation remains unauthorized.
+
+No production-code, test, schema or migration change is authorized by this
+Architecture Contract drafting step.
+
+### Next Exact Action
+
+Review the complete five-document RFC-070 / AD-056 Architecture Contract
+Draft before staging or acceptance.
+
+---
+
+## 2026-08-23 — RFC-070 / AD-056 Architecture Contract Review Refinement
+
+### Review Result
+
+The initial RFC-070 / AD-056 Architecture Contract Draft is not accepted yet.
+
+Architecture direction remains valid, but six contract details are refined
+before acceptance.
+
+### Refinements
+
+1. `open()` returning `None` is reserved for confirmed absence. Operational
+   storage/access failures must not be translated into absence.
+2. Zero-byte payload is valid and distinct from missing payload.
+3. Caller owns the `add()` source. The store never closes it, but after a
+   failed write its position may be partially consumed and is unspecified.
+4. Concurrent adds for one `document_id` may establish at most one canonical
+   payload. Bytes may not be merged, interleaved or overwritten.
+5. Each successful `open()` creates an independent logical read context from
+   payload start, with resource release on normal and exceptional context exit.
+6. Foundation verification is separated from concrete-adapter behavioral
+   conformance.
+
+### Verification Discipline
+
+RFC-070 foundation implementation can verify only the persistence-neutral
+contract surface, dependency direction and architecture exclusions.
+
+Behavior requiring a real storage implementation remains:
+
+**NOT YET APPLICABLE / BLOCKED BY ABSENCE OF CONCRETE ADAPTER**
+
+until a separately authorized adapter exists.
+
+Such behavior must never be claimed PASS merely from an abstract contract or
+test-only fake.
+
+### Identity Clarification
+
+Prior draft references to digest not being storage/deduplication identity mean
+that SHA-256 is not canonical/public store identity or contract-level
+deduplication identity.
+
+RFC-070 does not decide internal physical addressing or transparent physical
+deduplication inside a future concrete adapter.
+
+Any such design requires separate adapter architecture authorization and must
+preserve externally observable `document_id` identity semantics.
+
+### Governance
+
+AD-056 remains:
+
+**DRAFT — REVIEW GATE; NOT ACCEPTED**
+
+No technical implementation, Infrastructure adapter, storage technology,
+migration or application service is authorized.
+
+---
+
+## 2026-08-24 — RFC-070 / AD-056 Architecture Contract Accepted
+
+### Acceptance Baseline
+
+Verified RFC-070 successor-selection commit:
+
+`13cfccc08d8c0a3b891990d38edaf9fc48874a5e`
+
+The complete RFC-070 / AD-056 architecture contract, formal refinement review
+and final coherence review were completed before acceptance.
+
+### Final Architecture Review
+
+Result:
+
+**PASS — NO REMAINING REFINE / NO BLOCKED ITEM**
+
+### Accepted Architecture Contract
+
+AD-056 accepts the persistence-neutral binary Document Content Store / Access
+Foundation.
+
+The accepted contract preserves:
+
+- canonical module `app.document_content.store`;
+- `DocumentContentStore`;
+- `DocumentContentPayloadAlreadyExistsError`;
+- `document_id` / `EntityId` as externally observable canonical identity;
+- immutable one-payload-per-document semantics;
+- caller ownership of the write source;
+- valid zero-byte payload semantics;
+- confirmed absence distinct from operational failure;
+- same-document concurrent-add race safety;
+- independent context-managed read resources;
+- normal and exceptional context-exit resource release;
+- store-local atomic visibility only;
+- descriptor/binary responsibility separation;
+- canonical/public digest identity restrictions;
+- future internal physical addressing/deduplication deferral;
+- no concrete storage technology selection;
+- no Infrastructure adapter;
+- no SQLAlchemy/database/Alembic expansion;
+- canonical Alembic head `0005`;
+- no application-service or transaction-coordination expansion;
+- no Document Library/parser/OCR/chunking promotion;
+- no Search/Vector/Graph/RAG/LLM promotion;
+- no production-security or Cybersecurity approval claim.
+
+### Verification Discipline
+
+RFC-070 foundation verification is distinct from future concrete-adapter
+behavioral conformance.
+
+Concrete-adapter behavior remains:
+
+**NOT YET APPLICABLE / BLOCKED BY ABSENCE OF CONCRETE ADAPTER**
+
+It SHALL NOT be reported as PASS by the RFC-070 foundation.
+
+### Architecture Decision
+
+**AD-056 — ACCEPTED**
+
+AD-056 is now the latest Accepted Architecture Decision.
+
+### Git / Implementation Gate
+
+Architecture acceptance does not authorize technical implementation.
+
+Current state:
+
+- acceptance documentation review: in progress;
+- acceptance staging: not performed;
+- accepted-contract commit: not performed;
+- push: not performed;
+- technical implementation: not authorized.
+
+Before RFC-070 implementation may begin:
+
+1. the complete acceptance diff must pass review;
+2. the accepted contract must be staged and reviewed;
+3. the accepted-contract commit must be created;
+4. the commit must be pushed;
+5. exact local / tracking / remote identity must be verified;
+6. the working tree must be clean;
+7. a separate RFC-070 implementation-entry gate must pass.
+
+---
+
+## 2026-08-24 — RFC-070 / AD-056 Acceptance Staging Review Passed
+
+### Gate Result
+
+**PASS**
+
+The accepted AD-056 contract was staged for Git review with exactly the five
+engineering Source-of-Truth documents:
+
+- `docs/ARCHITECTURE-DECISIONS.md`;
+- `docs/ENGINEERING-JOURNAL.md`;
+- `docs/PROJECT-CONTEXT.md`;
+- `docs/ROADMAP-004-Active-Work-Register.md`;
+- `docs/SESSION-HANDOFF.md`.
+
+### Staging Evidence
+
+At the staging gate:
+
+- staged file count: 5;
+- staged surface: exact five Source-of-Truth documents;
+- unstaged tracked changes: none;
+- untracked files: none;
+- staged `git diff --check`: PASS;
+- Backend changes: none;
+- test changes: none;
+- documentation-only boundary: PASS.
+
+AD-056 remained **ACCEPTED**.
+
+Technical implementation remained unauthorized.
+
+### Commit-Safety Refinement
+
+Before commit creation, current control wording was made non-self-referential
+and durable:
+
+- the accepted-contract commit does not attempt to contain its own future hash;
+- its self-hash is intentionally omitted from its own content;
+- Git identity is verified after commit creation;
+- current controls no longer claim that staging has not occurred;
+- historical draft and refinement entries remain unchanged.
+
+### Next Git Gate
+
+Create the single documentation-only accepted-contract commit.
+
+Then review its exact:
+
+- parent;
+- commit message;
+- five-document surface;
+- local identity;
+- clean working tree;
+
+before any push.
+
+No technical implementation is authorized by this staging gate.

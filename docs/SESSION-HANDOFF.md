@@ -7,12 +7,14 @@
 | Project | PlantMind PM-001 |
 | Branch | `feature/engineering-platform` |
 | Last Fully Closed RFC | RFC-069 — Canonical Document Content Relational Persistence Adapter Boundary — Fully Closed and Source-of-Truth Reconciled |
-| Active RFC | None |
-| Selected Architecture Workstream | Canonical Binary Document Content Store / Access Foundation — Draft Successor Selection; Git Gate Pending |
-| Proposed Successor RFC | RFC-070 — numbering candidate only; not active |
-| Architecture Decision | AD-055 — Accepted |
+| Active RFC | RFC-070 — Canonical Binary Document Content Store / Access Foundation — Architecture Contract Accepted; Acceptance Git Gate Pending |
+| Selected Architecture Workstream | RFC-070 — Canonical Binary Document Content Store / Access Foundation — Selection Committed, Pushed and Verified |
+| Proposed Successor RFC | None — RFC-070 is now the selected active architecture workstream |
+| Architecture Decision | AD-056 — Accepted; Acceptance Git Gate Pending |
 | RFC-069 Selection Commit | `5d7794352029576e0b62c2ac8cbfa248fe11961d` |
-| Accepted Contract Commit | `467440b6c5d16e599fbc0d0f5c820d31725fd29b` |
+| RFC-070 Selection Commit | `13cfccc08d8c0a3b891990d38edaf9fc48874a5e` |
+| RFC-069 Accepted Contract Commit | `467440b6c5d16e599fbc0d0f5c820d31725fd29b` |
+| RFC-070 Accepted Contract Commit | Self-hash intentionally omitted in this commit; Git identity verified after creation |
 | Technical Implementation Commit | `4572b40cedecc263577453b95ca63ecab6e61428` |
 | Engineering Closure Commit | `63790de5312c69c709e2249b56e91995a00426b6` |
 | Reconciliation Commit | `231e0cc66862c797e299fdb71ff20da8a39e8ae2` |
@@ -22,7 +24,7 @@
 | Alembic Head | `0005` |
 | Authoritative Environment | `PlantMind-Core/.venv` |
 | RFC-069 State | Fully Closed and Source-of-Truth Reconciled |
-| Successor RFC Selection | Draft selected — Canonical Binary Document Content Store / Access Foundation; review / Git gate pending |
+| Successor RFC Selection | Completed — RFC-070 selection committed, pushed and verified |
 
 ## Recent Engineering Sequence
 
@@ -2869,3 +2871,87 @@ Review the complete five-document successor-selection diff.
 
 Do not stage, commit, author AD-056 or begin implementation until the
 selection review and Git gate are complete.
+
+---
+
+## RFC-070 / AD-056 Architecture Contract Accepted Handoff
+
+Verified RFC-070 selection commit:
+
+`13cfccc08d8c0a3b891990d38edaf9fc48874a5e`
+
+Active workstream:
+
+**RFC-070 — Canonical Binary Document Content Store / Access Foundation**
+
+Architecture Decision state:
+
+**AD-056 — ACCEPTED**
+
+AD-056 is now the latest Accepted Architecture Decision.
+
+The acceptance Git gate requires commit creation, commit review, push and exact local / tracking / remote identity verification before implementation entry.
+
+The accepted canonical foundation is persistence-neutral and establishes
+only:
+
+- `app.document_content.store`;
+- `DocumentContentStore`;
+- `DocumentContentPayloadAlreadyExistsError`;
+- immutable one-payload-per-`document_id` add semantics;
+- context-managed sequential binary access;
+- exact missing lookup returning `None`;
+- explicit caller/store resource ownership;
+- store-local atomic visibility.
+
+The accepted contract preserves:
+
+- `DocumentContentDescriptor` unchanged;
+- `DocumentContentRepository` unchanged;
+- `EnterpriseDocument.id` as canonical association;
+- digest as integrity description, not canonical/public store identity;
+- `source_reference` as provenance, not content access;
+- descriptor/binary responsibility separation;
+- Alembic head `0005`;
+- unchanged DatabaseRuntime, Runtime, Bootstrap and Composition authority.
+
+No storage technology, Infrastructure adapter, migration, application service,
+cross-boundary transaction, Document Library, parser/OCR/chunking,
+Search/Vector/Graph/RAG/LLM or production-security capability is authorized.
+
+Architecture review result:
+
+**PASS — NO REMAINING REFINE / NO BLOCKED ITEM**
+
+The complete refined AD-056 contract is accepted.
+
+Concrete-adapter behavioral verification remains NOT YET APPLICABLE / BLOCKED
+until a separately authorized concrete adapter exists.
+
+Next exact action after accepted-contract commit creation:
+
+Review the exact commit identity, parent, message and five-document surface
+before push.
+
+Technical implementation remains unauthorized until accepted-contract push /
+exact-identity verification and the separate RFC-070 implementation-entry gate
+pass.
+
+### Architecture Review Refinements
+
+Before AD-056 acceptance, the draft is refined to make explicit:
+
+- `None` means confirmed payload absence only;
+- operational access failures are never absence;
+- zero-byte payload is a valid present payload;
+- failed `add()` may partially consume but never closes the caller-owned
+  source and does not promise rewind;
+- concurrent same-document adds have at most one winner and may not
+  merge/interleave/overwrite;
+- independent `open()` contexts begin at the payload start;
+- context-owned read resources are released on normal and exceptional exit;
+- RFC-070 foundation verification and future adapter behavioral conformance
+  are separate gates;
+- adapter behavior cannot be claimed PASS before a concrete adapter exists;
+- internal physical addressing/deduplication remains a future adapter-level
+  decision, not canonical `DocumentContentStore` identity.

@@ -13481,3 +13481,493 @@ is introduced.
 
 The complete five-document successor-selection diff must be reviewed before
 staging or commit.
+
+---
+
+## AD-056 — Canonical Binary Document Content Store / Access Foundation Boundary
+
+### Status
+
+**ACCEPTED**
+
+### Related RFC
+
+**RFC-070 — Canonical Binary Document Content Store / Access Foundation**
+
+### Selection Baseline
+
+`13cfccc08d8c0a3b891990d38edaf9fc48874a5e`
+
+### Context
+
+RFC-066 / AD-052 established canonical immutable Document Content descriptor
+semantics.
+
+RFC-068 / AD-054 established the descriptor-only persistence-neutral
+`DocumentContentRepository`.
+
+RFC-069 / AD-055 established durable relational persistence for descriptor
+metadata under `app.infrastructure.document_content`.
+
+No canonical binary payload store/access contract currently exists.
+
+Document Library and parser/OCR capability require a stable canonical content
+access boundary without direct dependency on filesystem paths, database BLOBs
+or provider-specific object handles.
+
+### Decision
+
+PlantMind SHALL introduce a persistence-neutral binary Document Content
+store/access foundation under:
+
+`app.document_content.store`
+
+The canonical public contract SHALL expose:
+
+- `DocumentContentStore`;
+- `DocumentContentPayloadAlreadyExistsError`.
+
+The store SHALL remain outside the Domain descriptor module.
+
+`app.domain.document_content` SHALL remain unchanged.
+
+`app.document_content.repository` SHALL remain descriptor-only and unchanged.
+
+### Canonical Identity
+
+Binary payload association SHALL use only:
+
+`EnterpriseDocument.id`
+
+represented by the existing canonical:
+
+`EntityId`
+
+No `DocumentContentId`, payload ID, blob ID, object key, path, URI or storage
+locator SHALL become canonical identity.
+
+The same byte sequence MAY be stored for multiple distinct document
+identities.
+
+At the canonical/public contract level, SHA-256 digest SHALL remain
+integrity description only and SHALL NOT become:
+
+- canonical storage identity;
+- canonical uniqueness identity;
+- canonical lookup identity;
+- contract-level deduplication identity;
+- contract-level idempotency identity.
+
+RFC-070 does not decide internal physical addressing or transparent physical
+deduplication techniques for a future concrete storage adapter.
+
+Any such mechanism requires its own adapter architecture authorization and
+MUST NOT alter the externally observable `document_id` identity semantics of
+this contract.
+
+### Canonical Store Operations
+
+The minimum canonical contract SHALL be:
+
+`add(document_id: EntityId, source: BinaryIO) -> None`
+
+and:
+
+`open(document_id: EntityId) -> AbstractContextManager[BinaryIO] | None`
+
+No list, search, filter, query, delete, replace, update or upsert operation
+SHALL be introduced by RFC-070.
+
+### Write-Source Contract
+
+`add()` SHALL consume bytes beginning at the source's current position and
+continue through EOF.
+
+The contract SHALL NOT require successful:
+
+- `seek()`;
+- `tell()`;
+- `fileno()`.
+
+The source MAY be non-seekable and need not be filesystem-backed.
+
+The caller SHALL retain ownership of the supplied source.
+
+`DocumentContentStore.add()` SHALL NOT close the caller-owned source.
+
+The store SHALL NOT promise to rewind or restore the caller-owned source after
+failure.
+
+If `add()` fails after consuming any bytes, the caller-owned source MAY be
+partially consumed and its resulting position is unspecified.
+
+Callers SHALL NOT depend on the source position remaining unchanged after a
+failed `add()`.
+
+### Duplicate and Immutability Contract
+
+At most one canonical binary payload may be established for one
+`document_id`.
+
+If a payload already exists for the same `document_id`, `add()` SHALL raise:
+
+`DocumentContentPayloadAlreadyExistsError`
+
+This applies whether the newly supplied bytes are identical or different.
+
+No silent overwrite SHALL occur.
+
+No idempotent-success or upsert semantics SHALL be introduced.
+
+A zero-byte binary payload is valid.
+
+A successful `add()` whose source is already at EOF SHALL establish a present,
+zero-byte payload for that `document_id`.
+
+That present zero-byte payload SHALL remain distinguishable from absence.
+
+Concurrent `add()` operations targeting the same `document_id` SHALL NOT
+produce more than one successful canonical payload establishment.
+
+No concurrent operation may interleave, merge, append to or overwrite another
+operation's bytes.
+
+If one operation establishes the canonical payload and another operation loses
+the same-identity race, the losing operation SHALL fail with
+`DocumentContentPayloadAlreadyExistsError`.
+
+A later failed `add()` SHALL NOT damage, replace or partially modify an already
+established payload.
+
+### Store-Local Visibility Contract
+
+After successful `add()`, subsequent access SHALL expose the complete byte
+sequence consumed by that operation.
+
+If `add()` fails before completion, the store SHALL NOT expose a successfully
+addressable partial payload for that `document_id`.
+
+This is a store-local atomic visibility invariant only.
+
+It SHALL NOT be interpreted as atomicity across Enterprise Document,
+descriptor, Knowledge, Lineage or application operations.
+
+### Binary Access and Resource Lifecycle
+
+`open()` SHALL resolve only by exact `document_id`.
+
+Confirmed missing payload SHALL return:
+
+`None`
+
+`None` is reserved exclusively for confirmed absence.
+
+An operational storage/access failure, context-entry failure or provider
+failure SHALL NOT be translated into `None`.
+
+Such failures SHALL remain failures and propagate according to the future
+concrete adapter's accepted failure contract.
+
+A present zero-byte payload SHALL NOT return `None`.
+
+It SHALL return a valid context-managed readable binary resource whose reads
+reach EOF without yielding payload bytes.
+
+A present payload SHALL return a context manager yielding a readable binary
+resource.
+
+The readable resource SHALL begin at the start of the stored payload and
+preserve byte order and value exactly.
+
+Consumers SHALL use the context manager for deterministic resource release.
+
+Each successful `open()` SHALL establish an independent logical read context
+beginning at the start of the stored payload.
+
+Closing or exiting one read context SHALL NOT invalidate another independently
+opened read context for the same `document_id`.
+
+The storage implementation SHALL release the underlying read resource on both
+normal and exceptional context exit.
+
+Consumers SHALL NOT depend on the returned resource being:
+
+- successfully seekable;
+- a local file;
+- path-backed;
+- descriptor-backed;
+- backed by a database cursor;
+- backed by a specific object-storage SDK.
+
+No byte-range or random-access contract is established.
+
+### Descriptor Boundary
+
+`DocumentContentStore` SHALL NOT accept, persist, mutate or reconstruct:
+
+- `DocumentContentDescriptor`;
+- `DocumentContentMediaType`;
+- `DocumentContentDigest`;
+- descriptor `byte_length`;
+- `DocumentSource`.
+
+The existing descriptor repository remains the sole canonical repository
+boundary for descriptor metadata.
+
+The binary store SHALL NOT perform a descriptor-repository lookup.
+
+### Enterprise Document Boundary
+
+The binary store SHALL NOT perform an
+`EnterpriseDocumentRepository` existence lookup.
+
+RFC-070 SHALL NOT decide orphan prevention or document/content establishment
+workflow semantics.
+
+Those responsibilities remain with a future application boundary.
+
+### Integrity Boundary
+
+The binary store SHALL preserve the stored byte sequence but SHALL NOT
+independently establish cross-boundary consistency between payload bytes and
+a separately persisted descriptor.
+
+The store SHALL NOT require digest or byte-length metadata in its public
+contract.
+
+Future Document Content establishment/application architecture SHALL decide
+where descriptor/payload SHA-256 and byte-length validation occurs and how
+failure is coordinated.
+
+### Source Reference Boundary
+
+`DocumentSource.source_reference` SHALL remain provenance / external
+traceability only.
+
+It SHALL NOT be interpreted by `DocumentContentStore` as:
+
+- a filesystem path;
+- a URI to open;
+- an object-storage key;
+- a network-file locator;
+- canonical binary content access.
+
+### Persistence Technology Boundary
+
+AD-056 SHALL remain persistence-neutral.
+
+It SHALL NOT select or introduce:
+
+- PostgreSQL BLOB;
+- relational binary table;
+- database large-object facility;
+- filesystem adapter;
+- network filesystem;
+- object-storage adapter;
+- file server;
+- cloud provider;
+- cloud SDK;
+- bucket;
+- storage path convention;
+- storage key convention.
+
+No SQLAlchemy model, database table, index, foreign key, constraint or
+migration SHALL be introduced by RFC-070.
+
+Canonical Alembic head remains:
+
+`0005`
+
+### Runtime and Composition Boundary
+
+RFC-070 SHALL NOT modify or expand:
+
+- `DatabaseRuntime`;
+- Runtime authority;
+- Bootstrap authority;
+- readiness;
+- request admission;
+- `CompositionRoot`;
+- `ServiceContainer`;
+- `PlatformComposition`;
+- `ApplicationFacade`.
+
+No default concrete storage adapter SHALL be wired by RFC-070.
+
+### Application and Transaction Boundary
+
+RFC-070 SHALL introduce no Document Content establishment/registration
+application service.
+
+It SHALL NOT modify:
+
+- `EnterpriseDocumentRegistrationApplicationService`;
+- `DocumentKnowledgeIngestionApplicationService`;
+- `KnowledgeCaptureApplicationService`;
+- `KnowledgeLineageTransactionCoordinator`.
+
+No cross-boundary transaction, compensation, outbox, distributed transaction
+or retry policy SHALL be introduced.
+
+### Parser / Document Intelligence Boundary
+
+RFC-070 SHALL NOT implement:
+
+- Document Library;
+- upload UI/API;
+- download UI/API;
+- browse/catalogue behavior;
+- parser integration;
+- PDF extraction;
+- OCR;
+- DOCX extraction;
+- spreadsheet extraction;
+- text extraction;
+- encoding detection;
+- metadata extraction;
+- chunking;
+- semantic search;
+- embeddings;
+- vector persistence;
+- graph persistence;
+- Neo4j promotion;
+- RAG;
+- LLM;
+- AI Agent behavior.
+
+Those capabilities remain separately governed.
+
+### Security Boundary
+
+RFC-070 SHALL NOT claim or implement production:
+
+- authentication;
+- authorization;
+- RBAC;
+- Active Directory;
+- malware scanning;
+- document approval;
+- retention policy;
+- compliance enforcement;
+- Cybersecurity approval.
+
+### Technical Surface After Separate Implementation Entry Gate
+
+Only after this AD-056 acceptance is committed, pushed, exact
+local / tracking / remote identity is verified, and a separate
+implementation-entry Git gate passes may RFC-070 introduce:
+
+- `backend/app/document_content/store.py`;
+- focused `tests/document_content/` contract and architecture tests.
+
+No Infrastructure storage adapter or migration is part of the accepted
+RFC-070 foundation.
+
+### Verification Model
+
+RFC-070 distinguishes foundation verification from future concrete-adapter
+behavioral conformance.
+
+#### RFC-070 Foundation Verification
+
+After this AD-056 acceptance is committed, pushed, exact identity is
+verified and the separate implementation-entry gate passes, RFC-070
+foundation implementation SHALL verify at minimum:
+
+1. canonical public symbols;
+2. `DocumentContentStore` is an abstract persistence-neutral contract;
+3. exact `EntityId` association;
+4. exact `add()` signature;
+5. exact `open()` signature;
+6. duplicate error public contract;
+7. no descriptor or Enterprise Document repository dependency;
+8. no canonical digest-as-identity behavior;
+9. no source-reference access behavior;
+10. no storage-technology dependency;
+11. no SQLAlchemy/database/Alembic expansion;
+12. no Runtime/Bootstrap/Composition expansion;
+13. no application-service or transaction-coordination expansion;
+14. no Document Library/parser/OCR/search/vector/graph/RAG/LLM promotion;
+15. full existing PlantMind regression remains passing.
+
+The RFC-070 foundation MAY provide reusable contract-test definitions or test
+fixtures for future adapters, but the foundation SHALL NOT claim concrete
+storage behavior has passed when no concrete adapter exists.
+
+#### Future Concrete-Adapter Conformance
+
+Only a separately authorized concrete storage adapter can verify behavioral
+conformance including:
+
+1. caller-owned write source is not closed;
+2. failed write-source position is not falsely guaranteed or rewound;
+3. non-seekable source compatibility;
+4. valid zero-byte payload persistence and access;
+5. duplicate same-document add rejection;
+6. concurrent same-document add race safety;
+7. no overwrite, merge, append or upsert behavior;
+8. successful-add complete visibility;
+9. failed-add partial-visibility prohibition;
+10. preservation of any already-established payload after a failed add;
+11. confirmed absence returns `None`;
+12. operational access failures are not translated into `None`;
+13. independent repeated `open()` contexts;
+14. normal and exceptional context-exit resource release;
+15. byte fidelity and order;
+16. exact-document identity behavior.
+
+Until a concrete adapter exists and passes its own accepted conformance gate,
+these adapter-behavior checks SHALL be recorded as:
+
+**NOT YET APPLICABLE / BLOCKED BY ABSENCE OF CONCRETE ADAPTER**
+
+They SHALL NOT be reported as passed by RFC-070 foundation implementation.
+
+### Acceptance Basis
+
+Formal Architecture Contract review result:
+
+**PASS — NO REMAINING REFINE / NO BLOCKED ITEM**
+
+AD-056 accepts the complete refined RFC-070 contract, including:
+
+- confirmed absence versus operational failure separation;
+- valid zero-byte payload semantics;
+- failed-write caller-source ownership and position semantics;
+- same-document concurrent-add race safety;
+- independent read contexts and normal/exceptional cleanup;
+- separation of RFC-070 foundation verification from future concrete-adapter
+  behavioral conformance;
+- canonical/public digest identity restrictions;
+- deferral of internal physical addressing and transparent physical
+  deduplication to separately authorized adapter architecture;
+- `document_id` as the stable externally observable canonical identity.
+
+Concrete storage behavior remains unverified because RFC-070 contains no
+concrete storage adapter.
+
+Future concrete-adapter behavioral conformance remains:
+
+**NOT YET APPLICABLE / BLOCKED BY ABSENCE OF CONCRETE ADAPTER**
+
+This intentional blocked state does not block acceptance of the
+persistence-neutral foundation contract.
+
+### Consequence
+
+PlantMind gains a canonical binary payload access seam while preserving the
+existing descriptor model and avoiding premature commitment to a physical
+storage technology.
+
+Future concrete adapters may implement this contract only after their own
+evidence-based architecture authorization.
+
+### Current Review State
+
+**ACCEPTED**
+
+Architecture acceptance is complete.
+
+Technical implementation remains unauthorized until this accepted contract is
+committed, pushed, exact local / tracking / remote identity is verified, and
+the separate RFC-070 implementation-entry Git gate passes.

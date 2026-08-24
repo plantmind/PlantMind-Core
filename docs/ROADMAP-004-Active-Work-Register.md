@@ -35,6 +35,105 @@ No item may be marked complete until:
 
 ---
 
+## Active Architecture Workstream — RFC-070 — Canonical Binary Document Content Store / Access Foundation
+
+### Status
+
+**ARCHITECTURE CONTRACT ACCEPTED — ACCEPTANCE GIT GATE PENDING**
+
+Verified selection commit:
+
+`13cfccc08d8c0a3b891990d38edaf9fc48874a5e`
+
+Selection Git gate:
+
+**COMMITTED / PUSHED / EXACT IDENTITY VERIFIED**
+
+Architecture Decision:
+
+**AD-056 — ACCEPTED**
+
+Latest Accepted Architecture Decision:
+
+**AD-056**
+
+RFC-069 remains fully closed and Source-of-Truth reconciled.
+
+### Accepted Foundation
+
+AD-056 establishes the minimum persistence-neutral binary content boundary:
+
+- canonical module `app.document_content.store`;
+- `DocumentContentStore`;
+- `DocumentContentPayloadAlreadyExistsError`;
+- immutable `add(document_id, source)` behavior;
+- exact `open(document_id)` access;
+- context-managed binary read lifecycle;
+- store-local atomic visibility;
+- no silent overwrite;
+- no descriptor ownership;
+- no storage technology selection.
+
+### Preserved Boundaries
+
+RFC-070 does not authorize:
+
+- Infrastructure storage adapter;
+- PostgreSQL BLOB or schema work;
+- filesystem/network filesystem/object-store/file-server selection;
+- Alembic revision beyond current head `0005`;
+- descriptor/application transaction coordination;
+- Document Library;
+- parser/OCR/chunking;
+- Search/Vector/Graph/RAG/LLM;
+- Runtime/Bootstrap/Composition expansion;
+- production-security/Cybersecurity claims.
+
+### Contract Review Acceptance Basis
+
+AD-056 acceptance incorporates the following reviewed requirements:
+
+- confirmed-absence versus operational-failure separation;
+- valid zero-byte payload semantics;
+- explicit failed-write caller-source position semantics;
+- same-document concurrent-add race safety;
+- independent repeated read contexts and exceptional-exit cleanup;
+- separate foundation and future-adapter verification gates.
+
+No concrete storage behavior may be reported PASS while RFC-070 contains no
+concrete storage adapter.
+
+Concrete adapter behavior remains NOT YET APPLICABLE / BLOCKED until its own
+future architecture and implementation gates pass.
+
+Internal physical storage addressing/deduplication remains outside RFC-070
+canonical identity semantics.
+
+### Current Gate
+
+Formal Architecture Contract review:
+
+**PASS — NO REMAINING REFINE / NO BLOCKED ITEM**
+
+AD-056 is Accepted.
+
+Acceptance staging review:
+
+**PASS**
+
+The accepted-contract documentation is restricted to the exact five
+Source-of-Truth documents.
+
+The accepted-contract commit must be reviewed before push.
+
+No push verification is asserted by this documentation.
+
+Technical implementation remains unauthorized until the accepted-contract
+commit is pushed, exact local / tracking / remote identity is verified, and
+the separate RFC-070 implementation-entry Git gate passes.
+
+---
+
 ## Post-RFC-069 Successor Architecture Workstream Selection Draft
 
 ### Status

@@ -10,12 +10,14 @@
 | Deployment Model | On-Premise |
 | Development Branch | `feature/engineering-platform` |
 | Last Fully Closed RFC | RFC-069 — Canonical Document Content Relational Persistence Adapter Boundary — Fully Closed and Source-of-Truth Reconciled |
-| Active RFC | None |
-| Selected Architecture Workstream | Canonical Binary Document Content Store / Access Foundation — Draft Successor Selection; Git Gate Pending |
-| Proposed Successor RFC | RFC-070 — numbering candidate only; not active |
+| Active RFC | RFC-070 — Canonical Binary Document Content Store / Access Foundation — Architecture Contract Accepted; Acceptance Git Gate Pending |
+| Selected Architecture Workstream | RFC-070 — Canonical Binary Document Content Store / Access Foundation — Selection Committed, Pushed and Verified |
+| Proposed Successor RFC | None — RFC-070 is now the selected active architecture workstream |
 | RFC-069 Selection Commit | `5d7794352029576e0b62c2ac8cbfa248fe11961d` |
-| Architecture Decision | AD-055 — Accepted |
-| Accepted Contract Commit | `467440b6c5d16e599fbc0d0f5c820d31725fd29b` |
+| RFC-070 Selection Commit | `13cfccc08d8c0a3b891990d38edaf9fc48874a5e` |
+| Architecture Decision | AD-056 — Accepted; Acceptance Git Gate Pending |
+| RFC-069 Accepted Contract Commit | `467440b6c5d16e599fbc0d0f5c820d31725fd29b` |
+| RFC-070 Accepted Contract Commit | Self-hash intentionally omitted in this commit; Git identity verified after creation |
 | Technical Baseline Commit | `4572b40cedecc263577453b95ca63ecab6e61428` |
 | Engineering Closure Commit | `63790de5312c69c709e2249b56e91995a00426b6` |
 | Post-Closure Reconciliation Commit | `231e0cc66862c797e299fdb71ff20da8a39e8ae2` |
@@ -2831,3 +2833,327 @@ This selection draft does **not**:
 Review the complete five-document successor-selection diff.
 
 Do not stage or commit until that review passes.
+
+---
+
+## RFC-070 / AD-056 Architecture Contract Accepted State
+
+Workstream:
+
+**RFC-070 — Canonical Binary Document Content Store / Access Foundation**
+
+Verified workstream-selection commit:
+
+`13cfccc08d8c0a3b891990d38edaf9fc48874a5e`
+
+Architecture Decision:
+
+**AD-056 — ACCEPTED**
+
+AD-056 is now the latest Accepted Architecture Decision.
+
+This accepted contract becomes implementation-eligible only after its documentation commit is pushed, exact local / tracking / remote identity is verified, and the separate implementation-entry gate passes.
+
+### Architecture Objective
+
+RFC-070 shall establish the minimum canonical persistence-neutral boundary
+required to store and access immutable binary Document Content without
+coupling Domain, application services or consumers to a concrete storage
+technology.
+
+The boundary completes the missing architectural seam between durable
+descriptor metadata and future Document Library / parser / OCR capability.
+
+### Canonical Ownership
+
+Canonical module:
+
+`app.document_content.store`
+
+Accepted public contract:
+
+- `DocumentContentStore`;
+- `DocumentContentPayloadAlreadyExistsError`.
+
+The store remains outside `app.domain.document_content`.
+
+`DocumentContentDescriptor` remains metadata-only and unchanged.
+
+`DocumentContentRepository` remains descriptor persistence only and unchanged.
+
+### Binary Store Contract
+
+`DocumentContentStore` shall be an abstract persistence-neutral contract.
+
+Its minimum operations shall be:
+
+`add(document_id: EntityId, source: BinaryIO) -> None`
+
+and:
+
+`open(document_id: EntityId) -> AbstractContextManager[BinaryIO] | None`
+
+`document_id` remains the sole canonical association identity.
+
+No independent content ID, storage ID, object key, path, URI or locator shall
+enter the canonical contract.
+
+### Add Semantics
+
+`add()` shall:
+
+- establish one immutable binary payload for one canonical
+  `EnterpriseDocument.id`;
+- consume bytes from the source's current position through EOF;
+- accept non-seekable sources;
+- not require successful `seek()`, `tell()` or `fileno()` behavior;
+- not require filesystem-backed input;
+- not close the caller-owned source;
+- reject an already-stored payload for the same `document_id` with
+  `DocumentContentPayloadAlreadyExistsError`;
+- never silently overwrite an existing payload;
+- introduce no update, replace, delete or upsert behavior;
+- allow equal byte sequences under different document identities;
+- never treat SHA-256 digest as canonical store identity or
+  contract-level deduplication identity.
+
+A successful `add()` shall make the complete submitted byte sequence
+available for subsequent access.
+
+A failed `add()` shall not expose a successfully addressable partial payload.
+
+This is store-local atomic visibility only. It is not cross-repository or
+distributed transaction coordination.
+
+### Open / Access Semantics
+
+`open()` shall:
+
+- resolve only by exact `document_id`;
+- return `None` when no payload exists;
+- return a context-managed readable binary resource when payload exists;
+- expose the payload from its beginning;
+- provide byte-preserving sequential reads;
+- require consumers to use the returned context manager for deterministic
+  resource release.
+
+Consumers shall not rely on:
+
+- filesystem paths;
+- successful seeking;
+- random access;
+- successful `fileno()`;
+- local-file semantics;
+- storage-provider-specific object handles.
+
+The concrete adapter shall own closure of the underlying read resource when
+the returned context manager exits.
+
+### Descriptor / Binary Separation
+
+The store shall not accept or persist:
+
+- `DocumentContentDescriptor`;
+- media type;
+- descriptor byte length;
+- digest metadata;
+- `DocumentSource.source_reference`.
+
+The store shall not query:
+
+- `DocumentContentRepository`;
+- `EnterpriseDocumentRepository`;
+- Knowledge repositories;
+- Lineage repositories.
+
+Descriptor persistence and binary payload persistence remain distinct
+responsibilities.
+
+### Integrity Boundary
+
+At the canonical/public contract level, RFC-070 shall not make SHA-256 digest a canonical store key, lookup identity, uniqueness identity, contract-level deduplication identity or contract-level idempotency identity.
+
+RFC-070 does not decide internal physical addressing or transparent physical deduplication for a future concrete adapter. Any such mechanism requires separate adapter architecture authorization and must preserve externally observable `document_id` identity.
+
+The persistence-neutral store guarantees byte fidelity for the payload
+associated with `document_id`, but does not independently decide whether the
+payload matches a separately persisted descriptor's digest or `byte_length`.
+
+Cross-boundary descriptor/payload validation belongs to a future
+content-establishment application boundary.
+
+### Source Reference Boundary
+
+`DocumentSource.source_reference` remains external provenance / traceability.
+
+It shall not become:
+
+- a filesystem path used by the store;
+- a URI opened by the store;
+- a storage key;
+- a canonical byte-access locator.
+
+### Persistence Technology Boundary
+
+RFC-070 shall select no concrete persistence technology.
+
+It shall introduce no:
+
+- PostgreSQL BLOB;
+- relational binary table;
+- database large-object facility;
+- filesystem adapter;
+- network-filesystem adapter;
+- object-storage adapter;
+- file-server adapter;
+- cloud SDK;
+- storage bucket;
+- storage path convention;
+- storage key convention;
+- SQLAlchemy model;
+- Alembic revision.
+
+Canonical Alembic head therefore remains:
+
+`0005`
+
+`DatabaseRuntime` remains unchanged.
+
+### Application / Transaction Boundary
+
+RFC-070 shall introduce no Document Content establishment or registration
+application service.
+
+It shall not modify:
+
+- `EnterpriseDocumentRegistrationApplicationService`;
+- `DocumentKnowledgeIngestionApplicationService`;
+- `KnowledgeCaptureApplicationService`;
+- `KnowledgeLineageTransactionCoordinator`.
+
+RFC-070 establishes no atomicity across:
+
+- Enterprise Document registration;
+- descriptor persistence;
+- binary payload persistence;
+- Document-to-Knowledge ingestion.
+
+That coordination remains a separately governed future application boundary.
+
+### Runtime / Composition Boundary
+
+RFC-070 shall not expand:
+
+- `DatabaseRuntime`;
+- Runtime authority;
+- Bootstrap authority;
+- readiness authority;
+- request-admission authority;
+- `CompositionRoot`;
+- `ServiceContainer`;
+- `PlatformComposition`;
+- `ApplicationFacade`.
+
+No default concrete storage adapter is selected or wired.
+
+### Deferred Capabilities
+
+RFC-070 shall not introduce:
+
+- Document Library upload/download/browse/catalogue behavior;
+- parser integration;
+- PDF extraction;
+- OCR;
+- DOCX extraction;
+- spreadsheet extraction;
+- text extraction;
+- encoding detection;
+- metadata extraction;
+- chunking;
+- semantic search;
+- embeddings;
+- Vector persistence;
+- Graph persistence;
+- Neo4j promotion;
+- RAG;
+- LLM;
+- AI Agent behavior;
+- authentication;
+- authorization;
+- RBAC;
+- Active Directory;
+- malware scanning;
+- retention;
+- approval workflow;
+- production-security or Cybersecurity-approval claims.
+
+### Technical Surface After Separate Implementation Entry Gate
+
+After the AD-056 accepted-contract commit is pushed, exact local /
+tracking / remote identity is verified, and the separate RFC-070
+implementation-entry Git gate passes, the permitted minimum technical surface
+is:
+
+- `backend/app/document_content/store.py`;
+- focused persistence-neutral contract and architecture tests under
+  `tests/document_content/`.
+
+No Infrastructure adapter, schema migration or application service is
+authorized by AD-056. Each requires separate architecture authorization.
+
+### Architecture Contract Review Refinement
+
+The Architecture Contract review identified and resolved six boundary details
+before AD-056 acceptance:
+
+1. `None` from `open()` means confirmed absence only; operational access
+   failures must remain failures;
+2. zero-byte payloads are valid and remain distinguishable from absence;
+3. failed `add()` does not close or rewind the caller-owned source, and source
+   position after failure is unspecified;
+4. concurrent same-`document_id` adds may establish at most one canonical
+   payload and may not merge, interleave or overwrite bytes;
+5. repeated successful `open()` calls establish independent read contexts,
+   with deterministic release on normal and exceptional context exit;
+6. RFC-070 foundation verification is separated from future concrete-adapter
+   behavioral conformance.
+
+RFC-070 foundation implementation, if later authorized, must not claim
+concrete storage behavior as PASS while no concrete storage adapter exists.
+
+Concrete-adapter behavioral checks remain NOT YET APPLICABLE / BLOCKED until
+a separately governed adapter exists.
+
+Internal physical addressing or transparent physical deduplication is not
+decided by RFC-070. A future adapter architecture may consider such mechanisms
+only if canonical external identity remains `document_id` and no provider
+detail leaks into the public contract.
+
+### Architecture Acceptance Result
+
+Formal final Architecture Contract review:
+
+**PASS — NO REMAINING REFINE / NO BLOCKED ITEM**
+
+The complete refined AD-056 contract is accepted.
+
+All six formal contract refinements and the final digest-identity coherence
+refinement are normative parts of the accepted contract.
+
+Concrete-adapter behavioral verification remains NOT YET APPLICABLE / BLOCKED
+until a separately governed concrete adapter exists.
+
+No technical implementation is authorized by architecture acceptance alone.
+
+### Current Gate
+
+**ARCHITECTURE CONTRACT ACCEPTED — ACCEPTANCE GIT GATE PENDING**
+
+The complete five-document accepted-contract diff passed staging review
+before creation of the accepted-contract commit.
+
+The accepted-contract commit must remain documentation-only and must be
+reviewed before push.
+
+Technical implementation remains unauthorized until the push / exact-identity
+gate and separate implementation-entry gate pass.
