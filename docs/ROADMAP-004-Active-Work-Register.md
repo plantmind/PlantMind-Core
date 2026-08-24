@@ -39,7 +39,7 @@ No item may be marked complete until:
 
 ### Status
 
-**ENGINEERING CLOSURE STAGING REVIEW PASSED — CLOSURE COMMIT PENDING**
+**ENGINEERING CLOSURE COMPLETE — COMMITTED, PUSHED AND VERIFIED; POST-CLOSURE SOURCE-OF-TRUTH RECONCILIATION REVIEW PENDING**
 
 Verified selection commit:
 
@@ -137,31 +137,60 @@ Concrete-adapter behavioral conformance remains:
 
 **NOT YET APPLICABLE / BLOCKED BY ABSENCE OF CONCRETE ADAPTER**
 
-### Current Gate
+Engineering closure commit:
 
-Engineering closure documentation review:
+`ab4438b02a8f34f83b462e3d8a86b4b5ab5d1092`
+
+Closure push:
 
 **PASS**
 
-Engineering closure staging review:
+Exact local / tracking / remote closure identity:
 
-**PASS — EXACT FIVE SOURCE-OF-TRUTH DOCUMENTS**
+**PASS**
 
-Engineering closure commit:
+Working tree after closure push:
 
-**NOT PERFORMED**
-
-Closure push / exact identity verification:
-
-**NOT PERFORMED**
+**clean**
 
 Post-closure Source-of-Truth reconciliation:
 
-**NOT PERFORMED**
+**PENDING — DRAFT / REVIEW GATE**
 
-RFC-070 remains active until closure and reconciliation complete.
+### Current Gate
 
-No successor selection is authorized yet.
+Engineering closure:
+
+**COMPLETE — COMMITTED, PUSHED AND VERIFIED**
+
+Post-closure Source-of-Truth reconciliation:
+
+**PENDING — DRAFT / REVIEW GATE**
+
+Reconciliation commit:
+
+**NOT YET CREATED**
+
+The reconciliation remains documentation-only.
+
+Architecture Decisions history remains preserved.
+
+Engineering Journal history remains append-only.
+
+No backend or test-file change is authorized.
+
+A separate final reconciliation verification record remains required after
+the reconciliation Git gate completes.
+
+RFC-070 remains active until reconciliation and final verification complete.
+
+No successor RFC or architecture workstream is selected or authorized.
+
+### Current Next Exact Action
+
+Review the complete five-document RFC-070 post-closure reconciliation diff.
+
+Do not stage or commit until that review passes.
 
 ## Post-RFC-069 Successor Architecture Workstream Selection Draft
 
