@@ -7745,3 +7745,80 @@ Review the complete RFC-071 / AD-057 five-document architecture acceptance
 state.
 
 Do not stage before that review passes.
+
+---
+
+## 2026-08-25 — RFC-071 / AD-057 Engineering Closure Documentation
+
+**Append-Only Engineering Closure Record**
+
+RFC-071 selection:
+
+`92fc4196f24c84d49846ee9825aba9eeb1b03d8b`
+
+AD-057 accepted-contract commit:
+
+`14b2b56e9395b680da7aaca1a98515eea3a71b01`
+
+RFC-071 technical implementation commit:
+
+`9b556850adc011afca41cd6740a0265be03a2aa8`
+
+Technical Git durability:
+
+**PASS — LOCAL / TRACKING / REMOTE EXACT**
+
+### Delivered Boundary
+
+Implemented:
+
+`app.infrastructure.document_content.filesystem_store.FilesystemDocumentContentStore`
+
+The adapter remains behind the existing RFC-070 persistence-neutral
+`DocumentContentStore` port.
+
+No Runtime, Composition, database-schema, Alembic or provider-SDK expansion was
+introduced.
+
+### Verification
+
+Pre-implementation baseline:
+
+**928 passed**
+
+Final verified PlantMind regression after authorized RFC-069 historical-test
+reconciliation:
+
+**956 passed**
+
+RFC-069 relational invariants remain protected.
+
+Canonical Alembic head:
+
+`0005`
+
+### Current Governance State
+
+Technical implementation:
+
+**DURABLE**
+
+Closure documentation:
+
+**AUTHORED — REVIEW PENDING**
+
+RFC-071 terminal closure:
+
+**NOT YET CLAIMED**
+
+Source-of-Truth reconciliation:
+
+**PENDING**
+
+Successor:
+
+**NONE SELECTED**
+
+### Next Exact Action
+
+Review the complete five-document RFC-071 closure documentation before staging.

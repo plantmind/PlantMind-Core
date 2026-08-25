@@ -7,10 +7,10 @@
 | Project | PlantMind PM-001 |
 | Branch | `feature/engineering-platform` |
 | Last Fully Closed RFC | RFC-070 — Canonical Binary Document Content Store / Access Foundation — Fully Closed and Source-of-Truth Reconciled |
-| Active RFC | RFC-071 — Canonical Binary Document Content Infrastructure Adapter Boundary — Architecture Contract Accepted / Git Gate Pending |
+| Active RFC | RFC-071 — Canonical Binary Document Content Infrastructure Adapter Boundary — Technical Durable / Closure Review Pending |
 | Selected Architecture Workstream | RFC-071 — Canonical Binary Document Content Infrastructure Adapter Boundary — Selection Durable |
 | Proposed Successor RFC | None — RFC-071 is active |
-| Architecture Decision | AD-057 — Accepted; Accepted-Contract Git Gate Pending; Implementation Not Authorized |
+| Architecture Decision | AD-057 — Accepted and Git Durable; RFC-071 Technical Implementation Durable |
 | RFC-069 Selection Commit | `5d7794352029576e0b62c2ac8cbfa248fe11961d` |
 | RFC-070 Selection Commit | `13cfccc08d8c0a3b891990d38edaf9fc48874a5e` |
 | RFC-069 Accepted Contract Commit | `467440b6c5d16e599fbc0d0f5c820d31725fd29b` |
@@ -21,7 +21,7 @@
 | RFC-069 Reconciliation Commit | `231e0cc66862c797e299fdb71ff20da8a39e8ae2` |
 | RFC-069 Reconciliation Push | Verified |
 | RFC-069 Local / Tracking / Remote Reconciliation Identity | Verified |
-| Test Baseline | 928 passed |
+| Test Baseline | 956 passed |
 | RFC-070 Engineering Closure Commit | `ab4438b02a8f34f83b462e3d8a86b4b5ab5d1092` |
 | RFC-070 Engineering Closure State | Complete, Pushed and Verified |
 | RFC-070 Local / Tracking / Remote Closure Identity | Verified |
@@ -33,7 +33,7 @@
 | RFC-071 Selection Baseline | `3a57f02167e9b69aafee7261b5901b64fe894446` |
 | RFC-071 Selection State | Durable — Committed, Pushed and Exact Identity Verified |
 | RFC-071 Selection Commit | `92fc4196f24c84d49846ee9825aba9eeb1b03d8b` — committed / pushed / exact identity verified |
-| RFC-071 Architecture Contract State | Accepted — Acceptance-State Review Pending / Git Durability Pending |
+| RFC-071 Architecture Contract State | Accepted / Git Durable — Technical Implementation Committed and Pushed |
 | Alembic Head | `0005` |
 | Authoritative Environment | `PlantMind-Core/.venv` |
 | RFC-069 State | Fully Closed and Source-of-Truth Reconciled |
@@ -3283,3 +3283,83 @@ Do not stage before acceptance-state review passes.
 
 Do not implement before accepted-contract Git durability and the separate
 implementation-entry gate both pass.
+
+---
+
+## RFC-071 / AD-057 Engineering Closure Handoff
+
+### Durable Anchors
+
+RFC-071 selection:
+
+`92fc4196f24c84d49846ee9825aba9eeb1b03d8b`
+
+AD-057 accepted contract:
+
+`14b2b56e9395b680da7aaca1a98515eea3a71b01`
+
+RFC-071 technical implementation:
+
+`9b556850adc011afca41cd6740a0265be03a2aa8`
+
+Technical local / tracking / remote identity:
+
+**PASS — EXACT**
+
+### Technical Result
+
+Canonical concrete adapter:
+
+`app.infrastructure.document_content.filesystem_store.FilesystemDocumentContentStore`
+
+Final verified regression:
+
+**956 passed**
+
+RFC-069 historical architecture reconciliation:
+
+**PASS — RELATIONAL INVARIANTS PRESERVED**
+
+Alembic head:
+
+`0005`
+
+### Preserved Boundaries
+
+No:
+
+- Domain/store-port redesign;
+- descriptor repository redesign;
+- schema/Alembic expansion;
+- DatabaseRuntime expansion;
+- default Composition wiring;
+- provider SDK;
+- Document Library/parser/OCR;
+- Search/Vector/Graph/RAG/LLM;
+- production deployment-readiness claim.
+
+### Current Gate
+
+Closure documentation:
+
+**AUTHORED — REVIEW PENDING**
+
+RFC-071 terminal closure:
+
+**NOT YET CLAIMED**
+
+Source-of-Truth reconciliation:
+
+**PENDING**
+
+Successor:
+
+**NONE**
+
+### Next Exact Action
+
+Review:
+
+`PLANTMIND-RFC071-CLOSURE-DOCUMENTATION-REVIEW.txt`
+
+Do not stage until closure documentation review passes.

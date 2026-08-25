@@ -10,12 +10,12 @@
 | Deployment Model | On-Premise |
 | Development Branch | `feature/engineering-platform` |
 | Last Fully Closed RFC | RFC-070 — Canonical Binary Document Content Store / Access Foundation — Fully Closed and Source-of-Truth Reconciled |
-| Active RFC | RFC-071 — Canonical Binary Document Content Infrastructure Adapter Boundary — Architecture Contract Accepted / Git Gate Pending |
+| Active RFC | RFC-071 — Canonical Binary Document Content Infrastructure Adapter Boundary — Technical Durable / Closure Review Pending |
 | Selected Architecture Workstream | RFC-071 — Canonical Binary Document Content Infrastructure Adapter Boundary — Selection Durable |
 | Proposed Successor RFC | None — RFC-071 is active |
 | RFC-069 Selection Commit | `5d7794352029576e0b62c2ac8cbfa248fe11961d` |
 | RFC-070 Selection Commit | `13cfccc08d8c0a3b891990d38edaf9fc48874a5e` |
-| Architecture Decision | AD-057 — Accepted; Accepted-Contract Git Gate Pending; Implementation Not Authorized |
+| Architecture Decision | AD-057 — Accepted and Git Durable; RFC-071 Technical Implementation Durable |
 | RFC-069 Accepted Contract Commit | `467440b6c5d16e599fbc0d0f5c820d31725fd29b` |
 | RFC-070 Accepted Contract Commit | `cfd45d35144574d27a40e0f350b571a6298afd59` — committed / pushed / exact identity verified |
 | RFC-070 Technical Commit | `389ce20b9e01b99cf9b7c1a066a0e9a55bc71223` — committed / pushed / exact identity verified |
@@ -23,7 +23,7 @@
 | RFC-069 Engineering Closure Commit | `63790de5312c69c709e2249b56e91995a00426b6` |
 | RFC-069 Post-Closure Reconciliation Commit | `231e0cc66862c797e299fdb71ff20da8a39e8ae2` |
 | RFC-069 Reconciliation Verification | PASS — Committed, Pushed, Exact Local / Tracking / Remote Identity Verified |
-| Test Baseline | 928 passed |
+| Test Baseline | 956 passed |
 | RFC-070 Engineering Closure Commit | `ab4438b02a8f34f83b462e3d8a86b4b5ab5d1092` |
 | RFC-070 Engineering Closure State | Complete, Pushed and Verified |
 | RFC-070 Post-Closure Reconciliation | Complete, Pushed and Verified |
@@ -33,7 +33,7 @@
 | RFC-071 Selection Baseline | `3a57f02167e9b69aafee7261b5901b64fe894446` |
 | RFC-071 Selection State | Durable — Committed, Pushed and Exact Identity Verified |
 | RFC-071 Selection Commit | `92fc4196f24c84d49846ee9825aba9eeb1b03d8b` — committed / pushed / exact identity verified |
-| RFC-071 Architecture Contract State | Accepted — Acceptance-State Review Pending / Git Durability Pending |
+| RFC-071 Architecture Contract State | Accepted / Git Durable — Technical Implementation Committed and Pushed |
 | Alembic Head | `0005` |
 | Purpose | Authoritative context for continuing PlantMind development across engineering sessions |
 
@@ -3512,3 +3512,77 @@ Review the complete five-document accepted architecture state before staging.
 
 The accepted contract must be committed, pushed and exact Git identity verified
 before any implementation-entry decision.
+
+---
+
+## RFC-071 / AD-057 Engineering Closure State
+
+### Durable Engineering Baseline
+
+Selection commit:
+
+`92fc4196f24c84d49846ee9825aba9eeb1b03d8b`
+
+Accepted-contract commit:
+
+`14b2b56e9395b680da7aaca1a98515eea3a71b01`
+
+Technical implementation commit:
+
+`9b556850adc011afca41cd6740a0265be03a2aa8`
+
+Local / tracking / remote technical identity:
+
+**EXACT**
+
+Working tree at closure-entry gate:
+
+**CLEAN**
+
+### Delivered Capability
+
+`FilesystemDocumentContentStore`
+
+provides the first concrete filesystem-backed implementation of the canonical
+binary Document Content store/access contract.
+
+### Verified Engineering Evidence
+
+Final full regression:
+
+**956 passed**
+
+Canonical Alembic head:
+
+`0005`
+
+No DatabaseRuntime, default CompositionRoot, schema, migration or provider-SDK
+expansion occurred.
+
+### Closure Boundary
+
+Closure documentation:
+
+**AUTHORED — REVIEW PENDING**
+
+RFC-071 terminal closure:
+
+**NOT YET CLAIMED**
+
+Source-of-Truth reconciliation:
+
+**PENDING — MUST OCCUR AFTER DURABLE CLOSURE**
+
+Production deployment conformance:
+
+**SEPARATE / NOT CLAIMED**
+
+Successor RFC:
+
+**NONE SELECTED**
+
+### Next Gate
+
+Review the complete closure-documentation diff.
+
+Do not stage before closure review passes.

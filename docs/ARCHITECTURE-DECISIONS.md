@@ -15202,3 +15202,202 @@ Do not stage until that acceptance-state review passes.
 
 Do not implement before the accepted-contract Git durability gate and the
 separate implementation-entry gate both pass.
+
+---
+
+## RFC-071 / AD-057 Engineering Closure Record
+
+### Closure Baseline
+
+RFC-071 workstream:
+
+**Canonical Binary Document Content Infrastructure Adapter Boundary**
+
+Accepted architecture decision:
+
+**AD-057 — Canonical Filesystem-Backed Binary Document Content Infrastructure Adapter Boundary**
+
+Verified workstream-selection commit:
+
+`92fc4196f24c84d49846ee9825aba9eeb1b03d8b`
+
+Verified accepted-contract commit:
+
+`14b2b56e9395b680da7aaca1a98515eea3a71b01`
+
+Verified technical implementation commit:
+
+`9b556850adc011afca41cd6740a0265be03a2aa8`
+
+Technical Git durability:
+
+**PASS — LOCAL / TRACKING / REMOTE IDENTITY VERIFIED**
+
+### Verified Technical Outcome
+
+RFC-071 establishes the first concrete Infrastructure implementation of the
+canonical persistence-neutral binary Document Content store contract.
+
+Concrete adapter:
+
+`FilesystemDocumentContentStore`
+
+Canonical module:
+
+`app.infrastructure.document_content.filesystem_store`
+
+The adapter implements the existing RFC-070 `DocumentContentStore` port without
+modifying that port.
+
+The verified implementation preserves these AD-057 boundaries:
+
+- explicitly injected absolute filesystem root;
+- deployment-owned root must already exist;
+- deterministic adapter-owned UUID shard directories beneath that root;
+- Infrastructure-private physical addressing;
+- caller-owned source consumed from current position through EOF;
+- non-seekable sources supported;
+- caller source never closed;
+- zero-byte payload valid;
+- incremental streaming;
+- same-shard temporary file;
+- flush and file `fsync` before publication;
+- `os.link(temp_path, final_path)` as atomic create-if-absent publication;
+- only final-link destination conflict maps to
+  `DocumentContentPayloadAlreadyExistsError`;
+- unrelated filesystem failures remain operational failures;
+- no overwrite, update, append, merge, upsert or idempotent success;
+- concurrent same-document add permits at most one successful publication;
+- failed pre-publication operation exposes no canonical partial payload;
+- post-publication cleanup failure may leave a complete payload but never a
+  partial canonical payload;
+- confirmed absence returns `None` only beneath a healthy root;
+- root unavailability remains operational failure;
+- independent read handles begin at byte zero and close deterministically.
+
+### RFC-069 Historical-Test Reconciliation
+
+The initial RFC-071 full regression exposed two RFC-069 historical architecture
+expectations that predated any binary Infrastructure adapter.
+
+Failure classification occurred before test mutation.
+
+Production rewrite was neither authorized nor required.
+
+The historical test was reconciled narrowly so that:
+
+- RFC-069 relational Infrastructure files remain prohibited from owning the
+  binary `DocumentContentStore` contract;
+- `filesystem_store.py` is the only RFC-071-authorized binary-store owner;
+- RFC-069 relational invariants remain protected;
+- the historical architecture guard is not broadly weakened.
+
+### Verification Evidence
+
+Pre-implementation regression:
+
+**928 passed**
+
+Initial RFC-071 focused verification:
+
+**43 passed**
+
+Initial full regression:
+
+**953 passed / 2 failed**
+
+Failure classification:
+
+**PASS — HISTORICAL RFC-069 TEST RECONCILIATION REQUIRED**
+
+After narrow reconciliation:
+
+- RFC-069 architecture verification: **9 passed**;
+- RFC-071 focused plus historical verification: **52 passed**;
+- full PlantMind regression: **956 passed**.
+
+Technical staging review:
+
+**PASS**
+
+Technical commit review:
+
+**PASS**
+
+Technical push and exact Git durability:
+
+**PASS**
+
+### Persistence / Runtime Boundaries
+
+RFC-071 introduced no:
+
+- Domain model change;
+- canonical store-port change;
+- descriptor-repository change;
+- SQLAlchemy binary model;
+- PostgreSQL BLOB or large-object persistence;
+- database schema change;
+- Alembic migration;
+- `DatabaseRuntime` expansion;
+- default `CompositionRoot` wiring;
+- provider SDK;
+- object-storage dependency;
+- application coordination service;
+- Document Library / Parser / OCR / Chunking;
+- Search / Vector / Graph / RAG / LLM capability.
+
+Canonical Alembic head remains:
+
+`0005`
+
+### Deployment Conformance Boundary
+
+Code-level RFC-071 verification does not establish production storage readiness.
+
+Actual deployment storage still requires separately governed verification for:
+
+- provisioning;
+- permissions;
+- capacity / quota;
+- same-filesystem temporary/final placement;
+- hard-link create-if-absent semantics;
+- concurrency behavior;
+- file-fsync behavior;
+- mount-loss / namespace-substitution handling where applicable;
+- backup / restore;
+- HA / DR where required;
+- Cybersecurity-approved controls.
+
+No production HA, DR, mounted-storage or Cybersecurity completion claim is made.
+
+### Engineering Closure State
+
+Technical implementation:
+
+**COMPLETE / COMMITTED / PUSHED / EXACT GIT IDENTITY VERIFIED**
+
+Closure documentation:
+
+**AUTHORED — REVIEW PENDING**
+
+RFC-071 terminal closure:
+
+**NOT YET CLAIMED**
+
+Source-of-Truth reconciliation:
+
+**PENDING — SEPARATE POST-CLOSURE GATE**
+
+Successor workstream:
+
+**NONE SELECTED**
+
+### Next Exact Action
+
+Review the complete five-document RFC-071 engineering closure documentation.
+
+Do not stage closure documentation until that review passes.
+
+Do not claim terminal closure until the closure commit/push gate and the
+subsequent Source-of-Truth reconciliation are completed separately.

@@ -15559,3 +15559,72 @@ Do not stage before that review passes.
 
 Do not implement before accepted-contract commit/push/exact-identity
 verification and the separate implementation-entry gate.
+
+---
+
+## RFC-071 Engineering Closure Gate
+
+### Workstream
+
+**RFC-071 — Canonical Binary Document Content Infrastructure Adapter Boundary**
+
+Architecture:
+
+**AD-057 — ACCEPTED / GIT DURABLE**
+
+Selection commit:
+
+`92fc4196f24c84d49846ee9825aba9eeb1b03d8b`
+
+Accepted-contract commit:
+
+`14b2b56e9395b680da7aaca1a98515eea3a71b01`
+
+Technical commit:
+
+`9b556850adc011afca41cd6740a0265be03a2aa8`
+
+### Technical Outcome
+
+Implemented:
+
+`FilesystemDocumentContentStore`
+
+Verified full regression:
+
+**956 passed**
+
+Alembic:
+
+`0005`
+
+No database-schema, Runtime/Composition or provider-SDK expansion.
+
+### Current Gate
+
+Technical implementation durability:
+
+**COMPLETE**
+
+Closure documentation:
+
+**AUTHORED — REVIEW PENDING**
+
+Terminal RFC closure:
+
+**NOT YET CLAIMED**
+
+Post-closure Source-of-Truth reconciliation:
+
+**PENDING**
+
+Successor selection:
+
+**NOT STARTED**
+
+### Next Exact Action
+
+Review RFC-071 closure documentation.
+
+No staging, commit, push or successor selection until the closure review gate
+passes.
