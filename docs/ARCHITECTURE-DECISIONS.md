@@ -15577,3 +15577,121 @@ Verification of this record's own commit, push, exact local / tracking / remote
 identity and clean working tree is an external Git durability gate.
 
 That external Git gate does not require another RFC-071 Source-of-Truth record.
+
+---
+
+## Selected Successor Architecture Workstream — RFC-072 — Canonical Document Content Establishment Application Coordination Boundary
+
+**Record Classification: Non-Decision Successor Workstream Selection**
+
+This record creates no new Architecture Decision.
+
+AD-057 remains the latest Accepted Architecture Decision.
+
+No AD-058 is created or accepted by this selection record.
+
+### Selection Baseline
+
+Last fully closed workstream:
+
+**RFC-071 — Canonical Binary Document Content Infrastructure Adapter Boundary**
+
+RFC-071 final verification commit:
+
+`0363365989786c51d6757fb09662622dc54d5b44`
+
+Full regression baseline:
+
+**956 passed**
+
+Canonical Alembic head:
+
+`0005`
+
+### Selected Successor
+
+The next architecture workstream is selected as:
+
+**RFC-072 — Canonical Document Content Establishment Application Coordination Boundary**
+
+This is the smallest coherent architecture gap whose prerequisite
+Document Content foundations are now durable.
+
+### Evidence
+
+The repository establishes all of the following:
+
+1. canonical immutable Document Content Domain semantics already exist;
+2. canonical `DocumentContentRepository` descriptor persistence exists;
+3. canonical `DocumentContentStore` binary storage/access port exists;
+4. the concrete RFC-071 filesystem Infrastructure adapter exists;
+5. there is currently no application-layer consumer of
+   `DocumentContentStore`;
+6. content-establishment/application coordination was explicitly deferred
+   as a separately governed future application boundary;
+7. existing Document-to-Knowledge ingestion and Knowledge/Lineage transaction
+   coordination already own distinct responsibilities and shall not be
+   duplicated or absorbed;
+8. Document Library, parser, OCR and chunking remain downstream;
+9. Search, Vector, Graph, RAG and LLM remain higher-level dependent work;
+10. default Runtime/Composition wiring remains intentionally absent;
+11. filesystem production deployment conformance remains separately governed.
+
+### RFC-072 Architecture Questions
+
+RFC-072 architecture authoring must explicitly resolve, before implementation:
+
+- the exact application use case for canonical Document Content establishment;
+- which accepted persistence-neutral ports the application boundary consumes;
+- whether canonical Document existence must be confirmed;
+- descriptor/payload operation ordering;
+- descriptor/payload consistency semantics;
+- duplicate classification across descriptor and binary boundaries;
+- failure behavior before and after payload publication;
+- whether any compensating behavior is architecturally legal;
+- retry and idempotency semantics;
+- observable state when one persistence boundary succeeds and another fails;
+- how the accepted no-overwrite/no-delete binary-store semantics constrain
+  coordination;
+- whether a new narrow coordination abstraction is required or whether
+  application orchestration alone is sufficient;
+- preservation of storage-provider neutrality at the Application layer.
+
+These are architecture questions, not implementation decisions.
+
+### Explicit Non-Selection
+
+RFC-072 does **not** select or authorize:
+
+- Document Library behavior;
+- parser, PDF extraction, OCR or chunking;
+- Search, embeddings or Vector persistence;
+- Graph persistence or Neo4j production integration;
+- RAG or LLM capability;
+- default `CompositionRoot`, Runtime or Bootstrap wiring;
+- production filesystem deployment conformance;
+- production PostgreSQL or filesystem readiness;
+- production security or Cybersecurity approval.
+
+### Selection State
+
+Successor workstream decision:
+
+**SELECTED — RFC-072**
+
+Architecture contract:
+
+**NOT YET AUTHORED**
+
+Architecture Decision:
+
+**NONE CREATED — AD-057 REMAINS LATEST ACCEPTED**
+
+Implementation:
+
+**NOT AUTHORIZED**
+
+The selection record is intentionally non-self-referential.
+
+Its own commit/push/exact Git durability shall be verified externally before
+RFC-072 architecture authoring begins.

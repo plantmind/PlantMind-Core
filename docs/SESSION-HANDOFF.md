@@ -7,9 +7,9 @@
 | Project | PlantMind PM-001 |
 | Branch | `feature/engineering-platform` |
 | Last Fully Closed RFC | RFC-071 — Canonical Binary Document Content Infrastructure Adapter Boundary — Fully Closed and Source-of-Truth Reconciled |
-| Active RFC | None |
-| Selected Architecture Workstream | None |
-| Proposed Successor RFC | None — evidence-based successor selection has not started |
+| Active RFC | RFC-072 — Canonical Document Content Establishment Application Coordination Boundary — Selected Successor / Architecture Contract Not Yet Authored |
+| Selected Architecture Workstream | RFC-072 — Canonical Document Content Establishment Application Coordination Boundary |
+| Proposed Successor RFC | RFC-072 — selected successor architecture workstream |
 | Architecture Decision | AD-057 — Accepted |
 | RFC-069 Selection Commit | `5d7794352029576e0b62c2ac8cbfa248fe11961d` |
 | RFC-070 Selection Commit | `13cfccc08d8c0a3b891990d38edaf9fc48874a5e` |
@@ -44,7 +44,7 @@
 | Alembic Head | `0005` |
 | Authoritative Environment | `PlantMind-Core/.venv` |
 | RFC-069 State | Fully Closed and Source-of-Truth Reconciled |
-| Successor RFC Selection | Not started — separate evidence-based governance activity |
+| Successor RFC Selection | RFC-072 selected — architecture contract not yet authored |
 ## Recent Engineering Sequence
 
 - RFC-025 — Core Plugin Framework
@@ -3500,3 +3500,51 @@ record.
 
 Its own Git durability is verified externally without another RFC-071
 Source-of-Truth record.
+
+---
+
+## RFC-072 Successor Architecture Workstream Selection Handoff
+
+Selected successor:
+
+**RFC-072 — Canonical Document Content Establishment Application Coordination Boundary**
+
+Selection baseline:
+
+`0363365989786c51d6757fb09662622dc54d5b44`
+
+RFC-071 remains fully closed and Source-of-Truth reconciled.
+
+Latest Accepted Architecture Decision:
+
+**AD-057**
+
+### Exact Handoff
+
+RFC-072 exists to define the missing Application-layer coordination for
+establishing canonical Document Content across already accepted descriptor and
+binary-content boundaries.
+
+The architecture contract must resolve descriptor/payload consistency,
+ordering, failure, duplicate, compensation and retry/idempotency semantics
+without weakening RFC-069/RFC-070/RFC-071 invariants.
+
+Do not:
+
+- extend the existing Knowledge/Lineage transaction coordinator by assumption;
+- couple Application code to `FilesystemDocumentContentStore`;
+- introduce Document Library behavior;
+- introduce parser/OCR/chunking;
+- introduce Search/Vector/Graph/RAG/LLM;
+- wire default Composition;
+- claim production filesystem readiness;
+- claim Cybersecurity completion.
+
+### Next Exact Action
+
+Review the RFC-072 successor-selection documentation.
+
+No staging until selection review passes.
+
+No architecture implementation until the later RFC-072 architecture contract
+is accepted and Git durable.

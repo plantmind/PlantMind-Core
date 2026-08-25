@@ -10,9 +10,9 @@
 | Deployment Model | On-Premise |
 | Development Branch | `feature/engineering-platform` |
 | Last Fully Closed RFC | RFC-071 — Canonical Binary Document Content Infrastructure Adapter Boundary — Fully Closed and Source-of-Truth Reconciled |
-| Active RFC | None |
-| Selected Architecture Workstream | None |
-| Proposed Successor RFC | None — evidence-based successor selection has not started |
+| Active RFC | RFC-072 — Canonical Document Content Establishment Application Coordination Boundary — Selected Successor / Architecture Contract Not Yet Authored |
+| Selected Architecture Workstream | RFC-072 — Canonical Document Content Establishment Application Coordination Boundary |
+| Proposed Successor RFC | RFC-072 — selected successor architecture workstream |
 | RFC-069 Selection Commit | `5d7794352029576e0b62c2ac8cbfa248fe11961d` |
 | RFC-070 Selection Commit | `13cfccc08d8c0a3b891990d38edaf9fc48874a5e` |
 | Architecture Decision | AD-057 — Accepted |
@@ -3714,3 +3714,61 @@ This record is non-self-referential and records reconciliation commit
 `a6ad9bac7745a8c7e4583b9373acb3cbe889df75` only.
 
 Its own Git durability is verified externally.
+
+---
+
+## RFC-072 Successor Architecture Workstream Selection
+
+Selected successor:
+
+**RFC-072 — Canonical Document Content Establishment Application Coordination Boundary**
+
+Selection baseline:
+
+`0363365989786c51d6757fb09662622dc54d5b44`
+
+Latest Accepted Architecture Decision remains:
+
+**AD-057**
+
+No AD-058 has been created or accepted.
+
+### Evidence Basis
+
+The canonical descriptor repository, binary store port and concrete filesystem
+adapter are durable.
+
+No Application-layer consumer currently owns canonical
+`DocumentContentStore` use-case coordination.
+
+Content-establishment/application coordination was explicitly deferred as a
+separate future Application boundary.
+
+Existing Document-to-Knowledge ingestion and Knowledge/Lineage transaction
+coordination remain authoritative for their existing responsibilities.
+
+### Selection Boundary
+
+RFC-072 shall begin with architecture authoring only.
+
+It shall not begin implementation until its architecture contract is reviewed,
+accepted, committed, pushed and independently verified through the established
+implementation-entry gate.
+
+Document Library, parser/OCR/chunking, Search/Vector/Graph/RAG/LLM,
+Runtime/Composition wiring, deployment conformance and production security
+remain outside this selection.
+
+### Current State
+
+Selection:
+
+**AUTHORED — REVIEW PENDING**
+
+Architecture contract:
+
+**NOT YET AUTHORED**
+
+Implementation:
+
+**NOT AUTHORIZED**

@@ -15754,3 +15754,86 @@ Any successor must be selected separately through evidence-based governance.
 
 This state is intentionally non-self-referential and records only already
 verified commits through reconciliation commit `a6ad9bac7745a8c7e4583b9373acb3cbe889df75`.
+
+---
+
+## Selected Successor Architecture Workstream — RFC-072 — Canonical Document Content Establishment Application Coordination Boundary
+
+### Selection Result
+
+**SELECTED**
+
+Successor:
+
+**RFC-072 — Canonical Document Content Establishment Application Coordination Boundary**
+
+Selection baseline:
+
+`0363365989786c51d6757fb09662622dc54d5b44`
+
+RFC-071 state:
+
+**FULLY CLOSED AND SOURCE-OF-TRUTH RECONCILED**
+
+Full regression:
+
+**956 passed**
+
+Alembic head:
+
+`0005`
+
+### Why RFC-072 Is Next
+
+RFC-071 completed the concrete Infrastructure implementation of the canonical
+binary `DocumentContentStore`.
+
+The repository contains no Application-layer consumer of that store.
+
+The next dependency-completing gap is therefore the narrow
+Document Content establishment Application coordination boundary.
+
+This selection deliberately does not expand the existing
+Document-to-Knowledge ingestion service or Knowledge/Lineage transaction
+coordinator.
+
+### Architecture Work Required Before Implementation
+
+RFC-072 must determine:
+
+1. exact use-case ownership;
+2. accepted port dependencies;
+3. Document existence requirements;
+4. descriptor/payload ordering;
+5. cross-boundary consistency and partial-success semantics;
+6. duplicate behavior;
+7. failure classification;
+8. compensation legality;
+9. retry/idempotency behavior;
+10. whether a narrow coordinator abstraction is required;
+11. preservation of binary-store immutability and storage neutrality.
+
+### Deferred / Rejected At This Gate
+
+Not selected:
+
+- filesystem deployment-conformance work;
+- Runtime/Composition wiring;
+- Document Library;
+- parser/OCR/chunking;
+- Search/Vector/Graph/RAG/LLM;
+- production-security/Cybersecurity work.
+
+These remain separately evidence-governed.
+
+### Gate
+
+Architecture drafting may begin only after this successor-selection record is:
+
+1. reviewed;
+2. staged and verified;
+3. committed;
+4. pushed;
+5. confirmed exact on Local / Tracking / Remote.
+
+No implementation is authorized by this selection.

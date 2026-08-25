@@ -7950,3 +7950,68 @@ already verified reconciliation commit `a6ad9bac7745a8c7e4583b9373acb3cbe889df75
 
 Its own Git durability is verified externally without creating another
 RFC-071 governance record.
+
+---
+
+## 2026-08-26 — RFC-072 Successor Architecture Workstream Selection
+
+### Selection
+
+Selected successor architecture workstream:
+
+**RFC-072 — Canonical Document Content Establishment Application Coordination Boundary**
+
+Selection baseline:
+
+`0363365989786c51d6757fb09662622dc54d5b44`
+
+RFC-071 remains:
+
+**FULLY CLOSED AND SOURCE-OF-TRUTH RECONCILED**
+
+Full regression baseline:
+
+**956 passed**
+
+Alembic head:
+
+`0005`
+
+### Selection Rationale
+
+The canonical binary Content foundation is now technically complete through
+the persistence-neutral store and the RFC-071 filesystem adapter, while no
+application-layer `DocumentContentStore` consumer exists.
+
+Repository governance explicitly deferred content-establishment/application
+coordination as a separate future boundary.
+
+The selected RFC-072 workstream therefore fills that missing Application-layer
+coordination gap without promoting Document Library, parser/OCR, retrieval,
+AI, default Composition or production deployment claims.
+
+### Current Gate
+
+Selection documentation:
+
+**AUTHORED — REVIEW PENDING**
+
+Selection commit:
+
+**NOT YET CREATED**
+
+Selection push:
+
+**NOT PERFORMED**
+
+RFC-072 architecture contract:
+
+**NOT YET AUTHORED**
+
+Implementation:
+
+**NOT AUTHORIZED**
+
+Next action:
+
+Review this five-document RFC-072 successor-selection diff.
