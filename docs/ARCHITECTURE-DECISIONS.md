@@ -15401,3 +15401,106 @@ Do not stage closure documentation until that review passes.
 
 Do not claim terminal closure until the closure commit/push gate and the
 subsequent Source-of-Truth reconciliation are completed separately.
+
+---
+
+## Current Architecture Governance State — RFC-071 Post-Closure Source-of-Truth Reconciliation
+
+**Record Classification: Non-Decision Reconciliation Governance Record**
+
+This record creates no new Architecture Decision.
+
+It does not amend, replace or supersede AD-057.
+
+AD-057 remains:
+
+**ACCEPTED**
+
+RFC-071 workstream:
+
+**Canonical Binary Document Content Infrastructure Adapter Boundary**
+
+### Verified Durable Chain
+
+Selection commit:
+
+`92fc4196f24c84d49846ee9825aba9eeb1b03d8b`
+
+Accepted-contract commit:
+
+`14b2b56e9395b680da7aaca1a98515eea3a71b01`
+
+Technical implementation commit:
+
+`9b556850adc011afca41cd6740a0265be03a2aa8`
+
+Engineering closure commit:
+
+`c725163808d88d5b89e034b608eb51829efd0f4b`
+
+Closure commit parent:
+
+`9b556850adc011afca41cd6740a0265be03a2aa8`
+
+Closure push / exact local-tracking-remote identity:
+
+**PASS**
+
+Working tree at reconciliation entry:
+
+**CLEAN**
+
+### Reconciliation Scope
+
+This Source-of-Truth reconciliation records the durable RFC-071 closure state
+without rewriting the committed RFC-071 engineering closure record.
+
+Current maintained Source-of-Truth surfaces are reconciled so that:
+
+- RFC-071 closure is recorded as committed, pushed and exact-identity verified;
+- the verified full regression remains **956 passed**;
+- canonical Alembic head remains `0005`;
+- AD-057 remains the latest Accepted Architecture Decision;
+- the concrete `FilesystemDocumentContentStore` remains the delivered RFC-071
+  Infrastructure adapter;
+- the RFC-069 historical-test reconciliation remains part of the durable
+  RFC-071 technical commit;
+- no production code, test, schema, migration, Runtime, Composition or provider
+  SDK change is introduced by reconciliation;
+- production deployment conformance remains separately governed and unclaimed.
+
+### Governance State
+
+Reconciliation documentation:
+
+**AUTHORED — REVIEW PENDING**
+
+Post-closure reconciliation commit:
+
+**NOT YET CREATED**
+
+Post-closure reconciliation push / exact identity verification:
+
+**NOT YET PERFORMED**
+
+Final reconciliation verification record:
+
+**NOT YET CREATED**
+
+RFC-071 terminal closure:
+
+**NOT YET CLAIMED**
+
+Successor selection:
+
+**NOT AUTHORIZED**
+
+### Next Exact Action
+
+Review the complete five-document RFC-071 post-closure reconciliation diff.
+
+Do not stage reconciliation until that review passes.
+
+Do not declare RFC-071 fully closed until reconciliation commit/push exact
+identity verification and the separate final reconciliation verification record
+are complete.

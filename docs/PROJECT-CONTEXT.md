@@ -10,12 +10,12 @@
 | Deployment Model | On-Premise |
 | Development Branch | `feature/engineering-platform` |
 | Last Fully Closed RFC | RFC-070 — Canonical Binary Document Content Store / Access Foundation — Fully Closed and Source-of-Truth Reconciled |
-| Active RFC | RFC-071 — Canonical Binary Document Content Infrastructure Adapter Boundary — Technical Durable / Closure Review Pending |
+| Active RFC | RFC-071 — Canonical Binary Document Content Infrastructure Adapter Boundary — Closure Durable / Reconciliation Review Pending |
 | Selected Architecture Workstream | RFC-071 — Canonical Binary Document Content Infrastructure Adapter Boundary — Selection Durable |
-| Proposed Successor RFC | None — RFC-071 is active |
+| Proposed Successor RFC | None — RFC-071 post-closure reconciliation is active; successor not authorized |
 | RFC-069 Selection Commit | `5d7794352029576e0b62c2ac8cbfa248fe11961d` |
 | RFC-070 Selection Commit | `13cfccc08d8c0a3b891990d38edaf9fc48874a5e` |
-| Architecture Decision | AD-057 — Accepted and Git Durable; RFC-071 Technical Implementation Durable |
+| Architecture Decision | AD-057 — Accepted and Git Durable; RFC-071 Technical and Closure Git Durability Complete |
 | RFC-069 Accepted Contract Commit | `467440b6c5d16e599fbc0d0f5c820d31725fd29b` |
 | RFC-070 Accepted Contract Commit | `cfd45d35144574d27a40e0f350b571a6298afd59` — committed / pushed / exact identity verified |
 | RFC-070 Technical Commit | `389ce20b9e01b99cf9b7c1a066a0e9a55bc71223` — committed / pushed / exact identity verified |
@@ -34,6 +34,9 @@
 | RFC-071 Selection State | Durable — Committed, Pushed and Exact Identity Verified |
 | RFC-071 Selection Commit | `92fc4196f24c84d49846ee9825aba9eeb1b03d8b` — committed / pushed / exact identity verified |
 | RFC-071 Architecture Contract State | Accepted / Git Durable — Technical Implementation Committed and Pushed |
+| RFC-071 Engineering Closure Commit | `c725163808d88d5b89e034b608eb51829efd0f4b` — committed / pushed / exact identity verified |
+| RFC-071 Engineering Closure State | Complete / Pushed / Exact Identity Verified — Post-Closure Reconciliation Pending |
+| RFC-071 Post-Closure Reconciliation | Authored — Review Pending |
 | Alembic Head | `0005` |
 | Purpose | Authoritative context for continuing PlantMind development across engineering sessions |
 
@@ -3586,3 +3589,69 @@ Successor RFC:
 Review the complete closure-documentation diff.
 
 Do not stage before closure review passes.
+
+---
+
+## RFC-071 Post-Closure Source-of-Truth Reconciliation State
+
+### Durable Closure Baseline
+
+Engineering closure commit:
+
+`c725163808d88d5b89e034b608eb51829efd0f4b`
+
+Closure push / exact local-tracking-remote identity:
+
+**PASS**
+
+Full regression:
+
+**956 passed**
+
+Alembic head:
+
+`0005`
+
+### Current Reconciliation State
+
+Source-of-Truth reconciliation:
+
+**AUTHORED — REVIEW PENDING**
+
+Reconciliation commit:
+
+**NOT YET CREATED**
+
+Reconciliation push / exact identity verification:
+
+**NOT YET PERFORMED**
+
+Final reconciliation verification record:
+
+**NOT YET CREATED**
+
+RFC-071 terminal closure:
+
+**NOT YET CLAIMED**
+
+Last fully closed RFC remains:
+
+**RFC-070**
+
+Successor:
+
+**NOT AUTHORIZED**
+
+### Preserved Technical Boundary
+
+RFC-071 remains limited to the accepted and verified filesystem-backed binary
+Document Content Infrastructure adapter boundary.
+
+No production, test, database, Alembic, Runtime, Composition or provider-SDK
+change is introduced by this reconciliation.
+
+### Next Gate
+
+Review the complete five-document RFC-071 post-closure reconciliation diff.
+
+Do not stage until reconciliation review passes.
