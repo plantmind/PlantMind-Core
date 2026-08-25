@@ -13,13 +13,22 @@ INFRA = (
     / "document_content"
 )
 
-EXPECTED_FILES = {
+RFC069_INFRA_FILES = {
     "__init__.py",
     "duplicate_classification.py",
     "mapping.py",
     "models.py",
     "repository.py",
 }
+
+RFC071_INFRA_FILES = {
+    "filesystem_store.py",
+}
+
+EXPECTED_FILES = (
+    RFC069_INFRA_FILES
+    | RFC071_INFRA_FILES
+)
 
 CANONICAL_FILES = (
     BACKEND_APP / "domain/document_content.py",
@@ -157,7 +166,8 @@ def test_rfc069_introduces_no_binary_content_storage_contract() -> None:
 
     violations: list[tuple[str, str]] = []
 
-    for path in INFRA.glob("*.py"):
+    for name in sorted(RFC069_INFRA_FILES):
+        path = INFRA / name
         source = path.read_text()
 
         for marker in prohibited:
@@ -170,6 +180,18 @@ def test_rfc069_introduces_no_binary_content_storage_contract() -> None:
                 )
 
     assert violations == []
+
+
+def test_rfc071_filesystem_store_is_only_binary_store_contract_owner() -> None:
+    owners = []
+
+    for path in INFRA.glob("*.py"):
+        if "DocumentContentStore" in path.read_text():
+            owners.append(path.name)
+
+    assert sorted(owners) == [
+        "filesystem_store.py",
+    ]
 
 
 def test_database_runtime_does_not_gain_document_content_ownership() -> None:
