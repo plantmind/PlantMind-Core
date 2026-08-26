@@ -10,12 +10,16 @@
 | Deployment Model | On-Premise |
 | Development Branch | `feature/engineering-platform` |
 | Last Fully Closed RFC | RFC-071 — Canonical Binary Document Content Infrastructure Adapter Boundary — Fully Closed and Source-of-Truth Reconciled |
-| Active RFC | RFC-072 — Canonical Document Content Establishment Application Coordination Boundary — Selected Successor / Architecture Contract Not Yet Authored |
+| Active RFC | RFC-072 — Canonical Document Content Establishment Application Coordination Boundary — Architecture Contract Accepted / Git Gate Pending |
 | Selected Architecture Workstream | RFC-072 — Canonical Document Content Establishment Application Coordination Boundary |
-| Proposed Successor RFC | RFC-072 — selected successor architecture workstream |
+| Proposed Successor RFC | None — RFC-072 is active; no successor selected |
 | RFC-069 Selection Commit | `5d7794352029576e0b62c2ac8cbfa248fe11961d` |
 | RFC-070 Selection Commit | `13cfccc08d8c0a3b891990d38edaf9fc48874a5e` |
-| Architecture Decision | AD-057 — Accepted |
+| Architecture Decision | AD-058 — Accepted; Accepted-Contract Git Gate Pending; Implementation Not Authorized |
+| RFC-072 Selection State | Durable — Committed, Pushed and Exact Identity Verified |
+| RFC-072 Selection Commit | `0c9a8cba53221f547d340fa499f1ac7d07d1e7d3` — committed / pushed / exact identity verified |
+| RFC-072 Architecture Contract State | Accepted — Acceptance-State Metadata Refined / Re-Review Pending / Git Durability Pending |
+| RFC-072 Implementation Entry | Not Authorized |
 | RFC-069 Accepted Contract Commit | `467440b6c5d16e599fbc0d0f5c820d31725fd29b` |
 | RFC-070 Accepted Contract Commit | `cfd45d35144574d27a40e0f350b571a6298afd59` — committed / pushed / exact identity verified |
 | RFC-070 Technical Commit | `389ce20b9e01b99cf9b7c1a066a0e9a55bc71223` — committed / pushed / exact identity verified |
@@ -3772,3 +3776,105 @@ Architecture contract:
 Implementation:
 
 **NOT AUTHORIZED**
+
+---
+
+## RFC-072 / AD-058 Architecture Contract Accepted State
+
+Selected workstream:
+
+**RFC-072 — Canonical Document Content Establishment Application Coordination Boundary**
+
+Durable selection commit:
+
+`0c9a8cba53221f547d340fa499f1ac7d07d1e7d3`
+
+Accepted Architecture Decision:
+
+**AD-058 — Canonical Document Content Establishment Application Coordination Boundary**
+
+Final refined architecture review:
+
+**PASS — NO REMAINING REFINE / NO BLOCKED ITEM**
+
+Gate-separation review:
+
+**PASS**
+
+### Accepted Decision
+
+RFC-072 proposes one canonical Application boundary:
+
+`DocumentContentEstablishmentApplicationService`
+
+Its responsibility is to establish and verify coherent canonical Document
+Content using existing:
+
+- Enterprise Document repository;
+- Document Content descriptor repository;
+- binary Document Content store.
+
+The architecture does not claim distributed transaction atomicity.
+
+It uses payload-first monotonic establishment with explicit recovery of the
+payload-present / descriptor-absent partial state.
+
+Descriptor-present / payload-absent is classified as an integrity state and is
+not automatically healed by RFC-072.
+
+Cross-store state observation is not represented as an atomic or linearizable
+snapshot.
+
+A racing fresh binary-store duplicate is classified as an RFC-072 Application
+conflict, not same-invocation idempotent success.
+
+Architecture acceptance is explicitly prior to implementation entry.
+
+RFC-072 implementation tests, full regression and Python compilation belong to
+the later technical gate after accepted-contract Git durability and a separate
+implementation-entry PASS.
+
+### Preserved Boundaries
+
+The accepted contract introduces no authorization for:
+
+- Domain redesign;
+- repository/store redesign;
+- filesystem adapter redesign;
+- new database schema;
+- Alembic migration;
+- Runtime/Composition wiring;
+- Document Library;
+- parser/OCR/chunking;
+- Search/Vector/Graph/RAG/LLM;
+- production-security or Cybersecurity completion.
+
+### Current State
+
+RFC-072 selection:
+
+**GIT DURABLE**
+
+AD-058:
+
+**ACCEPTED — ACCEPTED-CONTRACT GIT GATE PENDING**
+
+Accepted-contract Git durability:
+
+**PENDING**
+
+Implementation entry:
+
+**NOT AUTHORIZED**
+
+Acceptance-state staging / commit / push:
+
+**NONE**
+
+Full regression baseline:
+
+**956 passed**
+
+Alembic head:
+
+`0005`

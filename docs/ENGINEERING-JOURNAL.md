@@ -8015,3 +8015,282 @@ Implementation:
 Next action:
 
 Review this five-document RFC-072 successor-selection diff.
+
+---
+
+## 2026-08-26 — RFC-072 / AD-058 Architecture Contract Draft Authored
+
+### Durable Selection Baseline
+
+RFC-072 selection commit:
+
+`0c9a8cba53221f547d340fa499f1ac7d07d1e7d3`
+
+Selection Git durability:
+
+**PASS — LOCAL / TRACKING / REMOTE IDENTITY VERIFIED**
+
+Selected workstream:
+
+**RFC-072 — Canonical Document Content Establishment Application Coordination Boundary**
+
+Latest Accepted Architecture Decision remains:
+
+**AD-057**
+
+### Draft Architecture Resolution
+
+The RFC-072 / AD-058 draft selects one narrow:
+
+`DocumentContentEstablishmentApplicationService`
+
+using only:
+
+- `EnterpriseDocumentRepository`;
+- `DocumentContentRepository`;
+- `DocumentContentStore`.
+
+The draft deliberately rejects false distributed atomicity.
+
+The selected model is:
+
+**monotonic recoverable Application coordination**
+
+Fresh content uses payload-first then descriptor establishment.
+
+Normal return requires verified Document + descriptor + payload consistency.
+
+Operational failure may expose a recoverable payload-only state.
+
+Descriptor-present / payload-absent is not automatically healed by RFC-072; it
+is classified as an integrity state because safe repair of an arbitrary
+non-seekable source would require replay/buffering or store-contract expansion.
+
+Cross-store descriptor/payload observation is not claimed to be one atomic or
+linearizable snapshot.
+
+The superseded descriptor-only caller-byte conflict path is removed.
+
+A racing fresh-store duplicate is deterministically mapped to
+`DocumentContentEstablishmentConflictError`; it is not same-invocation
+idempotent success.
+
+Architecture acceptance is now explicitly separated from the later technical
+implementation gate.
+
+Focused RFC-072 implementation tests, full regression and Python compilation
+are technical-gate requirements after accepted-contract Git durability and the
+separate implementation-entry PASS; they are not prerequisites for accepting
+AD-058.
+
+No automatic binary delete/rollback is introduced.
+
+Explicit retries re-observe actual canonical state.
+
+### Current Gate
+
+AD-058:
+
+**DRAFT — NOT ACCEPTED**
+
+Architecture review:
+
+**RE-REVIEW PENDING**
+
+Implementation:
+
+**NOT AUTHORIZED**
+
+Staging:
+
+**NOT AUTHORIZED**
+
+Commit:
+
+**NONE**
+
+Push:
+
+**NONE**
+
+Next action:
+
+Review the complete five-document RFC-072 / AD-058 architecture draft.
+
+---
+
+## 2026-08-26 — RFC-072 / AD-058 Architecture Contract Acceptance
+
+**Append-Only Architecture Contract Record**
+
+Verified RFC-072 selection commit:
+
+`0c9a8cba53221f547d340fa499f1ac7d07d1e7d3`
+
+Selected workstream:
+
+**RFC-072 — Canonical Document Content Establishment Application Coordination Boundary**
+
+Architecture Decision:
+
+**AD-058 — Canonical Document Content Establishment Application Coordination Boundary**
+
+### Final Architecture Review
+
+Final refined architecture review:
+
+**PASS — NO REMAINING REFINE / NO BLOCKED ITEM**
+
+Gate-separation refinement:
+
+**PASS**
+
+The circular acceptance / implementation dependency has been removed.
+
+Architecture acceptance precedes implementation entry.
+
+RFC-072 focused implementation tests, full regression and Python compilation
+belong to the later technical gate after accepted-contract Git durability and
+a separate implementation-entry PASS.
+
+### Accepted Direction
+
+Accepted Application service:
+
+`DocumentContentEstablishmentApplicationService`
+
+Canonical dependency surface:
+
+- `EnterpriseDocumentRepository`;
+- `DocumentContentRepository`;
+- `DocumentContentStore`.
+
+Fresh establishment ordering:
+
+**payload first → descriptor second**
+
+Descriptor-present / payload-absent:
+
+**INTEGRITY ERROR — NO AUTOMATIC HEAL**
+
+Payload-present / descriptor-absent:
+
+**RECOVERABLE**
+
+Fresh binary-store race:
+
+**APPLICATION CONFLICT — NOT SAME-INVOCATION IDEMPOTENT SUCCESS**
+
+Cross-store distributed atomicity:
+
+**NOT CLAIMED**
+
+New descriptor/payload transaction coordinator:
+
+**NONE**
+
+### Architecture Contract Acceptance
+
+AD-058:
+
+**ACCEPTED — ACCEPTED-CONTRACT GIT GATE PENDING**
+
+Implementation:
+
+**NOT AUTHORIZED**
+
+Acceptance-state staging:
+
+**NONE**
+
+Commit:
+
+**NONE**
+
+Push:
+
+**NONE**
+
+Full regression baseline remains:
+
+**956 passed**
+
+Canonical Alembic head remains:
+
+`0005`
+
+### Next Exact Action
+
+Review the complete five-document RFC-072 / AD-058 architecture acceptance
+state.
+
+Do not stage before that review passes.
+
+The accepted contract must be committed, pushed and exact Git identity verified
+before any separate implementation-entry decision.
+
+---
+
+## 2026-08-26 — RFC-072 / AD-058 Acceptance-State Metadata Coherence Refinement
+
+### Classification
+
+Architecture decision change:
+
+**NONE**
+
+Architecture contract semantics change:
+
+**NONE**
+
+Acceptance-state review identified one metadata contradiction in the uncommitted
+RFC-072 Roadmap acceptance record:
+
+- the Roadmap section heading still said `Architecture Contract Draft`;
+- its matching Architecture Decision still said
+  `AD-058 — Draft / Not Accepted`;
+- the same Roadmap section already correctly declared AD-058 Accepted.
+
+The accepted Project state also retained the stale phrase:
+
+`The draft introduces no authorization for`
+
+after architecture acceptance.
+
+### Refinement
+
+The current uncommitted acceptance state was refined so that:
+
+- the Roadmap heading identifies the RFC-072 Architecture Contract as Accepted;
+- the Roadmap identifies AD-058 as Accepted with its Git gate pending;
+- the Project accepted-state language says `The accepted contract`;
+- Project and Session current controls record metadata refinement / re-review
+  pending.
+
+Historical draft chronology remains unchanged.
+
+AD-058 remains:
+
+**ACCEPTED — ACCEPTED-CONTRACT GIT GATE PENDING**
+
+Implementation remains:
+
+**NOT AUTHORIZED**
+
+Staging:
+
+**NONE**
+
+Commit:
+
+**NONE**
+
+Push:
+
+**NONE**
+
+### Next Exact Action
+
+Re-review the complete five-document architecture acceptance state.
+
+No staging is authorized until that re-review passes.

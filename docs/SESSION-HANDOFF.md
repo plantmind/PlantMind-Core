@@ -7,10 +7,14 @@
 | Project | PlantMind PM-001 |
 | Branch | `feature/engineering-platform` |
 | Last Fully Closed RFC | RFC-071 — Canonical Binary Document Content Infrastructure Adapter Boundary — Fully Closed and Source-of-Truth Reconciled |
-| Active RFC | RFC-072 — Canonical Document Content Establishment Application Coordination Boundary — Selected Successor / Architecture Contract Not Yet Authored |
+| Active RFC | RFC-072 — Canonical Document Content Establishment Application Coordination Boundary — Architecture Contract Accepted / Git Gate Pending |
 | Selected Architecture Workstream | RFC-072 — Canonical Document Content Establishment Application Coordination Boundary |
-| Proposed Successor RFC | RFC-072 — selected successor architecture workstream |
-| Architecture Decision | AD-057 — Accepted |
+| Proposed Successor RFC | None — RFC-072 is active; no successor selected |
+| Architecture Decision | AD-058 — Accepted; Accepted-Contract Git Gate Pending; Implementation Not Authorized |
+| RFC-072 Selection State | Durable — Committed, Pushed and Exact Identity Verified |
+| RFC-072 Selection Commit | `0c9a8cba53221f547d340fa499f1ac7d07d1e7d3` — committed / pushed / exact identity verified |
+| RFC-072 Architecture Contract State | Accepted — Acceptance-State Metadata Refined / Re-Review Pending / Git Durability Pending |
+| RFC-072 Implementation Entry | Not Authorized |
 | RFC-069 Selection Commit | `5d7794352029576e0b62c2ac8cbfa248fe11961d` |
 | RFC-070 Selection Commit | `13cfccc08d8c0a3b891990d38edaf9fc48874a5e` |
 | RFC-069 Accepted Contract Commit | `467440b6c5d16e599fbc0d0f5c820d31725fd29b` |
@@ -44,7 +48,7 @@
 | Alembic Head | `0005` |
 | Authoritative Environment | `PlantMind-Core/.venv` |
 | RFC-069 State | Fully Closed and Source-of-Truth Reconciled |
-| Successor RFC Selection | RFC-072 selected — architecture contract not yet authored |
+| Successor RFC Selection | RFC-072 selected and active — AD-058 architecture contract accepted / Git gate pending |
 ## Recent Engineering Sequence
 
 - RFC-025 — Core Plugin Framework
@@ -3548,3 +3552,83 @@ No staging until selection review passes.
 
 No architecture implementation until the later RFC-072 architecture contract
 is accepted and Git durable.
+
+---
+
+## RFC-072 / AD-058 Architecture Acceptance Handoff
+
+RFC-072 selection commit:
+
+`0c9a8cba53221f547d340fa499f1ac7d07d1e7d3`
+
+Selection Git durability:
+
+**COMPLETE**
+
+Accepted architecture contract:
+
+**AD-058 — Canonical Document Content Establishment Application Coordination Boundary**
+
+Final refined architecture review:
+
+**PASS — NO REMAINING REFINE / NO BLOCKED ITEM**
+
+Status:
+
+**ACCEPTED — ACCEPTED-CONTRACT GIT GATE PENDING**
+
+### Exact Architecture Direction
+
+RFC-072 introduces one narrow Application service for canonical Document
+Content establishment.
+
+It consumes only persistence-neutral:
+
+- `EnterpriseDocumentRepository`;
+- `DocumentContentRepository`;
+- `DocumentContentStore`.
+
+Fresh establishment ordering is:
+
+**payload first → descriptor second**
+
+Success requires verified coherent state.
+
+Failure is not falsely represented as cross-store atomic rollback.
+
+Payload-present / descriptor-absent partial state is explicitly recoverable.
+
+Descriptor-present / payload-absent is an integrity state and RFC-072 performs
+no automatic repair of it.
+
+Descriptor/payload observations are not claimed to form one atomic cross-store
+snapshot.
+
+A racing fresh binary-store duplicate is mapped to
+`DocumentContentEstablishmentConflictError`; it is not treated as
+same-invocation idempotent success.
+
+AD-058 architecture acceptance occurs before implementation entry.
+
+Focused RFC-072 implementation tests, full regression and Python compilation
+belong to the later technical gate after accepted-contract Git durability and
+the separate implementation-entry PASS.
+
+No new descriptor/payload transaction coordinator is selected.
+
+`KnowledgeLineageTransactionCoordinator` remains unchanged.
+
+No concrete `FilesystemDocumentContentStore` dependency may enter the
+Application service.
+
+### Next Exact Action
+
+Re-review the complete five-document RFC-072 / AD-058 architecture acceptance
+state after metadata-coherence refinement.
+
+Do not stage until that acceptance-state re-review passes.
+
+Do not commit or push until the later staging review passes.
+
+Do not begin implementation until accepted-contract Git durability and the
+later implementation-entry gate both pass.

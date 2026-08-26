@@ -15837,3 +15837,1054 @@ Architecture drafting may begin only after this successor-selection record is:
 5. confirmed exact on Local / Tracking / Remote.
 
 No implementation is authorized by this selection.
+
+---
+
+## RFC-072 Architecture Contract Accepted — Canonical Document Content Establishment Application Coordination Boundary
+
+Accepted Architecture Decision:
+
+**AD-058 — Accepted / Accepted-Contract Git Gate Pending**
+
+### Status
+
+**ACCEPTED — ACCEPTED-CONTRACT GIT GATE PENDING**
+
+The RFC-072 / AD-058 Architecture Contract is Accepted.
+
+Its accepted-contract commit, push and exact Git durability gate remain
+pending.
+
+Implementation remains:
+
+**NOT AUTHORIZED**
+
+### Related Workstream
+
+**RFC-072 — Canonical Document Content Establishment Application Coordination Boundary**
+
+Verified successor-selection commit:
+
+`0c9a8cba53221f547d340fa499f1ac7d07d1e7d3`
+
+Selection Git durability:
+
+**PASS — LOCAL / TRACKING / REMOTE IDENTITY VERIFIED**
+
+Last fully closed workstream:
+
+**RFC-071 — Canonical Binary Document Content Infrastructure Adapter Boundary**
+
+Full regression baseline:
+
+**956 passed**
+
+Canonical Alembic head:
+
+`0005`
+
+### Context
+
+PlantMind now has the complete prerequisite Document Content foundation:
+
+- canonical immutable `DocumentContentDescriptor` Domain semantics;
+- canonical persistence-neutral `DocumentContentRepository`;
+- relational descriptor persistence;
+- canonical persistence-neutral `DocumentContentStore`;
+- concrete `FilesystemDocumentContentStore`.
+
+The remaining dependency gap is the Application-layer use case that establishes
+one coherent canonical Document Content association without collapsing
+descriptor persistence and binary storage into one responsibility.
+
+### Architectural Decision
+
+RFC-072 SHALL introduce one narrow Application service:
+
+`DocumentContentEstablishmentApplicationService`
+
+under:
+
+`app.services.document_content_establishment_application_service`
+
+implemented at:
+
+`backend/app/services/document_content_establishment_application_service.py`
+
+RFC-072 SHALL NOT introduce a new ARCH-001 layer.
+
+The service SHALL coordinate existing persistence-neutral contracts.
+
+It SHALL NOT become a persistence adapter or transaction manager.
+
+### Canonical Public Surface
+
+The new module SHALL expose exactly these RFC-072 public classes:
+
+- `DocumentContentEstablishmentRequest`;
+- `DocumentContentEstablishmentDocumentNotFoundError`;
+- `DocumentContentEstablishmentConflictError`;
+- `DocumentContentEstablishmentIntegrityError`;
+- `DocumentContentEstablishmentApplicationService`.
+
+No package-level re-export is required.
+
+Existing package initializers SHALL remain unchanged unless separately reviewed.
+
+### Canonical Request
+
+`DocumentContentEstablishmentRequest`
+
+SHALL be an immutable keyword-only dataclass containing exactly:
+
+`document_id: EntityId`
+
+`media_type: str`
+
+`source: BinaryIO`
+
+The request SHALL NOT require callers to supply:
+
+- byte length;
+- SHA-256 digest;
+- filesystem path;
+- URI;
+- storage key;
+- Infrastructure adapter;
+- SQLAlchemy session.
+
+Byte length and digest SHALL be derived from the exact canonical byte sequence
+processed by the Application use case.
+
+### Canonical Service Dependencies
+
+`DocumentContentEstablishmentApplicationService.__init__`
+
+SHALL receive exactly these persistence-neutral dependencies:
+
+- `document_repository: EnterpriseDocumentRepository`;
+- `content_repository: DocumentContentRepository`;
+- `content_store: DocumentContentStore`.
+
+The service SHALL NOT depend on:
+
+- `FilesystemDocumentContentStore`;
+- SQLAlchemy;
+- `DatabaseRuntime`;
+- filesystem paths;
+- storage roots;
+- provider SDKs;
+- `KnowledgeLineageTransactionCoordinator`;
+- concrete Infrastructure repositories.
+
+### Canonical Operation
+
+The canonical Application operation SHALL be:
+
+`establish(request: DocumentContentEstablishmentRequest) -> DocumentContentDescriptor`
+
+Normal return SHALL mean that the Application service has verified one coherent
+canonical content state for the requested `document_id`.
+
+### Enterprise Document Existence
+
+Before reading caller payload bytes or creating new descriptor/payload state,
+the service SHALL verify:
+
+`document_repository.get(request.document_id)`
+
+returns an existing canonical `EnterpriseDocument`.
+
+If the Document is absent, the service SHALL raise:
+
+`DocumentContentEstablishmentDocumentNotFoundError`
+
+No descriptor or payload persistence SHALL occur for an absent Document.
+
+RFC-072 SHALL NOT combine Enterprise Document registration with content
+establishment.
+
+`EnterpriseDocumentRegistrationApplicationService` remains unchanged.
+
+### Source Reference Boundary
+
+The Application service SHALL receive canonical payload bytes explicitly through:
+
+`request.source`
+
+It SHALL NOT open, interpret or convert:
+
+`EnterpriseDocument.source.source_reference`
+
+into canonical content access.
+
+`source_reference` remains external provenance / traceability only.
+
+### Media-Type Boundary
+
+`request.media_type`
+
+SHALL be converted through the existing canonical:
+
+`DocumentContentMediaType`
+
+before content establishment is reported successful.
+
+RFC-072 SHALL NOT duplicate media-type normalization or validation rules.
+
+### Exact Byte Measurement
+
+RFC-072 SHALL own Application-level derivation of:
+
+- exact byte length;
+- SHA-256 digest
+
+for the canonical raw byte sequence.
+
+Measurement SHALL use the exact bytes from the caller source's current position
+through EOF.
+
+It SHALL perform no:
+
+- text normalization;
+- parsing;
+- OCR;
+- decompression;
+- character conversion;
+- semantic transformation.
+
+The resulting descriptor SHALL use existing:
+
+`DocumentContentDigest`
+
+and:
+
+`DocumentContentDescriptor`
+
+Domain contracts.
+
+SHA-256 remains integrity metadata.
+
+It SHALL NOT become canonical identity, deduplication identity or storage
+identity.
+
+### Caller Source Lifecycle
+
+The Application service SHALL preserve RFC-070 caller-source semantics:
+
+- source ownership remains with the caller;
+- source is consumed from current position through EOF;
+- non-seekable sources are supported;
+- successful `seek()` is not required;
+- successful `tell()` is not required;
+- `fileno()` is not required;
+- the Application service SHALL NOT close the caller-owned source;
+- no rewind or position-restoration guarantee exists after failure.
+
+RFC-072 SHALL NOT require complete payload materialization in memory.
+
+### Single-Pass Fresh-Payload Measurement Boundary
+
+For fresh payload establishment, the Application service MAY use an
+Application-private read-through measuring wrapper around the caller-owned
+source.
+
+That wrapper SHALL:
+
+- forward bytes incrementally to `DocumentContentStore.add()`;
+- count only bytes actually yielded through the wrapper;
+- update SHA-256 only from those exact yielded bytes;
+- preserve byte order and value;
+- require no `seek()`;
+- require no `tell()`;
+- require no caller `fileno()`;
+- never close the caller-owned source;
+- not read ahead merely to complete validation;
+- not require full payload buffering in memory;
+- not introduce Application-owned filesystem or temporary-file persistence.
+
+Measurement from a fresh write SHALL be considered complete and usable for
+descriptor construction only when `DocumentContentStore.add()` returns
+normally.
+
+If `add()` fails, partial measurement state SHALL NOT be used to construct or
+persist a new descriptor.
+
+This preserves exact single-pass measurement without creating a replay or
+temporary-storage responsibility in the Application layer.
+
+### Existing-Payload Read Lifecycle
+
+When RFC-072 must verify an already-established payload, it SHALL use:
+
+`DocumentContentStore.open(document_id)`
+
+through the accepted context-manager lifecycle.
+
+The service SHALL:
+
+- consume the opened payload from byte zero;
+- calculate exact SHA-256 and byte length;
+- close the store-owned resource through the context manager;
+- treat `None` only as confirmed absence;
+- allow operational storage failures to propagate.
+
+### Canonical Establishment State Model
+
+RFC-072 recognizes four observable combinations for an existing canonical
+Document identity:
+
+1. descriptor absent / payload absent;
+2. descriptor present / payload absent;
+3. descriptor absent / payload present;
+4. descriptor present / payload present.
+
+RFC-072 SHALL NOT add a persisted workflow-state field or status table for these
+combinations.
+
+The state is derived only by observing the accepted repository/store contracts.
+
+Observation of descriptor state and payload state SHALL NOT be represented as
+one atomic cross-store snapshot.
+
+RFC-072 claims no cross-store linearizable read.
+
+Concurrent establishment may therefore cause an invocation to fail
+conservatively with conflict or integrity classification even when a later
+observation would show a converged state.
+
+A later explicit invocation may re-observe the current canonical state.
+
+No result may claim success unless the success invariants of this contract have
+actually been verified.
+
+### Fresh Establishment Ordering
+
+For:
+
+**descriptor absent / payload absent**
+
+RFC-072 SHALL establish the binary payload first.
+
+The service SHALL stream the caller source through measurement logic into:
+
+`DocumentContentStore.add(document_id, source)`
+
+Only after successful payload establishment may the service construct and add
+the canonical descriptor.
+
+The descriptor SHALL be derived from the exact bytes consumed by the successful
+payload operation.
+
+RFC-072 deliberately selects:
+
+**payload publication before descriptor publication**
+
+for new content.
+
+This prevents RFC-072 itself from exposing a newly persisted descriptor before
+the corresponding new payload has been established.
+
+### Fresh Descriptor Persistence
+
+After successful new payload establishment, the service SHALL construct:
+
+`DocumentContentDescriptor`
+
+using:
+
+- the requested canonical `document_id`;
+- normalized `DocumentContentMediaType`;
+- measured exact byte length;
+- measured SHA-256 digest.
+
+It SHALL then call:
+
+`DocumentContentRepository.add(descriptor)`
+
+Normal return SHALL occur only after the descriptor is successfully accepted
+according to the existing repository contract or an exact concurrent descriptor
+result is safely reconciled as defined below.
+
+RFC-072 SHALL NOT add a stronger physical-durability guarantee to the abstract
+repository contract than that contract already provides.
+
+### Descriptor-Present / Payload-Absent Integrity State
+
+When a canonical descriptor already exists but the binary payload is confirmed
+absent, RFC-072 SHALL classify the observed state as:
+
+`DocumentContentEstablishmentIntegrityError`
+
+RFC-072 SHALL NOT automatically heal this state.
+
+For this state, the invocation SHALL:
+
+- not consume the caller-owned source;
+- not call `DocumentContentStore.add()`;
+- not add or replace a descriptor;
+- not overwrite any canonical state;
+- not introduce temporary buffering or replay storage.
+
+This restriction is intentional.
+
+The existing binary store exposes immutable create-if-absent publication and no
+conditional pre-publication digest predicate.
+
+The caller source is allowed to be non-seekable and RFC-072 introduces no
+replay-buffer persistence contract.
+
+Therefore RFC-072 cannot both:
+
+1. fully validate an arbitrary non-seekable caller stream against the existing
+   descriptor before publication; and
+2. subsequently publish those same bytes through the unchanged store
+
+without adding buffering/replay or changing the accepted store contract.
+
+Neither expansion is authorized by RFC-072.
+
+Descriptor-present / payload-absent state is not a state produced by the normal
+RFC-072 payload-first flow.
+
+If encountered, remediation requires separately governed operational or
+architecture action.
+
+A later invocation may observe a different state if another authorized actor
+has independently restored the payload.
+
+### Payload-Present / Descriptor-Absent Recovery
+
+When the payload already exists but the descriptor is absent:
+
+1. the existing payload SHALL be measured through `DocumentContentStore.open`;
+2. the caller source SHALL be consumed and measured;
+3. caller source byte length and SHA-256 SHALL match the existing payload;
+4. the requested media type SHALL be normalized through the Domain contract;
+5. the descriptor SHALL be constructed from the already-established payload's
+   measured bytes;
+6. the descriptor may then be persisted through `DocumentContentRepository`.
+
+If caller source bytes do not match the already-established payload, the
+operation SHALL raise:
+
+`DocumentContentEstablishmentConflictError`
+
+and SHALL NOT create a descriptor.
+
+### Descriptor-Present / Payload-Present Verification
+
+When descriptor and payload both already exist:
+
+1. requested media type SHALL match the canonical descriptor;
+2. persisted payload byte length and SHA-256 SHALL match the canonical
+   descriptor;
+3. caller source SHALL be consumed and measured;
+4. caller source bytes SHALL match the canonical persisted content;
+5. only then may an explicit repeated establishment request return successfully.
+
+Successful exact repeat SHALL return the existing canonical descriptor.
+
+This is Application-level idempotent convergence.
+
+It SHALL NOT change the underlying repository/store duplicate contracts into
+idempotent-success contracts.
+
+### Canonical Integrity Failure
+
+`DocumentContentEstablishmentIntegrityError`
+
+SHALL represent canonical persisted-state inconsistency.
+
+It SHALL be raised when:
+
+- a canonical descriptor is present while the payload is confirmed absent; or
+- an already-persisted descriptor and already-persisted payload disagree on
+  byte length; or
+- an already-persisted descriptor and already-persisted payload disagree on
+  SHA-256 digest.
+
+It SHALL NOT:
+
+- overwrite either side;
+- delete either side;
+- reinterpret the mismatch as absence;
+- silently repair using caller bytes.
+
+Such a mismatch is an observed canonical integrity violation requiring separate
+operational investigation.
+
+### Canonical Request Conflict
+
+`DocumentContentEstablishmentConflictError`
+
+SHALL represent a request that cannot converge with already-established
+canonical state.
+
+Examples include:
+
+- requested media type differs from an existing canonical descriptor;
+- caller bytes differ from an already-established canonical payload;
+- a concurrent binary-store duplicate occurs after this invocation already
+  attempted a new write and exact equivalence cannot safely be proven from the
+  possibly-consumed caller source.
+
+Conflict SHALL NOT authorize overwrite or replacement.
+
+### Duplicate and Concurrency Semantics
+
+RFC-072 SHALL preserve the accepted duplicate contracts of both underlying
+ports.
+
+`DocumentContentPayloadAlreadyExistsError`
+
+from a racing new `DocumentContentStore.add()` SHALL NOT automatically become
+idempotent success in the same invocation.
+
+RFC-070 permits a failed `add()` to leave caller-source position unspecified.
+
+Therefore RFC-072 SHALL NOT assume it can safely replay or revalidate that
+source after a racing store duplicate.
+
+That invocation SHALL raise:
+
+`DocumentContentEstablishmentConflictError`
+
+The RFC-072 Application service SHALL map that racing
+`DocumentContentPayloadAlreadyExistsError` to the Application conflict
+classification.
+
+It SHALL NOT treat the duplicate as same-invocation idempotent success because
+the caller source may already be partially or fully consumed and exact
+equivalence cannot safely be proven by replay.
+
+The original store duplicate MAY be retained as causal exception context.
+
+A later explicit invocation using a fresh source may re-observe the now-existing
+canonical state and converge through the applicable state rules.
+
+### Descriptor Duplicate Reconciliation
+
+If the payload has already been successfully established or verified and
+`DocumentContentRepository.add()` encounters
+`DocumentContentAlreadyExistsError` due to a concurrent descriptor writer,
+RFC-072 MAY re-read the canonical descriptor.
+
+If the observed descriptor is exactly equal to the descriptor this invocation
+has already derived and the payload state is known valid, the operation MAY
+return that canonical descriptor successfully.
+
+If the descriptor differs, the service SHALL raise:
+
+`DocumentContentEstablishmentConflictError`
+
+No overwrite is allowed.
+
+### Success Contract
+
+Normal return from `establish()` SHALL mean:
+
+- the canonical Enterprise Document exists;
+- exactly one canonical descriptor is present for the Document;
+- one canonical binary payload is present for the Document;
+- descriptor `document_id` equals the canonical Document identity;
+- descriptor media type is canonical;
+- descriptor byte length describes the exact persisted payload;
+- descriptor SHA-256 describes the exact persisted payload;
+- the supplied caller source for this invocation has been established or
+  verified against that canonical state;
+- no overwrite, replacement or deletion occurred.
+
+### Atomicity Decision
+
+RFC-072 SHALL NOT claim distributed or all-or-nothing transaction atomicity
+across:
+
+- `EnterpriseDocumentRepository`;
+- `DocumentContentRepository`;
+- `DocumentContentStore`.
+
+The current descriptor repository uses independently committed persistence.
+
+The binary store publishes immutable payloads through a separately owned
+storage boundary with no delete/rollback operation.
+
+A generic transaction coordinator cannot truthfully provide rollback across
+those accepted contracts without redesigning them.
+
+RFC-072 therefore selects:
+
+**monotonic recoverable Application coordination**
+
+rather than false distributed atomicity.
+
+### New Coordinator Decision
+
+RFC-072 SHALL NOT introduce a new descriptor/payload transaction coordinator.
+
+It SHALL NOT extend:
+
+`KnowledgeLineageTransactionCoordinator`
+
+That coordinator remains exclusively responsible for its accepted Knowledge and
+lineage transaction scope.
+
+Application orchestration is sufficient for RFC-072 because the selected model
+is explicit state observation, monotonic establishment and retry recovery—not a
+shared transactional resource boundary.
+
+### Partial-Failure Contract
+
+RFC-072 SHALL distinguish success from recoverable partial state.
+
+If binary payload establishment fails before canonical publication, no new
+descriptor SHALL be added by RFC-072.
+
+If the store raises an operational failure after canonical publication may
+already have occurred, RFC-072 SHALL propagate the failure and SHALL NOT add a
+new descriptor in that invocation.
+
+This may leave:
+
+**payload present / descriptor absent**
+
+A later explicit retry may recover that state.
+
+If descriptor persistence raises a non-duplicate operational failure after
+payload establishment, the failure SHALL propagate.
+
+The canonical state may then be:
+
+- payload-only; or
+- already complete if the descriptor persistence boundary committed before a
+  later cleanup failure.
+
+A later retry SHALL re-observe actual state rather than infer outcome from the
+prior exception.
+
+### No Automatic Rollback
+
+RFC-072 SHALL NOT automatically delete a published binary payload.
+
+RFC-072 SHALL NOT add delete, replace or rollback operations to:
+
+- `DocumentContentStore`;
+- `DocumentContentRepository`.
+
+RFC-072 SHALL NOT attempt compensating filesystem deletion.
+
+Accepted RFC-070/RFC-071 immutability remains authoritative.
+
+### Retry / Idempotency Decision
+
+RFC-072 introduces no automatic retry loop.
+
+Retry is an explicit new Application invocation.
+
+An explicit retry MAY return idempotent success only after re-observing and
+verifying exact canonical state according to this contract.
+
+RFC-072 SHALL NOT use as standalone idempotency identity:
+
+- SHA-256 digest;
+- media type;
+- byte length;
+- source reference;
+- filesystem path.
+
+Canonical association identity remains:
+
+`document_id`
+
+Idempotent convergence is a verified Application outcome, not a new persistence
+identity.
+
+### Operational Failure Propagation
+
+Operational failures from:
+
+- `EnterpriseDocumentRepository`;
+- `DocumentContentRepository`;
+- `DocumentContentStore`;
+- caller source reads;
+- opened payload reads
+
+SHALL remain operational failures unless this contract explicitly classifies
+them as one of the RFC-072 Application errors.
+
+RFC-072 SHALL NOT introduce a generic catch-all storage or repository error
+hierarchy.
+
+### Existing Responsibility Preservation
+
+RFC-072 SHALL NOT modify or absorb the responsibilities of:
+
+- `EnterpriseDocumentRegistrationApplicationService`;
+- `DocumentKnowledgeIngestionApplicationService`;
+- `KnowledgeCaptureApplicationService`;
+- `KnowledgeLineageTransactionCoordinator`;
+- `EnterpriseDocumentRepository`;
+- `DocumentContentRepository`;
+- `DocumentContentStore`;
+- `FilesystemDocumentContentStore`;
+- `DocumentContentDescriptor`;
+- `EnterpriseDocument`.
+
+Document registration remains independent.
+
+Document-to-Knowledge ingestion remains independent.
+
+Knowledge/Lineage transactional coordination remains independent.
+
+### Persistence and Database Boundary
+
+RFC-072 requires no new:
+
+- SQLAlchemy model;
+- database table;
+- column;
+- foreign key;
+- index;
+- uniqueness constraint;
+- BLOB;
+- large-object persistence;
+- Alembic revision.
+
+Canonical Alembic head SHALL remain:
+
+`0005`
+
+`DatabaseRuntime` remains unchanged.
+
+### Infrastructure Boundary
+
+Application code SHALL NOT import:
+
+`app.infrastructure`
+
+It SHALL depend only on accepted persistence-neutral ports and Domain contracts.
+
+RFC-072 SHALL NOT expose:
+
+- storage root;
+- shard layout;
+- path;
+- hard link;
+- temporary filename;
+- filesystem implementation detail.
+
+The same Application service SHALL remain compatible with a future alternative
+`DocumentContentStore` implementation conforming to the accepted port.
+
+### Runtime / Composition Boundary
+
+RFC-072 SHALL NOT modify or expand:
+
+- `CompositionRoot`;
+- `ServiceContainer`;
+- `PlatformComposition`;
+- `ApplicationFacade`;
+- Runtime;
+- Bootstrap;
+- readiness;
+- Health;
+- request admission;
+- mandatory-capability policy.
+
+No default `FilesystemDocumentContentStore` wiring is authorized.
+
+### Document Library / Parser Boundary
+
+RFC-072 is not the Document Library.
+
+It SHALL NOT introduce:
+
+- upload API/UI;
+- download API/UI;
+- browse/catalogue behavior;
+- folder hierarchy;
+- parser integration;
+- PDF extraction;
+- OCR;
+- DOCX extraction;
+- spreadsheet extraction;
+- text extraction;
+- metadata extraction;
+- chunking.
+
+Future parser behavior SHALL consume canonical bytes through an accepted
+Application/access path and SHALL NOT reinterpret `source_reference`.
+
+### Search / Vector / Graph / AI Boundary
+
+RFC-072 SHALL NOT introduce:
+
+- keyword search;
+- semantic search;
+- embeddings;
+- vector persistence;
+- Qdrant integration;
+- graph persistence;
+- Neo4j production integration;
+- RAG;
+- LLM invocation;
+- AI Agent behavior.
+
+### Security and Deployment Boundary
+
+RFC-072 SHALL NOT claim or implement production:
+
+- authentication;
+- authorization;
+- RBAC;
+- Active Directory;
+- malware scanning;
+- Document approval;
+- retention enforcement;
+- compliance approval;
+- Cybersecurity approval.
+
+RFC-071 filesystem deployment conformance remains separately governed.
+
+### Expected Technical Surface After Separate Implementation Entry Gate
+
+Only if this RFC-072 / AD-058 contract is later:
+
+1. reviewed;
+2. refined if required;
+3. accepted;
+4. committed;
+5. pushed;
+6. verified exact on local / tracking / remote;
+7. followed by a separate implementation-entry PASS
+
+may implementation introduce:
+
+`backend/app/services/document_content_establishment_application_service.py`
+
+and focused tests:
+
+`tests/services/test_document_content_establishment_application_service.py`
+
+`tests/services/test_document_content_establishment_architecture.py`
+
+No other production file is pre-authorized.
+
+If implementation reveals that a historical architecture test contains an
+assumption superseded specifically by accepted RFC-072 scope, the failure SHALL
+be classified before any test change.
+
+No historical test SHALL be mechanically weakened.
+
+### Acceptance Requirements
+
+Before RFC-072 / AD-058 may become Accepted, review SHALL confirm:
+
+1. RFC-072 introduces no new ARCH-001 layer;
+2. canonical module ownership is
+   `app.services.document_content_establishment_application_service`;
+3. the public RFC-072 class surface is exactly the five classes defined here;
+4. `DocumentContentEstablishmentRequest` is immutable and keyword-only;
+5. request fields are exactly `document_id`, `media_type` and `source`;
+6. caller does not supply canonical byte length;
+7. caller does not supply canonical SHA-256 digest;
+8. byte length and digest are derived from exact raw bytes;
+9. SHA-256 remains integrity metadata only;
+10. service constructor depends exactly on the three persistence-neutral ports;
+11. Application code imports no concrete Infrastructure adapter;
+12. `establish()` returns `DocumentContentDescriptor`;
+13. canonical Enterprise Document existence is checked before source
+    consumption or content mutation;
+14. absent Document raises the RFC-072 Document-not-found error;
+15. absent Document causes no descriptor/payload persistence;
+16. Document registration remains independent;
+17. `source_reference` is never opened as canonical content;
+18. media type uses existing Domain validation;
+19. source is consumed from current position through EOF;
+20. non-seekable sources remain supported;
+21. caller source is never closed by the service;
+22. no seek/tell/fileno dependency is introduced;
+23. zero-byte payload remains valid;
+24. fresh payload measurement is single-pass and requires neither full-payload
+    memory materialization nor Application-owned temporary/replay storage;
+25. existing payload verification uses the context-managed store contract;
+26. confirmed store absence remains distinct from operational failure;
+27. the four descriptor/payload observable state combinations are recognized,
+    without claiming an atomic or linearizable cross-store snapshot;
+28. no persisted workflow-state table or field is introduced;
+29. fresh establishment publishes payload before descriptor;
+30. fresh descriptor values derive from bytes consumed by successful payload
+    establishment;
+31. RFC-072 fresh flow does not create descriptor-before-payload state;
+32. descriptor-present / payload-absent is classified as an integrity state and
+    is not automatically healed by RFC-072;
+33. descriptor-present / payload-absent raises the RFC-072 integrity error
+    without consuming caller source or publishing a payload;
+34. payload-only recovery verifies persisted payload and caller source;
+35. payload-only recovery creates descriptor only for matching bytes;
+36. complete existing state verifies persisted descriptor/payload integrity;
+37. complete exact repeated requests may converge idempotently;
+38. persisted descriptor/payload mismatch raises the RFC-072 integrity error;
+39. caller content conflicting with canonical state raises the RFC-072 conflict
+    error;
+40. no overwrite, replace, update or delete is introduced;
+41. a racing `DocumentContentPayloadAlreadyExistsError` during fresh
+    establishment is mapped to
+    `DocumentContentEstablishmentConflictError` and is not translated to
+    same-invocation idempotent success;
+42. failed store writes preserve RFC-070 source-position semantics;
+43. later explicit retry may re-observe and recover partial state;
+44. descriptor duplicate after verified payload may reconcile only when exact
+    descriptor equality is observed;
+45. different concurrent descriptor state becomes conflict;
+46. normal return requires Document + descriptor + payload consistency;
+47. RFC-072 claims no distributed transaction atomicity;
+48. no new descriptor/payload transaction coordinator is introduced;
+49. `KnowledgeLineageTransactionCoordinator` remains unchanged;
+50. monotonic recoverable coordination is explicit;
+51. no automatic payload rollback or deletion is introduced;
+52. store post-publication operational failure is propagated;
+53. descriptor persistence operational failure is propagated;
+54. no automatic retry loop is introduced;
+55. retry is an explicit Application invocation;
+56. digest/media type/byte length/source reference do not become idempotency
+    identities;
+57. underlying repository/store duplicate semantics remain unchanged;
+58. existing Document-to-Knowledge ingestion remains unchanged;
+59. existing Document Registration remains unchanged;
+60. existing Domain content contracts remain unchanged;
+61. existing relational descriptor adapter remains unchanged;
+62. existing filesystem store remains unchanged;
+63. no SQLAlchemy or Alembic expansion occurs;
+64. canonical Alembic head remains `0005`;
+65. `DatabaseRuntime` remains unchanged;
+66. default Composition/Runtime/Bootstrap remain unchanged;
+67. no Document Library/parser/OCR/chunking capability is promoted;
+68. no Search/Vector/Graph/RAG/LLM capability is promoted;
+69. no production-security or Cybersecurity completion claim is introduced;
+70. implementation begins only after accepted-contract Git durability and a
+    separate implementation-entry gate.
+
+These are Architecture Contract acceptance requirements.
+
+They SHALL NOT require RFC-072 production implementation to exist before
+AD-058 acceptance.
+
+### Future Implementation / Technical Gate Requirements
+
+The following requirements belong to the later RFC-072 technical implementation
+gate, not to AD-058 architecture acceptance.
+
+Only after:
+
+1. AD-058 is Accepted;
+2. the accepted-contract commit is created;
+3. the accepted-contract commit is pushed;
+4. exact Local / Tracking / Remote identity is verified; and
+5. a separate implementation-entry PASS authorizes code changes
+
+shall the RFC-072 technical gate require:
+
+1. focused RFC-072 service behavior tests pass;
+2. RFC-072 architecture/dependency tests pass;
+3. relevant RFC-066/RFC-068/RFC-069/RFC-070/RFC-071 regressions remain
+   passing;
+4. full PlantMind regression remains passing;
+5. Python compilation passes;
+6. `git diff --check` passes.
+
+These future technical checks SHALL NOT be used as prerequisites for AD-058
+architecture acceptance.
+
+They SHALL NOT be used to bypass the separate implementation-entry gate.
+
+### Alternatives Considered
+
+#### Distributed Transaction / Two-Phase Commit
+
+Rejected.
+
+Current descriptor persistence and immutable filesystem publication do not share
+one rollback-capable transactional resource.
+
+Claiming atomic rollback would be architecturally false.
+
+#### Extend KnowledgeLineageTransactionCoordinator
+
+Rejected.
+
+Its accepted scope is Knowledge + lineage persistence only.
+
+RFC-072 SHALL NOT turn it into a generic Unit of Work.
+
+#### Descriptor-First Fresh Establishment
+
+Rejected.
+
+RFC-072 would then intentionally create a newly visible descriptor before the
+new payload exists.
+
+Payload-first ordering better preserves the meaning of canonical descriptor
+visibility under the accepted immutable store model.
+
+#### Automatic Payload Deletion Compensation
+
+Rejected.
+
+It conflicts with accepted no-delete/no-overwrite binary-store semantics.
+
+#### Require Caller-Supplied Digest and Byte Length
+
+Rejected.
+
+RFC-072 can derive canonical integrity metadata directly from the exact bytes
+processed by the use case and avoids shifting canonical byte-accounting
+responsibility into ungoverned callers.
+
+#### Pre-Buffer Entire Payload
+
+Rejected as a canonical requirement.
+
+It would weaken non-seekable/streaming behavior and could introduce unbounded
+memory or hidden temporary-storage policy into the Application layer.
+
+RFC-072 therefore does not attempt automatic repair of a
+descriptor-present / payload-absent integrity state.
+
+Such repair would require a separately accepted replay/buffering contract,
+a changed store contract, or another explicitly governed remediation boundary.
+
+### Architecture Contract Acceptance
+
+Final refined architecture review:
+
+**PASS — NO REMAINING REFINE / NO BLOCKED ITEM**
+
+Gate-separation review:
+
+**PASS — CIRCULAR ACCEPTANCE / IMPLEMENTATION GATE REMOVED**
+
+AD-058:
+
+**ACCEPTED — ACCEPTED-CONTRACT GIT GATE PENDING**
+
+Implementation:
+
+**NOT AUTHORIZED**
+
+Acceptance-state staging / commit / push:
+
+**NONE**
+
+The accepted contract remains local Source-of-Truth content until its dedicated
+Git durability gate completes.
+
+### Next Exact Action
+
+Review the complete five-document RFC-072 / AD-058 architecture acceptance
+state.
+
+Do not stage before that review passes.
+
+Do not begin implementation before accepted-contract commit/push/exact-identity
+verification and the separate implementation-entry gate.
