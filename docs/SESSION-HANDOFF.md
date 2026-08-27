@@ -7,15 +7,17 @@
 | Project | PlantMind PM-001 |
 | Branch | `feature/engineering-platform` |
 | Last Fully Closed RFC | RFC-071 — Canonical Binary Document Content Infrastructure Adapter Boundary — Fully Closed and Source-of-Truth Reconciled |
-| Active RFC | RFC-072 — Canonical Document Content Establishment Application Coordination Boundary — Technical Implementation Git Durable / Engineering Closure Documentation Authored / Review Pending |
+| Active RFC | RFC-072 — Canonical Document Content Establishment Application Coordination Boundary — Closure Git Durable / Post-Closure Reconciliation Authored / Review Pending |
 | Selected Architecture Workstream | RFC-072 — Canonical Document Content Establishment Application Coordination Boundary |
-| Proposed Successor RFC | None — RFC-072 is active; no successor selected |
-| Architecture Decision | AD-058 — Accepted / Git Durable |
+| Proposed Successor RFC | None — RFC-072 post-closure reconciliation is active; successor not authorized |
+| Architecture Decision | AD-058 — Accepted / Git Durable; RFC-072 Technical and Closure Git Durability Complete |
 | RFC-072 Selection State | Durable — Committed, Pushed and Exact Identity Verified |
 | RFC-072 Selection Commit | `0c9a8cba53221f547d340fa499f1ac7d07d1e7d3` — committed / pushed / exact identity verified |
 | RFC-072 Accepted Contract Commit | `aa444f1f339c6aa00d37a9b3f0f564f3b5b6c06e` — committed / pushed / exact identity verified |
 | RFC-072 Technical Commit | `81a137d117df65c5beebd1fb935ca5b48e014733` — committed / pushed / exact identity verified |
-| RFC-072 Engineering Closure State | Documentation Authored / Review Pending — Terminal Closure Not Yet Claimed |
+| RFC-072 Engineering Closure Commit | `99066acafd76205ba41d7997eba7486d2f572fc7` — committed / pushed / exact identity verified |
+| RFC-072 Engineering Closure State | Complete / Pushed / Exact Identity Verified — Post-Closure Reconciliation Pending |
+| RFC-072 Post-Closure Reconciliation | Authored — Review Pending |
 | RFC-072 Architecture Contract State | Accepted / Committed / Pushed / Exact Identity Verified |
 | RFC-072 Implementation Entry | Passed — Technical Implementation Complete / Committed / Pushed / Exact Identity Verified |
 | RFC-069 Selection Commit | `5d7794352029576e0b62c2ac8cbfa248fe11961d` |
@@ -51,7 +53,7 @@
 | Alembic Head | `0005` |
 | Authoritative Environment | `PlantMind-Core/.venv` |
 | RFC-069 State | Fully Closed and Source-of-Truth Reconciled |
-| Successor RFC Selection | RFC-072 selected and active — AD-058 accepted / technical implementation Git durable / engineering closure review pending |
+| Successor RFC Selection | RFC-072 post-closure reconciliation active — successor not authorized |
 ## Recent Engineering Sequence
 
 - RFC-025 — Core Plugin Framework
@@ -3733,3 +3735,87 @@ Review:
 `PLANTMIND-RFC072-CLOSURE-DOCUMENTATION-REVIEW.txt`
 
 Do not stage until closure documentation review passes.
+
+---
+
+## RFC-072 Post-Closure Source-of-Truth Reconciliation Handoff
+
+### Durable Anchors
+
+Selection:
+
+`0c9a8cba53221f547d340fa499f1ac7d07d1e7d3`
+
+Accepted contract:
+
+`aa444f1f339c6aa00d37a9b3f0f564f3b5b6c06e`
+
+Technical implementation:
+
+`81a137d117df65c5beebd1fb935ca5b48e014733`
+
+Engineering closure:
+
+`99066acafd76205ba41d7997eba7486d2f572fc7`
+
+Closure Local / Tracking / Remote identity:
+
+**PASS — EXACT**
+
+Full regression:
+
+**995 passed**
+
+Alembic:
+
+`0005`
+
+### Current Handoff State
+
+Post-closure reconciliation:
+
+**AUTHORED — REVIEW PENDING**
+
+Reconciliation staging:
+
+**NOT PERFORMED**
+
+Reconciliation commit:
+
+**NOT YET CREATED**
+
+Reconciliation push:
+
+**NOT PERFORMED**
+
+Final reconciliation verification record:
+
+**NOT YET CREATED**
+
+RFC-072 terminal closure:
+
+**NOT YET CLAIMED**
+
+Successor:
+
+**NOT AUTHORIZED**
+
+### Preserved Boundaries
+
+No production code, test, schema, migration, Runtime, Composition or Bootstrap
+change accompanies this reconciliation.
+
+No Document Library, parser/OCR/chunking, Search/Vector/Graph/RAG/LLM or
+production-security capability is promoted.
+
+AD-058 remains Accepted.
+
+Production deployment conformance remains separately governed.
+
+### Next Exact Action
+
+Review:
+
+`PLANTMIND-RFC072-POST-CLOSURE-RECONCILIATION-REVIEW.txt`
+
+Do not stage until reconciliation review passes.
