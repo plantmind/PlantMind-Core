@@ -16742,3 +16742,156 @@ Do not stage before that review passes.
 
 Do not begin implementation before accepted-contract commit/push/exact-identity
 verification and the separate implementation-entry gate.
+
+---
+
+## RFC-072 / AD-058 Engineering Closure Record
+
+**Record Classification: Non-Decision Engineering Closure Governance Record**
+
+This section creates no new Architecture Decision.
+
+It does not amend, replace, supersede or rewrite AD-058.
+
+AD-058 remains:
+
+**ACCEPTED**
+
+### Closure Baseline
+
+RFC-072 workstream:
+
+**Canonical Document Content Establishment Application Coordination Boundary**
+
+Verified workstream-selection commit:
+
+`0c9a8cba53221f547d340fa499f1ac7d07d1e7d3`
+
+Verified accepted-contract commit:
+
+`aa444f1f339c6aa00d37a9b3f0f564f3b5b6c06e`
+
+Verified technical implementation commit:
+
+`81a137d117df65c5beebd1fb935ca5b48e014733`
+
+Technical Git durability:
+
+**PASS — LOCAL / TRACKING / REMOTE IDENTITY VERIFIED**
+
+### Verified Technical Outcome
+
+RFC-072 establishes:
+
+`DocumentContentEstablishmentApplicationService`
+
+under:
+
+`app.services.document_content_establishment_application_service`
+
+with exactly the accepted persistence-neutral dependencies:
+
+- `EnterpriseDocumentRepository`;
+- `DocumentContentRepository`;
+- `DocumentContentStore`.
+
+The technical implementation preserves AD-058 semantics for:
+
+- Document-existence verification before content mutation;
+- payload-first fresh establishment;
+- Application-derived canonical byte length and SHA-256;
+- current-position-to-EOF caller-source consumption;
+- non-seekable sources;
+- caller-source ownership;
+- zero-byte content;
+- descriptor-present / payload-absent integrity classification;
+- payload-present / descriptor-absent verified recovery;
+- exact complete-state convergence;
+- persisted-state integrity verification;
+- racing binary-store duplicate conflict classification;
+- exact descriptor-duplicate reconciliation only;
+- operational-failure propagation;
+- no automatic payload rollback/deletion;
+- no automatic retry loop;
+- no distributed cross-store atomicity claim.
+
+### Verification Evidence
+
+RFC-072 focused service and architecture verification:
+
+**39 passed**
+
+Relevant prior-boundary regression:
+
+**175 passed**
+
+Full PlantMind regression:
+
+**995 passed**
+
+Python compilation:
+
+**PASS**
+
+Reviewed and durable technical diff SHA-256:
+
+`66ea75b2fbdccd1e423f123590261900f59e05679d7c708874600880dc3e0100`
+
+Canonical Alembic head remains:
+
+`0005`
+
+### Architecture Preservation
+
+RFC-072 introduced no:
+
+- new ARCH-001 layer;
+- Domain redesign;
+- repository/store-port redesign;
+- concrete Infrastructure dependency in the Application service;
+- SQLAlchemy dependency in the Application service;
+- schema or migration change;
+- `DatabaseRuntime` expansion;
+- default Runtime / Composition / Bootstrap wiring;
+- generic transaction coordinator;
+- Document Library / parser / OCR / chunking promotion;
+- Search / Vector / Graph / RAG / LLM promotion;
+- authentication / authorization / RBAC / Active Directory implementation;
+- production-security readiness claim;
+- Cybersecurity approval claim.
+
+Existing AD-050 Knowledge/Lineage transaction coordination remains unchanged.
+
+Existing RFC-069, RFC-070 and RFC-071 Document Content boundaries remain
+authoritative.
+
+### Engineering Closure State
+
+Technical implementation:
+
+**COMPLETE / COMMITTED / PUSHED / EXACT GIT IDENTITY VERIFIED**
+
+Closure documentation:
+
+**AUTHORED — REVIEW PENDING**
+
+RFC-072 terminal closure:
+
+**NOT YET CLAIMED**
+
+Post-closure Source-of-Truth reconciliation:
+
+**PENDING — SEPARATE POST-CLOSURE GATE**
+
+Successor workstream:
+
+**NONE SELECTED**
+
+### Next Exact Action
+
+Review the complete five-document RFC-072 engineering closure documentation.
+
+Do not stage closure documentation until that review passes.
+
+Do not claim terminal closure until closure Git durability and the subsequent
+Source-of-Truth reconciliation complete separately.

@@ -16888,3 +16888,90 @@ Do not stage before that review passes.
 
 Do not begin implementation before accepted-contract commit/push/exact-identity
 verification and the separate implementation-entry gate.
+
+---
+
+## RFC-072 Engineering Closure Gate
+
+### Workstream
+
+**RFC-072 — Canonical Document Content Establishment Application Coordination Boundary**
+
+Architecture:
+
+**AD-058 — ACCEPTED / GIT DURABLE**
+
+Selection commit:
+
+`0c9a8cba53221f547d340fa499f1ac7d07d1e7d3`
+
+Accepted-contract commit:
+
+`aa444f1f339c6aa00d37a9b3f0f564f3b5b6c06e`
+
+Technical commit:
+
+`81a137d117df65c5beebd1fb935ca5b48e014733`
+
+### Technical Outcome
+
+Implemented:
+
+`DocumentContentEstablishmentApplicationService`
+
+Canonical module:
+
+`app.services.document_content_establishment_application_service`
+
+Focused RFC-072 verification:
+
+**39 passed**
+
+Relevant prior-boundary regression:
+
+**175 passed**
+
+Verified full regression:
+
+**995 passed**
+
+Alembic:
+
+`0005`
+
+Technical diff SHA-256:
+
+`66ea75b2fbdccd1e423f123590261900f59e05679d7c708874600880dc3e0100`
+
+No database-schema, Alembic, Runtime/Composition/Bootstrap, Document Library,
+parser/OCR/chunking, Search/Vector/Graph/RAG/LLM or production-security
+expansion occurred.
+
+### Current Gate
+
+Technical implementation durability:
+
+**COMPLETE**
+
+Closure documentation:
+
+**AUTHORED — REVIEW PENDING**
+
+Terminal RFC closure:
+
+**NOT YET CLAIMED**
+
+Post-closure Source-of-Truth reconciliation:
+
+**PENDING**
+
+Successor selection:
+
+**NOT STARTED**
+
+### Next Exact Action
+
+Review RFC-072 closure documentation.
+
+No staging, commit, push or successor selection until the closure review gate
+passes.

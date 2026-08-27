@@ -8294,3 +8294,97 @@ Push:
 Re-review the complete five-document architecture acceptance state.
 
 No staging is authorized until that re-review passes.
+
+---
+
+## 2026-08-27 — RFC-072 / AD-058 Engineering Closure Documentation
+
+**Append-Only Engineering Closure Record**
+
+RFC-072 selection:
+
+`0c9a8cba53221f547d340fa499f1ac7d07d1e7d3`
+
+AD-058 accepted-contract commit:
+
+`aa444f1f339c6aa00d37a9b3f0f564f3b5b6c06e`
+
+RFC-072 technical implementation commit:
+
+`81a137d117df65c5beebd1fb935ca5b48e014733`
+
+Technical Git durability:
+
+**PASS — LOCAL / TRACKING / REMOTE EXACT**
+
+### Delivered Boundary
+
+Implemented:
+
+`app.services.document_content_establishment_application_service.DocumentContentEstablishmentApplicationService`
+
+The service remains an Application-layer coordinator over existing
+persistence-neutral Document, descriptor and binary-store ports.
+
+Fresh establishment remains payload-first.
+
+The verified implementation preserves explicit partial-state classification
+without claiming cross-store atomic rollback.
+
+### Verification
+
+Focused RFC-072 service and architecture verification:
+
+**39 passed**
+
+Relevant RFC-066 / RFC-068 / RFC-069 / RFC-070 / RFC-071 regression:
+
+**175 passed**
+
+Full PlantMind regression:
+
+**995 passed**
+
+Python compilation:
+
+**PASS**
+
+Technical diff SHA-256:
+
+`66ea75b2fbdccd1e423f123590261900f59e05679d7c708874600880dc3e0100`
+
+Canonical Alembic head:
+
+`0005`
+
+No schema, migration, Runtime, Composition, Bootstrap, Document Library,
+parser/OCR/chunking, Search/Vector/Graph/RAG/LLM or production-security
+expansion was introduced.
+
+AD-058 remains accepted and unchanged.
+
+### Current Governance State
+
+Technical implementation:
+
+**DURABLE**
+
+Closure documentation:
+
+**AUTHORED — REVIEW PENDING**
+
+RFC-072 terminal closure:
+
+**NOT YET CLAIMED**
+
+Post-closure Source-of-Truth reconciliation:
+
+**PENDING**
+
+Successor:
+
+**NONE SELECTED**
+
+### Next Exact Action
+
+Review the complete five-document RFC-072 closure documentation before staging.

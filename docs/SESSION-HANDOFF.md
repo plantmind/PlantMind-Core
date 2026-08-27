@@ -7,14 +7,17 @@
 | Project | PlantMind PM-001 |
 | Branch | `feature/engineering-platform` |
 | Last Fully Closed RFC | RFC-071 — Canonical Binary Document Content Infrastructure Adapter Boundary — Fully Closed and Source-of-Truth Reconciled |
-| Active RFC | RFC-072 — Canonical Document Content Establishment Application Coordination Boundary — Architecture Contract Accepted / Git Gate Pending |
+| Active RFC | RFC-072 — Canonical Document Content Establishment Application Coordination Boundary — Technical Implementation Git Durable / Engineering Closure Documentation Authored / Review Pending |
 | Selected Architecture Workstream | RFC-072 — Canonical Document Content Establishment Application Coordination Boundary |
 | Proposed Successor RFC | None — RFC-072 is active; no successor selected |
-| Architecture Decision | AD-058 — Accepted; Accepted-Contract Git Gate Pending; Implementation Not Authorized |
+| Architecture Decision | AD-058 — Accepted / Git Durable |
 | RFC-072 Selection State | Durable — Committed, Pushed and Exact Identity Verified |
 | RFC-072 Selection Commit | `0c9a8cba53221f547d340fa499f1ac7d07d1e7d3` — committed / pushed / exact identity verified |
-| RFC-072 Architecture Contract State | Accepted — Acceptance-State Metadata Refined / Re-Review Pending / Git Durability Pending |
-| RFC-072 Implementation Entry | Not Authorized |
+| RFC-072 Accepted Contract Commit | `aa444f1f339c6aa00d37a9b3f0f564f3b5b6c06e` — committed / pushed / exact identity verified |
+| RFC-072 Technical Commit | `81a137d117df65c5beebd1fb935ca5b48e014733` — committed / pushed / exact identity verified |
+| RFC-072 Engineering Closure State | Documentation Authored / Review Pending — Terminal Closure Not Yet Claimed |
+| RFC-072 Architecture Contract State | Accepted / Committed / Pushed / Exact Identity Verified |
+| RFC-072 Implementation Entry | Passed — Technical Implementation Complete / Committed / Pushed / Exact Identity Verified |
 | RFC-069 Selection Commit | `5d7794352029576e0b62c2ac8cbfa248fe11961d` |
 | RFC-070 Selection Commit | `13cfccc08d8c0a3b891990d38edaf9fc48874a5e` |
 | RFC-069 Accepted Contract Commit | `467440b6c5d16e599fbc0d0f5c820d31725fd29b` |
@@ -25,7 +28,7 @@
 | RFC-069 Reconciliation Commit | `231e0cc66862c797e299fdb71ff20da8a39e8ae2` |
 | RFC-069 Reconciliation Push | Verified |
 | RFC-069 Local / Tracking / Remote Reconciliation Identity | Verified |
-| Test Baseline | 956 passed |
+| Test Baseline | 995 passed |
 | RFC-070 Engineering Closure Commit | `ab4438b02a8f34f83b462e3d8a86b4b5ab5d1092` |
 | RFC-070 Engineering Closure State | Complete, Pushed and Verified |
 | RFC-070 Local / Tracking / Remote Closure Identity | Verified |
@@ -48,7 +51,7 @@
 | Alembic Head | `0005` |
 | Authoritative Environment | `PlantMind-Core/.venv` |
 | RFC-069 State | Fully Closed and Source-of-Truth Reconciled |
-| Successor RFC Selection | RFC-072 selected and active — AD-058 architecture contract accepted / Git gate pending |
+| Successor RFC Selection | RFC-072 selected and active — AD-058 accepted / technical implementation Git durable / engineering closure review pending |
 ## Recent Engineering Sequence
 
 - RFC-025 — Core Plugin Framework
@@ -3632,3 +3635,101 @@ Do not commit or push until the later staging review passes.
 
 Do not begin implementation until accepted-contract Git durability and the
 later implementation-entry gate both pass.
+
+---
+
+## RFC-072 / AD-058 Engineering Closure Handoff
+
+### Durable Anchors
+
+RFC-072 selection:
+
+`0c9a8cba53221f547d340fa499f1ac7d07d1e7d3`
+
+AD-058 accepted contract:
+
+`aa444f1f339c6aa00d37a9b3f0f564f3b5b6c06e`
+
+RFC-072 technical implementation:
+
+`81a137d117df65c5beebd1fb935ca5b48e014733`
+
+Technical Local / Tracking / Remote identity:
+
+**PASS — EXACT**
+
+### Technical Result
+
+Canonical Application service:
+
+`app.services.document_content_establishment_application_service.DocumentContentEstablishmentApplicationService`
+
+Verified behavior preserves:
+
+- Enterprise Document existence before content mutation;
+- payload-first fresh establishment;
+- exact SHA-256 and byte-length derivation from canonical bytes;
+- non-seekable caller sources;
+- caller-source ownership;
+- descriptor-only integrity failure;
+- payload-only verified recovery;
+- complete-state verification;
+- deterministic conflict classification;
+- no automatic delete, overwrite, retry or distributed transaction claim.
+
+Focused RFC-072 verification:
+
+**39 passed**
+
+Relevant regression:
+
+**175 passed**
+
+Full PlantMind regression:
+
+**995 passed**
+
+Alembic head:
+
+`0005`
+
+### Preserved Boundaries
+
+No Runtime / Composition / Bootstrap wiring was added.
+
+No schema or Alembic expansion occurred.
+
+No Document Library, parser/OCR/chunking, Search/Vector/Graph/RAG/LLM or
+production-security capability was promoted.
+
+AD-058 remains accepted and unchanged.
+
+### Current Gate
+
+Technical implementation durability:
+
+**COMPLETE**
+
+Closure documentation:
+
+**AUTHORED — REVIEW PENDING**
+
+RFC-072 terminal closure:
+
+**NOT YET CLAIMED**
+
+Post-closure Source-of-Truth reconciliation:
+
+**PENDING**
+
+Successor:
+
+**NONE**
+
+### Next Exact Action
+
+Review:
+
+`PLANTMIND-RFC072-CLOSURE-DOCUMENTATION-REVIEW.txt`
+
+Do not stage until closure documentation review passes.

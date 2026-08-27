@@ -10,16 +10,19 @@
 | Deployment Model | On-Premise |
 | Development Branch | `feature/engineering-platform` |
 | Last Fully Closed RFC | RFC-071 — Canonical Binary Document Content Infrastructure Adapter Boundary — Fully Closed and Source-of-Truth Reconciled |
-| Active RFC | RFC-072 — Canonical Document Content Establishment Application Coordination Boundary — Architecture Contract Accepted / Git Gate Pending |
+| Active RFC | RFC-072 — Canonical Document Content Establishment Application Coordination Boundary — Technical Implementation Git Durable / Engineering Closure Documentation Authored / Review Pending |
 | Selected Architecture Workstream | RFC-072 — Canonical Document Content Establishment Application Coordination Boundary |
 | Proposed Successor RFC | None — RFC-072 is active; no successor selected |
 | RFC-069 Selection Commit | `5d7794352029576e0b62c2ac8cbfa248fe11961d` |
 | RFC-070 Selection Commit | `13cfccc08d8c0a3b891990d38edaf9fc48874a5e` |
-| Architecture Decision | AD-058 — Accepted; Accepted-Contract Git Gate Pending; Implementation Not Authorized |
+| Architecture Decision | AD-058 — Accepted / Git Durable |
 | RFC-072 Selection State | Durable — Committed, Pushed and Exact Identity Verified |
 | RFC-072 Selection Commit | `0c9a8cba53221f547d340fa499f1ac7d07d1e7d3` — committed / pushed / exact identity verified |
-| RFC-072 Architecture Contract State | Accepted — Acceptance-State Metadata Refined / Re-Review Pending / Git Durability Pending |
-| RFC-072 Implementation Entry | Not Authorized |
+| RFC-072 Accepted Contract Commit | `aa444f1f339c6aa00d37a9b3f0f564f3b5b6c06e` — committed / pushed / exact identity verified |
+| RFC-072 Technical Commit | `81a137d117df65c5beebd1fb935ca5b48e014733` — committed / pushed / exact identity verified |
+| RFC-072 Engineering Closure State | Documentation Authored / Review Pending — Terminal Closure Not Yet Claimed |
+| RFC-072 Architecture Contract State | Accepted / Committed / Pushed / Exact Identity Verified |
+| RFC-072 Implementation Entry | Passed — Technical Implementation Complete / Committed / Pushed / Exact Identity Verified |
 | RFC-069 Accepted Contract Commit | `467440b6c5d16e599fbc0d0f5c820d31725fd29b` |
 | RFC-070 Accepted Contract Commit | `cfd45d35144574d27a40e0f350b571a6298afd59` — committed / pushed / exact identity verified |
 | RFC-070 Technical Commit | `389ce20b9e01b99cf9b7c1a066a0e9a55bc71223` — committed / pushed / exact identity verified |
@@ -27,7 +30,7 @@
 | RFC-069 Engineering Closure Commit | `63790de5312c69c709e2249b56e91995a00426b6` |
 | RFC-069 Post-Closure Reconciliation Commit | `231e0cc66862c797e299fdb71ff20da8a39e8ae2` |
 | RFC-069 Reconciliation Verification | PASS — Committed, Pushed, Exact Local / Tracking / Remote Identity Verified |
-| Test Baseline | 956 passed |
+| Test Baseline | 995 passed |
 | RFC-070 Engineering Closure Commit | `ab4438b02a8f34f83b462e3d8a86b4b5ab5d1092` |
 | RFC-070 Engineering Closure State | Complete, Pushed and Verified |
 | RFC-070 Post-Closure Reconciliation | Complete, Pushed and Verified |
@@ -3878,3 +3881,139 @@ Full regression baseline:
 Alembic head:
 
 `0005`
+
+---
+
+## RFC-072 / AD-058 Engineering Closure State
+
+### Durable Engineering Baseline
+
+Selection commit:
+
+`0c9a8cba53221f547d340fa499f1ac7d07d1e7d3`
+
+Accepted-contract commit:
+
+`aa444f1f339c6aa00d37a9b3f0f564f3b5b6c06e`
+
+Technical implementation commit:
+
+`81a137d117df65c5beebd1fb935ca5b48e014733`
+
+Technical Local / Tracking / Remote identity:
+
+**PASS — EXACT**
+
+Working tree at closure-entry gate:
+
+**CLEAN**
+
+### Delivered Capability
+
+RFC-072 establishes the canonical:
+
+`DocumentContentEstablishmentApplicationService`
+
+at:
+
+`app.services.document_content_establishment_application_service`
+
+The service coordinates existing persistence-neutral:
+
+- `EnterpriseDocumentRepository`;
+- `DocumentContentRepository`;
+- `DocumentContentStore`.
+
+Fresh establishment remains:
+
+**payload first → descriptor second**
+
+Payload-present / descriptor-absent state is recoverable only after exact
+persisted-payload and caller-source verification.
+
+Descriptor-present / payload-absent remains an integrity error and is not
+automatically healed.
+
+No distributed cross-store atomicity is claimed.
+
+### Verified Engineering Evidence
+
+Focused RFC-072 verification:
+
+**39 passed**
+
+Relevant RFC-066 / RFC-068 / RFC-069 / RFC-070 / RFC-071 regression:
+
+**175 passed**
+
+Full PlantMind regression:
+
+**995 passed**
+
+Python compilation:
+
+**PASS**
+
+Reviewed / durable technical diff SHA-256:
+
+`66ea75b2fbdccd1e423f123590261900f59e05679d7c708874600880dc3e0100`
+
+Canonical Alembic head:
+
+`0005`
+
+### Preserved Boundaries
+
+RFC-072 introduced no:
+
+- Domain redesign;
+- Enterprise Document repository redesign;
+- Document Content repository redesign;
+- Document Content store-port redesign;
+- relational descriptor-adapter redesign;
+- filesystem-store redesign;
+- database schema change;
+- Alembic migration;
+- `DatabaseRuntime` expansion;
+- default Runtime / Composition / Bootstrap wiring;
+- Document Library / parser / OCR / chunking promotion;
+- Search / Vector / Graph / RAG / LLM promotion;
+- production-security or Cybersecurity completion claim.
+
+AD-058 remains the accepted architecture decision and is not amended by this
+engineering closure record.
+
+### Closure Boundary
+
+Technical implementation:
+
+**COMPLETE / COMMITTED / PUSHED / EXACT GIT IDENTITY VERIFIED**
+
+Closure documentation:
+
+**AUTHORED — REVIEW PENDING**
+
+RFC-072 terminal closure:
+
+**NOT YET CLAIMED**
+
+Post-closure Source-of-Truth reconciliation:
+
+**PENDING — SEPARATE GATE AFTER DURABLE CLOSURE**
+
+Production deployment conformance:
+
+**SEPARATE / NOT CLAIMED**
+
+Successor RFC:
+
+**NONE SELECTED**
+
+### Next Exact Action
+
+Review the complete five-document RFC-072 engineering closure documentation.
+
+Do not stage closure documentation until that review passes.
+
+Do not claim terminal closure until the closure commit/push gate and the
+subsequent post-closure Source-of-Truth reconciliation are completed separately.
