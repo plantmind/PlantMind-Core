@@ -16999,3 +16999,81 @@ Do not stage reconciliation until that review passes.
 Do not declare RFC-072 fully closed until reconciliation commit/push exact
 identity verification and the separate final reconciliation verification
 record are complete.
+
+---
+
+## Current Architecture Governance State — RFC-072 Final Source-of-Truth Reconciliation Verification
+
+**Record Classification: Non-Decision Final Governance Verification**
+
+This record creates no new Architecture Decision and does not amend, replace
+or supersede AD-058.
+
+AD-058 remains the latest Accepted Architecture Decision.
+
+RFC-072 — Canonical Document Content Establishment Application Coordination Boundary
+is:
+
+**FULLY CLOSED AND SOURCE-OF-TRUTH RECONCILED**
+
+### Verified Commit Chain
+
+- selection commit `0c9a8cba53221f547d340fa499f1ac7d07d1e7d3`;
+- accepted-contract commit `aa444f1f339c6aa00d37a9b3f0f564f3b5b6c06e`;
+- technical implementation commit `81a137d117df65c5beebd1fb935ca5b48e014733`;
+- engineering closure commit `99066acafd76205ba41d7997eba7486d2f572fc7`;
+- post-closure reconciliation commit `3fab31e046c47c90a0b3a10467570af646273011`.
+
+### Verified Reconciliation Git State
+
+- reconciliation parent:
+  `99066acafd76205ba41d7997eba7486d2f572fc7`;
+- reconciliation push: **PASS**;
+- exact Local / Tracking / Remote reconciliation identity: **PASS**;
+- working tree after reconciliation push: **CLEAN**;
+- reconciliation surface: exactly five maintained Source-of-Truth documents;
+- production-code changes: none;
+- test-file changes: none.
+
+### Preserved Technical Baseline
+
+- full PlantMind regression: **995 passed**;
+- canonical Alembic head: `0005`;
+- delivered RFC-072 Application boundary:
+  `app.services.document_content_establishment_application_service.DocumentContentEstablishmentApplicationService`;
+- canonical Enterprise Document repository responsibility remains unchanged;
+- canonical Document Content descriptor repository responsibility remains unchanged;
+- canonical binary Document Content store responsibility remains unchanged;
+- RFC-069 relational descriptor adapter remains unchanged;
+- RFC-071 filesystem-backed binary store remains unchanged;
+- no schema or Alembic expansion;
+- no `DatabaseRuntime` expansion;
+- no default Runtime / Composition / Bootstrap wiring;
+- no Document Library / parser / OCR / chunking promotion;
+- no Search / Vector / Graph / RAG / LLM promotion;
+- no production-security or Cybersecurity completion claim.
+
+Production deployment conformance remains separately governed.
+
+### Successor Governance
+
+No successor RFC or Architecture workstream is selected or preselected by
+this record.
+
+Successor selection is a separate evidence-based governance activity.
+
+### Non-Self-Referential Final Record
+
+This final verification record is intentionally non-self-referential.
+
+It records reconciliation commit:
+
+`3fab31e046c47c90a0b3a10467570af646273011`
+
+and does not contain, predict or require the future Git commit hash that
+persists this record.
+
+Verification of this record's own commit, push, exact Local / Tracking / Remote
+identity and clean working tree is an external Git durability gate.
+
+That external gate does not require another RFC-072 Source-of-Truth record.
