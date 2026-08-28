@@ -8594,3 +8594,211 @@ Selection review:
 Staging / commit / push:
 
 **NONE**
+
+---
+
+## 2026-08-28 — RFC-073 / AD-059 Architecture Contract Draft
+
+### Entry Evidence Review
+
+RFC-073 selection commit:
+
+`059fbcbf404da390079ca77685eb2135e663e80d`
+
+Selection Git durability:
+
+**PASS**
+
+Current full regression baseline:
+
+**995 passed**
+
+Alembic:
+
+`0005`
+
+Latest Accepted Architecture Decision:
+
+**AD-058**
+
+The architecture-entry evidence established:
+
+- `EnterpriseDocumentRepository.get(document_id)` exists;
+- `DocumentContentRepository.get(document_id)` exists;
+- `DocumentContentStore.open(document_id)` exists;
+- store access is context-managed and returns `None` only for confirmed
+  absence;
+- RFC-072 is the only current Application-level `DocumentContentStore`
+  consumer;
+- no dedicated general content-access Application service exists;
+- future parser behavior requires an accepted Application/access path;
+- `source_reference` remains provenance / traceability only.
+
+### Draft Decision
+
+The next Architecture Decision draft is:
+
+**AD-059 — Canonical Document Content Access Application Boundary**
+
+AD-059 is:
+
+**DRAFT — NOT ACCEPTED**
+
+The draft selects a narrow read-only:
+
+`DocumentContentAccessApplicationService`
+
+with dependencies limited to:
+
+- `EnterpriseDocumentRepository`;
+- `DocumentContentRepository`;
+- `DocumentContentStore`.
+
+The draft selects:
+
+**verify → close → reopen → stream**
+
+for successful canonical content access.
+
+A first complete streaming pass validates exact byte length and SHA-256 against
+the canonical descriptor.
+
+Only after that pass succeeds is the payload reopened and yielded to a
+downstream consumer inside an Application-owned context manager.
+
+This avoids:
+
+- exposing unverified bytes;
+- requiring seek;
+- requiring tell;
+- requiring fileno;
+- buffering the complete payload;
+- leaking filesystem paths;
+- interpreting `source_reference`;
+- moving parser responsibility into RFC-073.
+
+### Integrity Policy
+
+For an existing canonical Document:
+
+- both descriptor and payload absent → Content Not Found;
+- descriptor only → Integrity Error;
+- payload only → Integrity Error;
+- descriptor/payload mismatch → Integrity Error;
+- verified complete state → delivery reopen;
+- payload disappearing before delivery reopen → Integrity Error.
+
+No repair or write is authorized.
+
+### Governance
+
+Architecture review:
+
+**PENDING**
+
+AD-059 acceptance:
+
+**NOT AUTHORIZED**
+
+Implementation:
+
+**NOT AUTHORIZED**
+
+No production or test file was changed by architecture authoring.
+
+### RFC-073 / AD-059 Architecture Review Refinement — Engineering Journal
+
+Chief Architect review identified one semantic clarification required before
+AD-059 acceptance.
+
+RFC-072's accepted payload-first establishment means RFC-073 can observe a
+payload-only state during legitimate concurrent establishment or recovery.
+
+RFC-073 continues to fail closed for that invocation with:
+
+`DocumentContentAccessIntegrityError`
+
+but the error is explicitly defined as an access-safety classification rather
+than proof of permanent corruption.
+
+No automatic repair, retry, waiting or polling is introduced.
+
+A later explicit access re-observes canonical state.
+
+The review also clarifies that:
+
+**VERIFY → CLOSE → REOPEN → DELIVER**
+
+uses separate fresh `DocumentContentStore.open()` access attempts and does not
+introduce seek, buffering or a rewrite of accepted store ownership.
+
+AD-059 remains:
+
+**DRAFT — NOT ACCEPTED**
+
+Architecture re-review is required.
+
+---
+
+## 2026-08-28 — RFC-073 / AD-059 Architecture Contract Acceptance
+
+### Final Architecture Review
+
+The refined RFC-073 / AD-059 architecture review completed with:
+
+**PASS — NO REMAINING REFINE / NO BLOCKED ITEM**
+
+The final review confirmed both required refinements:
+
+1. payload-only observation is fail-closed access integrity for the current
+   invocation without asserting permanent corruption;
+2. fresh-open semantics preserve the accepted persistence-neutral store
+   boundary without seekability, buffering or store-ownership expansion.
+
+### Accepted Architecture
+
+Architecture Decision:
+
+**AD-059 — Canonical Document Content Access Application Boundary**
+
+Status:
+
+**ACCEPTED — GIT DURABILITY PENDING**
+
+Accepted Application service:
+
+`DocumentContentAccessApplicationService`
+
+Dependencies:
+
+- `EnterpriseDocumentRepository`;
+- `DocumentContentRepository`;
+- `DocumentContentStore`.
+
+Accepted access model:
+
+**VERIFY → CLOSE → REOPEN → DELIVER**
+
+RFC-072 payload-first establishment semantics remain unchanged.
+
+RFC-073 is read-only and introduces no automatic repair or retry.
+
+### Gate Separation
+
+Architecture acceptance:
+
+**COMPLETE LOCALLY / REVIEW CANDIDATE AUTHORED**
+
+Acceptance Git durability:
+
+**PENDING**
+
+Implementation entry:
+
+**NOT STARTED**
+
+Implementation:
+
+**NOT AUTHORIZED**
+
+No production or test file is changed by this acceptance authoring.

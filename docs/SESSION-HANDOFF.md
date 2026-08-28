@@ -7,10 +7,14 @@
 | Project | PlantMind PM-001 |
 | Branch | `feature/engineering-platform` |
 | Last Fully Closed RFC | RFC-072 — Canonical Document Content Establishment Application Coordination Boundary — Fully Closed and Source-of-Truth Reconciled |
-| Active RFC | None — RFC-072 Fully Closed and Source-of-Truth Reconciled; RFC-073 successor-selection draft under review |
-| Selected Architecture Workstream | None — RFC-073 candidate selection authored locally / review pending / not Git durable |
-| Proposed Successor RFC | RFC-073 — Canonical Document Content Access Application Boundary — local successor-selection draft / review pending |
-| Architecture Decision | AD-058 — Accepted / Git Durable |
+| Active RFC | RFC-073 — Canonical Document Content Access Application Boundary — Architecture Contract Accepted / Acceptance Git Durability Pending |
+| Selected Architecture Workstream | RFC-073 — Canonical Document Content Access Application Boundary — Selection Git Durable |
+| Proposed Successor RFC | None — RFC-073 selected and active |
+| Architecture Decision | AD-059 — Accepted / Acceptance Git Durability Pending |
+| RFC-073 Selection State | Durable — Committed, Pushed and Exact Identity Verified |
+| RFC-073 Selection Commit | `059fbcbf404da390079ca77685eb2135e663e80d` — committed / pushed / exact identity verified |
+| RFC-073 Architecture Contract State | Accepted / Architecture Review Passed / Acceptance Git Durability Pending |
+| RFC-073 Implementation | Not Authorized |
 | RFC-072 Selection State | Durable — Committed, Pushed and Exact Identity Verified |
 | RFC-072 Selection Commit | `0c9a8cba53221f547d340fa499f1ac7d07d1e7d3` — committed / pushed / exact identity verified |
 | RFC-072 Accepted Contract Commit | `aa444f1f339c6aa00d37a9b3f0f564f3b5b6c06e` — committed / pushed / exact identity verified |
@@ -56,7 +60,7 @@
 | Alembic Head | `0005` |
 | Authoritative Environment | `PlantMind-Core/.venv` |
 | RFC-069 State | Fully Closed and Source-of-Truth Reconciled |
-| Successor RFC Selection | RFC-073 candidate — Canonical Document Content Access Application Boundary — local draft / review pending / not Git durable |
+| Successor RFC Selection | RFC-073 — Selected / Committed / Pushed / Exact Identity Verified |
 ## Recent Engineering Sequence
 
 - RFC-025 — Core Plugin Framework
@@ -3975,3 +3979,193 @@ Review:
 
 No architecture drafting or implementation is authorized before durable
 successor selection.
+
+---
+
+## RFC-073 / AD-059 Architecture Contract Draft Handoff
+
+Selected workstream:
+
+**RFC-073 — Canonical Document Content Access Application Boundary**
+
+Selection Git durability:
+
+**PASS — LOCAL / TRACKING / REMOTE EXACT**
+
+Selection commit:
+
+`059fbcbf404da390079ca77685eb2135e663e80d`
+
+Architecture Decision:
+
+**AD-059 — DRAFT / NOT ACCEPTED**
+
+Latest Accepted Architecture Decision remains:
+
+**AD-058**
+
+### Draft Direction
+
+RFC-073 proposes one read-only:
+
+`DocumentContentAccessApplicationService`
+
+using:
+
+- `EnterpriseDocumentRepository`;
+- `DocumentContentRepository`;
+- `DocumentContentStore`.
+
+The draft selects a:
+
+**verify → close → reopen → stream**
+
+model.
+
+Canonical descriptor and payload integrity must be verified before a consumer
+receives a payload stream.
+
+The returned stream is context-managed and store-owned.
+
+No seekability, full buffering, parser behavior or filesystem path exposure is
+introduced.
+
+### State Policy
+
+For an existing Enterprise Document:
+
+- descriptor absent + payload absent → Content Not Found;
+- descriptor present + payload absent → Integrity Error;
+- descriptor absent + payload present → Integrity Error;
+- descriptor/payload mismatch → Integrity Error;
+- verified descriptor + payload → reopen and yield canonical stream.
+
+Document absence is classified separately as Document Not Found.
+
+No incomplete state is automatically repaired by RFC-073.
+
+### Boundaries
+
+`source_reference` remains provenance only.
+
+RFC-073 introduces no Document Library, parser/OCR/chunking,
+Search/Vector/Graph/RAG/LLM, Runtime wiring, migration or production-security
+claim.
+
+### Current Gate
+
+Architecture review:
+
+**PENDING**
+
+AD-059 acceptance:
+
+**NOT AUTHORIZED**
+
+Implementation:
+
+**NOT AUTHORIZED**
+
+Staging / commit / push:
+
+**NONE**
+
+Next action:
+
+Review `PLANTMIND-RFC073-AD059-ARCHITECTURE-DRAFT-REVIEW.txt`.
+
+### RFC-073 / AD-059 Architecture Review Refinement — Session Handoff
+
+AD-059 is refined before acceptance.
+
+Payload-only observation remains an RFC-073 Integrity Error for the current
+access invocation, but it is not declared permanent corruption.
+
+RFC-072 payload-first establishment may produce that observable state
+transiently.
+
+RFC-073 performs no:
+
+- automatic repair;
+- automatic retry;
+- polling;
+- waiting.
+
+A later explicit access re-observes canonical state.
+
+Fresh-open verification/delivery remains persistence-neutral and introduces no
+seek or complete buffering requirement.
+
+Architecture state:
+
+**RE-REVIEW REQUIRED**
+
+AD-059:
+
+**DRAFT — NOT ACCEPTED**
+
+Implementation:
+
+**NOT AUTHORIZED**
+
+---
+
+## RFC-073 / AD-059 Architecture Contract Acceptance — Handoff
+
+RFC-073 selected workstream:
+
+**Git Durable**
+
+AD-059 refined architecture review:
+
+**PASS**
+
+AD-059:
+
+**ACCEPTED — GIT DURABILITY PENDING**
+
+Accepted service:
+
+`DocumentContentAccessApplicationService`
+
+Accepted model:
+
+**VERIFY → CLOSE → REOPEN → DELIVER**
+
+Observable payload-only state:
+
+**FAIL-CLOSED FOR CURRENT INVOCATION / NOT PERMANENT-CORRUPTION CLAIM**
+
+Automatic retry / repair:
+
+**NONE**
+
+Later explicit invocation:
+
+**RE-OBSERVES CANONICAL STATE**
+
+Fresh-open storage ownership:
+
+**UNCHANGED**
+
+Full regression baseline:
+
+**995 passed**
+
+Alembic:
+
+`0005`
+
+Implementation:
+
+**NOT AUTHORIZED**
+
+Acceptance staging / commit / push:
+
+**NONE**
+
+Next action:
+
+Review:
+
+`PLANTMIND-RFC073-AD059-ARCHITECTURE-ACCEPTANCE-REVIEW.txt`

@@ -17182,3 +17182,1269 @@ Review the complete five-document successor-selection diff.
 Only after selection documentation is reviewed, staged, committed, pushed and
 verified exact may RFC-073 become the active architecture workstream and
 architecture drafting begin.
+
+---
+
+## AD-059 — Canonical Document Content Access Application Boundary
+
+**Status: DRAFT — NOT ACCEPTED**
+
+**RFC: RFC-073**
+
+Selection commit:
+
+`059fbcbf404da390079ca77685eb2135e663e80d`
+
+Selection Git durability:
+
+**PASS — LOCAL / TRACKING / REMOTE EXACT IDENTITY VERIFIED**
+
+Latest Accepted Architecture Decision remains:
+
+**AD-058 — Canonical Document Content Establishment Application Coordination Boundary**
+
+### Context
+
+PlantMind now has a complete canonical Document Content foundation through:
+
+1. canonical `EnterpriseDocument` identity;
+2. canonical immutable `DocumentContentDescriptor`;
+3. persistence-neutral `DocumentContentRepository`;
+4. relational descriptor persistence;
+5. persistence-neutral `DocumentContentStore`;
+6. concrete `FilesystemDocumentContentStore`;
+7. RFC-072 canonical Document Content establishment Application coordination.
+
+The accepted binary store already exposes:
+
+`open(document_id) -> AbstractContextManager[BinaryIO] | None`
+
+where `None` represents confirmed payload absence.
+
+The Application layer does not yet expose a dedicated general read/access use
+case for downstream consumers.
+
+RFC-072 explicitly preserved the requirement that future parser behavior
+consume canonical bytes through an accepted Application/access path rather
+than reinterpreting:
+
+`EnterpriseDocument.source.source_reference`
+
+as binary storage.
+
+### Decision
+
+RFC-073 shall introduce one narrow read-only Application service:
+
+`DocumentContentAccessApplicationService`
+
+under:
+
+`app.services.document_content_access_application_service`
+
+implemented, if later authorized, at:
+
+`backend/app/services/document_content_access_application_service.py`
+
+RFC-073 introduces no new ARCH-001 layer.
+
+### Canonical Public Surface
+
+The RFC-073 module shall expose exactly these public RFC-073 classes:
+
+- `DocumentContentAccessRequest`;
+- `DocumentContentAccess`;
+- `DocumentContentAccessDocumentNotFoundError`;
+- `DocumentContentAccessContentNotFoundError`;
+- `DocumentContentAccessIntegrityError`;
+- `DocumentContentAccessApplicationService`.
+
+No package-level re-export is required.
+
+Existing package initializers shall remain unchanged unless separately
+reviewed.
+
+### Request Contract
+
+`DocumentContentAccessRequest` shall be:
+
+- a dataclass;
+- frozen;
+- slots-based;
+- keyword-only.
+
+It shall contain exactly:
+
+`document_id: EntityId`
+
+RFC-073 shall not accept:
+
+- filesystem paths;
+- storage roots;
+- source references;
+- URLs;
+- media-type search criteria;
+- digest lookup keys;
+- arbitrary repository filters.
+
+Canonical association identity remains:
+
+`document_id`
+
+### Access Value
+
+`DocumentContentAccess` shall be:
+
+- a dataclass;
+- frozen;
+- slots-based;
+- keyword-only.
+
+It shall contain exactly:
+
+- `descriptor: DocumentContentDescriptor`;
+- `payload: BinaryIO`.
+
+The `payload` member is store-owned and context-bound.
+
+The value does not transfer persistence ownership to the caller.
+
+### Application Service Dependencies
+
+`DocumentContentAccessApplicationService` shall depend exactly on:
+
+- `EnterpriseDocumentRepository`;
+- `DocumentContentRepository`;
+- `DocumentContentStore`.
+
+It shall not depend directly on:
+
+- SQLAlchemy;
+- `DatabaseRuntime`;
+- filesystem APIs;
+- `pathlib.Path`;
+- `FilesystemDocumentContentStore`;
+- parser modules;
+- OCR modules;
+- Search;
+- Vector DB;
+- Graph DB;
+- RAG;
+- LLM;
+- Runtime;
+- Composition;
+- Bootstrap.
+
+### Application Operation
+
+The canonical RFC-073 use case shall be:
+
+`open(request: DocumentContentAccessRequest) -> AbstractContextManager[DocumentContentAccess]`
+
+The returned context manager owns the Application access lifecycle.
+
+Repository and store evaluation may occur when entering that context.
+
+A consumer shall use the access only within the returned context-manager
+lifecycle.
+
+### Canonical Document Gate
+
+RFC-073 shall first resolve:
+
+`EnterpriseDocumentRepository.get(document_id)`
+
+If the canonical Enterprise Document is absent, RFC-073 shall raise:
+
+`DocumentContentAccessDocumentNotFoundError`
+
+The service shall not expose orphan descriptor or orphan payload content when
+the canonical Enterprise Document is absent.
+
+It shall not use `source_reference` as fallback access.
+
+RFC-073 is not an orphan-content audit capability.
+
+### Descriptor / Payload Observation
+
+After canonical Document existence is confirmed, RFC-073 shall observe:
+
+`DocumentContentRepository.get(document_id)`
+
+and:
+
+`DocumentContentStore.open(document_id)`
+
+Sequential observation is intentional.
+
+RFC-073 does not claim those observations form one distributed, transactional
+or linearizable snapshot.
+
+### Canonical State Matrix
+
+For an existing canonical Enterprise Document:
+
+#### Descriptor absent / payload absent
+
+Classification:
+
+**CONTENT NOT FOUND**
+
+Raise:
+
+`DocumentContentAccessContentNotFoundError`
+
+#### Descriptor present / payload absent
+
+Classification:
+
+**INTEGRITY ERROR**
+
+Raise:
+
+`DocumentContentAccessIntegrityError`
+
+No automatic descriptor deletion or repair is permitted.
+
+#### Descriptor absent / payload present
+
+Classification:
+
+**INTEGRITY ERROR**
+
+Raise:
+
+`DocumentContentAccessIntegrityError`
+
+The non-None payload context shall be safely closed.
+
+RFC-073 shall not reconstruct a descriptor because media-type ownership and
+content establishment belong to RFC-072.
+
+#### Descriptor present / payload present
+
+The payload shall be fully verified before delivery.
+
+### Pre-Delivery Integrity Verification
+
+A successful RFC-073 access shall not expose unverified canonical bytes.
+
+RFC-073 therefore selects:
+
+**VERIFY → CLOSE → REOPEN → DELIVER**
+
+The verification pass shall:
+
+1. enter the first non-None store-owned payload context;
+2. consume the canonical payload from byte zero through EOF;
+3. count exact bytes;
+4. calculate SHA-256 over those exact bytes;
+5. compare byte length with `descriptor.byte_length`;
+6. compare digest with `descriptor.digest`;
+7. close the verification payload context before delivery begins.
+
+Verification shall perform no:
+
+- normalization;
+- decoding;
+- decompression;
+- parsing;
+- OCR;
+- character conversion;
+- metadata extraction;
+- chunking;
+- semantic transformation.
+
+### Streaming Requirements
+
+The verification algorithm shall be incremental.
+
+It shall not require:
+
+- complete payload buffering in memory;
+- `seek()`;
+- `tell()`;
+- `fileno()`;
+- an Application-owned temporary file;
+- an Application-owned filesystem cache.
+
+Zero-byte canonical payloads remain valid and shall verify against their
+canonical descriptor normally.
+
+### Verification Failure
+
+If observed payload byte length differs from:
+
+`descriptor.byte_length`
+
+or calculated SHA-256 differs from:
+
+`descriptor.digest.value`
+
+RFC-073 shall raise:
+
+`DocumentContentAccessIntegrityError`
+
+The unverified payload shall never be yielded to the consumer.
+
+### Delivery Reopen
+
+After successful verification, RFC-073 shall call:
+
+`DocumentContentStore.open(document_id)`
+
+again.
+
+The verification context must already be closed before this second open is
+used for delivery.
+
+This second open is selected instead of rewind because the persistence-neutral
+store contract does not require a seekable stream.
+
+If the delivery reopen returns `None` after successful verification, RFC-073
+shall raise:
+
+`DocumentContentAccessIntegrityError`
+
+because an accepted immutable canonical payload cannot legitimately disappear
+between successful verification and delivery access through the same
+conforming store contract.
+
+### Delivery Context
+
+When the delivery reopen succeeds, RFC-073 shall yield:
+
+`DocumentContentAccess(descriptor=descriptor, payload=payload)`
+
+inside the delivery store context.
+
+The delivery `payload`:
+
+- begins at canonical byte zero;
+- is readable incrementally;
+- need not be seekable;
+- need not provide `fileno()`;
+- is valid only during the Application context;
+- is closed when the Application context exits.
+
+RFC-073 shall guarantee context closure when:
+
+- the consumer completes normally;
+- the consumer raises;
+- downstream parsing later raises;
+- the caller exits early.
+
+The consumer shall not retain the payload for use after context exit.
+
+### Integrity Versus Delivery Pass
+
+The first pass is the canonical pre-delivery integrity verification.
+
+The second pass is the consumer delivery stream.
+
+RFC-073 does not require a third pass.
+
+The architecture relies on the accepted immutability of the canonical
+`DocumentContentStore` contract between those two opens.
+
+It does not claim protection against out-of-band filesystem tampering,
+host compromise or storage-media corruption occurring outside accepted store
+semantics.
+
+Production tamper detection and infrastructure integrity monitoring remain
+separate Cybersecurity/deployment concerns.
+
+### No Automatic Recovery
+
+RFC-073 is read-only.
+
+It shall never call:
+
+- `EnterpriseDocumentRepository.add()`;
+- `DocumentContentRepository.add()`;
+- `DocumentContentStore.add()`.
+
+It shall introduce no:
+
+- update;
+- delete;
+- overwrite;
+- upsert;
+- repair;
+- descriptor reconstruction;
+- payload reconstruction;
+- compensating transaction;
+- retry loop.
+
+Incomplete canonical state is reported, not repaired.
+
+RFC-072 remains the canonical establishment/recovery Application use case.
+
+### Operational Failure Propagation
+
+Operational failures from:
+
+- `EnterpriseDocumentRepository`;
+- `DocumentContentRepository`;
+- `DocumentContentStore`;
+- verification payload reads;
+- delivery payload open;
+
+shall propagate unless this contract explicitly classifies the observable state
+as an RFC-073 Application error.
+
+RFC-073 shall not introduce a generic catch-all storage/repository error
+hierarchy.
+
+### `source_reference` Decision
+
+`EnterpriseDocument.source.source_reference` remains external provenance and
+traceability only.
+
+RFC-073 shall not:
+
+- call `open(source_reference)`;
+- interpret it as a filesystem path;
+- interpret it as a storage key;
+- treat it as a canonical URI;
+- use it for payload lookup;
+- use it for deduplication;
+- use it as canonical Document identity;
+- derive binary storage topology from it.
+
+The only canonical content association key is:
+
+`document_id`
+
+### Responsibility Preservation
+
+RFC-073 shall not modify or absorb the responsibility of:
+
+- `EnterpriseDocumentRegistrationApplicationService`;
+- `DocumentContentEstablishmentApplicationService`;
+- `DocumentKnowledgeIngestionApplicationService`;
+- `KnowledgeCaptureApplicationService`;
+- `KnowledgeLineageTransactionCoordinator`;
+- `EnterpriseDocumentRepository`;
+- `DocumentContentRepository`;
+- `DocumentContentStore`;
+- `FilesystemDocumentContentStore`;
+- `EnterpriseDocument`;
+- `DocumentContentDescriptor`.
+
+Registration remains registration.
+
+Establishment and incomplete-state recovery remain RFC-072 responsibility.
+
+RFC-073 owns verified read access only.
+
+### Parser / Document Intelligence Boundary
+
+RFC-073 does not implement a parser.
+
+A future parser may consume:
+
+`DocumentContentAccess.payload`
+
+only after RFC-073 is accepted, technically implemented and wired through its
+own separately governed Application capability.
+
+RFC-073 does not determine:
+
+- PDF parsing;
+- DOCX parsing;
+- spreadsheet parsing;
+- text extraction;
+- encoding detection;
+- OCR;
+- metadata extraction;
+- chunking strategy;
+- parser result persistence;
+- Knowledge generation.
+
+### Document Library Boundary
+
+RFC-073 is not a Document Library.
+
+It does not introduce:
+
+- browse;
+- catalogue;
+- list;
+- search;
+- upload workflow;
+- download HTTP endpoint;
+- revision lifecycle;
+- supersession;
+- publication lifecycle;
+- document permissions UI.
+
+Those require separate architecture.
+
+### Search / Vector / Graph / RAG / LLM Boundary
+
+Successful RFC-073 access means only:
+
+**canonical binary content was verified and exposed through the governed
+Application context**
+
+It does not imply the Document is:
+
+- parsed;
+- indexed;
+- searchable;
+- embedded;
+- present in Vector storage;
+- represented in Graph storage;
+- available to RAG;
+- available to an LLM;
+- trusted for autonomous AI action.
+
+### Persistence and Migration Boundary
+
+RFC-073 requires no new:
+
+- SQLAlchemy model;
+- table;
+- column;
+- index;
+- constraint;
+- migration;
+- Alembic revision.
+
+Canonical Alembic head remains:
+
+`0005`
+
+### Runtime / Composition Boundary
+
+RFC-073 architecture acceptance shall not itself add:
+
+- default `CompositionRoot` construction;
+- Runtime registration;
+- Bootstrap registration;
+- API wiring;
+- filesystem root configuration;
+- deployment configuration.
+
+Production composition is separately governed.
+
+### Security Boundary
+
+RFC-073 makes no claim of:
+
+- authentication completion;
+- authorization completion;
+- RBAC completion;
+- Active Directory completion;
+- BOLA protection completion;
+- Cybersecurity approval;
+- secure production deployment;
+- regulatory certification.
+
+Future API/content-delivery authorization must be governed separately and
+fail closed.
+
+### No New Transaction Coordinator
+
+RFC-073 introduces no coordinator.
+
+It does not extend:
+
+`KnowledgeLineageTransactionCoordinator`
+
+That coordinator retains only its accepted Knowledge/Lineage scope.
+
+### Rejected Alternative — Return `DocumentContentStore.open()` Directly
+
+Rejected.
+
+Reason:
+
+That would expose a lower-level persistence port directly to downstream
+Application consumers and would not guarantee descriptor/payload integrity
+before use.
+
+### Rejected Alternative — Seek Back After Verification
+
+Rejected.
+
+Reason:
+
+The accepted persistence-neutral store does not require seekable payloads.
+
+### Rejected Alternative — Buffer Entire Payload
+
+Rejected.
+
+Reason:
+
+It unnecessarily creates an Application memory-scaling responsibility.
+
+### Rejected Alternative — Temporary Application File
+
+Rejected.
+
+Reason:
+
+It would introduce filesystem/storage ownership into the Application layer.
+
+### Rejected Alternative — Use `source_reference`
+
+Rejected.
+
+Reason:
+
+It violates accepted provenance semantics and reintroduces an implicit storage
+contract.
+
+### Rejected Alternative — Repair Payload-Only State
+
+Rejected.
+
+Reason:
+
+Canonical descriptor establishment and media-type ownership already belong to
+RFC-072.
+
+### Proposed Technical Implementation Surface
+
+Architecture acceptance alone shall not authorize implementation.
+
+Only after:
+
+1. this draft is reviewed and refined;
+2. AD-059 is explicitly accepted;
+3. the acceptance record is committed;
+4. the acceptance record is pushed;
+5. exact Local / Tracking / Remote accepted-contract identity is verified;
+6. a separate implementation-entry review passes
+
+may implementation introduce:
+
+`backend/app/services/document_content_access_application_service.py`
+
+and focused tests:
+
+- `tests/services/test_document_content_access_application_service.py`;
+- `tests/services/test_document_content_access_architecture.py`.
+
+No other production file is pre-authorized.
+
+### Required Technical Verification After Later Implementation
+
+A later technical gate shall require coverage of at least:
+
+1. Document absent;
+2. Document exists / descriptor absent / payload absent;
+3. descriptor-only integrity failure;
+4. payload-only integrity failure;
+5. exact complete payload verification;
+6. byte-length mismatch;
+7. SHA-256 mismatch;
+8. zero-byte payload;
+9. non-seekable verification stream;
+10. verification context closure;
+11. delivery reopen occurs only after verification close;
+12. delivery reopen confirmed absence;
+13. delivery context closes after normal consumer exit;
+14. delivery context closes after consumer exception;
+15. operational repository failure propagation;
+16. operational store-open failure propagation;
+17. operational payload-read failure propagation;
+18. no write operations;
+19. no `source_reference` access;
+20. no Infrastructure path leakage;
+21. exact public-surface architecture contract;
+22. no existing responsibility absorbed;
+23. no schema/Alembic expansion;
+24. full PlantMind regression;
+25. Python compilation;
+26. `git diff --check`.
+
+These technical tests belong to the later implementation gate, not to
+architecture acceptance.
+
+### Acceptance Requirements
+
+Before AD-059 may become Accepted, architecture review must confirm:
+
+1. RFC-073 introduces no new ARCH-001 layer;
+2. the service is read-only;
+3. canonical identity is `document_id`;
+4. Document existence is checked first;
+5. both-absent content state is distinct from Document absence;
+6. descriptor-only is integrity failure;
+7. payload-only is integrity failure;
+8. descriptor/payload mismatch is integrity failure;
+9. unverified bytes are never yielded;
+10. verification is streaming and persistence-neutral;
+11. successful access uses verify-close-reopen-deliver;
+12. delivery resource ownership is context-managed;
+13. no seekability requirement exists;
+14. no full buffering exists;
+15. zero-byte content remains valid;
+16. no repair/write path exists;
+17. `source_reference` remains provenance only;
+18. RFC-072 establishment ownership is preserved;
+19. parser/Document Library responsibilities remain downstream;
+20. Search/Vector/Graph/RAG/LLM remain downstream;
+21. no database migration is introduced;
+22. no Runtime/Composition/Bootstrap expansion is introduced;
+23. no production-security claim is introduced;
+24. acceptance is separate from implementation entry.
+
+### Current Gate
+
+AD-059:
+
+**DRAFT — NOT ACCEPTED**
+
+Architecture review:
+
+**PENDING**
+
+Implementation:
+
+**NOT AUTHORIZED**
+
+Staging:
+
+**NOT AUTHORIZED**
+
+Commit:
+
+**NONE**
+
+Push:
+
+**NONE**
+
+### Next Exact Action
+
+Perform Chief Architect review of the complete five-document RFC-073 / AD-059
+architecture draft.
+
+No staging, acceptance or implementation is authorized until that review
+passes.
+
+### RFC-073 / AD-059 Architecture Review Refinement — Observable-State and Fresh-Open Semantics
+
+#### Observable-State Classification
+
+RFC-073 error classifications describe the state observed by one access
+invocation.
+
+They SHALL NOT be interpreted as a claim that the observed persistence state
+is permanently corrupt.
+
+RFC-072 uses:
+
+**payload first → descriptor second**
+
+for fresh establishment.
+
+Therefore a concurrent RFC-073 access may legitimately observe:
+
+**payload present / descriptor absent**
+
+during an RFC-072 establishment or recovery window.
+
+RFC-073 shall still classify that observation as:
+
+`DocumentContentAccessIntegrityError`
+
+because verified canonical content cannot safely be delivered from the state
+observed by that invocation.
+
+This Application error means:
+
+**the observed canonical content state is not safe for delivery now**
+
+It does not mean:
+
+**the persistence state is proven permanently unrecoverable**
+
+RFC-073 shall perform no:
+
+- automatic repair;
+- automatic retry;
+- waiting;
+- polling;
+- descriptor reconstruction;
+- payload reconstruction;
+- write.
+
+A later explicit caller invocation re-observes canonical state from the
+beginning and may succeed if RFC-072 has completed establishment or recovery.
+
+Likewise:
+
+**descriptor absent / payload absent → Content Not Found**
+
+is a classification of the current observation only.
+
+RFC-073 makes no linearizability claim that the same state must remain visible
+after the invocation returns.
+
+#### Fresh-Open Semantics
+
+RFC-073 does not amend or replace the accepted `DocumentContentStore` port.
+
+Each call to:
+
+`DocumentContentStore.open(document_id)`
+
+is treated as a fresh canonical payload access attempt under the accepted
+store contract.
+
+RFC-073 itself shall not:
+
+- seek;
+- rewind;
+- reposition;
+- cache;
+- duplicate;
+- reconstruct
+
+a returned payload stream.
+
+The verification pass consumes its fresh opened payload incrementally through
+EOF.
+
+After that verification context is closed, delivery uses a separate fresh:
+
+`DocumentContentStore.open(document_id)`
+
+result.
+
+RFC-073 relies on the accepted immutable canonical-payload semantics.
+
+It introduces no new binary-store responsibility and does not modify RFC-070
+or RFC-071 ownership.
+
+If a future storage adapter cannot satisfy the accepted store contract and
+RFC-073 consumer semantics, that adapter requires separate conformance review
+rather than silent weakening of RFC-073 integrity guarantees.
+
+#### Refined Acceptance Meaning
+
+Before AD-059 may be accepted, architecture review must additionally confirm:
+
+1. `IntegrityError` is an access-safety classification, not a permanent
+   corruption assertion;
+2. RFC-072 payload-first transient/recoverable state remains architecturally
+   valid;
+3. RFC-073 performs no same-invocation retry or repair;
+4. an explicit later invocation may re-observe and succeed;
+5. fresh-open delivery does not amend persistence-neutral store ownership;
+6. no seekability or buffering requirement is introduced.
+
+Architecture review:
+
+**PENDING — RE-REVIEW REQUIRED**
+
+AD-059:
+
+**DRAFT — NOT ACCEPTED**
+
+Implementation:
+
+**NOT AUTHORIZED**
+
+---
+
+## RFC-073 / AD-059 Architecture Contract Acceptance
+
+**Record Classification: Architecture Contract Acceptance**
+
+Verified RFC-073 selection commit:
+
+`059fbcbf404da390079ca77685eb2135e663e80d`
+
+Selected workstream:
+
+**RFC-073 — Canonical Document Content Access Application Boundary**
+
+Architecture Decision:
+
+**AD-059 — Canonical Document Content Access Application Boundary**
+
+### Final Architecture Review
+
+Refined architecture review:
+
+**PASS — NO REMAINING REFINE / NO BLOCKED ITEM**
+
+Observable-state refinement:
+
+**PASS**
+
+Fresh-open semantics refinement:
+
+**PASS**
+
+Architecture acceptance and implementation entry remain separate gates.
+
+### Accepted Decision
+
+AD-059 is:
+
+**ACCEPTED**
+
+Acceptance Git durability is:
+
+**PENDING**
+
+Implementation is:
+
+**NOT AUTHORIZED**
+
+### Accepted Application Boundary
+
+Accepted service:
+
+`DocumentContentAccessApplicationService`
+
+Accepted module:
+
+`app.services.document_content_access_application_service`
+
+Accepted future implementation path:
+
+`backend/app/services/document_content_access_application_service.py`
+
+Canonical dependencies are exactly:
+
+- `EnterpriseDocumentRepository`;
+- `DocumentContentRepository`;
+- `DocumentContentStore`.
+
+No additional repository, storage adapter, coordinator or Infrastructure
+dependency is accepted by RFC-073.
+
+### Accepted Public Surface
+
+The RFC-073 module owns exactly:
+
+- `DocumentContentAccessRequest`;
+- `DocumentContentAccess`;
+- `DocumentContentAccessDocumentNotFoundError`;
+- `DocumentContentAccessContentNotFoundError`;
+- `DocumentContentAccessIntegrityError`;
+- `DocumentContentAccessApplicationService`.
+
+`DocumentContentAccessRequest` is frozen, slots-based and keyword-only with
+exactly:
+
+`document_id: EntityId`
+
+`DocumentContentAccess` is frozen, slots-based and keyword-only with exactly:
+
+- `descriptor: DocumentContentDescriptor`;
+- `payload: BinaryIO`.
+
+Accepted operation:
+
+`open(request: DocumentContentAccessRequest) -> AbstractContextManager[DocumentContentAccess]`
+
+### Accepted Access Model
+
+Successful RFC-073 access uses:
+
+**VERIFY → CLOSE → REOPEN → DELIVER**
+
+The first fresh store access is consumed incrementally through EOF and verifies:
+
+- exact byte length;
+- exact SHA-256 digest.
+
+The verification context is closed before delivery access begins.
+
+A second fresh:
+
+`DocumentContentStore.open(document_id)`
+
+provides the consumer delivery stream.
+
+RFC-073 requires no:
+
+- `seek()`;
+- `tell()`;
+- `fileno()`;
+- complete payload buffering;
+- Application temporary file;
+- Application filesystem cache.
+
+Unverified bytes are never delivered.
+
+Zero-byte canonical content remains valid.
+
+### Fresh-Open Conformance Clarification
+
+AD-059 does not modify the public RFC-070 `DocumentContentStore` method
+signature or transfer store ownership to the Application layer.
+
+For RFC-073 consumer semantics, each fresh conforming
+`DocumentContentStore.open(document_id)` access must expose the canonical
+payload from the start of that newly opened payload stream.
+
+The earlier draft wording:
+
+`canonical byte zero`
+
+means the beginning of the canonical payload exposed by that fresh open.
+
+RFC-073 itself does not seek, rewind or reposition the stream.
+
+The current filesystem adapter naturally satisfies this behavior through a
+fresh binary file open.
+
+A future adapter that cannot satisfy RFC-073 access/conformance semantics
+requires separate architecture/conformance review.
+
+Its limitation shall not silently weaken AD-059 integrity guarantees.
+
+### Accepted State Classification
+
+Canonical Enterprise Document absence:
+
+**DocumentContentAccessDocumentNotFoundError**
+
+For an existing canonical Document:
+
+- descriptor absent / payload absent:
+  **DocumentContentAccessContentNotFoundError**;
+
+- descriptor present / payload absent:
+  **DocumentContentAccessIntegrityError**;
+
+- descriptor absent / payload present:
+  **DocumentContentAccessIntegrityError**;
+
+- descriptor/payload byte-length mismatch:
+  **DocumentContentAccessIntegrityError**;
+
+- descriptor/payload digest mismatch:
+  **DocumentContentAccessIntegrityError**;
+
+- successful verification followed by confirmed delivery-reopen absence:
+  **DocumentContentAccessIntegrityError**.
+
+### Observable-State Acceptance Semantics
+
+RFC-073 Application errors classify the state observed by the current access
+invocation.
+
+They do not prove permanent persistence corruption.
+
+RFC-072 accepted establishment remains:
+
+**payload first → descriptor second**
+
+Therefore payload-only state may be observed transiently during legitimate
+RFC-072 establishment or recovery.
+
+RFC-073 nevertheless fails closed for that access invocation because verified
+canonical content cannot safely be delivered from the observed incomplete
+state.
+
+RFC-073 performs no:
+
+- automatic retry;
+- waiting;
+- polling;
+- repair;
+- descriptor reconstruction;
+- payload reconstruction;
+- write.
+
+A later explicit invocation re-observes canonical state and may succeed.
+
+### Read-Only Ownership
+
+RFC-073 never calls:
+
+- `EnterpriseDocumentRepository.add()`;
+- `DocumentContentRepository.add()`;
+- `DocumentContentStore.add()`.
+
+RFC-073 introduces no:
+
+- update;
+- delete;
+- overwrite;
+- upsert;
+- compensation;
+- recovery coordinator.
+
+RFC-072 retains establishment and recovery ownership.
+
+### Resource Ownership
+
+Every non-None store-owned context acquired by RFC-073 is closed
+deterministically.
+
+The consumer payload is usable only within the RFC-073 Application context.
+
+Normal exit, consumer exception and early exit all close the delivery context.
+
+Persistence ownership remains with `DocumentContentStore`.
+
+### Canonical Identity and Provenance
+
+Canonical content association identity is:
+
+`document_id: EntityId`
+
+`EnterpriseDocument.source.source_reference` remains:
+
+**external provenance / traceability only**
+
+RFC-073 never uses it as:
+
+- storage path;
+- storage key;
+- canonical URI;
+- payload locator;
+- deduplication key;
+- canonical Document identity.
+
+### Sequential Observation
+
+RFC-073 does not claim one atomic, transactional or linearizable snapshot
+across:
+
+- Enterprise Document repository;
+- Document Content descriptor repository;
+- binary Document Content store.
+
+It introduces no distributed transaction and no new coordinator.
+
+### Operational Failure Rule
+
+Underlying operational failures propagate unless AD-059 explicitly classifies
+the observed condition as one of its Application errors.
+
+No generic catch-all persistence error hierarchy is introduced.
+
+### Preserved Responsibilities
+
+AD-059 does not modify or absorb:
+
+- `EnterpriseDocumentRegistrationApplicationService`;
+- `DocumentContentEstablishmentApplicationService`;
+- `DocumentKnowledgeIngestionApplicationService`;
+- `KnowledgeCaptureApplicationService`;
+- `KnowledgeLineageTransactionCoordinator`;
+- `EnterpriseDocumentRepository`;
+- `DocumentContentRepository`;
+- `DocumentContentStore`;
+- `FilesystemDocumentContentStore`;
+- `EnterpriseDocument`;
+- `DocumentContentDescriptor`.
+
+### Accepted Non-Scope
+
+AD-059 does not introduce:
+
+- Document Library;
+- parser implementation;
+- PDF/DOCX/spreadsheet/text extraction;
+- OCR;
+- metadata extraction;
+- chunking;
+- Search;
+- embeddings;
+- Vector persistence;
+- Graph / Neo4j production integration;
+- RAG;
+- LLM;
+- AI Agents;
+- HTTP content-download API;
+- Runtime / Composition / Bootstrap wiring;
+- SQLAlchemy expansion;
+- database schema change;
+- Alembic revision;
+- authentication completion;
+- authorization completion;
+- RBAC completion;
+- Active Directory completion;
+- Cybersecurity approval;
+- production-readiness claim.
+
+Canonical Alembic head remains:
+
+`0005`
+
+### Acceptance Requirements Verification
+
+Architecture review confirms:
+
+1. no new ARCH-001 layer — PASS;
+2. read-only service — PASS;
+3. canonical identity is `document_id` — PASS;
+4. Document existence first — PASS;
+5. Content Not Found distinct from Document Not Found — PASS;
+6. descriptor-only fail-closed — PASS;
+7. payload-only fail-closed — PASS;
+8. mismatch fail-closed — PASS;
+9. unverified bytes never delivered — PASS;
+10. incremental verification — PASS;
+11. verify-close-reopen-deliver — PASS;
+12. context-managed resource ownership — PASS;
+13. no seek requirement — PASS;
+14. no full buffering — PASS;
+15. zero-byte content valid — PASS;
+16. no repair/write — PASS;
+17. `source_reference` provenance only — PASS;
+18. RFC-072 ownership preserved — PASS;
+19. parser/Document Library downstream — PASS;
+20. Search/Vector/Graph/RAG/LLM downstream — PASS;
+21. no migration — PASS;
+22. no Runtime/Composition/Bootstrap expansion — PASS;
+23. no production-security claim — PASS;
+24. acceptance separated from implementation entry — PASS;
+25. IntegrityError is access-safety classification, not permanent-corruption
+    assertion — PASS;
+26. RFC-072 payload-first semantics preserved — PASS;
+27. no same-invocation retry/repair — PASS;
+28. later explicit invocation re-observes state — PASS;
+29. fresh-open delivery does not transfer store ownership — PASS;
+30. no seekability/buffering requirement introduced — PASS.
+
+### Acceptance Gate State
+
+AD-059:
+
+**ACCEPTED — GIT DURABILITY PENDING**
+
+Architecture review:
+
+**PASS**
+
+Acceptance staging:
+
+**NOT YET PERFORMED**
+
+Acceptance commit:
+
+**NONE**
+
+Acceptance push:
+
+**NONE**
+
+Implementation:
+
+**NOT AUTHORIZED**
+
+### Next Exact Action
+
+Review the complete five-document RFC-073 / AD-059 architecture acceptance
+candidate.
+
+Do not stage until that acceptance review passes.
+
+Do not begin implementation until accepted-contract Git durability is
+complete and a separate implementation-entry review passes.

@@ -17218,3 +17218,247 @@ Push:
 Review the RFC-073 successor-selection documentation.
 
 No staging is authorized until that review passes.
+
+---
+
+## RFC-073 — Canonical Document Content Access Application Boundary — Architecture Draft
+
+### Status
+
+**ARCHITECTURE CONTRACT DRAFT AUTHORED — REVIEW PENDING**
+
+Architecture Decision:
+
+**AD-059 — DRAFT / NOT ACCEPTED**
+
+Verified selection commit:
+
+`059fbcbf404da390079ca77685eb2135e663e80d`
+
+Latest Accepted Architecture Decision:
+
+**AD-058**
+
+Full regression baseline:
+
+**995 passed**
+
+Alembic:
+
+`0005`
+
+### Draft Boundary
+
+RFC-073 proposes:
+
+`DocumentContentAccessApplicationService`
+
+with exactly:
+
+- `EnterpriseDocumentRepository`;
+- `DocumentContentRepository`;
+- `DocumentContentStore`.
+
+Canonical request identity:
+
+`document_id: EntityId`
+
+Canonical result context:
+
+- `DocumentContentDescriptor`;
+- context-bound `BinaryIO` payload.
+
+### Access Model
+
+Selected draft model:
+
+**VERIFY → CLOSE → REOPEN → DELIVER**
+
+Verification is a full incremental byte pass against canonical:
+
+- byte length;
+- SHA-256 digest.
+
+No seek, tell, fileno, complete buffering or Application temporary file is
+required.
+
+### State Matrix
+
+Existing Document:
+
+| Descriptor | Payload | Result |
+|---|---|---|
+| absent | absent | Content Not Found |
+| present | absent | Integrity Error |
+| absent | present | Integrity Error |
+| present | present but mismatch | Integrity Error |
+| present | present and verified | Reopen and deliver |
+
+A delivery reopen that reports confirmed absence after successful verification
+is an Integrity Error.
+
+### Resource Rule
+
+Every non-None store-owned context is closed deterministically.
+
+The consumer receives a payload only within the RFC-073 Application context.
+
+### Preserved Boundaries
+
+RFC-073 does not:
+
+- write content;
+- repair content;
+- use `source_reference`;
+- expose filesystem paths;
+- parse documents;
+- implement Document Library;
+- implement Search/Vector/Graph/RAG/LLM;
+- alter migrations;
+- wire Runtime/Composition/Bootstrap;
+- claim production security.
+
+### Technical Gate
+
+Implementation remains:
+
+**NOT AUTHORIZED**
+
+After later accepted-contract Git durability and a separate implementation
+entry, the expected technical surface is only:
+
+- `backend/app/services/document_content_access_application_service.py`;
+- `tests/services/test_document_content_access_application_service.py`;
+- `tests/services/test_document_content_access_architecture.py`.
+
+### Next Exact Action
+
+Review the complete RFC-073 / AD-059 architecture draft.
+
+No staging or acceptance is authorized before review passes.
+
+### RFC-073 / AD-059 Architecture Review Refinement — Roadmap
+
+The RFC-073 draft is refined before acceptance.
+
+Observable payload-only state remains fail-closed:
+
+**Integrity Error for the current access invocation**
+
+but is not a permanent-corruption assertion because RFC-072 legitimately uses
+payload-first establishment.
+
+RFC-073 introduces no automatic retry or repair.
+
+A later explicit invocation re-observes canonical state.
+
+The access model remains:
+
+**VERIFY → CLOSE → REOPEN → DELIVER**
+
+Fresh store opens introduce no seekability, complete buffering or store-port
+ownership change.
+
+Current gate:
+
+**ARCHITECTURE RE-REVIEW REQUIRED**
+
+AD-059:
+
+**DRAFT — NOT ACCEPTED**
+
+Implementation:
+
+**NOT AUTHORIZED**
+
+---
+
+## RFC-073 / AD-059 Architecture Contract Acceptance — Roadmap State
+
+### Architecture Review
+
+Refined contract review:
+
+**PASS — NO REMAINING REFINE / NO BLOCKED ITEM**
+
+Architecture Decision:
+
+**AD-059 — ACCEPTED / GIT DURABILITY PENDING**
+
+### Accepted Boundary
+
+Service:
+
+`DocumentContentAccessApplicationService`
+
+Dependencies:
+
+- `EnterpriseDocumentRepository`;
+- `DocumentContentRepository`;
+- `DocumentContentStore`.
+
+Access model:
+
+**VERIFY → CLOSE → REOPEN → DELIVER**
+
+Payload-only observation:
+
+**Fail closed for the current access invocation**
+
+Permanent-corruption assertion:
+
+**No**
+
+Automatic retry / repair:
+
+**None**
+
+Fresh-open store ownership change:
+
+**None**
+
+`source_reference` storage use:
+
+**Prohibited**
+
+### Preserved Deferrals
+
+Still downstream:
+
+- Document Library;
+- parser / OCR / extraction;
+- chunking;
+- Search / Vector / Graph;
+- RAG / LLM / AI Agents;
+- Runtime / Composition / Bootstrap integration;
+- production security and Cybersecurity approval.
+
+Alembic remains:
+
+`0005`
+
+Implementation remains:
+
+**NOT AUTHORIZED**
+
+### Current Gate
+
+Acceptance documentation:
+
+**AUTHORED — REVIEW PENDING**
+
+Acceptance staging:
+
+**NONE**
+
+Acceptance commit:
+
+**NONE**
+
+Acceptance push:
+
+**NONE**
+
+Next action:
+
+Review the complete five-document architecture acceptance candidate.
