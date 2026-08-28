@@ -8530,3 +8530,67 @@ This record intentionally references reconciliation commit:
 but does not predict the future commit that persists this record.
 
 Its own Git durability must be verified externally after commit and push.
+
+---
+
+## 2026-08-27 — Post-RFC-072 Successor Workstream Selection Draft
+
+### Evidence Review Result
+
+RFC-072 terminal baseline:
+
+`60ede75cb850101afbcf08f6cac18cce3a04ef43`
+
+RFC-072:
+
+**FULLY CLOSED AND SOURCE-OF-TRUTH RECONCILED**
+
+Full regression:
+
+**995 passed**
+
+Canonical Alembic head:
+
+`0005`
+
+### Candidate Successor
+
+**RFC-073 — Canonical Document Content Access Application Boundary**
+
+### Evidence
+
+The repository now contains the accepted canonical Document Content
+foundation, concrete binary store and RFC-072 establishment Application
+coordination.
+
+It does not contain a dedicated general Application content-access service for
+downstream consumers.
+
+The accepted RFC-072 architecture states that future parser behavior shall
+consume canonical bytes through an accepted Application/access path and shall
+not reinterpret `source_reference` as storage.
+
+Document Library/parser/OCR/chunking and Search/Vector/Graph/RAG/LLM remain
+higher-level downstream capabilities.
+
+### Governance
+
+This is successor-selection documentation only.
+
+It creates no Architecture Decision.
+
+It authorizes no production implementation.
+
+Active RFC remains:
+
+**NONE**
+
+until successor-selection Git durability is complete.
+
+Selection review:
+
+**PENDING**
+
+Staging / commit / push:
+
+**NONE**

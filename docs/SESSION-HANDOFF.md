@@ -7,9 +7,9 @@
 | Project | PlantMind PM-001 |
 | Branch | `feature/engineering-platform` |
 | Last Fully Closed RFC | RFC-072 — Canonical Document Content Establishment Application Coordination Boundary — Fully Closed and Source-of-Truth Reconciled |
-| Active RFC | None — RFC-072 Fully Closed and Source-of-Truth Reconciled; successor selection not started |
-| Selected Architecture Workstream | None — RFC-072 completed; successor not selected |
-| Proposed Successor RFC | None — successor selection has not started |
+| Active RFC | None — RFC-072 Fully Closed and Source-of-Truth Reconciled; RFC-073 successor-selection draft under review |
+| Selected Architecture Workstream | None — RFC-073 candidate selection authored locally / review pending / not Git durable |
+| Proposed Successor RFC | RFC-073 — Canonical Document Content Access Application Boundary — local successor-selection draft / review pending |
 | Architecture Decision | AD-058 — Accepted / Git Durable |
 | RFC-072 Selection State | Durable — Committed, Pushed and Exact Identity Verified |
 | RFC-072 Selection Commit | `0c9a8cba53221f547d340fa499f1ac7d07d1e7d3` — committed / pushed / exact identity verified |
@@ -56,7 +56,7 @@
 | Alembic Head | `0005` |
 | Authoritative Environment | `PlantMind-Core/.venv` |
 | RFC-069 State | Fully Closed and Source-of-Truth Reconciled |
-| Successor RFC Selection | None — RFC-072 fully closed; successor selection not started |
+| Successor RFC Selection | RFC-073 candidate — Canonical Document Content Access Application Boundary — local draft / review pending / not Git durable |
 ## Recent Engineering Sequence
 
 - RFC-025 — Core Plugin Framework
@@ -3893,3 +3893,85 @@ commits through reconciliation commit:
 `3fab31e046c47c90a0b3a10467570af646273011`
 
 Its own future Git commit identity is intentionally not predicted here.
+
+---
+
+## RFC-073 Successor Workstream Selection Draft Handoff
+
+### Candidate
+
+**RFC-073 — Canonical Document Content Access Application Boundary**
+
+Selection baseline:
+
+`60ede75cb850101afbcf08f6cac18cce3a04ef43`
+
+RFC-072 remains:
+
+**FULLY CLOSED AND SOURCE-OF-TRUTH RECONCILED**
+
+Latest Accepted Architecture Decision remains:
+
+**AD-058**
+
+Full regression baseline:
+
+**995 passed**
+
+Alembic:
+
+`0005`
+
+### Why This Candidate Is Next
+
+RFC-072 established the canonical content-establishment use case, but the
+repository still has no dedicated general Application access boundary for a
+downstream consumer to obtain canonical binary Document Content.
+
+The accepted architecture explicitly requires future parser behavior to use
+an accepted Application/access path.
+
+Therefore the minimum dependency-completing candidate is a narrow canonical
+Document Content access Application boundary.
+
+Document Library, parser/OCR/chunking, Search/Vector/Graph/RAG/LLM and
+production-security work remain downstream and are not authorized here.
+
+### Current Handoff State
+
+RFC-073 selection draft:
+
+**AUTHORED — REVIEW PENDING**
+
+Selection Git durability:
+
+**PENDING**
+
+Active RFC:
+
+**NONE**
+
+Architecture Decision:
+
+**NOT CREATED**
+
+Architecture contract:
+
+**NOT AUTHORED**
+
+Implementation:
+
+**NOT AUTHORIZED**
+
+Staging / commit / push:
+
+**NONE**
+
+### Next Exact Action
+
+Review:
+
+`PLANTMIND-RFC073-SUCCESSOR-SELECTION-REVIEW.txt`
+
+No architecture drafting or implementation is authorized before durable
+successor selection.

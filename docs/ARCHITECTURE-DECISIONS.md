@@ -17077,3 +17077,108 @@ Verification of this record's own commit, push, exact Local / Tracking / Remote
 identity and clean working tree is an external Git durability gate.
 
 That external gate does not require another RFC-072 Source-of-Truth record.
+
+---
+
+## Current Architecture Governance State — Post-RFC-072 Successor Workstream Selection Draft
+
+**Record Classification: Non-Decision Successor-Selection Governance Record**
+
+This record creates no new Architecture Decision.
+
+Latest Accepted Architecture Decision remains:
+
+**AD-058 — Canonical Document Content Establishment Application Coordination Boundary**
+
+RFC-072 remains:
+
+**FULLY CLOSED AND SOURCE-OF-TRUTH RECONCILED**
+
+### Candidate Successor
+
+**RFC-073 — Canonical Document Content Access Application Boundary**
+
+Selection baseline:
+
+`60ede75cb850101afbcf08f6cac18cce3a04ef43`
+
+### Dependency Evidence
+
+The accepted architecture now contains:
+
+- canonical Enterprise Document identity;
+- canonical Document Content descriptor semantics;
+- descriptor repository and relational persistence;
+- canonical binary Document Content Store / Access foundation;
+- concrete filesystem-backed binary adapter;
+- canonical Document Content establishment Application coordination.
+
+The current Application surface has no dedicated general content-access
+Application boundary for downstream consumers.
+
+RFC-072 explicitly requires future parser behavior to consume canonical bytes
+through an accepted Application/access path and prohibits reinterpretation of
+`source_reference` as canonical binary storage.
+
+RFC-073 is therefore selected in this local draft as the smallest
+dependency-completing architecture candidate before Document Intelligence
+capabilities are promoted.
+
+### Boundaries Preserved
+
+RFC-073 selection does not itself authorize:
+
+- an API or UI;
+- Document Library behavior;
+- parser/OCR/chunking;
+- extraction;
+- Search/Vector/Graph/RAG/LLM;
+- Runtime / Composition / Bootstrap wiring;
+- schema or Alembic expansion;
+- authentication / authorization / RBAC / Active Directory;
+- production deployment or Cybersecurity claims.
+
+The future RFC-073 architecture contract must first define the exact
+Application access semantics and accepted dependencies.
+
+### Selection Gate
+
+Selection documentation:
+
+**AUTHORED — REVIEW PENDING**
+
+Selection commit:
+
+**NOT YET CREATED**
+
+Selection push:
+
+**NOT PERFORMED**
+
+Exact Local / Tracking / Remote selection identity:
+
+**NOT YET APPLICABLE**
+
+Active RFC:
+
+**NONE**
+
+Architecture Decision:
+
+**NOT CREATED**
+
+Architecture contract:
+
+**NOT AUTHORED**
+
+Implementation:
+
+**NOT AUTHORIZED**
+
+### Next Exact Action
+
+Review the complete five-document successor-selection diff.
+
+Only after selection documentation is reviewed, staged, committed, pushed and
+verified exact may RFC-073 become the active architecture workstream and
+architecture drafting begin.

@@ -17124,3 +17124,97 @@ records only already durable commits through reconciliation commit:
 
 Its own Git durability is verified externally and does not require another
 RFC-072 Source-of-Truth record.
+
+---
+
+## Post-RFC-072 Successor Workstream Selection Draft — RFC-073
+
+### Candidate Workstream
+
+**RFC-073 — Canonical Document Content Access Application Boundary**
+
+Selection baseline:
+
+`60ede75cb850101afbcf08f6cac18cce3a04ef43`
+
+RFC-072 terminal state:
+
+**FULLY CLOSED AND SOURCE-OF-TRUTH RECONCILED**
+
+Latest Accepted Architecture Decision:
+
+**AD-058**
+
+Full verified regression:
+
+**995 passed**
+
+Alembic:
+
+`0005`
+
+### Dependency Rationale
+
+RFC-072 completed canonical content establishment.
+
+The next narrow dependency is an accepted Application access path for
+canonical binary Document Content.
+
+This boundary is required before a downstream parser can consume canonical
+bytes without bypassing the Application layer or treating `source_reference`
+as storage.
+
+### Not Promoted
+
+The following remain downstream:
+
+- Document Library;
+- parser / PDF / DOCX / spreadsheet / text extraction;
+- OCR;
+- metadata extraction;
+- chunking;
+- Search / Vector / Graph;
+- RAG / LLM / AI Agents;
+- Runtime / Composition / Bootstrap expansion;
+- production security / RBAC / Active Directory;
+- production deployment conformance.
+
+### Current Gate
+
+RFC-073 successor selection:
+
+**AUTHORED — REVIEW PENDING**
+
+Active RFC:
+
+**NONE**
+
+Architecture Decision:
+
+**NOT CREATED**
+
+Architecture contract:
+
+**NOT AUTHORED**
+
+Implementation:
+
+**NOT AUTHORIZED**
+
+Staging:
+
+**NONE**
+
+Commit:
+
+**NONE**
+
+Push:
+
+**NONE**
+
+### Next Exact Action
+
+Review the RFC-073 successor-selection documentation.
+
+No staging is authorized until that review passes.

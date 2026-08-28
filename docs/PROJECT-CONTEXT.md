@@ -10,9 +10,9 @@
 | Deployment Model | On-Premise |
 | Development Branch | `feature/engineering-platform` |
 | Last Fully Closed RFC | RFC-072 — Canonical Document Content Establishment Application Coordination Boundary — Fully Closed and Source-of-Truth Reconciled |
-| Active RFC | None — RFC-072 Fully Closed and Source-of-Truth Reconciled; successor selection not started |
-| Selected Architecture Workstream | None — RFC-072 completed; successor not selected |
-| Proposed Successor RFC | None — successor selection has not started |
+| Active RFC | None — RFC-072 Fully Closed and Source-of-Truth Reconciled; RFC-073 successor-selection draft under review |
+| Selected Architecture Workstream | None — RFC-073 candidate selection authored locally / review pending / not Git durable |
+| Proposed Successor RFC | RFC-073 — Canonical Document Content Access Application Boundary — local successor-selection draft / review pending |
 | RFC-069 Selection Commit | `5d7794352029576e0b62c2ac8cbfa248fe11961d` |
 | RFC-070 Selection Commit | `13cfccc08d8c0a3b891990d38edaf9fc48874a5e` |
 | Architecture Decision | AD-058 — Accepted / Git Durable |
@@ -4198,3 +4198,158 @@ Verification of this record's own commit, push, exact Local / Tracking / Remote
 identity and clean working tree is an external Git durability gate.
 
 That external Git gate does not require another RFC-072 Source-of-Truth record.
+
+---
+
+## Post-RFC-072 Successor Workstream Selection Draft — RFC-073
+
+### Candidate Selection
+
+Candidate successor:
+
+**RFC-073 — Canonical Document Content Access Application Boundary**
+
+Selection baseline:
+
+`60ede75cb850101afbcf08f6cac18cce3a04ef43`
+
+Last fully closed RFC:
+
+**RFC-072 — Canonical Document Content Establishment Application Coordination Boundary**
+
+Latest Accepted Architecture Decision:
+
+**AD-058**
+
+Full verified regression baseline:
+
+**995 passed**
+
+Canonical Alembic head:
+
+`0005`
+
+### Evidence-Based Selection Rationale
+
+RFC-072 completed the Application use case for establishing and verifying
+canonical Document Content.
+
+The accepted Document Content chain now provides:
+
+- canonical Enterprise Document identity;
+- canonical Document Content descriptor semantics;
+- persistence-neutral descriptor repository;
+- relational descriptor persistence;
+- persistence-neutral binary `DocumentContentStore`;
+- concrete filesystem-backed binary store;
+- Application-level canonical content establishment.
+
+However, the current Application service inventory contains no dedicated,
+general canonical Document Content read/access boundary for downstream
+Application consumers.
+
+The accepted RFC-072 contract explicitly requires future parser behavior to
+consume canonical bytes through an accepted Application/access path rather
+than reinterpret:
+
+`EnterpriseDocument.source.source_reference`
+
+as binary storage.
+
+That access dependency is therefore narrower and earlier than promoting a
+Document Library, parser, OCR, chunking, Search, Vector, Graph, RAG or LLM
+capability.
+
+### Selected Dependency Direction
+
+RFC-073 shall investigate and define one narrow Application-level content
+access contract over the already accepted canonical Document Content
+boundaries.
+
+The later architecture contract must determine, without presupposing the
+answer:
+
+1. exact Application use-case ownership;
+2. canonical request / identifier input;
+3. whether Document existence verification is required;
+4. whether descriptor presence and payload presence must be jointly verified;
+5. exact absence, integrity and operational-failure classifications;
+6. resource/context-manager lifecycle exposed to the caller;
+7. preservation of binary streaming behavior;
+8. preservation of caller/consumer ownership boundaries;
+9. prohibition of Infrastructure path/root/shard leakage;
+10. how downstream parser consumers receive canonical bytes safely;
+11. how `source_reference` remains provenance only;
+12. whether any existing Application service may be reused without absorbing
+    incompatible responsibilities.
+
+These are architecture questions, not implementation decisions.
+
+### Explicitly Not Selected
+
+This successor-selection draft does not authorize or promote:
+
+- Document Library upload/download/browse/catalogue behavior;
+- parser execution;
+- PDF/DOCX/spreadsheet/text extraction;
+- OCR;
+- metadata extraction;
+- chunking;
+- Search;
+- embeddings or Vector persistence;
+- Graph / Neo4j production integration;
+- RAG;
+- LLM invocation;
+- AI Agent behavior;
+- Runtime / Composition / Bootstrap expansion;
+- production authentication / authorization / RBAC / Active Directory;
+- Cybersecurity approval or production-readiness claims.
+
+Those remain separately governed downstream capabilities.
+
+### Governance State
+
+RFC-073 candidate selection documentation:
+
+**AUTHORED — REVIEW PENDING**
+
+RFC-073 selection Git durability:
+
+**NOT YET ESTABLISHED**
+
+Active RFC:
+
+**NONE**
+
+Architecture Decision for RFC-073:
+
+**NOT YET CREATED**
+
+RFC-073 architecture contract:
+
+**NOT YET AUTHORED**
+
+Implementation:
+
+**NOT AUTHORIZED**
+
+Staging:
+
+**NOT PERFORMED**
+
+Commit:
+
+**NOT CREATED**
+
+Push:
+
+**NOT PERFORMED**
+
+### Next Exact Action
+
+Review the complete five-document RFC-073 successor-selection diff.
+
+Do not stage until that review passes.
+
+Do not begin architecture drafting until the successor-selection record is
+committed, pushed and verified exact on Local / Tracking / Remote.
