@@ -18835,3 +18835,135 @@ Verification of this record's own commit, push, exact Local / Tracking / Remote
 identity and clean working tree is an external Git durability gate.
 
 That external gate does not require another RFC-073 Source-of-Truth record.
+
+
+---
+
+## Selected Successor Architecture Workstream Draft — RFC-074 — Canonical Document Content Parsing Application Boundary
+
+**Record Classification: Non-Decision Successor-Selection Governance Record**
+
+This record does not create or accept a new Architecture Decision.
+
+RFC-073 / AD-059 remains fully closed, Source-of-Truth reconciled and
+authoritative.
+
+### Candidate Successor
+
+**RFC-074 — Canonical Document Content Parsing Application Boundary**
+
+Selection state:
+
+**CANDIDATE AUTHORED — REVIEW PENDING**
+
+Architecture contract:
+
+**NOT YET AUTHORED OR ACCEPTED**
+
+Technical implementation:
+
+**NOT AUTHORIZED**
+
+### Evidence Basis
+
+The post-RFC-073 repository review established:
+
+1. `backend/app/knowledge/document_parser.py` exists only as an empty seam;
+2. no competing Parser or Extractor implementation currently owns the
+   responsibility;
+3. RFC-073 provides verified read-only canonical Document Content access as
+   `DocumentContentDescriptor` plus context-bound `BinaryIO`;
+4. future parser behavior is already required to consume canonical bytes
+   through an accepted Application/access path;
+5. RFC-073 now provides that accepted path;
+6. `source_reference` remains provenance and SHALL NOT become parser storage;
+7. `DocumentKnowledgeIngestionApplicationService` already exists and accepts
+   prepared Knowledge fields rather than raw binary Document Content;
+8. parsing therefore remains a distinct missing responsibility between
+   verified canonical Document Content access and any later Knowledge,
+   indexing or intelligence workflow.
+
+### Candidate Responsibility
+
+RFC-074 is selected for review as the narrow Application-level boundary that
+shall define how one parsing use case consumes verified canonical Document
+Content without taking ownership of storage, persistence or downstream
+Knowledge responsibilities.
+
+The future architecture contract shall determine the exact:
+
+- parsing request;
+- parsing result;
+- parsing/extraction port shape;
+- dependency on `DocumentContentAccessApplicationService`;
+- media-type interaction;
+- parser failure semantics;
+- context-managed payload lifetime;
+- boundary between Application orchestration and format-specific parser
+  implementation.
+
+### Mandatory Preserved Boundaries
+
+RFC-074 SHALL NOT, merely by successor selection, authorize:
+
+- promotion of the existing empty `app.knowledge.document_parser` seam as the
+  canonical implementation;
+- filesystem paths or storage keys as parser inputs;
+- reinterpretation of `source_reference` as binary storage;
+- Document Content mutation or repair;
+- descriptor mutation;
+- binary storage ownership;
+- Document Library upload/download/browse/catalogue behavior;
+- OCR implementation;
+- PDF/DOCX/spreadsheet parser technology selection;
+- chunking;
+- parser-result persistence;
+- automatic Knowledge creation;
+- automatic `DocumentKnowledgeIngestionApplicationService` invocation;
+- Search;
+- embeddings or Vector persistence;
+- Graph / Neo4j production integration;
+- RAG;
+- LLM invocation;
+- AI Agents;
+- Runtime / Composition / Bootstrap wiring;
+- database-schema or Alembic migration changes;
+- authentication / authorization / RBAC / Active Directory completion;
+- production-security or Cybersecurity completion;
+- production-readiness claims.
+
+### Why Not Document Library Next
+
+A Document Library would combine catalogue, browse, upload/download,
+authorization and user-facing lifecycle responsibilities before the canonical
+raw-content transformation boundary exists.
+
+It remains downstream.
+
+### Why Not Search / Vector / Graph / RAG Next
+
+Those capabilities depend on reliable parsed or otherwise prepared information.
+
+Promoting them now would bypass the missing canonical transformation boundary.
+
+They remain downstream.
+
+### Why Not Document Knowledge Ingestion Next
+
+`DocumentKnowledgeIngestionApplicationService` already exists.
+
+It accepts prepared Knowledge fields and coordinates canonical Knowledge and
+lineage persistence.
+
+RFC-074 SHALL NOT duplicate that responsibility.
+
+### Selection Gate
+
+This draft authorizes no architecture implementation.
+
+The next action is Chief Architect review of the complete five-document
+successor-selection diff.
+
+Only after the reviewed selection record becomes Git durable may RFC-074 be
+treated as the formally selected active architecture workstream and its
+architecture contract be drafted.

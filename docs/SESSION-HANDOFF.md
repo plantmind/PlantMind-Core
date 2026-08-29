@@ -7,9 +7,9 @@
 | Project | PlantMind PM-001 |
 | Branch | `feature/engineering-platform` |
 | Last Fully Closed RFC | RFC-073 — Canonical Document Content Access Application Boundary — Fully Closed and Source-of-Truth Reconciled |
-| Active RFC | None — RFC-073 Fully Closed and Source-of-Truth Reconciled; successor selection not started |
-| Selected Architecture Workstream | None — RFC-073 completed; successor not selected |
-| Proposed Successor RFC | None — successor selection has not started |
+| Active RFC | None — RFC-074 successor-selection candidate authored / review pending; architecture contract not authorized |
+| Selected Architecture Workstream | Candidate RFC-074 — Canonical Document Content Parsing Application Boundary — selection review pending |
+| Proposed Successor RFC | RFC-074 — Canonical Document Content Parsing Application Boundary — candidate / review pending |
 | Architecture Decision | AD-059 — Accepted / Committed / Pushed / Exact Identity Verified |
 | RFC-073 Selection State | Durable — Committed, Pushed and Exact Identity Verified |
 | RFC-073 Selection Commit | `059fbcbf404da390079ca77685eb2135e663e80d` — committed / pushed / exact identity verified |
@@ -68,7 +68,7 @@
 | Alembic Head | `0005` |
 | Authoritative Environment | `PlantMind-Core/.venv` |
 | RFC-069 State | Fully Closed and Source-of-Truth Reconciled |
-| Successor RFC Selection | None — RFC-073 fully closed; successor selection not started |
+| Successor RFC Selection | RFC-074 candidate authored / review pending — not yet Git durable |
 ## Recent Engineering Sequence
 
 - RFC-025 — Core Plugin Framework
@@ -4469,3 +4469,85 @@ commits through reconciliation commit:
 `a98fad393431a922276b15639504c86454a93c05`
 
 Its own future Git commit identity is intentionally not predicted here.
+
+
+---
+
+## Post-RFC-073 Successor Architecture Workstream Handoff
+
+Candidate:
+
+**RFC-074 — Canonical Document Content Parsing Application Boundary**
+
+Status:
+
+**SUCCESSOR-SELECTION CANDIDATE AUTHORED — REVIEW PENDING**
+
+RFC-073:
+
+**FULLY CLOSED AND SOURCE-OF-TRUTH RECONCILED**
+
+### Evidence Summary
+
+- RFC-073 provides verified canonical Document Content access;
+- `backend/app/knowledge/document_parser.py` is empty;
+- duplicate Parser/Extractor responsibility check found none;
+- RFC-065 already owns prepared Document-to-Knowledge ingestion;
+- parsing therefore remains a missing independent boundary;
+- future parser access must not use `source_reference` as storage.
+
+### Candidate RFC-074 Ownership
+
+RFC-074 shall be reviewed as the future canonical Application boundary for
+parsing verified Document Content.
+
+Exact request/result/port/error contracts are not yet accepted.
+
+### Hard Deferrals
+
+Do not introduce during successor selection:
+
+- parser implementation libraries;
+- OCR;
+- chunking;
+- Document Library;
+- parsed-content persistence;
+- automatic Knowledge ingestion;
+- Search/Vector/Graph/RAG/LLM;
+- Runtime/Composition/Bootstrap;
+- database migrations;
+- production security claims.
+
+### Gate State
+
+Selection authored:
+
+**YES**
+
+Selection review:
+
+**PENDING**
+
+Selection staged:
+
+**NO**
+
+Selection committed:
+
+**NO**
+
+Selection pushed:
+
+**NO**
+
+Architecture contract authored:
+
+**NO**
+
+Implementation authorized:
+
+**NO**
+
+### Next Gate
+
+Chief Architect RFC-074 successor-selection review.

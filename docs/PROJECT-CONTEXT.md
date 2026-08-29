@@ -10,9 +10,9 @@
 | Deployment Model | On-Premise |
 | Development Branch | `feature/engineering-platform` |
 | Last Fully Closed RFC | RFC-073 — Canonical Document Content Access Application Boundary — Fully Closed and Source-of-Truth Reconciled |
-| Active RFC | None — RFC-073 Fully Closed and Source-of-Truth Reconciled; successor selection not started |
-| Selected Architecture Workstream | None — RFC-073 completed; successor not selected |
-| Proposed Successor RFC | None — successor selection has not started |
+| Active RFC | None — RFC-074 successor-selection candidate authored / review pending; architecture contract not authorized |
+| Selected Architecture Workstream | Candidate RFC-074 — Canonical Document Content Parsing Application Boundary — selection review pending |
+| Proposed Successor RFC | RFC-074 — Canonical Document Content Parsing Application Boundary — candidate / review pending |
 | RFC-069 Selection Commit | `5d7794352029576e0b62c2ac8cbfa248fe11961d` |
 | RFC-070 Selection Commit | `13cfccc08d8c0a3b891990d38edaf9fc48874a5e` |
 | Architecture Decision | AD-059 — Accepted / Committed / Pushed / Exact Identity Verified |
@@ -5086,3 +5086,93 @@ Verification of this record's own commit, push, exact Local / Tracking / Remote
 identity and clean working tree is an external Git durability gate.
 
 That external Git gate does not require another RFC-073 Source-of-Truth record.
+
+
+---
+
+## Post-RFC-073 Successor Workstream Selection Draft — RFC-074
+
+Candidate successor:
+
+**RFC-074 — Canonical Document Content Parsing Application Boundary**
+
+Selection state:
+
+**AUTHORED — REVIEW PENDING**
+
+RFC-073 remains fully closed and Source-of-Truth reconciled.
+
+### Why This Candidate Exists
+
+PlantMind now has verified canonical binary Document Content access through
+RFC-073.
+
+The focused successor review found no existing canonical parser implementation.
+
+The legacy `backend/app/knowledge/document_parser.py` path remains an empty
+seam and is not promoted by this selection.
+
+The missing responsibility is therefore a narrow parsing Application boundary
+that consumes canonical verified bytes while preserving all accepted Document,
+Document Content, Knowledge and lineage ownership.
+
+### Required Relationship To Existing Boundaries
+
+A future RFC-074 architecture contract must preserve:
+
+- RFC-073 as the canonical verified Document Content access boundary;
+- RFC-072 as canonical content-establishment coordination;
+- RFC-065 as canonical prepared Document-to-Knowledge ingestion;
+- Knowledge Capture ownership;
+- Knowledge/lineage transaction-coordination ownership;
+- Document Content repository ownership;
+- Document Content binary-store ownership;
+- `source_reference` as provenance only.
+
+### Explicitly Not Selected
+
+This successor selection does not select:
+
+- Document Library;
+- OCR;
+- chunking;
+- parser-result persistence;
+- semantic search;
+- Vector persistence;
+- Graph persistence;
+- RAG;
+- LLM;
+- AI Agent behavior;
+- production deployment or security completion.
+
+### Current Gate
+
+Successor-selection documentation:
+
+**AUTHORED — REVIEW PENDING**
+
+Selection staging:
+
+**NOT PERFORMED**
+
+Selection commit:
+
+**NOT YET CREATED**
+
+Selection push / exact identity verification:
+
+**NOT YET PERFORMED**
+
+RFC-074 architecture contract:
+
+**NOT YET AUTHORED**
+
+RFC-074 implementation:
+
+**NOT AUTHORIZED**
+
+### Next Exact Action
+
+Review the complete five-document RFC-074 successor-selection diff.
+
+Do not stage until that review passes.

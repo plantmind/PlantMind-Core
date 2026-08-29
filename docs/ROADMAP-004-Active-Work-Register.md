@@ -17754,3 +17754,76 @@ records only already durable commits through reconciliation commit:
 
 Its own Git durability is verified externally and does not require another
 RFC-073 Source-of-Truth record.
+
+
+---
+
+## Post-RFC-073 Successor Workstream Selection Draft — RFC-074 — Canonical Document Content Parsing Application Boundary
+
+### Selection Status
+
+**CANDIDATE AUTHORED — REVIEW PENDING**
+
+Last fully closed RFC:
+
+**RFC-073**
+
+Candidate successor:
+
+**RFC-074 — Canonical Document Content Parsing Application Boundary**
+
+### Evidence-Based Selection
+
+RFC-074 is the leading successor because the canonical Document Content chain
+now reaches verified read-only binary access, while no canonical parser
+responsibility has yet been implemented.
+
+The empty parser seam shall not be promoted by default.
+
+RFC-065 already owns prepared Document-to-Knowledge ingestion and shall not be
+duplicated.
+
+### Proposed Responsibility
+
+Define a narrow canonical Application-level parsing boundary over RFC-073
+verified Document Content.
+
+The detailed contract remains subject to a separate architecture review and
+acceptance gate.
+
+### Preserved Sequence
+
+The selected direction preserves this dependency sequence:
+
+canonical Enterprise Document
+→ canonical Document Content
+→ verified canonical Document Content access
+→ future canonical parsing boundary
+→ separately governed Knowledge ingestion / indexing / intelligence.
+
+### Explicitly Deferred
+
+- concrete parser technology;
+- OCR;
+- Document Library;
+- chunking;
+- parsed-result persistence;
+- automatic Knowledge ingestion;
+- Search;
+- Vector;
+- Graph;
+- RAG;
+- LLM;
+- AI Agents;
+- Runtime / Composition / Bootstrap promotion;
+- schema/migration changes;
+- production-security readiness.
+
+### Gate
+
+No implementation is authorized.
+
+Review the successor-selection record first.
+
+Only after reviewed selection Git durability may RFC-074 architecture drafting
+begin.

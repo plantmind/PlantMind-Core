@@ -9061,3 +9061,63 @@ This record intentionally references reconciliation commit:
 but does not predict the future commit that persists this record.
 
 Its own Git durability must be verified externally after commit and push.
+
+
+---
+
+## 2026-08-29 — Post-RFC-073 Successor Workstream Selection Draft
+
+### Candidate Successor
+
+**RFC-074 — Canonical Document Content Parsing Application Boundary**
+
+Status:
+
+**CANDIDATE AUTHORED — REVIEW PENDING**
+
+RFC-073 remains:
+
+**FULLY CLOSED AND SOURCE-OF-TRUTH RECONCILED**
+
+### Repository Evidence
+
+Focused repository review confirmed:
+
+- canonical Document Content access is now available through RFC-073;
+- the current `backend/app/knowledge/document_parser.py` seam is empty;
+- no competing Parser/Extractor implementation was found;
+- RFC-065 already owns prepared Document-to-Knowledge ingestion;
+- parsing remains a distinct missing responsibility;
+- parser behavior must consume canonical content rather than
+  `source_reference` or storage topology.
+
+### Candidate Boundary
+
+RFC-074 is intended to define the canonical Application-level Document Content
+parsing boundary.
+
+Detailed architecture remains unaccepted.
+
+No technical implementation is authorized by this journal record.
+
+### Preserved Deferrals
+
+Still deferred:
+
+- Document Library;
+- OCR implementation;
+- concrete PDF/DOCX/spreadsheet parsing technology;
+- chunking;
+- parsed-result persistence;
+- automatic Knowledge ingestion;
+- Search / Vector / Graph / RAG / LLM;
+- Runtime / Composition / Bootstrap wiring;
+- schema / migration change;
+- production security and deployment readiness.
+
+### Next Gate
+
+Review the complete RFC-074 successor-selection documentation before staging.
+
+No architecture drafting or technical implementation begins until selection
+review and Git durability complete.
