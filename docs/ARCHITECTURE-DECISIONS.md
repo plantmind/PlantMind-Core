@@ -18967,3 +18967,776 @@ successor-selection diff.
 Only after the reviewed selection record becomes Git durable may RFC-074 be
 treated as the formally selected active architecture workstream and its
 architecture contract be drafted.
+
+
+---
+
+# AD-060 — Canonical Document Content Parsing Application Boundary
+
+**Status: DRAFT — REVIEW PENDING**
+
+**Workstream: RFC-074 — Canonical Document Content Parsing Application Boundary**
+
+**Verified Selection Commit: `b5d1e7fe434378ac7ee90912ac40932d5c5451eb`**
+
+## Context
+
+RFC-073 / AD-059 established verified read-only access to canonical
+Document Content.
+
+Its accepted access boundary exposes:
+
+- the canonical `DocumentContentDescriptor`;
+- a context-bound verified `BinaryIO` payload.
+
+RFC-073 deliberately does not parse that payload.
+
+The repository also contains:
+
+`backend/app/knowledge/document_parser.py`
+
+but that file remains an empty legacy capability seam and has no accepted
+canonical responsibility.
+
+RFC-065 already owns prepared Document-to-Knowledge ingestion through:
+
+`DocumentKnowledgeIngestionApplicationService`
+
+and therefore SHALL NOT be expanded into raw binary parsing.
+
+A distinct boundary is required between verified canonical binary content and
+all later Knowledge, indexing and intelligence behavior.
+
+## Decision
+
+PlantMind SHALL introduce a narrow persistence-neutral Application boundary
+for canonical Document Content parsing.
+
+The proposed technical boundary is:
+
+`app.services.document_content_parsing_application_service.DocumentContentParsingApplicationService`
+
+supported by a parsing port under:
+
+`app.document_parsing`
+
+RFC-074 SHALL define parsing as:
+
+**VERIFIED CANONICAL CONTENT → FORMAT-NEUTRAL PARSER PORT → TEXTUAL PARSE RESULT**
+
+RFC-074 SHALL NOT select or implement a concrete PDF, DOCX, spreadsheet or OCR
+technology.
+
+## Principle
+
+Parsing is transformation of already verified canonical Document Content.
+
+It is not storage, Document registration, Knowledge persistence, indexing or
+AI inference.
+
+## Implication
+
+The parser SHALL receive canonical verified bytes only through RFC-073.
+
+It SHALL NOT locate files, derive paths, inspect deployment storage topology or
+reinterpret provenance as storage.
+
+## Canonical Application Request
+
+The Application request SHALL be immutable and contain exactly:
+
+`document_id: EntityId`
+
+The request SHALL NOT contain:
+
+- filesystem path;
+- storage key;
+- `source_reference`;
+- raw caller-supplied payload;
+- parser implementation name;
+- database session;
+- Knowledge fields.
+
+Canonical content identity remains the Enterprise Document identity.
+
+## Canonical Application Result
+
+The Application result SHALL be immutable and contain:
+
+- the verified `DocumentContentDescriptor`;
+- textual parsed content as `str`.
+
+The result SHALL NOT contain or retain:
+
+- `BinaryIO`;
+- filesystem handles;
+- storage paths;
+- temporary-file references;
+- repository objects;
+- database sessions.
+
+The payload lifetime ends before the completed Application result escapes the
+RFC-073 access context.
+
+## Parser Port
+
+RFC-074 SHALL introduce a persistence-neutral parser contract:
+
+`DocumentContentParser`
+
+Its conceptual operation is:
+
+`parse(*, descriptor: DocumentContentDescriptor, payload: BinaryIO) -> str`
+
+The parser receives only:
+
+- the verified canonical descriptor;
+- the verified context-bound binary payload.
+
+The parser SHALL NOT require access to:
+
+- `EnterpriseDocumentRepository`;
+- `DocumentContentRepository`;
+- `DocumentContentStore`;
+- Knowledge repositories;
+- lineage repositories;
+- database runtime;
+- Runtime / Composition / Bootstrap infrastructure.
+
+## Payload Borrowing And Ownership
+
+`DocumentContentParser` is a borrower of the RFC-073 delivery payload.
+
+Payload ownership remains with the RFC-073 access context.
+
+The parser SHALL NOT:
+
+- close the supplied payload;
+- retain the supplied payload beyond the synchronous `parse()` invocation;
+- cache or persist the supplied payload;
+- return the supplied payload or any stream wrapper around it;
+- transfer payload ownership to another component;
+- expose the supplied payload through parser result state.
+
+`DocumentContentParsingApplicationService` SHALL NOT close the payload directly.
+
+RFC-073 remains responsible for deterministic delivery-context closure after
+the parser invocation completes or fails.
+
+The descriptor may be propagated as immutable result metadata.
+
+The binary payload itself SHALL NOT escape the active RFC-073 access context.
+
+## Parser Output Semantics
+
+Successful parsing returns Python `str`.
+
+This is a runtime contract, not only a type annotation.
+
+If `DocumentContentParser.parse()` returns a value that is not an actual
+`str`, `DocumentContentParsingApplicationService` SHALL raise `TypeError`
+before constructing or returning an Application result.
+
+The Application boundary SHALL NOT coerce an invalid parser result through
+`str(...)` or any other normalization.
+
+The Application boundary SHALL NOT:
+
+- trim parser output;
+- rewrite text;
+- summarize text;
+- classify Knowledge;
+- split text into chunks;
+- generate embeddings;
+- create Knowledge records.
+
+An empty string MAY be a valid parser result.
+
+For example, a structurally valid document may contain no text extractable by
+a non-OCR parser.
+
+RFC-074 SHALL NOT silently interpret empty parsed text as parser failure.
+
+## Media-Type Semantics
+
+The parser receives the canonical media type from
+`DocumentContentDescriptor`.
+
+RFC-074 SHALL NOT:
+
+- sniff storage filenames;
+- infer format from `source_reference`;
+- use filesystem extensions as canonical media type;
+- silently substitute a different parser;
+- perform parser fallback chains.
+
+Unsupported canonical media type SHALL fail explicitly.
+
+Concrete media-type support remains the responsibility of future parser
+implementations governed separately.
+
+## Application Coordination
+
+`DocumentContentParsingApplicationService` SHALL depend on exactly:
+
+1. `DocumentContentAccessApplicationService`;
+2. `DocumentContentParser`.
+
+It SHALL NOT directly depend on:
+
+- `EnterpriseDocumentRepository`;
+- `DocumentContentRepository`;
+- `DocumentContentStore`;
+- Infrastructure adapters;
+- SQLAlchemy;
+- PostgreSQL;
+- filesystem storage;
+- Knowledge persistence.
+
+The Application sequence SHALL be:
+
+**OPEN VERIFIED CONTENT → PARSE INSIDE ACCESS CONTEXT → CLOSE CONTENT → RETURN RESULT**
+
+The parser invocation SHALL occur while RFC-073 delivery access is active.
+
+No payload or stream SHALL escape that context.
+
+## RFC-073 Dependency Rule
+
+RFC-074 SHALL consume RFC-073 rather than reproduce it.
+
+RFC-074 SHALL NOT independently:
+
+- verify byte length;
+- verify SHA-256;
+- reopen content;
+- classify descriptor/payload consistency;
+- repair content state;
+- access the binary store directly.
+
+RFC-073 remains the single Application owner of verified canonical content
+delivery.
+
+## Stream Semantics
+
+RFC-074 Application orchestration SHALL NOT require:
+
+- `seek()`;
+- `tell()`;
+- `fileno()`;
+- filesystem-backed payloads.
+
+The Application service SHALL pass the RFC-073 delivery stream to the parser
+without converting canonical access into a path contract.
+
+Any future concrete parser implementation that requires buffering, spooling or
+format-specific stream adaptation requires explicit evidence and SHALL NOT
+transfer such responsibility into the RFC-074 Application service.
+
+## Failure Semantics
+
+RFC-073 access failures SHALL propagate unchanged.
+
+The initial `app.document_parsing.parser` contract SHALL define exactly
+these public parser-contract failures:
+
+- `DocumentContentParserUnsupportedMediaTypeError`;
+- `DocumentContentParserInvalidContentError`.
+
+`DocumentContentParserUnsupportedMediaTypeError` represents an unsupported
+canonical `DocumentContentMediaType`.
+
+`DocumentContentParserInvalidContentError` represents content that the selected
+parser contract recognizes as its supported media type but cannot structurally
+parse as valid content.
+
+These parser-contract failures SHALL fail closed and SHALL propagate unchanged
+through `DocumentContentParsingApplicationService`.
+
+No generic RFC-074 parser wrapper exception is authorized.
+
+Operational exceptions raised by a parser implementation remain distinct from
+these two public parser-contract failures.
+
+The Application service SHALL NOT:
+
+- retry automatically;
+- wait or poll;
+- repair content;
+- select fallback parsers;
+- invoke OCR automatically;
+- persist partial parsing output;
+- invoke Knowledge ingestion after failure.
+
+Operational failures raised by a parser implementation SHALL propagate unless
+a future accepted architecture explicitly classifies them.
+
+RFC-074 SHALL NOT introduce a generic catch-all exception that hides accepted
+RFC-073 or parser failure semantics.
+
+## Context Ownership
+
+RFC-073 retains ownership of payload context creation and closure.
+
+RFC-074 SHALL NOT close store internals directly.
+
+The Application boundary SHALL ensure parsing completes within the RFC-073
+context.
+
+Normal return, parser failure and consumer-visible failure SHALL preserve
+deterministic RFC-073 context cleanup.
+
+## Relationship To RFC-065
+
+`DocumentKnowledgeIngestionApplicationService` remains unchanged.
+
+RFC-074 SHALL NOT invoke it automatically.
+
+RFC-074 SHALL NOT create:
+
+- `KnowledgeRecord`;
+- `KnowledgeProvenance`;
+- `KnowledgeSubject`;
+- `DocumentKnowledgeLineage`.
+
+A future separately accepted orchestration capability MAY consume an RFC-074
+text result and invoke RFC-065.
+
+That future orchestration is outside RFC-074.
+
+## Legacy Parser Seam
+
+The existing:
+
+`app.knowledge.document_parser`
+
+SHALL NOT be promoted, imported or treated as canonical merely because it
+exists.
+
+RFC-074 shall establish its canonical responsibility under the new
+`app.document_parsing` boundary.
+
+Any removal, migration or retirement of the legacy empty seam requires
+evidence and SHALL NOT be performed silently.
+
+## Document Library Boundary
+
+RFC-074 is not a Document Library.
+
+It SHALL NOT provide:
+
+- upload;
+- download API;
+- browsing;
+- catalogue behavior;
+- listing;
+- search UI;
+- revision management;
+- document approval workflow.
+
+## OCR Boundary
+
+OCR remains separately deferred.
+
+RFC-074 SHALL NOT silently invoke OCR when textual parsing returns empty
+content or fails.
+
+OCR selection, confidence semantics and provenance require separate
+architecture.
+
+## Chunking Boundary
+
+RFC-074 SHALL NOT chunk parsed text.
+
+Chunk identity, overlap, ordering, revision linkage and persistence remain
+separately governed.
+
+## Search / Vector / Graph / RAG / LLM Boundary
+
+Successful RFC-074 parsing does not mean content is:
+
+- indexed;
+- searchable;
+- embedded;
+- stored in a Vector database;
+- represented in a Graph database;
+- available to RAG;
+- available to an LLM;
+- approved as enterprise Knowledge.
+
+All such capabilities remain downstream.
+
+## Persistence Boundary
+
+RFC-074 introduces no new persistence responsibility.
+
+No:
+
+- database table;
+- Alembic revision;
+- parsed-result repository;
+- parser cache;
+- temporary replay store;
+- binary-store mutation
+
+is authorized.
+
+Canonical Alembic head remains:
+
+`0005`
+
+## Runtime / Composition Boundary
+
+RFC-074 architecture acceptance SHALL NOT automatically authorize:
+
+- default `CompositionRoot` registration;
+- `DatabaseRuntime` expansion;
+- Bootstrap registration;
+- mandatory parser startup;
+- production API exposure.
+
+Those remain separate deployment/composition decisions.
+
+## Security Boundary
+
+RFC-074 does not claim completion of:
+
+- authentication;
+- authorization;
+- RBAC;
+- Active Directory;
+- document-level authorization;
+- parser sandboxing;
+- malicious-document isolation;
+- active-content security screening;
+- Cybersecurity approval;
+- production deployment conformance.
+
+Future concrete parser deployment SHALL require separately governed security
+evidence before production exposure.
+
+## Proposed Technical Surface
+
+If AD-060 is later Accepted, the initial technical implementation SHALL be
+limited to the minimum canonical boundary required by this decision.
+
+Expected new production surface:
+
+- `backend/app/document_parsing/__init__.py`;
+- `backend/app/document_parsing/parser.py`;
+- `backend/app/services/document_content_parsing_application_service.py`.
+
+Expected tests shall cover:
+
+- exact immutable request/result contracts;
+- exact Application dependencies;
+- RFC-073 access reuse;
+- parser invocation only inside the active access context;
+- descriptor propagation;
+- textual result propagation without normalization;
+- rejection of non-`str` parser output without coercion;
+- empty-text success;
+- exact public parser failure-class surface;
+- unsupported-media failure propagation;
+- invalid-content failure propagation;
+- operational parser failure propagation;
+- parser borrower-only payload ownership;
+- deterministic access-context closure;
+- no payload escape or retention;
+- no repository/store direct dependency;
+- no Knowledge ingestion;
+- no legacy parser-seam promotion;
+- no Runtime / Composition / Bootstrap wiring;
+- no schema/migration change;
+- no Document Library/OCR/chunking/Search/Vector/Graph/RAG/LLM promotion.
+
+## Explicitly Deferred
+
+The following remain outside RFC-074:
+
+- concrete PDF parser implementation;
+- concrete DOCX parser implementation;
+- concrete spreadsheet parser implementation;
+- image parsing;
+- OCR;
+- parser registry/resolver;
+- automatic parser fallback;
+- language detection;
+- encoding policy beyond concrete parser responsibility;
+- metadata extraction;
+- table extraction semantics;
+- page/section model;
+- chunking;
+- parsed-result persistence;
+- Document Library;
+- automatic Document-to-Knowledge ingestion;
+- Search;
+- embeddings;
+- Vector persistence;
+- Graph persistence;
+- RAG;
+- LLM invocation;
+- AI Agents;
+- production transport exposure;
+- production parser sandboxing;
+- production security readiness.
+
+## Alternatives Rejected
+
+### Extend RFC-073 With Parsing
+
+Rejected.
+
+RFC-073 owns verified canonical content access.
+
+Adding parsing would merge content-integrity/access responsibility with
+content transformation.
+
+### Extend RFC-065 With Raw Binary Parsing
+
+Rejected.
+
+RFC-065 owns prepared Knowledge ingestion and lineage persistence coordination.
+
+Raw-content transformation would violate that accepted responsibility.
+
+### Promote `app.knowledge.document_parser`
+
+Rejected.
+
+The file is an empty legacy seam with no accepted contract and its Knowledge
+location would incorrectly suggest Knowledge ownership of raw Document
+parsing.
+
+### Let Parsers Read Filesystem Paths
+
+Rejected.
+
+That would bypass RFC-073, leak storage topology and undermine canonical
+content integrity semantics.
+
+### Select A PDF/OCR Library Now
+
+Rejected.
+
+Parser technology selection is not necessary to establish the canonical
+Application contract.
+
+## Architecture Acceptance State
+
+AD-060:
+
+**DRAFT — REVIEW PENDING**
+
+RFC-074 implementation:
+
+**NOT AUTHORIZED**
+
+No production or test implementation change accompanies this architecture
+draft.
+
+## Next Gate
+
+Chief Architect review of the complete five-document RFC-074 / AD-060
+architecture draft.
+
+No acceptance, staging, commit or technical implementation is authorized until
+that review passes.
+
+
+---
+
+## RFC-074 / AD-060 Architecture Contract Acceptance
+
+**Record Classification: Architecture Acceptance Governance Record**
+
+### Final Architecture Review
+
+The refined RFC-074 / AD-060 architecture review completed with:
+
+**PASS — NO REMAINING REFINE / NO BLOCKED ITEM**
+
+The final review confirmed:
+
+1. RFC-073 remains the sole Application owner of verified canonical Document
+   Content access;
+2. RFC-074 consumes RFC-073 rather than duplicating integrity verification,
+   reopen semantics or binary-store access;
+3. the canonical parser port is persistence-neutral;
+4. the parser receives only verified descriptor plus context-bound `BinaryIO`;
+5. payload ownership remains with RFC-073;
+6. the RFC-074 parser is borrower-only;
+7. parser payload close, retention, caching, persistence or ownership transfer
+   is prohibited;
+8. no payload or stream escapes the RFC-073 access context;
+9. Application request identity remains exactly `document_id: EntityId`;
+10. Application result contains immutable verified descriptor plus parsed
+    textual `str`;
+11. non-`str` parser results fail with `TypeError`;
+12. non-`str` results are never coerced through `str(...)`;
+13. empty string remains a valid parser result;
+14. the canonical parser contract defines exactly:
+    `DocumentContentParserUnsupportedMediaTypeError` and
+    `DocumentContentParserInvalidContentError`;
+15. those parser-contract failures propagate unchanged;
+16. operational parser failures remain distinct and propagate unless separately
+    governed in future;
+17. no generic catch-all RFC-074 parser wrapper exception is authorized;
+18. canonical media type comes from `DocumentContentDescriptor`;
+19. `source_reference` remains provenance only;
+20. filesystem path or storage-key parser contracts are prohibited;
+21. RFC-065 prepared Document-to-Knowledge ingestion remains unchanged;
+22. RFC-074 performs no automatic Knowledge ingestion;
+23. the legacy `app.knowledge.document_parser` seam is not promoted;
+24. concrete PDF/DOCX/spreadsheet parser technology remains deferred;
+25. OCR remains deferred;
+26. chunking remains deferred;
+27. parsed-result persistence remains deferred;
+28. Document Library remains deferred;
+29. Search / Vector / Graph / RAG / LLM / AI Agent behavior remains deferred;
+30. no schema or Alembic expansion is introduced;
+31. no Runtime / Composition / Bootstrap promotion is introduced;
+32. no production-security or Cybersecurity completion is claimed;
+33. architecture acceptance remains separate from implementation authorization.
+
+### Accepted Architecture
+
+Architecture Decision:
+
+**AD-060 — Canonical Document Content Parsing Application Boundary**
+
+Status:
+
+**ACCEPTED — GIT DURABILITY PENDING**
+
+Accepted Application service:
+
+`DocumentContentParsingApplicationService`
+
+Accepted parser port:
+
+`DocumentContentParser`
+
+Accepted Application request identity:
+
+`document_id: EntityId`
+
+Accepted parser operation:
+
+`parse(*, descriptor: DocumentContentDescriptor, payload: BinaryIO) -> str`
+
+Accepted Application result semantics:
+
+**VERIFIED DESCRIPTOR + TEXTUAL PARSED CONTENT**
+
+Accepted coordination model:
+
+**OPEN VERIFIED CONTENT → PARSE INSIDE ACCESS CONTEXT → CLOSE CONTENT → RETURN RESULT**
+
+Accepted payload ownership:
+
+**RFC-073 OWNED / RFC-074 PARSER BORROWED ONLY**
+
+Accepted public parser-contract failures:
+
+- `DocumentContentParserUnsupportedMediaTypeError`;
+- `DocumentContentParserInvalidContentError`.
+
+Accepted invalid-result behavior:
+
+**NON-STR → TYPEERROR / NO COERCION**
+
+Accepted empty-text behavior:
+
+**VALID SUCCESS / NO AUTOMATIC OCR**
+
+### Preserved Ownership
+
+RFC-073 remains canonical verified binary-content access.
+
+RFC-072 remains canonical Document Content establishment coordination.
+
+RFC-065 remains canonical prepared Document-to-Knowledge ingestion.
+
+RFC-074 introduces no persistence ownership.
+
+### Accepted Initial Technical Surface
+
+After acceptance Git durability and a separate implementation-entry gate, the
+initial authorized implementation may be limited to:
+
+- `backend/app/document_parsing/__init__.py`;
+- `backend/app/document_parsing/parser.py`;
+- `backend/app/services/document_content_parsing_application_service.py`;
+- focused RFC-074 behavior and architecture tests.
+
+This acceptance does not itself authorize those changes.
+
+### Preserved Deferrals
+
+Still outside RFC-074:
+
+- concrete parser adapters;
+- parser registry/resolver;
+- automatic parser fallback;
+- OCR;
+- metadata/table/page extraction models;
+- chunking;
+- parsed-result persistence;
+- Document Library;
+- automatic Knowledge ingestion;
+- Search;
+- embeddings / Vector;
+- Graph;
+- RAG;
+- LLM;
+- AI Agents;
+- Runtime / Composition / Bootstrap wiring;
+- API exposure;
+- schema/migration expansion;
+- production parser sandboxing;
+- production-security readiness.
+
+### Acceptance Gate State
+
+AD-060:
+
+**ACCEPTED — GIT DURABILITY PENDING**
+
+Architecture review:
+
+**PASS**
+
+Acceptance authoring:
+
+**COMPLETE LOCALLY / REVIEW CANDIDATE AUTHORED**
+
+Acceptance staging:
+
+**NOT YET PERFORMED**
+
+Acceptance commit:
+
+**NONE**
+
+Acceptance push:
+
+**NONE**
+
+Implementation entry:
+
+**NOT STARTED**
+
+Implementation:
+
+**NOT AUTHORIZED**
+
+### Next Exact Action
+
+Review the complete five-document RFC-074 / AD-060 architecture acceptance
+candidate.
+
+Do not stage until that acceptance review passes.
+
+Do not begin implementation until accepted-contract Git durability is complete
+and a separate implementation-entry review passes.

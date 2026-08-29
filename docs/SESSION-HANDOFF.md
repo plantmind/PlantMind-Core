@@ -7,10 +7,14 @@
 | Project | PlantMind PM-001 |
 | Branch | `feature/engineering-platform` |
 | Last Fully Closed RFC | RFC-073 — Canonical Document Content Access Application Boundary — Fully Closed and Source-of-Truth Reconciled |
-| Active RFC | None — RFC-074 successor-selection candidate authored / review pending; architecture contract not authorized |
-| Selected Architecture Workstream | Candidate RFC-074 — Canonical Document Content Parsing Application Boundary — selection review pending |
-| Proposed Successor RFC | RFC-074 — Canonical Document Content Parsing Application Boundary — candidate / review pending |
-| Architecture Decision | AD-059 — Accepted / Committed / Pushed / Exact Identity Verified |
+| Active RFC | RFC-074 — Canonical Document Content Parsing Application Boundary — Architecture Contract Accepted / Acceptance Git Durability Pending |
+| Selected Architecture Workstream | RFC-074 — Canonical Document Content Parsing Application Boundary — Selection Committed / Pushed / Exact Identity Verified |
+| Proposed Successor RFC | None — RFC-074 is the selected active architecture workstream |
+| Architecture Decision | AD-060 — Accepted / Acceptance Git Durability Pending |
+| RFC-074 Selection State | Durable — Committed, Pushed and Exact Identity Verified |
+| RFC-074 Selection Commit | `b5d1e7fe434378ac7ee90912ac40932d5c5451eb` — committed / pushed / exact identity verified |
+| RFC-074 Architecture Contract State | Accepted / Architecture Review Passed / Acceptance Git Durability Pending |
+| RFC-074 Implementation | Not Authorized |
 | RFC-073 Selection State | Durable — Committed, Pushed and Exact Identity Verified |
 | RFC-073 Selection Commit | `059fbcbf404da390079ca77685eb2135e663e80d` — committed / pushed / exact identity verified |
 | RFC-073 Architecture Contract State | Accepted / Committed / Pushed / Exact Identity Verified |
@@ -68,7 +72,7 @@
 | Alembic Head | `0005` |
 | Authoritative Environment | `PlantMind-Core/.venv` |
 | RFC-069 State | Fully Closed and Source-of-Truth Reconciled |
-| Successor RFC Selection | RFC-074 candidate authored / review pending — not yet Git durable |
+| Successor RFC Selection | RFC-074 — Committed / Pushed / Exact Identity Verified |
 ## Recent Engineering Sequence
 
 - RFC-025 — Core Plugin Framework
@@ -4551,3 +4555,189 @@ Implementation authorized:
 ### Next Gate
 
 Chief Architect RFC-074 successor-selection review.
+
+
+---
+
+## RFC-074 / AD-060 Architecture Contract Draft Handoff
+
+Workstream:
+
+**RFC-074 — Canonical Document Content Parsing Application Boundary**
+
+Selection commit:
+
+`b5d1e7fe434378ac7ee90912ac40932d5c5451eb`
+
+Selection Git durability:
+
+**VERIFIED**
+
+Architecture Decision candidate:
+
+**AD-060 — DRAFT / REVIEW PENDING**
+
+### Proposed Boundary
+
+RFC-074 proposes a narrow persistence-neutral parsing Application boundary.
+
+Proposed service:
+
+`DocumentContentParsingApplicationService`
+
+Proposed parser port:
+
+`DocumentContentParser`
+
+Proposed flow:
+
+**OPEN VERIFIED CONTENT → PARSE INSIDE ACCESS CONTEXT → CLOSE CONTENT → RETURN RESULT**
+
+### Critical Ownership Rules
+
+- RFC-073 remains canonical verified content access;
+- RFC-065 remains prepared Document-to-Knowledge ingestion;
+- the parser does not receive `source_reference`;
+- the RFC-073 payload is borrowed only;
+- the parser must not close, retain, cache or persist the payload;
+- no stream escapes the RFC-073 context;
+- parser public contract failures are
+  `DocumentContentParserUnsupportedMediaTypeError` and
+  `DocumentContentParserInvalidContentError`;
+- non-`str` parser returns are rejected with `TypeError` without coercion;
+- no direct repository/store access is introduced;
+- no parser technology is selected;
+- no OCR or chunking is introduced;
+- the empty legacy `app.knowledge.document_parser` seam is not promoted.
+
+### Gate State
+
+RFC-074 selection:
+
+**DURABLE**
+
+AD-060 draft:
+
+**AUTHORED — REVIEW PENDING**
+
+AD-060 accepted:
+
+**NO**
+
+Staging:
+
+**NO**
+
+Architecture commit:
+
+**NO**
+
+Technical implementation:
+
+**NOT AUTHORIZED**
+
+### Next Gate
+
+Chief Architect review of the RFC-074 / AD-060 architecture contract draft.
+
+
+---
+
+## RFC-074 / AD-060 Architecture Contract Acceptance — Handoff
+
+RFC-074 selection:
+
+**GIT DURABLE**
+
+Selection commit:
+
+`b5d1e7fe434378ac7ee90912ac40932d5c5451eb`
+
+Refined AD-060 architecture review:
+
+**PASS — NO REMAINING REFINE / NO BLOCKED ITEM**
+
+AD-060:
+
+**ACCEPTED — GIT DURABILITY PENDING**
+
+### Accepted Boundary
+
+Application service:
+
+`DocumentContentParsingApplicationService`
+
+Parser port:
+
+`DocumentContentParser`
+
+Accepted flow:
+
+**OPEN VERIFIED CONTENT → PARSE INSIDE ACCESS CONTEXT → CLOSE CONTENT → RETURN RESULT**
+
+Payload ownership:
+
+**RFC-073 OWNED / RFC-074 PARSER BORROWED ONLY**
+
+Parser must not:
+
+- close payload;
+- retain payload;
+- cache payload;
+- persist payload;
+- transfer payload ownership.
+
+Parser public failures:
+
+- `DocumentContentParserUnsupportedMediaTypeError`;
+- `DocumentContentParserInvalidContentError`.
+
+Non-`str` parser result:
+
+**TYPEERROR / NO COERCION**
+
+Empty `str` result:
+
+**VALID**
+
+Automatic OCR:
+
+**NONE**
+
+### Preserved Responsibilities
+
+RFC-073 remains verified canonical Document Content access.
+
+RFC-065 remains prepared Document-to-Knowledge ingestion.
+
+Legacy `app.knowledge.document_parser` remains unpromoted.
+
+Alembic remains:
+
+`0005`
+
+### Gate State
+
+Architecture acceptance:
+
+**AUTHORED — REVIEW PENDING**
+
+Acceptance staging:
+
+**NO**
+
+Acceptance commit:
+
+**NO**
+
+Acceptance push:
+
+**NO**
+
+Technical implementation:
+
+**NOT AUTHORIZED**
+
+### Next Gate
+
+Chief Architect RFC-074 / AD-060 architecture acceptance review.

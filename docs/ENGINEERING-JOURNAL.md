@@ -9121,3 +9121,187 @@ Review the complete RFC-074 successor-selection documentation before staging.
 
 No architecture drafting or technical implementation begins until selection
 review and Git durability complete.
+
+
+---
+
+## 2026-08-30 — RFC-074 / AD-060 Architecture Contract Draft Authored
+
+Selected workstream:
+
+**RFC-074 — Canonical Document Content Parsing Application Boundary**
+
+Verified selection commit:
+
+`b5d1e7fe434378ac7ee90912ac40932d5c5451eb`
+
+Selection Git durability:
+
+**PASS — LOCAL / TRACKING / REMOTE EXACT**
+
+Architecture Decision candidate:
+
+**AD-060 — DRAFT / REVIEW PENDING**
+
+### Proposed Boundary
+
+RFC-074 proposes:
+
+`DocumentContentParsingApplicationService`
+
+supported by a persistence-neutral:
+
+`DocumentContentParser`
+
+The proposed coordination model is:
+
+**OPEN VERIFIED CONTENT → PARSE INSIDE ACCESS CONTEXT → CLOSE CONTENT → RETURN RESULT**
+
+RFC-073 remains the only Application owner of canonical content integrity and
+verified binary delivery.
+
+RFC-065 remains the owner of prepared Document-to-Knowledge ingestion.
+
+### Proposed Result
+
+The parsing boundary returns:
+
+- verified `DocumentContentDescriptor`;
+- textual parsed content as `str`.
+
+No binary stream escapes the RFC-073 context.
+
+The parser is a borrower only and does not own, close, retain, cache or persist
+the RFC-073 delivery payload.
+
+The initial parser contract defines:
+
+- `DocumentContentParserUnsupportedMediaTypeError`;
+- `DocumentContentParserInvalidContentError`.
+
+A non-`str` parser return is a runtime contract violation and is rejected with
+`TypeError` without coercion.
+
+Empty textual output may be valid and shall not automatically invoke OCR.
+
+### Preserved Deferrals
+
+No concrete parser library, OCR, chunking, parser persistence, Document Library,
+Knowledge ingestion, Search, Vector, Graph, RAG, LLM, Runtime/Composition,
+schema migration or production-security capability is authorized.
+
+### Current Gate
+
+Architecture draft:
+
+**AUTHORED — REVIEW PENDING**
+
+AD-060:
+
+**NOT ACCEPTED**
+
+Implementation:
+
+**NOT AUTHORIZED**
+
+Next action:
+
+Review the complete five-document RFC-074 / AD-060 architecture draft.
+
+
+---
+
+## 2026-08-30 — RFC-074 / AD-060 Architecture Contract Acceptance
+
+### Final Architecture Review
+
+RFC-074 / AD-060 V2 review result:
+
+**PASS — NO REMAINING REFINE / NO BLOCKED ITEM**
+
+Selection commit:
+
+`b5d1e7fe434378ac7ee90912ac40932d5c5451eb`
+
+Selection Git durability:
+
+**PASS — LOCAL / TRACKING / REMOTE EXACT**
+
+### Accepted Architecture
+
+Architecture Decision:
+
+**AD-060 — Canonical Document Content Parsing Application Boundary**
+
+Status:
+
+**ACCEPTED — GIT DURABILITY PENDING**
+
+Accepted service:
+
+`DocumentContentParsingApplicationService`
+
+Accepted parser port:
+
+`DocumentContentParser`
+
+Accepted coordination:
+
+**OPEN VERIFIED CONTENT → PARSE INSIDE ACCESS CONTEXT → CLOSE CONTENT → RETURN RESULT**
+
+Payload ownership:
+
+**RFC-073 OWNED / RFC-074 BORROWED ONLY**
+
+Parser public failures:
+
+- `DocumentContentParserUnsupportedMediaTypeError`;
+- `DocumentContentParserInvalidContentError`.
+
+Parser invalid return:
+
+**NON-STR → TYPEERROR / NO COERCION**
+
+Empty parsed text:
+
+**VALID**
+
+Automatic OCR:
+
+**NONE**
+
+### Boundary Preservation
+
+RFC-073 access ownership remains unchanged.
+
+RFC-065 Knowledge-ingestion ownership remains unchanged.
+
+No production code, test, schema, migration, Runtime, Composition or Bootstrap
+change accompanies this acceptance authoring.
+
+Concrete parser adapters, OCR, chunking, Document Library,
+Search/Vector/Graph/RAG/LLM and production-security capabilities remain
+separately governed.
+
+### Gate Separation
+
+Architecture acceptance:
+
+**COMPLETE LOCALLY / REVIEW CANDIDATE AUTHORED**
+
+Acceptance Git durability:
+
+**PENDING**
+
+Implementation entry:
+
+**NOT STARTED**
+
+Implementation:
+
+**NOT AUTHORIZED**
+
+### Next Action
+
+Review the complete RFC-074 / AD-060 architecture acceptance candidate before
+staging.

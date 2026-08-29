@@ -10,12 +10,16 @@
 | Deployment Model | On-Premise |
 | Development Branch | `feature/engineering-platform` |
 | Last Fully Closed RFC | RFC-073 — Canonical Document Content Access Application Boundary — Fully Closed and Source-of-Truth Reconciled |
-| Active RFC | None — RFC-074 successor-selection candidate authored / review pending; architecture contract not authorized |
-| Selected Architecture Workstream | Candidate RFC-074 — Canonical Document Content Parsing Application Boundary — selection review pending |
-| Proposed Successor RFC | RFC-074 — Canonical Document Content Parsing Application Boundary — candidate / review pending |
+| Active RFC | RFC-074 — Canonical Document Content Parsing Application Boundary — Architecture Contract Accepted / Acceptance Git Durability Pending |
+| Selected Architecture Workstream | RFC-074 — Canonical Document Content Parsing Application Boundary — Selection Committed / Pushed / Exact Identity Verified |
+| Proposed Successor RFC | None — RFC-074 is the selected active architecture workstream |
 | RFC-069 Selection Commit | `5d7794352029576e0b62c2ac8cbfa248fe11961d` |
 | RFC-070 Selection Commit | `13cfccc08d8c0a3b891990d38edaf9fc48874a5e` |
-| Architecture Decision | AD-059 — Accepted / Committed / Pushed / Exact Identity Verified |
+| Architecture Decision | AD-060 — Accepted / Acceptance Git Durability Pending |
+| RFC-074 Selection State | Durable — Committed, Pushed and Exact Identity Verified |
+| RFC-074 Selection Commit | `b5d1e7fe434378ac7ee90912ac40932d5c5451eb` — committed / pushed / exact identity verified |
+| RFC-074 Architecture Contract State | Accepted / Architecture Review Passed / Acceptance Git Durability Pending |
+| RFC-074 Implementation | Not Authorized |
 | RFC-073 Selection State | Durable — Committed, Pushed and Exact Identity Verified |
 | RFC-073 Selection Commit | `059fbcbf404da390079ca77685eb2135e663e80d` — committed / pushed / exact identity verified |
 | RFC-073 Architecture Contract State | Accepted / Committed / Pushed / Exact Identity Verified |
@@ -5176,3 +5180,242 @@ RFC-074 implementation:
 Review the complete five-document RFC-074 successor-selection diff.
 
 Do not stage until that review passes.
+
+
+---
+
+## RFC-074 — Canonical Document Content Parsing Application Boundary — Architecture Draft
+
+Verified selection commit:
+
+`b5d1e7fe434378ac7ee90912ac40932d5c5451eb`
+
+Selection Git durability:
+
+**PASS — LOCAL / TRACKING / REMOTE EXACT**
+
+Architecture Decision candidate:
+
+**AD-060 — DRAFT / REVIEW PENDING**
+
+### Proposed Canonical Responsibility
+
+RFC-074 defines the proposed Application boundary between:
+
+- RFC-073 verified canonical Document Content access; and
+- all later Knowledge, indexing and intelligence capabilities.
+
+Proposed Application service:
+
+`DocumentContentParsingApplicationService`
+
+Proposed parser port:
+
+`DocumentContentParser`
+
+Proposed sequence:
+
+**OPEN VERIFIED CONTENT → PARSE INSIDE ACCESS CONTEXT → CLOSE CONTENT → RETURN RESULT**
+
+### Proposed Contracts
+
+Request:
+
+`document_id: EntityId`
+
+Result:
+
+- verified `DocumentContentDescriptor`;
+- parsed textual `str`.
+
+Parser conceptual contract:
+
+`parse(*, descriptor: DocumentContentDescriptor, payload: BinaryIO) -> str`
+
+Payload ownership:
+
+**BORROWED FROM RFC-073 — PARSER MUST NOT CLOSE OR RETAIN**
+
+Initial parser-contract failures:
+
+- `DocumentContentParserUnsupportedMediaTypeError`;
+- `DocumentContentParserInvalidContentError`.
+
+Non-`str` parser output:
+
+**TYPE ERROR — NO COERCION**
+
+### Preserved Ownership
+
+RFC-074 shall not replace or absorb:
+
+- RFC-073 content verification/access;
+- RFC-072 content establishment;
+- RFC-065 Document Knowledge ingestion;
+- Knowledge Capture;
+- Knowledge/lineage transaction coordination;
+- Document Content descriptor persistence;
+- binary Document Content storage.
+
+`source_reference` remains provenance only.
+
+### Current Gate
+
+RFC-074 selection:
+
+**COMMITTED / PUSHED / EXACT IDENTITY VERIFIED**
+
+AD-060 draft:
+
+**AUTHORED — REVIEW PENDING**
+
+AD-060 accepted:
+
+**NO**
+
+Architecture staging:
+
+**NOT PERFORMED**
+
+Architecture commit:
+
+**NOT YET CREATED**
+
+Implementation:
+
+**NOT AUTHORIZED**
+
+Alembic remains:
+
+`0005`
+
+### Explicitly Deferred
+
+Document Library, concrete parser technology, OCR, metadata/table extraction,
+chunking, parsed-result persistence, automatic Knowledge ingestion,
+Search/Vector/Graph/RAG/LLM, Runtime/Composition/Bootstrap and production
+security remain outside the draft.
+
+### Next Exact Action
+
+Review the complete five-document RFC-074 / AD-060 architecture draft.
+
+Do not accept or stage the architecture until review passes.
+
+
+---
+
+## RFC-074 / AD-060 Architecture Acceptance Candidate
+
+RFC-074 selection commit:
+
+`b5d1e7fe434378ac7ee90912ac40932d5c5451eb`
+
+Selection Git durability:
+
+**PASS — EXACT**
+
+Architecture review:
+
+**PASS — NO REMAINING REFINE / NO BLOCKED ITEM**
+
+Architecture Decision:
+
+**AD-060 — Canonical Document Content Parsing Application Boundary**
+
+Current acceptance state:
+
+**ACCEPTED — GIT DURABILITY PENDING**
+
+### Accepted Contract Summary
+
+Application service:
+
+`DocumentContentParsingApplicationService`
+
+Parser port:
+
+`DocumentContentParser`
+
+Request:
+
+`document_id: EntityId`
+
+Parser operation:
+
+`parse(*, descriptor: DocumentContentDescriptor, payload: BinaryIO) -> str`
+
+Application result:
+
+verified `DocumentContentDescriptor` + parsed textual `str`.
+
+Payload ownership:
+
+**RFC-073 OWNED / RFC-074 BORROWED ONLY**
+
+Parser public failures:
+
+- `DocumentContentParserUnsupportedMediaTypeError`;
+- `DocumentContentParserInvalidContentError`.
+
+Invalid parser result:
+
+**NON-STR → TYPEERROR / NO COERCION**
+
+Empty text:
+
+**VALID / NO AUTOMATIC OCR**
+
+### Preserved Architecture
+
+- RFC-073 verified content-access ownership preserved;
+- RFC-072 establishment ownership preserved;
+- RFC-065 Knowledge-ingestion ownership preserved;
+- `source_reference` remains provenance only;
+- no direct repository/store parser dependency;
+- no persistence expansion;
+- no schema/migration change;
+- no Runtime/Composition/Bootstrap promotion.
+
+Alembic remains:
+
+`0005`
+
+Last fully verified full regression remains:
+
+**1028 passed**
+
+No production or test files changed after that verified baseline during RFC-074
+selection or architecture governance.
+
+### Current Gate
+
+AD-060:
+
+**ACCEPTED — GIT DURABILITY PENDING**
+
+Acceptance documentation:
+
+**AUTHORED — REVIEW PENDING**
+
+Acceptance staging:
+
+**NOT PERFORMED**
+
+Acceptance commit:
+
+**NOT YET CREATED**
+
+Acceptance push:
+
+**NOT PERFORMED**
+
+Implementation:
+
+**NOT AUTHORIZED**
+
+### Next Exact Action
+
+Review the complete five-document architecture acceptance candidate.
+
+Do not stage before acceptance review passes.
