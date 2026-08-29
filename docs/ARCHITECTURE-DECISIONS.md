@@ -18448,3 +18448,183 @@ Do not stage until that acceptance review passes.
 
 Do not begin implementation until accepted-contract Git durability is
 complete and a separate implementation-entry review passes.
+
+---
+
+## RFC-073 / AD-059 Engineering Closure Record
+
+**Record Classification: Non-Decision Engineering Closure Governance Record**
+
+This section creates no new Architecture Decision.
+
+It does not amend, replace, supersede or rewrite AD-059.
+
+AD-059 remains:
+
+**ACCEPTED**
+
+### Closure Baseline
+
+RFC-073 workstream:
+
+**Canonical Document Content Access Application Boundary**
+
+Verified workstream-selection commit:
+
+`059fbcbf404da390079ca77685eb2135e663e80d`
+
+Verified accepted-contract commit:
+
+`c6749fc75a67faf926c7d398a43f7c8825f719fd`
+
+Verified technical implementation commit:
+
+`52b1cbf50b2b248914ee00539419f9262b9c7530`
+
+Technical Git durability:
+
+**PASS — LOCAL / TRACKING / REMOTE IDENTITY VERIFIED**
+
+Working tree at closure-entry gate:
+
+**CLEAN**
+
+### Verified Technical Outcome
+
+RFC-073 establishes:
+
+`DocumentContentAccessApplicationService`
+
+under:
+
+`app.services.document_content_access_application_service`
+
+The service depends only on:
+
+- `EnterpriseDocumentRepository`;
+- `DocumentContentRepository`;
+- `DocumentContentStore`.
+
+Canonical request identity remains:
+
+`document_id: EntityId`
+
+Successful verified access remains:
+
+**VERIFY → CLOSE → REOPEN → DELIVER**
+
+Pre-delivery verification consumes the first canonical payload stream
+incrementally through EOF, verifies exact byte length and SHA-256, closes that
+context, and only then obtains a fresh delivery context.
+
+The implementation preserves:
+
+- Document-first lookup;
+- fail-closed descriptor/payload state classification;
+- payload-only integrity classification for the current invocation without
+  asserting permanent persistence corruption;
+- RFC-072 payload-first establishment semantics;
+- zero-byte canonical payload support;
+- non-seekable verification and delivery;
+- no seek/tell/fileno requirement;
+- no full-payload buffering requirement;
+- deterministic context ownership and closure;
+- no automatic repair, retry, waiting, polling or persistence write;
+- `source_reference` as provenance only.
+
+### Verified Engineering Evidence
+
+Focused RFC-073 verification:
+
+**33 passed**
+
+Full PlantMind regression:
+
+**1028 passed**
+
+Canonical Alembic head:
+
+`0005`
+
+Reviewed technical diff SHA-256:
+
+`63a922d37b63badb8a127de543c21686629ad2dc2c1eaed41dadd0711f286bd2`
+
+### Responsibility Preservation
+
+This closure record does not modify or absorb responsibility from:
+
+- `EnterpriseDocumentRegistrationApplicationService`;
+- `DocumentContentEstablishmentApplicationService`;
+- `DocumentKnowledgeIngestionApplicationService`;
+- `KnowledgeCaptureApplicationService`;
+- `KnowledgeLineageTransactionCoordinator`;
+- `EnterpriseDocumentRepository`;
+- `DocumentContentRepository`;
+- `DocumentContentStore`;
+- `FilesystemDocumentContentStore`;
+- `EnterpriseDocument`;
+- `DocumentContentDescriptor`.
+
+RFC-073 owns verified read access only.
+
+### Explicitly Preserved Non-Scope
+
+This closure record does not authorize or claim:
+
+- Document Library behavior;
+- parser execution;
+- PDF/DOCX/spreadsheet/text extraction;
+- OCR;
+- metadata extraction;
+- chunking;
+- Search;
+- embeddings or Vector persistence;
+- Graph / Neo4j production integration;
+- RAG;
+- LLM invocation;
+- AI Agents;
+- Runtime / Composition / Bootstrap wiring;
+- HTTP/API content-download endpoints;
+- schema or Alembic migration changes;
+- authentication / authorization / RBAC / Active Directory completion;
+- Cybersecurity approval;
+- production deployment conformance;
+- production-readiness claims.
+
+Production deployment conformance remains separately governed.
+
+### Closure Governance State
+
+Closure documentation:
+
+**AUTHORED — REVIEW PENDING**
+
+Engineering closure commit:
+
+**NOT YET CREATED**
+
+Engineering closure push:
+
+**NOT PERFORMED**
+
+RFC-073 terminal closure:
+
+**NOT YET CLAIMED**
+
+Post-closure Source-of-Truth reconciliation:
+
+**PENDING — SEPARATE POST-CLOSURE GATE**
+
+Successor workstream:
+
+**NONE SELECTED**
+
+### Next Exact Action
+
+Review the complete five-document RFC-073 engineering closure documentation.
+
+Do not stage closure documentation until that review passes.
+
+Do not claim terminal closure until closure Git durability and the subsequent
+Source-of-Truth reconciliation complete separately.

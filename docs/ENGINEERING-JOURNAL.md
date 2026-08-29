@@ -8802,3 +8802,111 @@ Implementation:
 **NOT AUTHORIZED**
 
 No production or test file is changed by this acceptance authoring.
+
+---
+
+## 2026-08-28 — RFC-073 / AD-059 Engineering Closure Documentation
+
+**Append-Only Engineering Closure Record**
+
+RFC-073 selection:
+
+`059fbcbf404da390079ca77685eb2135e663e80d`
+
+AD-059 accepted-contract commit:
+
+`c6749fc75a67faf926c7d398a43f7c8825f719fd`
+
+RFC-073 technical implementation commit:
+
+`52b1cbf50b2b248914ee00539419f9262b9c7530`
+
+Technical Git durability:
+
+**PASS — LOCAL / TRACKING / REMOTE EXACT**
+
+### Delivered Boundary
+
+Implemented:
+
+`app.services.document_content_access_application_service.DocumentContentAccessApplicationService`
+
+The service owns only verified read-only canonical Document Content access.
+
+Its successful access sequence is:
+
+**VERIFY → CLOSE → REOPEN → DELIVER**
+
+The verified implementation:
+
+- resolves canonical Enterprise Document existence first;
+- observes canonical descriptor and payload through existing ports;
+- fails closed for missing or inconsistent canonical content;
+- verifies exact byte length and SHA-256 incrementally;
+- supports non-seekable and zero-byte payloads;
+- closes the verification context before delivery reopen;
+- exposes the verified delivery payload only inside the Application context;
+- guarantees store-owned context closure on normal and exceptional exits;
+- performs no repository/store add, update, delete, overwrite, repair or retry;
+- never treats `source_reference` as canonical binary storage.
+
+### Verification
+
+Focused RFC-073 service and architecture verification:
+
+**33 passed**
+
+Full PlantMind regression:
+
+**1028 passed**
+
+Canonical Alembic head:
+
+`0005`
+
+Reviewed technical diff SHA-256:
+
+`63a922d37b63badb8a127de543c21686629ad2dc2c1eaed41dadd0711f286bd2`
+
+### Preserved Architecture
+
+AD-059 remains:
+
+**ACCEPTED**
+
+RFC-072 payload-first content establishment remains unchanged.
+
+No existing production file was modified by RFC-073 beyond the accepted new
+Application service.
+
+No existing test file was modified; RFC-073 introduced only its accepted new
+behavior and architecture tests.
+
+No schema or migration changed.
+
+No Runtime / Composition / Bootstrap wiring was added.
+
+Document Library, parser/OCR/chunking, Search/Vector/Graph/RAG/LLM and
+production-security capabilities remain separately governed.
+
+### Closure State
+
+Closure documentation:
+
+**AUTHORED — REVIEW PENDING**
+
+RFC-073 terminal closure:
+
+**NOT YET CLAIMED**
+
+Post-closure Source-of-Truth reconciliation:
+
+**PENDING**
+
+Successor:
+
+**NONE SELECTED**
+
+### Next Exact Action
+
+Review the complete five-document RFC-073 closure documentation before staging.

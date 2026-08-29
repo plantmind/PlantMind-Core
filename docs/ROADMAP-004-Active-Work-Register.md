@@ -17462,3 +17462,114 @@ Acceptance push:
 Next action:
 
 Review the complete five-document architecture acceptance candidate.
+
+---
+
+## RFC-073 Engineering Closure Gate
+
+### Workstream
+
+**RFC-073 — Canonical Document Content Access Application Boundary**
+
+Architecture:
+
+**AD-059 — ACCEPTED / GIT DURABLE**
+
+Selection commit:
+
+`059fbcbf404da390079ca77685eb2135e663e80d`
+
+Accepted-contract commit:
+
+`c6749fc75a67faf926c7d398a43f7c8825f719fd`
+
+Technical commit:
+
+`52b1cbf50b2b248914ee00539419f9262b9c7530`
+
+Technical Local / Tracking / Remote identity:
+
+**PASS — EXACT**
+
+### Technical Outcome
+
+Implemented:
+
+`DocumentContentAccessApplicationService`
+
+Canonical module:
+
+`app.services.document_content_access_application_service`
+
+Access model:
+
+**VERIFY → CLOSE → REOPEN → DELIVER**
+
+Focused RFC-073 verification:
+
+**33 passed**
+
+Full PlantMind regression:
+
+**1028 passed**
+
+Canonical Alembic head:
+
+`0005`
+
+Technical diff SHA-256:
+
+`63a922d37b63badb8a127de543c21686629ad2dc2c1eaed41dadd0711f286bd2`
+
+### Preserved Boundary
+
+RFC-073 remains limited to verified read-only canonical Document Content access.
+
+No Document Library, parser/OCR/chunking, Search/Vector/Graph/RAG/LLM,
+schema/migration, Runtime/Composition/Bootstrap or production-security scope is
+promoted by closure.
+
+### Current Gate
+
+Technical implementation:
+
+**COMPLETE / COMMITTED / PUSHED / EXACT IDENTITY VERIFIED**
+
+Closure documentation:
+
+**AUTHORED — REVIEW PENDING**
+
+Closure staging:
+
+**NOT PERFORMED**
+
+Engineering closure commit:
+
+**NOT YET CREATED**
+
+Engineering closure push:
+
+**NOT PERFORMED**
+
+Post-closure Source-of-Truth reconciliation:
+
+**NOT STARTED — MUST FOLLOW DURABLE CLOSURE**
+
+RFC-073 terminal closure:
+
+**NOT YET CLAIMED**
+
+Last fully closed RFC:
+
+**RFC-072**
+
+Successor selection:
+
+**NOT AUTHORIZED**
+
+### Next Exact Action
+
+Review RFC-073 closure documentation.
+
+No staging, commit, push, reconciliation, final-verification record or
+successor selection until the closure documentation review gate passes.

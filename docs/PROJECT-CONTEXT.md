@@ -10,16 +10,20 @@
 | Deployment Model | On-Premise |
 | Development Branch | `feature/engineering-platform` |
 | Last Fully Closed RFC | RFC-072 — Canonical Document Content Establishment Application Coordination Boundary — Fully Closed and Source-of-Truth Reconciled |
-| Active RFC | RFC-073 — Canonical Document Content Access Application Boundary — Architecture Contract Accepted / Acceptance Git Durability Pending |
+| Active RFC | RFC-073 — Canonical Document Content Access Application Boundary — Technical Implementation Git Durable / Closure Documentation Authored / Review Pending |
 | Selected Architecture Workstream | RFC-073 — Canonical Document Content Access Application Boundary — Selection Git Durable |
 | Proposed Successor RFC | None — RFC-073 selected and active |
 | RFC-069 Selection Commit | `5d7794352029576e0b62c2ac8cbfa248fe11961d` |
 | RFC-070 Selection Commit | `13cfccc08d8c0a3b891990d38edaf9fc48874a5e` |
-| Architecture Decision | AD-059 — Accepted / Acceptance Git Durability Pending |
+| Architecture Decision | AD-059 — Accepted / Committed / Pushed / Exact Identity Verified |
 | RFC-073 Selection State | Durable — Committed, Pushed and Exact Identity Verified |
 | RFC-073 Selection Commit | `059fbcbf404da390079ca77685eb2135e663e80d` — committed / pushed / exact identity verified |
-| RFC-073 Architecture Contract State | Accepted / Architecture Review Passed / Acceptance Git Durability Pending |
-| RFC-073 Implementation | Not Authorized |
+| RFC-073 Architecture Contract State | Accepted / Committed / Pushed / Exact Identity Verified |
+| RFC-073 Implementation | Passed — Technical Implementation Complete / Committed / Pushed / Exact Identity Verified |
+| RFC-073 Accepted Contract Commit | `c6749fc75a67faf926c7d398a43f7c8825f719fd` — committed / pushed / exact identity verified |
+| RFC-073 Technical Commit | `52b1cbf50b2b248914ee00539419f9262b9c7530` — committed / pushed / exact identity verified |
+| RFC-073 Engineering Closure State | Documentation Authored / Review Pending |
+| RFC-073 Post-Closure Reconciliation | Pending — Separate Gate After Durable Closure |
 | RFC-072 Selection State | Durable — Committed, Pushed and Exact Identity Verified |
 | RFC-072 Selection Commit | `0c9a8cba53221f547d340fa499f1ac7d07d1e7d3` — committed / pushed / exact identity verified |
 | RFC-072 Accepted Contract Commit | `aa444f1f339c6aa00d37a9b3f0f564f3b5b6c06e` — committed / pushed / exact identity verified |
@@ -39,7 +43,7 @@
 | RFC-069 Engineering Closure Commit | `63790de5312c69c709e2249b56e91995a00426b6` |
 | RFC-069 Post-Closure Reconciliation Commit | `231e0cc66862c797e299fdb71ff20da8a39e8ae2` |
 | RFC-069 Reconciliation Verification | PASS — Committed, Pushed, Exact Local / Tracking / Remote Identity Verified |
-| Test Baseline | 995 passed |
+| Test Baseline | 1028 passed |
 | RFC-070 Engineering Closure Commit | `ab4438b02a8f34f83b462e3d8a86b4b5ab5d1092` |
 | RFC-070 Engineering Closure State | Complete, Pushed and Verified |
 | RFC-070 Post-Closure Reconciliation | Complete, Pushed and Verified |
@@ -4747,3 +4751,123 @@ Acceptance staging / commit / push:
 Next gate:
 
 **Chief Architect Architecture Acceptance Review**
+
+---
+
+## RFC-073 / AD-059 Engineering Closure State
+
+### Durable Engineering Baseline
+
+RFC-073 selection commit:
+
+`059fbcbf404da390079ca77685eb2135e663e80d`
+
+AD-059 accepted-contract commit:
+
+`c6749fc75a67faf926c7d398a43f7c8825f719fd`
+
+RFC-073 technical implementation commit:
+
+`52b1cbf50b2b248914ee00539419f9262b9c7530`
+
+Technical Local / Tracking / Remote identity:
+
+**PASS — EXACT**
+
+Working tree at closure-entry gate:
+
+**CLEAN**
+
+### Delivered Capability
+
+RFC-073 establishes the canonical read-only Application service:
+
+`DocumentContentAccessApplicationService`
+
+at:
+
+`app.services.document_content_access_application_service`
+
+The delivered boundary provides verified canonical binary Document Content
+access through existing persistence-neutral:
+
+- `EnterpriseDocumentRepository`;
+- `DocumentContentRepository`;
+- `DocumentContentStore`.
+
+Successful access preserves:
+
+**VERIFY → CLOSE → REOPEN → DELIVER**
+
+The implementation verifies exact byte length and SHA-256 before any payload is
+delivered, supports zero-byte and non-seekable payloads, closes every acquired
+store-owned context, and performs no persistence write, repair or retry.
+
+### Verified Engineering Evidence
+
+Focused RFC-073 verification:
+
+**33 passed**
+
+Full PlantMind regression:
+
+**1028 passed**
+
+Canonical Alembic head:
+
+`0005`
+
+Technical diff SHA-256:
+
+`63a922d37b63badb8a127de543c21686629ad2dc2c1eaed41dadd0711f286bd2`
+
+### Preserved Boundaries
+
+RFC-073 does not:
+
+- modify RFC-072 content-establishment responsibility;
+- reinterpret `source_reference` as canonical storage;
+- add Document Library, parser, OCR or chunking behavior;
+- add Search, Vector, Graph, RAG or LLM behavior;
+- add SQLAlchemy models, schema changes or Alembic migrations;
+- add Runtime / Composition / Bootstrap wiring;
+- claim authentication, authorization, RBAC, Active Directory,
+  Cybersecurity approval or production deployment readiness.
+
+AD-059 remains Accepted and unchanged.
+
+### Closure Governance State
+
+Closure documentation:
+
+**AUTHORED — REVIEW PENDING**
+
+Engineering closure commit:
+
+**NOT YET CREATED**
+
+RFC-073 terminal closure:
+
+**NOT YET CLAIMED**
+
+Post-closure Source-of-Truth reconciliation:
+
+**PENDING — SEPARATE GATE AFTER DURABLE CLOSURE**
+
+Last fully closed RFC remains:
+
+**RFC-072**
+
+Successor RFC:
+
+**NONE SELECTED**
+
+### Next Exact Action
+
+Review the complete five-document RFC-073 engineering closure documentation.
+
+Do not stage closure documentation until that review passes.
+
+Do not claim terminal closure until the closure commit is created, pushed and
+verified exact and the subsequent post-closure Source-of-Truth reconciliation
+completes separately.
