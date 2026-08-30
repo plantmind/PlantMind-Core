@@ -10,16 +10,20 @@
 | Deployment Model | On-Premise |
 | Development Branch | `feature/engineering-platform` |
 | Last Fully Closed RFC | RFC-073 — Canonical Document Content Access Application Boundary — Fully Closed and Source-of-Truth Reconciled |
-| Active RFC | RFC-074 — Canonical Document Content Parsing Application Boundary — Architecture Contract Accepted / Acceptance Git Durability Pending |
+| Active RFC | RFC-074 — Canonical Document Content Parsing Application Boundary — Technical Implementation Git Durable / Closure Documentation Authored / Review Pending |
 | Selected Architecture Workstream | RFC-074 — Canonical Document Content Parsing Application Boundary — Selection Committed / Pushed / Exact Identity Verified |
 | Proposed Successor RFC | None — RFC-074 is the selected active architecture workstream |
 | RFC-069 Selection Commit | `5d7794352029576e0b62c2ac8cbfa248fe11961d` |
 | RFC-070 Selection Commit | `13cfccc08d8c0a3b891990d38edaf9fc48874a5e` |
-| Architecture Decision | AD-060 — Accepted / Acceptance Git Durability Pending |
+| Architecture Decision | AD-060 — Accepted / Committed / Pushed / Exact Identity Verified |
 | RFC-074 Selection State | Durable — Committed, Pushed and Exact Identity Verified |
 | RFC-074 Selection Commit | `b5d1e7fe434378ac7ee90912ac40932d5c5451eb` — committed / pushed / exact identity verified |
-| RFC-074 Architecture Contract State | Accepted / Architecture Review Passed / Acceptance Git Durability Pending |
-| RFC-074 Implementation | Not Authorized |
+| RFC-074 Architecture Contract State | Accepted / Architecture Review Passed / Committed / Pushed / Exact Identity Verified |
+| RFC-074 Implementation | Passed — Technical Implementation Complete / Committed / Pushed / Exact Identity Verified |
+| RFC-074 Accepted Contract Commit | `44b068915e95a3965ab00f7a0e2ea726a9670120` — committed / pushed / exact identity verified |
+| RFC-074 Technical Commit | `34841f28b357bfb70686d3fb1622e5bd746f7396` — committed / pushed / exact identity verified |
+| RFC-074 Engineering Closure State | Documentation Authored / Review Pending |
+| RFC-074 Post-Closure Reconciliation | Pending — Separate Gate After Durable Closure |
 | RFC-073 Selection State | Durable — Committed, Pushed and Exact Identity Verified |
 | RFC-073 Selection Commit | `059fbcbf404da390079ca77685eb2135e663e80d` — committed / pushed / exact identity verified |
 | RFC-073 Architecture Contract State | Accepted / Committed / Pushed / Exact Identity Verified |
@@ -5419,3 +5423,115 @@ Implementation:
 Review the complete five-document architecture acceptance candidate.
 
 Do not stage before acceptance review passes.
+
+
+---
+
+## RFC-074 / AD-060 Engineering Closure State
+
+### Durable Engineering Baseline
+
+RFC-074 selection commit:
+
+`b5d1e7fe434378ac7ee90912ac40932d5c5451eb`
+
+AD-060 accepted-contract commit:
+
+`44b068915e95a3965ab00f7a0e2ea726a9670120`
+
+RFC-074 technical implementation commit:
+
+`34841f28b357bfb70686d3fb1622e5bd746f7396`
+
+Technical Local / Tracking / Remote identity:
+
+**PASS — EXACT**
+
+Working tree at closure-entry gate:
+
+**CLEAN**
+
+### Delivered Capability
+
+RFC-074 establishes:
+
+`DocumentContentParser`
+
+under:
+
+`app.document_parsing.parser`
+
+and:
+
+`DocumentContentParsingApplicationService`
+
+under:
+
+`app.services.document_content_parsing_application_service`
+
+Successful orchestration:
+
+**OPEN VERIFIED CONTENT → PARSE INSIDE ACCESS CONTEXT → CLOSE CONTENT → RETURN RESULT**
+
+RFC-073 owns the verified content-access context.
+
+RFC-074 consumes that boundary without duplicating integrity verification or
+payload ownership.
+
+### Verified Engineering Evidence
+
+Focused RFC-074 verification:
+
+**26 passed**
+
+Full PlantMind regression:
+
+**1054 passed**
+
+Canonical Alembic head:
+
+`0005`
+
+Technical diff SHA-256:
+
+`df65028433c6f8bb5e2fe03106d764ce5f9d88ca7deb5e9c1f1a7608a7dc9671`
+
+### Preserved Boundaries
+
+RFC-074 does not introduce a concrete parser adapter, OCR, Document Library,
+chunking, automatic Knowledge ingestion, Search/Vector/Graph/RAG/LLM,
+Runtime/Composition/Bootstrap, schema/migration or production-security capability.
+
+AD-060 remains Accepted and unchanged.
+
+### Closure Governance State
+
+Closure documentation:
+
+**AUTHORED — REVIEW PENDING**
+
+Engineering closure commit:
+
+**NOT YET CREATED**
+
+RFC-074 terminal closure:
+
+**NOT YET CLAIMED**
+
+Post-closure Source-of-Truth reconciliation:
+
+**PENDING — SEPARATE GATE AFTER DURABLE CLOSURE**
+
+Last fully closed RFC remains:
+
+**RFC-073**
+
+Successor RFC:
+
+**NONE SELECTED / NOT AUTHORIZED**
+
+### Next Exact Action
+
+Review the complete five-document RFC-074 engineering closure documentation.
+
+Do not stage until closure documentation review passes.

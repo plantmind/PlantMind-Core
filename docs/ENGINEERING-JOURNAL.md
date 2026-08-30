@@ -9305,3 +9305,114 @@ Implementation:
 
 Review the complete RFC-074 / AD-060 architecture acceptance candidate before
 staging.
+
+
+---
+
+## 2026-08-30 — RFC-074 / AD-060 Engineering Closure Documentation
+
+**Append-Only Engineering Closure Record**
+
+RFC-074 selection:
+
+`b5d1e7fe434378ac7ee90912ac40932d5c5451eb`
+
+AD-060 accepted-contract commit:
+
+`44b068915e95a3965ab00f7a0e2ea726a9670120`
+
+RFC-074 technical implementation commit:
+
+`34841f28b357bfb70686d3fb1622e5bd746f7396`
+
+Technical Git durability:
+
+**PASS — LOCAL / TRACKING / REMOTE EXACT**
+
+### Delivered Boundary
+
+Implemented parser port:
+
+`app.document_parsing.parser.DocumentContentParser`
+
+Implemented Application service:
+
+`app.services.document_content_parsing_application_service.DocumentContentParsingApplicationService`
+
+Successful orchestration:
+
+**OPEN VERIFIED CONTENT → PARSE INSIDE ACCESS CONTEXT → CLOSE CONTENT → RETURN RESULT**
+
+RFC-073 owns the verified payload and its lifetime.
+
+RFC-074 borrows the payload only during parser execution.
+
+The verified implementation:
+
+- accepts exactly `document_id: EntityId`;
+- obtains verified content through RFC-073;
+- passes the verified descriptor and borrowed `BinaryIO` to the parser;
+- returns the verified descriptor plus exact parsed `str`;
+- raises `TypeError` for non-`str` parser output without coercion;
+- accepts empty parsed text;
+- propagates the two accepted parser contract failures unchanged;
+- propagates operational parser failures unchanged;
+- does not close, seek, tell or fileno the borrowed stream;
+- performs no Knowledge ingestion;
+- introduces no concrete parser technology.
+
+### Verification
+
+Focused RFC-074 behavior and architecture verification:
+
+**26 passed**
+
+Full PlantMind regression:
+
+**1054 passed**
+
+Canonical Alembic head:
+
+`0005`
+
+Reviewed technical diff SHA-256:
+
+`df65028433c6f8bb5e2fe03106d764ce5f9d88ca7deb5e9c1f1a7608a7dc9671`
+
+### Preserved Architecture
+
+AD-060 remains:
+
+**ACCEPTED**
+
+RFC-073 content-access responsibility remains unchanged.
+
+No persistence, schema or migration changed.
+
+No Runtime / Composition / Bootstrap wiring was added.
+
+No concrete PDF/DOCX/spreadsheet parser, OCR, Document Library, chunking,
+Search/Vector/Graph/RAG/LLM, AI Agent or production-security capability is
+promoted by RFC-074 closure.
+
+### Closure State
+
+Closure documentation:
+
+**AUTHORED — REVIEW PENDING**
+
+RFC-074 terminal closure:
+
+**NOT YET CLAIMED**
+
+Post-closure Source-of-Truth reconciliation:
+
+**PENDING**
+
+Successor:
+
+**NONE SELECTED / NOT AUTHORIZED**
+
+### Next Exact Action
+
+Review the complete five-document RFC-074 closure documentation before staging.

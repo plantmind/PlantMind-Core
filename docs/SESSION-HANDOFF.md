@@ -7,14 +7,18 @@
 | Project | PlantMind PM-001 |
 | Branch | `feature/engineering-platform` |
 | Last Fully Closed RFC | RFC-073 — Canonical Document Content Access Application Boundary — Fully Closed and Source-of-Truth Reconciled |
-| Active RFC | RFC-074 — Canonical Document Content Parsing Application Boundary — Architecture Contract Accepted / Acceptance Git Durability Pending |
+| Active RFC | RFC-074 — Canonical Document Content Parsing Application Boundary — Technical Implementation Git Durable / Closure Documentation Authored / Review Pending |
 | Selected Architecture Workstream | RFC-074 — Canonical Document Content Parsing Application Boundary — Selection Committed / Pushed / Exact Identity Verified |
 | Proposed Successor RFC | None — RFC-074 is the selected active architecture workstream |
-| Architecture Decision | AD-060 — Accepted / Acceptance Git Durability Pending |
+| Architecture Decision | AD-060 — Accepted / Committed / Pushed / Exact Identity Verified |
 | RFC-074 Selection State | Durable — Committed, Pushed and Exact Identity Verified |
 | RFC-074 Selection Commit | `b5d1e7fe434378ac7ee90912ac40932d5c5451eb` — committed / pushed / exact identity verified |
-| RFC-074 Architecture Contract State | Accepted / Architecture Review Passed / Acceptance Git Durability Pending |
-| RFC-074 Implementation | Not Authorized |
+| RFC-074 Architecture Contract State | Accepted / Architecture Review Passed / Committed / Pushed / Exact Identity Verified |
+| RFC-074 Implementation | Passed — Technical Implementation Complete / Committed / Pushed / Exact Identity Verified |
+| RFC-074 Accepted Contract Commit | `44b068915e95a3965ab00f7a0e2ea726a9670120` — committed / pushed / exact identity verified |
+| RFC-074 Technical Commit | `34841f28b357bfb70686d3fb1622e5bd746f7396` — committed / pushed / exact identity verified |
+| RFC-074 Engineering Closure State | Documentation Authored / Review Pending |
+| RFC-074 Post-Closure Reconciliation | Pending — Separate Gate After Durable Closure |
 | RFC-073 Selection State | Durable — Committed, Pushed and Exact Identity Verified |
 | RFC-073 Selection Commit | `059fbcbf404da390079ca77685eb2135e663e80d` — committed / pushed / exact identity verified |
 | RFC-073 Architecture Contract State | Accepted / Committed / Pushed / Exact Identity Verified |
@@ -4741,3 +4745,118 @@ Technical implementation:
 ### Next Gate
 
 Chief Architect RFC-074 / AD-060 architecture acceptance review.
+
+
+---
+
+## RFC-074 / AD-060 Engineering Closure Handoff
+
+### Durable Anchors
+
+RFC-074 selection:
+
+`b5d1e7fe434378ac7ee90912ac40932d5c5451eb`
+
+AD-060 accepted contract:
+
+`44b068915e95a3965ab00f7a0e2ea726a9670120`
+
+RFC-074 technical implementation:
+
+`34841f28b357bfb70686d3fb1622e5bd746f7396`
+
+Technical Local / Tracking / Remote identity:
+
+**PASS — EXACT**
+
+Working tree at closure-entry gate:
+
+**CLEAN**
+
+### Technical Result
+
+Canonical parser port:
+
+`app.document_parsing.parser.DocumentContentParser`
+
+Canonical Application service:
+
+`app.services.document_content_parsing_application_service.DocumentContentParsingApplicationService`
+
+Verified behavior preserves:
+
+- RFC-073 verified content access;
+- borrower-only parser payload use;
+- parsing while the RFC-073 access context is active;
+- payload closure before the Application result returns;
+- exact descriptor propagation;
+- exact `str` output with no coercion;
+- valid empty text;
+- unchanged parser contract failures;
+- unchanged operational failures;
+- no payload escape through the result;
+- no persistence ownership.
+
+Focused RFC-074 verification:
+
+**26 passed**
+
+Full regression:
+
+**1054 passed**
+
+Alembic:
+
+`0005`
+
+Technical diff SHA-256:
+
+`df65028433c6f8bb5e2fe03106d764ce5f9d88ca7deb5e9c1f1a7608a7dc9671`
+
+### Current Handoff State
+
+AD-060:
+
+**ACCEPTED / COMMITTED / PUSHED / EXACT IDENTITY VERIFIED**
+
+Technical implementation:
+
+**COMPLETE / COMMITTED / PUSHED / EXACT IDENTITY VERIFIED**
+
+Closure documentation:
+
+**AUTHORED — REVIEW PENDING**
+
+Engineering closure commit:
+
+**NOT YET CREATED**
+
+RFC-074 terminal closure:
+
+**NOT YET CLAIMED**
+
+Post-closure Source-of-Truth reconciliation:
+
+**PENDING**
+
+Successor:
+
+**NONE / NOT AUTHORIZED**
+
+### Preserved Boundaries
+
+No production implementation change accompanies this documentation authoring.
+
+No concrete parser library, OCR, Document Library, chunking, automatic Knowledge
+ingestion, Search/Vector/Graph/RAG/LLM, Runtime, Composition, Bootstrap, schema,
+migration or production-security capability is promoted.
+
+AD-060 remains Accepted and unchanged.
+
+### Next Exact Action
+
+Review:
+
+`PLANTMIND-RFC074-CLOSURE-DOCUMENTATION-REVIEW.txt`
+
+Do not stage until closure documentation review passes.

@@ -19740,3 +19740,184 @@ Do not stage until that acceptance review passes.
 
 Do not begin implementation until accepted-contract Git durability is complete
 and a separate implementation-entry review passes.
+
+
+---
+
+## RFC-074 / AD-060 Engineering Closure Record
+
+**Record Classification: Non-Decision Engineering Closure Governance Record**
+
+This section creates no new Architecture Decision.
+
+It does not amend, replace, supersede or rewrite AD-060.
+
+AD-060 remains:
+
+**ACCEPTED**
+
+### Closure Baseline
+
+RFC-074 workstream:
+
+**Canonical Document Content Parsing Application Boundary**
+
+Verified workstream-selection commit:
+
+`b5d1e7fe434378ac7ee90912ac40932d5c5451eb`
+
+Verified accepted-contract commit:
+
+`44b068915e95a3965ab00f7a0e2ea726a9670120`
+
+Verified technical implementation commit:
+
+`34841f28b357bfb70686d3fb1622e5bd746f7396`
+
+Technical Git durability:
+
+**PASS — LOCAL / TRACKING / REMOTE IDENTITY VERIFIED**
+
+Working tree at closure-entry gate:
+
+**CLEAN**
+
+### Verified Technical Outcome
+
+RFC-074 establishes the canonical persistence-neutral parser port:
+
+`app.document_parsing.parser.DocumentContentParser`
+
+and the canonical Application service:
+
+`app.services.document_content_parsing_application_service.DocumentContentParsingApplicationService`
+
+Canonical request identity remains:
+
+`document_id: EntityId`
+
+Canonical parser operation remains conceptually:
+
+`parse(*, descriptor: DocumentContentDescriptor, payload: BinaryIO) -> str`
+
+The accepted successful orchestration remains:
+
+**OPEN VERIFIED CONTENT → PARSE INSIDE ACCESS CONTEXT → CLOSE CONTENT → RETURN RESULT**
+
+RFC-073 remains the owner of verified payload access and payload lifetime.
+
+The RFC-074 parser is borrower-only.
+
+The Application result contains only:
+
+- verified `DocumentContentDescriptor`;
+- parsed textual `str`.
+
+No binary payload, stream handle, path, temporary file, repository or session
+escapes through the RFC-074 result.
+
+The implementation preserves:
+
+- canonical media type from `DocumentContentDescriptor`;
+- no filename or `source_reference` media-type inference;
+- no parser fallback or content sniffing;
+- exact `str` runtime validation;
+- non-`str` parser output raises `TypeError`;
+- no `str(...)` coercion or normalization;
+- empty parsed text remains a valid successful result;
+- `DocumentContentParserUnsupportedMediaTypeError` propagates unchanged;
+- `DocumentContentParserInvalidContentError` propagates unchanged;
+- operational parser failures remain distinct and propagate unchanged;
+- RFC-073 content-access failures propagate unchanged;
+- RFC-074 performs no direct repository or content-store access.
+
+### Verified Engineering Evidence
+
+Focused RFC-074 behavior and architecture verification:
+
+**26 passed**
+
+Full PlantMind regression:
+
+**1054 passed**
+
+Canonical Alembic head:
+
+`0005`
+
+Reviewed technical diff SHA-256:
+
+`df65028433c6f8bb5e2fe03106d764ce5f9d88ca7deb5e9c1f1a7608a7dc9671`
+
+### Responsibility Preservation
+
+This closure record does not modify or absorb responsibility from RFC-073.
+
+RFC-073 continues to own verified canonical Document Content access and payload
+context lifetime.
+
+RFC-074 does not own:
+
+- binary content establishment;
+- persistence or schema;
+- concrete PDF, DOCX, spreadsheet or text parser adapters;
+- OCR;
+- metadata extraction;
+- chunking;
+- Document Library behavior;
+- automatic Knowledge creation or RFC-065 invocation;
+- Search;
+- embeddings or Vector persistence;
+- Graph / Neo4j production integration;
+- RAG;
+- LLM invocation;
+- AI Agents;
+- Runtime / Composition / Bootstrap wiring;
+- HTTP/API exposure;
+- authentication / authorization / RBAC / Active Directory completion;
+- Cybersecurity approval;
+- production deployment conformance;
+- production-readiness claims.
+
+The legacy empty `app.knowledge.document_parser` seam remains unpromoted.
+
+No schema or Alembic migration changed.
+
+### Closure Governance State
+
+Closure documentation:
+
+**AUTHORED — REVIEW PENDING**
+
+Engineering closure commit:
+
+**NOT YET CREATED**
+
+Engineering closure push:
+
+**NOT PERFORMED**
+
+RFC-074 terminal closure:
+
+**NOT YET CLAIMED**
+
+Post-closure Source-of-Truth reconciliation:
+
+**PENDING — SEPARATE POST-CLOSURE GATE**
+
+Last fully closed RFC remains:
+
+**RFC-073**
+
+Successor workstream:
+
+**NONE SELECTED / NOT AUTHORIZED**
+
+### Next Exact Action
+
+Review the complete five-document RFC-074 engineering closure documentation.
+
+Do not stage closure documentation until that review passes.
+
+Do not claim terminal closure until closure Git durability and the subsequent
+Source-of-Truth reconciliation complete separately.
