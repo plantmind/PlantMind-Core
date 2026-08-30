@@ -20184,3 +20184,97 @@ Verification of this record's own commit, push, exact Local / Tracking / Remote
 identity and clean working tree is an external Git durability gate.
 
 That external Git gate does not require another RFC-074 Source-of-Truth record.
+
+
+---
+
+## RFC-075 Successor Workstream Selection Record
+
+**Record Classification: Non-Decision Successor Workstream Selection Record**
+
+This record creates no Architecture Decision.
+
+AD-060 remains the latest Accepted Architecture Decision.
+
+RFC-074 remains:
+
+**FULLY CLOSED AND SOURCE-OF-TRUTH RECONCILED**
+
+RFC-074 terminal commit:
+
+`a86ce4534174e8b815313e2205fa18ecb8f5ef04`
+
+### Selected Successor Workstream
+
+**RFC-075 — Canonical Document Content Parser Resolution & Dispatch Foundation**
+
+### Evidence-Based Rationale
+
+RFC-074 established the canonical persistence-neutral parser port and
+Application parsing boundary while deliberately deferring parser
+registry/resolution and every concrete parser technology.
+
+The next architecture gap is deterministic parser resolution and dispatch
+without changing RFC-074 ownership.
+
+The successor shall preserve the existing RFC-074 parser contract rather
+than make the Application service depend directly on PDF, DOCX, spreadsheet,
+text, OCR or vendor-specific parser technology.
+
+### Intended Architectural Problem
+
+Establish a canonical, deterministic and extensible mechanism for selecting
+the appropriate Document Content parser from canonical descriptor media type.
+
+The architecture review must determine the exact resolver/registry/dispatch
+contract and whether dispatch can remain behind the existing
+`DocumentContentParser` boundary.
+
+No exact class name or implementation shape is accepted by this selection.
+
+### Explicitly Outside RFC-075 Selection
+
+- concrete PDF/DOCX/spreadsheet/text parser adapters;
+- OCR;
+- parser fallback or content sniffing;
+- metadata/table/page extraction models;
+- chunking;
+- parsed-result persistence;
+- Document Library;
+- automatic Knowledge ingestion or RFC-065 invocation;
+- Search;
+- embeddings / Vector;
+- Graph / Neo4j production integration;
+- RAG;
+- LLM;
+- AI Agents;
+- Runtime / Composition / Bootstrap wiring;
+- HTTP/API exposure;
+- schema or Alembic migration expansion;
+- production parser sandboxing;
+- production-security readiness.
+
+The legacy `app.knowledge.document_parser` seam remains unpromoted.
+
+Existing legacy RAG, semantic-search or vector-memory surfaces are not
+promoted by this selection.
+
+### Current Gate
+
+RFC-075 selection:
+
+**AUTHORED — REVIEW PENDING**
+
+Architecture Decision:
+
+**NONE YET — AD-061 NOT AUTHORED**
+
+Implementation:
+
+**NOT AUTHORIZED**
+
+### Next Exact Action
+
+Review this RFC-075 successor selection before staging.
+
+Do not author AD-061 until selection Git durability is complete.

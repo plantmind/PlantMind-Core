@@ -10,9 +10,11 @@
 | Deployment Model | On-Premise |
 | Development Branch | `feature/engineering-platform` |
 | Last Fully Closed RFC | RFC-074 — Canonical Document Content Parsing Application Boundary — Fully Closed and Source-of-Truth Reconciled |
-| Active RFC | None — RFC-074 Fully Closed and Source-of-Truth Reconciled; successor selection not started |
-| Selected Architecture Workstream | None — RFC-074 completed; successor not selected |
-| Proposed Successor RFC | None — successor selection has not started |
+| Active RFC | RFC-075 — Canonical Document Content Parser Resolution & Dispatch Foundation — Selection Authored / Review Pending |
+| Selected Architecture Workstream | RFC-075 — Canonical Document Content Parser Resolution & Dispatch Foundation — Selection Authored / Review Pending |
+| Proposed Successor RFC | RFC-075 — Canonical Document Content Parser Resolution & Dispatch Foundation — selected candidate / review pending |
+| RFC-075 Selection State | Authored / Review Pending |
+| RFC-075 Predecessor Baseline | `a86ce4534174e8b815313e2205fa18ecb8f5ef04` — RFC-074 terminal closure |
 | RFC-069 Selection Commit | `5d7794352029576e0b62c2ac8cbfa248fe11961d` |
 | RFC-070 Selection Commit | `13cfccc08d8c0a3b891990d38edaf9fc48874a5e` |
 | Architecture Decision | AD-060 — Accepted / Committed / Pushed / Exact Identity Verified |
@@ -59,7 +61,7 @@
 | RFC-069 Engineering Closure Commit | `63790de5312c69c709e2249b56e91995a00426b6` |
 | RFC-069 Post-Closure Reconciliation Commit | `231e0cc66862c797e299fdb71ff20da8a39e8ae2` |
 | RFC-069 Reconciliation Verification | PASS — Committed, Pushed, Exact Local / Tracking / Remote Identity Verified |
-| Test Baseline | 1028 passed |
+| Test Baseline | 1054 passed |
 | RFC-070 Engineering Closure Commit | `ab4438b02a8f34f83b462e3d8a86b4b5ab5d1092` |
 | RFC-070 Engineering Closure State | Complete, Pushed and Verified |
 | RFC-070 Post-Closure Reconciliation | Complete, Pushed and Verified |
@@ -5741,3 +5743,80 @@ The future Git commit that persists this record is intentionally not predicted.
 
 Its own commit/push/exact identity verification is an external Git durability
 gate and does not require another RFC-074 Source-of-Truth record.
+
+
+---
+
+## RFC-075 Successor Selection State
+
+### Selected Workstream
+
+**RFC-075 — Canonical Document Content Parser Resolution & Dispatch Foundation**
+
+Predecessor:
+
+RFC-074 — Canonical Document Content Parsing Application Boundary
+
+Predecessor terminal commit:
+
+`a86ce4534174e8b815313e2205fa18ecb8f5ef04`
+
+### Selection Evidence
+
+RFC-074 is fully closed.
+
+No Active RFC existed at selection entry.
+
+RFC-074 deliberately deferred parser registry/resolution and concrete parser
+technology.
+
+The canonical parsing surface currently exposes the parser port and parsing
+Application service but no governed canonical parser-resolution/dispatch
+foundation.
+
+### Mandatory Current-Control Correction
+
+The generic `Test Baseline` row was stale at `1028 passed`.
+
+RFC-074 final technical verification established:
+
+**1054 passed**
+
+The maintained current-control baseline is therefore corrected to:
+
+**1054 passed**
+
+This is current-control maintenance only and does not reopen or modify
+RFC-074 history.
+
+### Selected Direction
+
+RFC-075 shall address canonical parser resolution and dispatch.
+
+Exact architecture, class names, interfaces and implementation strategy remain
+subject to AD-061 architecture authoring and review.
+
+### Exclusions
+
+No concrete parser adapter, OCR, chunking, parsed-result persistence,
+Document Library, automatic Knowledge ingestion, Search/Vector/Graph/RAG/LLM,
+AI Agent, Runtime/Composition/Bootstrap, HTTP/API, schema/migration or
+production-security capability is selected.
+
+### Current Gate
+
+Selection:
+
+**AUTHORED — REVIEW PENDING**
+
+AD-061:
+
+**NOT AUTHORED**
+
+Implementation authorization:
+
+**NO**
+
+### Next Exact Action
+
+Chief Architect review of RFC-075 successor selection.

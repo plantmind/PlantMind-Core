@@ -18343,3 +18343,70 @@ only already durable commits through reconciliation commit:
 
 Its own Git durability is verified externally and does not require another
 RFC-074 Source-of-Truth record.
+
+
+---
+
+## RFC-075 Successor Selection Gate
+
+### Durable Entry Baseline
+
+RFC-074 terminal state:
+
+**FULLY CLOSED AND SOURCE-OF-TRUTH RECONCILED**
+
+Terminal commit:
+
+`a86ce4534174e8b815313e2205fa18ecb8f5ef04`
+
+### Selected Candidate
+
+**RFC-075 — Canonical Document Content Parser Resolution & Dispatch Foundation**
+
+### Why This Comes Next
+
+Canonical parsing now exists, but canonical parser resolution/dispatch remains
+deliberately unowned.
+
+A resolution foundation is required before PlantMind introduces multiple
+concrete parser technologies.
+
+This prevents parser-specific branching from leaking into the RFC-074
+Application boundary.
+
+### Deferred Beyond This Selection
+
+Concrete format parsers, OCR, extraction models, chunking, parser-result
+persistence, Document Library, Knowledge auto-ingestion,
+Search/Vector/Graph/RAG/LLM, AI Agents, Runtime/Composition/Bootstrap,
+API exposure, migrations and production-security readiness remain separate.
+
+### Gate State
+
+RFC-075 selection authoring:
+
+**COMPLETE — REVIEW PENDING**
+
+Selection staging:
+
+**NOT PERFORMED**
+
+Selection commit:
+
+**NOT YET CREATED**
+
+Selection push:
+
+**NOT PERFORMED**
+
+AD-061:
+
+**NOT AUTHORED**
+
+Technical implementation:
+
+**NOT AUTHORIZED**
+
+### Next Gate
+
+Chief Architect RFC-075 successor-selection review.

@@ -9576,3 +9576,69 @@ durable reconciliation commit:
 
 Its own Git durability is verified externally without another RFC-074
 Source-of-Truth record.
+
+
+---
+
+## 2026-08-30 — RFC-075 Successor Workstream Selection Authored
+
+### Durable Predecessor
+
+RFC-074:
+
+**FULLY CLOSED AND SOURCE-OF-TRUTH RECONCILED**
+
+Terminal commit:
+
+`a86ce4534174e8b815313e2205fa18ecb8f5ef04`
+
+### Selected Candidate
+
+**RFC-075 — Canonical Document Content Parser Resolution & Dispatch Foundation**
+
+### Selection Basis
+
+RFC-074 delivered canonical parsing orchestration but deliberately left
+parser registry/resolution and concrete parser technologies outside its
+ownership.
+
+RFC-075 therefore targets parser resolution and dispatch before concrete
+document-format adapters or downstream chunking/RAG work.
+
+### Boundary Preservation
+
+RFC-074 remains unchanged.
+
+RFC-073 remains verified Document Content access and payload-lifetime owner.
+
+RFC-065 remains prepared Document-to-Knowledge ingestion owner.
+
+No concrete parser, OCR, chunking, Document Library, automatic Knowledge
+ingestion, Search/Vector/Graph/RAG/LLM, Runtime/Composition/Bootstrap,
+schema/migration or production-security capability is authorized.
+
+### Current State
+
+Selection authoring:
+
+**COMPLETE — REVIEW PENDING**
+
+Selection staging:
+
+**NOT PERFORMED**
+
+Selection commit:
+
+**NOT YET CREATED**
+
+Selection push:
+
+**NOT PERFORMED**
+
+AD-061:
+
+**NOT YET AUTHORED**
+
+Implementation:
+
+**NOT AUTHORIZED**

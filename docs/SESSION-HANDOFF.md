@@ -7,9 +7,11 @@
 | Project | PlantMind PM-001 |
 | Branch | `feature/engineering-platform` |
 | Last Fully Closed RFC | RFC-074 — Canonical Document Content Parsing Application Boundary — Fully Closed and Source-of-Truth Reconciled |
-| Active RFC | None — RFC-074 Fully Closed and Source-of-Truth Reconciled; successor selection not started |
-| Selected Architecture Workstream | None — RFC-074 completed; successor not selected |
-| Proposed Successor RFC | None — successor selection has not started |
+| Active RFC | RFC-075 — Canonical Document Content Parser Resolution & Dispatch Foundation — Selection Authored / Review Pending |
+| Selected Architecture Workstream | RFC-075 — Canonical Document Content Parser Resolution & Dispatch Foundation — Selection Authored / Review Pending |
+| Proposed Successor RFC | RFC-075 — Canonical Document Content Parser Resolution & Dispatch Foundation — selected candidate / review pending |
+| RFC-075 Selection State | Authored / Review Pending |
+| RFC-075 Predecessor Baseline | `a86ce4534174e8b815313e2205fa18ecb8f5ef04` — RFC-074 terminal closure |
 | Architecture Decision | AD-060 — Accepted / Committed / Pushed / Exact Identity Verified |
 | RFC-074 Selection State | Durable — Committed, Pushed and Exact Identity Verified |
 | RFC-074 Selection Commit | `b5d1e7fe434378ac7ee90912ac40932d5c5451eb` — committed / pushed / exact identity verified |
@@ -80,7 +82,7 @@
 | Alembic Head | `0005` |
 | Authoritative Environment | `PlantMind-Core/.venv` |
 | RFC-069 State | Fully Closed and Source-of-Truth Reconciled |
-| Successor RFC Selection | None — RFC-074 fully closed; successor selection not started |
+| Successor RFC Selection | RFC-075 — Authored / Review Pending |
 ## Recent Engineering Sequence
 
 - RFC-025 — Core Plugin Framework
@@ -5078,3 +5080,69 @@ commits through reconciliation commit:
 `69d951c386224a52d466d076eb08869c97ffc81c`
 
 Its own future Git commit identity is intentionally not predicted here.
+
+
+---
+
+## RFC-075 Successor Selection Handoff
+
+### Durable Starting Point
+
+RFC-074:
+
+**FULLY CLOSED AND SOURCE-OF-TRUTH RECONCILED**
+
+Terminal commit:
+
+`a86ce4534174e8b815313e2205fa18ecb8f5ef04`
+
+### Selected Candidate
+
+**RFC-075 — Canonical Document Content Parser Resolution & Dispatch Foundation**
+
+### Preserved Boundaries
+
+RFC-073 remains verified canonical Document Content access and payload owner.
+
+RFC-074 remains the canonical persistence-neutral parsing Application boundary.
+
+RFC-065 remains canonical prepared Document-to-Knowledge ingestion.
+
+Legacy `app.knowledge.document_parser` remains unpromoted.
+
+No existing RAG, semantic-search or vector-memory surface is promoted.
+
+### RFC-075 Scope Direction
+
+Establish the architecture for deterministic canonical parser resolution and
+dispatch without selecting concrete parser technology yet.
+
+### Current Handoff State
+
+Selection:
+
+**AUTHORED — REVIEW PENDING**
+
+Staging:
+
+**NOT PERFORMED**
+
+Commit:
+
+**NOT YET CREATED**
+
+Push:
+
+**NOT PERFORMED**
+
+AD-061:
+
+**NOT AUTHORED**
+
+Implementation:
+
+**NOT AUTHORIZED**
+
+### Next Exact Action
+
+Review RFC-075 successor selection before staging.
