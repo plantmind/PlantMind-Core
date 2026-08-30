@@ -7,7 +7,7 @@
 | Project | PlantMind PM-001 |
 | Branch | `feature/engineering-platform` |
 | Last Fully Closed RFC | RFC-073 — Canonical Document Content Access Application Boundary — Fully Closed and Source-of-Truth Reconciled |
-| Active RFC | RFC-074 — Canonical Document Content Parsing Application Boundary — Technical Implementation Git Durable / Closure Documentation Authored / Review Pending |
+| Active RFC | RFC-074 — Canonical Document Content Parsing Application Boundary — Engineering Closure Complete / Post-Closure Source-of-Truth Reconciliation Authored / Review Pending |
 | Selected Architecture Workstream | RFC-074 — Canonical Document Content Parsing Application Boundary — Selection Committed / Pushed / Exact Identity Verified |
 | Proposed Successor RFC | None — RFC-074 is the selected active architecture workstream |
 | Architecture Decision | AD-060 — Accepted / Committed / Pushed / Exact Identity Verified |
@@ -17,8 +17,9 @@
 | RFC-074 Implementation | Passed — Technical Implementation Complete / Committed / Pushed / Exact Identity Verified |
 | RFC-074 Accepted Contract Commit | `44b068915e95a3965ab00f7a0e2ea726a9670120` — committed / pushed / exact identity verified |
 | RFC-074 Technical Commit | `34841f28b357bfb70686d3fb1622e5bd746f7396` — committed / pushed / exact identity verified |
-| RFC-074 Engineering Closure State | Documentation Authored / Review Pending |
-| RFC-074 Post-Closure Reconciliation | Pending — Separate Gate After Durable Closure |
+| RFC-074 Engineering Closure Commit | `1f2360dd81a54788dadf3007177de17c4e5d2110` — committed / pushed / exact identity verified |
+| RFC-074 Engineering Closure State | Complete / Committed / Pushed / Exact Identity Verified |
+| RFC-074 Post-Closure Reconciliation | Authored / Review Pending |
 | RFC-073 Selection State | Durable — Committed, Pushed and Exact Identity Verified |
 | RFC-073 Selection Commit | `059fbcbf404da390079ca77685eb2135e663e80d` — committed / pushed / exact identity verified |
 | RFC-073 Architecture Contract State | Accepted / Committed / Pushed / Exact Identity Verified |
@@ -4860,3 +4861,119 @@ Review:
 `PLANTMIND-RFC074-CLOSURE-DOCUMENTATION-REVIEW.txt`
 
 Do not stage until closure documentation review passes.
+
+
+---
+
+## RFC-074 Post-Closure Source-of-Truth Reconciliation Handoff
+
+### Durable Anchors
+
+RFC-074 selection:
+
+`b5d1e7fe434378ac7ee90912ac40932d5c5451eb`
+
+AD-060 accepted contract:
+
+`44b068915e95a3965ab00f7a0e2ea726a9670120`
+
+Technical implementation:
+
+`34841f28b357bfb70686d3fb1622e5bd746f7396`
+
+Engineering closure:
+
+`1f2360dd81a54788dadf3007177de17c4e5d2110`
+
+Closure Local / Tracking / Remote identity:
+
+**PASS — EXACT**
+
+Working tree at reconciliation entry:
+
+**CLEAN**
+
+### Preserved Engineering Result
+
+Canonical parser port:
+
+`app.document_parsing.parser.DocumentContentParser`
+
+Canonical Application service:
+
+`app.services.document_content_parsing_application_service.DocumentContentParsingApplicationService`
+
+Accepted behavior remains:
+
+**OPEN VERIFIED CONTENT → PARSE INSIDE ACCESS CONTEXT → CLOSE CONTENT → RETURN RESULT**
+
+RFC-073 verified content access remains the payload ownership boundary.
+
+RFC-074 continues to borrow payload only while parsing.
+
+Focused RFC-074 verification:
+
+**26 passed**
+
+Full regression:
+
+**1054 passed**
+
+Alembic:
+
+`0005`
+
+### Current Handoff State
+
+AD-060:
+
+**ACCEPTED / COMMITTED / PUSHED / EXACT IDENTITY VERIFIED**
+
+Technical implementation:
+
+**COMPLETE / COMMITTED / PUSHED / EXACT IDENTITY VERIFIED**
+
+Engineering closure:
+
+**COMPLETE / COMMITTED / PUSHED / EXACT IDENTITY VERIFIED**
+
+Post-closure Source-of-Truth reconciliation:
+
+**AUTHORED — REVIEW PENDING**
+
+Reconciliation commit:
+
+**NOT YET CREATED**
+
+Final reconciliation verification:
+
+**NOT YET CREATED**
+
+RFC-074 terminal closure:
+
+**NOT YET CLAIMED**
+
+Last fully closed RFC:
+
+**RFC-073**
+
+Successor:
+
+**NONE / NOT AUTHORIZED**
+
+### Preserved Boundaries
+
+This handoff update changes engineering memory only.
+
+No production implementation, parser technology, OCR, Document Library,
+chunking, Knowledge ingestion, Search/Vector/Graph/RAG/LLM,
+Runtime/Composition/Bootstrap, schema, migration or production-security scope
+is promoted.
+
+### Next Exact Action
+
+Review:
+
+`PLANTMIND-RFC074-POST-CLOSURE-RECONCILIATION-REVIEW.txt`
+
+Do not stage reconciliation until review passes.

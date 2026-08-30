@@ -19921,3 +19921,149 @@ Do not stage closure documentation until that review passes.
 
 Do not claim terminal closure until closure Git durability and the subsequent
 Source-of-Truth reconciliation complete separately.
+
+
+---
+
+## RFC-074 / AD-060 Post-Closure Source-of-Truth Reconciliation Record
+
+**Record Classification: Non-Decision Engineering Reconciliation Governance Record**
+
+This record creates no new Architecture Decision.
+
+It does not amend, replace, supersede or rewrite AD-060.
+
+AD-060 remains:
+
+**ACCEPTED**
+
+### Durable RFC-074 Commit Chain
+
+Selection commit:
+
+`b5d1e7fe434378ac7ee90912ac40932d5c5451eb`
+
+Accepted-contract commit:
+
+`44b068915e95a3965ab00f7a0e2ea726a9670120`
+
+Technical implementation commit:
+
+`34841f28b357bfb70686d3fb1622e5bd746f7396`
+
+Engineering closure commit:
+
+`1f2360dd81a54788dadf3007177de17c4e5d2110`
+
+Closure commit parent:
+
+`34841f28b357bfb70686d3fb1622e5bd746f7396`
+
+Closure Git durability:
+
+**PASS — LOCAL / TRACKING / REMOTE EXACT**
+
+Working tree at reconciliation entry:
+
+**CLEAN**
+
+### Preserved Technical Baseline
+
+Canonical parser port:
+
+`app.document_parsing.parser.DocumentContentParser`
+
+Canonical Application service:
+
+`app.services.document_content_parsing_application_service.DocumentContentParsingApplicationService`
+
+Accepted successful flow remains:
+
+**OPEN VERIFIED CONTENT → PARSE INSIDE ACCESS CONTEXT → CLOSE CONTENT → RETURN RESULT**
+
+Payload ownership remains:
+
+**RFC-073 OWNED / RFC-074 BORROWED ONLY**
+
+Focused RFC-074 verification:
+
+**26 passed**
+
+Full PlantMind regression:
+
+**1054 passed**
+
+Canonical Alembic head:
+
+`0005`
+
+Reviewed technical diff SHA-256:
+
+`df65028433c6f8bb5e2fe03106d764ce5f9d88ca7deb5e9c1f1a7608a7dc9671`
+
+Reviewed engineering-closure diff SHA-256:
+
+`adf2364013a8a37445d403207362988082d2fb5cdbcba65104634903ec8c11bd`
+
+### Reconciliation Responsibility
+
+This reconciliation updates maintained engineering-memory current state only.
+
+It does not modify production code, tests, database schema, Alembic migrations,
+Runtime, Composition, Bootstrap, parser implementation technology, Document
+Library, OCR, chunking, automatic Knowledge ingestion, Search/Vector/Graph/RAG/LLM,
+AI Agents or production-security capability.
+
+RFC-073 continues to own verified canonical Document Content access and payload
+lifetime.
+
+RFC-074 continues to own only the persistence-neutral parsing Application boundary.
+
+The legacy empty `app.knowledge.document_parser` seam remains unpromoted.
+
+### Current Reconciliation State
+
+Engineering closure:
+
+**COMPLETE / COMMITTED / PUSHED / EXACT IDENTITY VERIFIED**
+
+Source-of-Truth reconciliation:
+
+**AUTHORED — REVIEW PENDING**
+
+Reconciliation staging:
+
+**NOT PERFORMED**
+
+Reconciliation commit:
+
+**NOT YET CREATED**
+
+Reconciliation push / exact identity verification:
+
+**NOT YET PERFORMED**
+
+Final reconciliation verification record:
+
+**NOT YET CREATED**
+
+RFC-074 terminal closure:
+
+**NOT YET CLAIMED**
+
+Last fully closed RFC remains:
+
+**RFC-073**
+
+Successor workstream:
+
+**NONE SELECTED / NOT AUTHORIZED**
+
+### Next Exact Action
+
+Review the complete RFC-074 post-closure Source-of-Truth reconciliation.
+
+Do not stage reconciliation until that review passes.
+
+Do not declare RFC-074 fully closed until reconciliation Git durability and the
+separate final reconciliation verification record complete.
