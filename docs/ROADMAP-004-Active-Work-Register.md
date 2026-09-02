@@ -18410,3 +18410,166 @@ Technical implementation:
 ### Next Gate
 
 Chief Architect RFC-075 successor-selection review.
+
+
+---
+
+## RFC-075 / AD-061 Architecture Contract Gate
+
+### Workstream
+
+**RFC-075 — Canonical Document Content Parser Resolution & Dispatch Foundation**
+
+Durable selection commit:
+
+`66a252310b14d868cfac90d3f23a2f7bc269fe64`
+
+Selection Git durability:
+
+**PASS — EXACT**
+
+### Proposed Architecture
+
+Architecture Decision candidate:
+
+**AD-061 — Canonical Document Content Parser Resolution & Dispatch Foundation**
+
+Status:
+
+**PROPOSED — REVIEW PENDING**
+
+Canonical resolver port:
+
+`DocumentContentParserResolver`
+
+Canonical dispatcher:
+
+`DispatchingDocumentContentParser`
+
+Resolution key:
+
+`DocumentContentMediaType`
+
+Canonical flow:
+
+**RFC-074 APPLICATION → DISPATCHING PARSER → RESOLVE BY CANONICAL MEDIA TYPE → DELEGATE PARSER → RETURN EXACT RESULT**
+
+### Hard Ownership Boundary
+
+RFC-073 owns payload access/lifetime.
+
+RFC-074 owns Application orchestration and result validation.
+
+RFC-075 owns resolution/dispatch only.
+
+RFC-065 remains Knowledge-ingestion owner.
+
+### Hard Deferrals
+
+No:
+
+- concrete parser adapter;
+- registry-backed resolver adapter;
+- controlled parser registration;
+- fallback;
+- content sniffing;
+- OCR;
+- chunking;
+- Document Library;
+- parsed-result persistence;
+- automatic Knowledge ingestion;
+- Search/Vector/Graph/RAG/LLM;
+- Runtime/Composition/Bootstrap wiring;
+- API;
+- schema/migration;
+- production-security claim.
+
+### Gate State
+
+Architecture authoring:
+
+**COMPLETE — REVIEW PENDING**
+
+Architecture acceptance:
+
+**NOT PERFORMED**
+
+Technical implementation:
+
+**NOT AUTHORIZED**
+
+### Next Gate
+
+Chief Architect RFC-075 / AD-061 architecture-contract review.
+
+
+---
+
+## RFC-075 / AD-061 Architecture Acceptance Gate
+
+### Durable Selection
+
+`66a252310b14d868cfac90d3f23a2f7bc269fe64`
+
+### Architecture Review
+
+**PASS — NO REMAINING REFINE / NO BLOCKED ITEM**
+
+### Accepted Architecture
+
+**AD-061 — Canonical Document Content Parser Resolution & Dispatch Foundation**
+
+Status:
+
+**ACCEPTED — GIT DURABILITY PENDING**
+
+Resolver:
+
+`DocumentContentParserResolver`
+
+Dispatcher:
+
+`DispatchingDocumentContentParser`
+
+Resolution key:
+
+`DocumentContentMediaType`
+
+RFC-074 Application service:
+
+**UNCHANGED**
+
+### Accepted Boundary
+
+RFC-075 owns parser resolution and dispatch only.
+
+No concrete parser, registry-backed resolver, parser registration,
+fallback/sniffing, OCR, chunking, Document Library, automatic Knowledge
+ingestion, Search/Vector/Graph/RAG/LLM, Runtime/Composition/Bootstrap, API,
+migration or production-security capability is promoted.
+
+### Gate State
+
+Acceptance authoring:
+
+**COMPLETE — REVIEW PENDING**
+
+Acceptance staging:
+
+**NOT PERFORMED**
+
+Acceptance commit:
+
+**NOT YET CREATED**
+
+Acceptance push:
+
+**NOT PERFORMED**
+
+Implementation:
+
+**NOT AUTHORIZED**
+
+### Next Gate
+
+Chief Architect AD-061 architecture-acceptance review.

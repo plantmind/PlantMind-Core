@@ -9642,3 +9642,122 @@ AD-061:
 Implementation:
 
 **NOT AUTHORIZED**
+
+
+---
+
+## 2026-08-30 — RFC-075 / AD-061 Architecture Candidate Authored
+
+### Durable Entry
+
+RFC-075 selection commit:
+
+`66a252310b14d868cfac90d3f23a2f7bc269fe64`
+
+Selection Git durability:
+
+**PASS — LOCAL / TRACKING / REMOTE EXACT**
+
+### Candidate Architecture
+
+**AD-061 — Canonical Document Content Parser Resolution & Dispatch Foundation**
+
+Status:
+
+**PROPOSED — REVIEW PENDING**
+
+Candidate direction:
+
+**RESOLVER PORT + DISPATCHING PARSER BEHIND EXISTING RFC-074 PARSER PORT**
+
+Canonical resolution input:
+
+`DocumentContentMediaType`
+
+RFC-074 Application service:
+
+**UNCHANGED**
+
+### Ownership
+
+RFC-073 owns verified content access and payload lifetime.
+
+RFC-074 owns parsing Application orchestration and result-type validation.
+
+RFC-075 candidate owns resolution and dispatch only.
+
+### Registry Integrity
+
+No new generic registry is proposed.
+
+AD-006 Generic Registry / Plugin Registry / Service Registry responsibilities
+remain unchanged.
+
+Registry-backed resolution and controlled registration remain deferred.
+
+### Preserved Deferrals
+
+No concrete parser, OCR, chunking, Document Library, automatic Knowledge
+ingestion, Search/Vector/Graph/RAG/LLM, Runtime/Composition/Bootstrap,
+API, migration or production-security capability is authorized.
+
+### Gate State
+
+Architecture authoring:
+
+**COMPLETE — REVIEW PENDING**
+
+Architecture acceptance:
+
+**NOT PERFORMED**
+
+Implementation:
+
+**NOT AUTHORIZED**
+
+### Next Exact Action
+
+Chief Architect review of the complete RFC-075 / AD-061 architecture candidate.
+
+
+---
+
+## 2026-08-30 — RFC-075 / AD-061 Architecture Acceptance Authored
+
+RFC-075 durable selection:
+
+`66a252310b14d868cfac90d3f23a2f7bc269fe64`
+
+Architecture review:
+
+**PASS**
+
+Accepted Architecture Decision:
+
+**AD-061 — Canonical Document Content Parser Resolution & Dispatch Foundation**
+
+Status:
+
+**ACCEPTED — GIT DURABILITY PENDING**
+
+Accepted shape:
+
+**RESOLVER PORT + DISPATCHING PARSER BEHIND RFC-074 PARSER PORT**
+
+Resolution identity:
+
+`DocumentContentMediaType`
+
+RFC-074 Application service:
+
+**UNCHANGED**
+
+No Generic Registry, Plugin Registry or Service Registry responsibility is
+duplicated.
+
+Concrete parser technology and registry-backed parser resolution remain
+deferred.
+
+Acceptance authoring is complete locally.
+
+No staging, commit, push or implementation has been performed.

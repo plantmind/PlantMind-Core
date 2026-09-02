@@ -7,11 +7,14 @@
 | Project | PlantMind PM-001 |
 | Branch | `feature/engineering-platform` |
 | Last Fully Closed RFC | RFC-074 — Canonical Document Content Parsing Application Boundary — Fully Closed and Source-of-Truth Reconciled |
-| Active RFC | RFC-075 — Canonical Document Content Parser Resolution & Dispatch Foundation — Selection Authored / Review Pending |
-| Selected Architecture Workstream | RFC-075 — Canonical Document Content Parser Resolution & Dispatch Foundation — Selection Authored / Review Pending |
-| Proposed Successor RFC | RFC-075 — Canonical Document Content Parser Resolution & Dispatch Foundation — selected candidate / review pending |
-| RFC-075 Selection State | Authored / Review Pending |
+| Active RFC | RFC-075 — Canonical Document Content Parser Resolution & Dispatch Foundation — AD-061 Accepted / Git Durability Pending |
+| Selected Architecture Workstream | RFC-075 — Canonical Document Content Parser Resolution & Dispatch Foundation — Selection Committed / Pushed / Exact Identity Verified |
+| Proposed Successor RFC | None — RFC-075 is the selected active architecture workstream |
+| RFC-075 Selection State | Durable — Committed, Pushed and Exact Identity Verified |
 | RFC-075 Predecessor Baseline | `a86ce4534174e8b815313e2205fa18ecb8f5ef04` — RFC-074 terminal closure |
+| RFC-075 Selection Commit | `66a252310b14d868cfac90d3f23a2f7bc269fe64` — committed / pushed / exact identity verified |
+| RFC-075 Architecture Decision Candidate | AD-061 — Accepted / Git Durability Pending |
+| RFC-075 Architecture Contract State | Accepted / Architecture Review Passed / Git Durability Pending |
 | Architecture Decision | AD-060 — Accepted / Committed / Pushed / Exact Identity Verified |
 | RFC-074 Selection State | Durable — Committed, Pushed and Exact Identity Verified |
 | RFC-074 Selection Commit | `b5d1e7fe434378ac7ee90912ac40932d5c5451eb` — committed / pushed / exact identity verified |
@@ -82,7 +85,7 @@
 | Alembic Head | `0005` |
 | Authoritative Environment | `PlantMind-Core/.venv` |
 | RFC-069 State | Fully Closed and Source-of-Truth Reconciled |
-| Successor RFC Selection | RFC-075 — Authored / Review Pending |
+| Successor RFC Selection | RFC-075 — Committed / Pushed / Exact Identity Verified |
 ## Recent Engineering Sequence
 
 - RFC-025 — Core Plugin Framework
@@ -5146,3 +5149,147 @@ Implementation:
 ### Next Exact Action
 
 Review RFC-075 successor selection before staging.
+
+
+---
+
+## RFC-075 / AD-061 Architecture Candidate Handoff
+
+### Durable Anchor
+
+RFC-075 selection:
+
+`66a252310b14d868cfac90d3f23a2f7bc269fe64`
+
+Selection Local / Tracking / Remote:
+
+**EXACT**
+
+### Candidate Architecture
+
+**AD-061 — Canonical Document Content Parser Resolution & Dispatch Foundation**
+
+Status:
+
+**PROPOSED — REVIEW PENDING**
+
+### Proposed Technical Shape
+
+Resolver:
+
+`app.document_parsing.resolver.DocumentContentParserResolver`
+
+Dispatcher:
+
+`app.document_parsing.dispatching_parser.DispatchingDocumentContentParser`
+
+Dispatcher remains an implementation of:
+
+`DocumentContentParser`
+
+Therefore RFC-074 Application service remains unchanged.
+
+Resolution uses only canonical:
+
+`DocumentContentMediaType`
+
+### Preserved Ownership
+
+RFC-073:
+
+**PAYLOAD ACCESS / LIFETIME**
+
+RFC-074:
+
+**APPLICATION PARSING ORCHESTRATION / RESULT VALIDATION**
+
+RFC-075 candidate:
+
+**PARSER RESOLUTION / DISPATCH**
+
+RFC-065:
+
+**PREPARED KNOWLEDGE INGESTION**
+
+### Registry Boundary
+
+No new general-purpose registry.
+
+No Plugin Registry or Service Registry modification.
+
+No Generic Registry responsibility duplication.
+
+Registry-backed parser resolution remains deferred.
+
+### Current Handoff State
+
+Architecture authoring:
+
+**COMPLETE — REVIEW PENDING**
+
+Acceptance:
+
+**NOT PERFORMED**
+
+Implementation:
+
+**NOT AUTHORIZED**
+
+No production/test/schema/runtime mutation is part of this authoring.
+
+### Next Exact Action
+
+Review the RFC-075 / AD-061 architecture candidate before acceptance authoring.
+
+
+---
+
+## RFC-075 / AD-061 Architecture Acceptance Handoff
+
+RFC-075 selection:
+
+`66a252310b14d868cfac90d3f23a2f7bc269fe64`
+
+Selection Git durability:
+
+**EXACT / VERIFIED**
+
+Architecture review:
+
+**PASS**
+
+Architecture Decision:
+
+**AD-061 — ACCEPTED / GIT DURABILITY PENDING**
+
+Accepted architecture:
+
+**RESOLVER PORT + DISPATCHING PARSER**
+
+Canonical resolution identity:
+
+`DocumentContentMediaType`
+
+RFC-073 continues to own payload access/lifetime.
+
+RFC-074 continues to own Application orchestration and result validation.
+
+RFC-075 owns resolution/dispatch only.
+
+RFC-065 continues to own prepared Knowledge ingestion.
+
+No concrete parser, registry-backed resolver, parser registration,
+Runtime/Composition/Bootstrap, schema/migration or downstream AI capability
+is promoted.
+
+Acceptance authoring:
+
+**COMPLETE — REVIEW PENDING**
+
+Implementation:
+
+**NOT AUTHORIZED**
+
+Next action:
+
+Review AD-061 acceptance before staging.

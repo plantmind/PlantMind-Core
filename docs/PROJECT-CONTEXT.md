@@ -10,11 +10,14 @@
 | Deployment Model | On-Premise |
 | Development Branch | `feature/engineering-platform` |
 | Last Fully Closed RFC | RFC-074 — Canonical Document Content Parsing Application Boundary — Fully Closed and Source-of-Truth Reconciled |
-| Active RFC | RFC-075 — Canonical Document Content Parser Resolution & Dispatch Foundation — Selection Authored / Review Pending |
-| Selected Architecture Workstream | RFC-075 — Canonical Document Content Parser Resolution & Dispatch Foundation — Selection Authored / Review Pending |
-| Proposed Successor RFC | RFC-075 — Canonical Document Content Parser Resolution & Dispatch Foundation — selected candidate / review pending |
-| RFC-075 Selection State | Authored / Review Pending |
+| Active RFC | RFC-075 — Canonical Document Content Parser Resolution & Dispatch Foundation — AD-061 Accepted / Git Durability Pending |
+| Selected Architecture Workstream | RFC-075 — Canonical Document Content Parser Resolution & Dispatch Foundation — Selection Committed / Pushed / Exact Identity Verified |
+| Proposed Successor RFC | None — RFC-075 is the selected active architecture workstream |
+| RFC-075 Selection State | Durable — Committed, Pushed and Exact Identity Verified |
 | RFC-075 Predecessor Baseline | `a86ce4534174e8b815313e2205fa18ecb8f5ef04` — RFC-074 terminal closure |
+| RFC-075 Selection Commit | `66a252310b14d868cfac90d3f23a2f7bc269fe64` — committed / pushed / exact identity verified |
+| RFC-075 Architecture Decision Candidate | AD-061 — Accepted / Git Durability Pending |
+| RFC-075 Architecture Contract State | Accepted / Architecture Review Passed / Git Durability Pending |
 | RFC-069 Selection Commit | `5d7794352029576e0b62c2ac8cbfa248fe11961d` |
 | RFC-070 Selection Commit | `13cfccc08d8c0a3b891990d38edaf9fc48874a5e` |
 | Architecture Decision | AD-060 — Accepted / Committed / Pushed / Exact Identity Verified |
@@ -5820,3 +5823,133 @@ Implementation authorization:
 ### Next Exact Action
 
 Chief Architect review of RFC-075 successor selection.
+
+
+---
+
+## RFC-075 / AD-061 Architecture Candidate State
+
+### Workstream
+
+**RFC-075 — Canonical Document Content Parser Resolution & Dispatch Foundation**
+
+Selection commit:
+
+`66a252310b14d868cfac90d3f23a2f7bc269fe64`
+
+Selection Git durability:
+
+**VERIFIED**
+
+### Architecture Candidate
+
+**AD-061 — Canonical Document Content Parser Resolution & Dispatch Foundation**
+
+Status:
+
+**PROPOSED — REVIEW PENDING**
+
+### Proposed Boundary
+
+RFC-075 introduces a canonical parser resolver port and a dispatching parser
+behind the existing RFC-074 `DocumentContentParser` dependency.
+
+Resolution uses only:
+
+`DocumentContentMediaType`
+
+The RFC-074 Application service remains unchanged.
+
+### Responsibility Model
+
+- RFC-073: verified binary-content access and payload lifetime;
+- RFC-074: Application parsing orchestration and `str` result validation;
+- RFC-075 candidate: parser resolution and dispatch only;
+- RFC-065: prepared Document-to-Knowledge ingestion.
+
+### Registry Preservation
+
+No parallel Generic Registry is created.
+
+Existing AD-006 registry responsibilities remain unchanged.
+
+Registry-backed resolution remains deferred.
+
+### Technical Baseline
+
+Full PlantMind regression baseline:
+
+**1054 passed**
+
+Canonical Alembic head:
+
+`0005`
+
+### Architecture Gate
+
+Architecture candidate:
+
+**AUTHORED — REVIEW PENDING**
+
+Acceptance:
+
+**NOT PERFORMED**
+
+Implementation authorization:
+
+**NO**
+
+### Next Exact Action
+
+Chief Architect RFC-075 / AD-061 architecture-contract review.
+
+
+---
+
+## RFC-075 / AD-061 Architecture Acceptance State
+
+RFC-075 selection commit:
+
+`66a252310b14d868cfac90d3f23a2f7bc269fe64`
+
+Selection Git durability:
+
+**VERIFIED**
+
+Architecture review:
+
+**PASS — NO REMAINING REFINE**
+
+Architecture Decision:
+
+**AD-061 — ACCEPTED / GIT DURABILITY PENDING**
+
+Accepted boundary:
+
+**PARSER RESOLUTION / DISPATCH ONLY**
+
+Canonical resolution input:
+
+`DocumentContentMediaType`
+
+RFC-074 Application service remains unchanged.
+
+No new Generic Registry or Runtime/Composition/Bootstrap responsibility is
+introduced.
+
+Full regression baseline remains:
+
+**1054 passed**
+
+Alembic remains:
+
+`0005`
+
+Implementation:
+
+**NOT AUTHORIZED**
+
+Next gate:
+
+Review the complete five-document AD-061 architecture acceptance candidate
+before staging.

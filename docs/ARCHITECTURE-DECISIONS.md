@@ -20278,3 +20278,548 @@ Implementation:
 Review this RFC-075 successor selection before staging.
 
 Do not author AD-061 until selection Git durability is complete.
+
+
+---
+
+# AD-061 — Canonical Document Content Parser Resolution & Dispatch Foundation
+
+## Status
+
+**ACCEPTED — GIT DURABILITY PENDING**
+
+Related workstream:
+
+**RFC-075 — Canonical Document Content Parser Resolution & Dispatch Foundation**
+
+Durable RFC-075 selection commit:
+
+`66a252310b14d868cfac90d3f23a2f7bc269fe64`
+
+Latest Git-durable Accepted Architecture Decision remains:
+
+**AD-060 — ACCEPTED / GIT DURABLE**
+
+AD-061 is now Accepted locally, with Git durability still pending.
+
+This acceptance does not amend, replace, supersede or rewrite AD-060.
+
+## Context
+
+RFC-074 established:
+
+- canonical `DocumentContentParser`;
+- canonical `DocumentContentParsingApplicationService`;
+- verified payload borrowing inside the RFC-073 access context;
+- exact `str` result validation at the RFC-074 Application boundary.
+
+RFC-074 deliberately deferred:
+
+- parser registry/resolution;
+- parser dispatch;
+- concrete parser technologies;
+- parser fallback;
+- OCR;
+- chunking;
+- Document Library;
+- downstream RAG capabilities.
+
+Canonical Document Content already owns an immutable
+`DocumentContentMediaType` value object.
+
+That value object is the only accepted media-type identity for RFC-075.
+
+RFC-075 must not invent a second filename-based, extension-based,
+`source_reference`-based or payload-sniffing identity system.
+
+## Decision Candidate
+
+RFC-075 SHALL introduce a persistence-neutral parser-resolution port:
+
+`app.document_parsing.resolver.DocumentContentParserResolver`
+
+with conceptual contract:
+
+`resolve(*, media_type: DocumentContentMediaType) -> DocumentContentParser`
+
+RFC-075 SHALL also introduce a canonical dispatching parser:
+
+`app.document_parsing.dispatching_parser.DispatchingDocumentContentParser`
+
+which implements the existing:
+
+`DocumentContentParser`
+
+contract.
+
+The RFC-074 Application service SHALL remain unchanged.
+
+The dispatching parser therefore remains behind the existing RFC-074 parser
+dependency rather than becoming a new Application-service dependency.
+
+## Canonical Flow
+
+The successful conceptual flow SHALL be:
+
+**RFC-074 APPLICATION → DISPATCHING PARSER → RESOLVE BY CANONICAL MEDIA TYPE → DELEGATE PARSER → RETURN EXACT RESULT**
+
+RFC-073 continues to own payload access and lifetime.
+
+RFC-074 continues to own Application orchestration and parser-result type
+validation.
+
+RFC-075 owns only parser resolution and dispatch.
+
+## Resolver Contract
+
+`DocumentContentParserResolver` SHALL receive exactly:
+
+`DocumentContentMediaType`
+
+for parser selection.
+
+It SHALL NOT receive:
+
+- filename;
+- file extension;
+- `source_reference`;
+- binary payload;
+- stream;
+- document title;
+- Document Library metadata;
+- Knowledge metadata.
+
+Resolution semantics SHALL be exact against canonical media-type identity.
+
+RFC-075 SHALL NOT introduce:
+
+- wildcard media types;
+- suffix matching;
+- aliases;
+- ordered fallback;
+- default parser;
+- parser chaining;
+- content sniffing;
+- extension inference;
+- filename inference.
+
+The canonical `DocumentContentMediaType` normalization already remains the
+single normalization authority.
+
+RFC-075 SHALL NOT duplicate or reinterpret its normalization rules.
+
+## Unsupported Media Type
+
+Failure to resolve a parser for the canonical media type SHALL use the existing
+public parser-contract failure:
+
+`DocumentContentParserUnsupportedMediaTypeError`
+
+RFC-075 SHALL NOT introduce a competing public unsupported-media-type error.
+
+The unresolved case SHALL fail closed.
+
+No fallback parser SHALL be attempted.
+
+## Dispatching Parser Contract
+
+`DispatchingDocumentContentParser` SHALL:
+
+1. receive the exact RFC-074 `DocumentContentDescriptor`;
+2. receive the exact borrowed RFC-073 payload;
+3. pass `descriptor.media_type` to the resolver;
+4. receive exactly one resolved `DocumentContentParser`;
+5. invoke that parser exactly once;
+6. pass the original descriptor object unchanged;
+7. pass the original payload object unchanged;
+8. return the delegate parser result unchanged.
+
+The dispatcher SHALL NOT:
+
+- read payload bytes itself;
+- close the payload;
+- seek the payload;
+- call `tell()`;
+- call `fileno()`;
+- retain the payload;
+- cache the payload;
+- persist the payload;
+- replace the payload;
+- reopen content;
+- modify the descriptor;
+- normalize parser text;
+- coerce parser output;
+- persist parser output.
+
+## Result Validation Ownership
+
+RFC-074 remains the owner of:
+
+**NON-STR → TYPEERROR / NO COERCION**
+
+Therefore the RFC-075 dispatcher SHALL NOT duplicate RFC-074 result-type
+validation.
+
+A delegate return value is passed unchanged to RFC-074.
+
+RFC-074 remains responsible for rejecting a non-`str` result.
+
+Empty `str` remains valid.
+
+## Failure Propagation
+
+The existing parser failures remain canonical:
+
+- `DocumentContentParserUnsupportedMediaTypeError`;
+- `DocumentContentParserInvalidContentError`.
+
+A delegate parser's accepted contract failures SHALL propagate unchanged.
+
+Operational parser failures SHALL propagate unchanged.
+
+RFC-075 SHALL NOT introduce a generic catch-and-wrap parser failure.
+
+## Existing Registry Architecture
+
+AD-006 established distinct responsibilities for:
+
+- Generic Registry;
+- Plugin Registry;
+- Service Registry.
+
+RFC-075 SHALL NOT create another general-purpose registry framework.
+
+RFC-075 SHALL NOT modify or absorb responsibility from:
+
+- `Registry[T]`;
+- `PluginRegistry`;
+- `ServiceRegistry`.
+
+This RFC does not decide registration lifecycle, parser factory ownership,
+runtime registration, Composition Root wiring or automatic discovery.
+
+A future registry-backed resolver may reuse the existing Generic Registry
+mechanism only through a separately reviewed adapter/registration decision.
+
+RFC-075 itself introduces no parallel generic registry.
+
+## Existing RFC Ownership Preservation
+
+RFC-073 remains:
+
+**canonical verified Document Content access and payload-lifetime owner**
+
+RFC-074 remains:
+
+**canonical persistence-neutral parsing Application boundary**
+
+RFC-065 remains:
+
+**canonical prepared Document-to-Knowledge ingestion boundary**
+
+RFC-075 SHALL NOT invoke RFC-065 automatically.
+
+The legacy empty:
+
+`app.knowledge.document_parser`
+
+remains unpromoted and SHALL NOT become canonical.
+
+Existing legacy RAG, semantic-search, graph or vector-memory modules are not
+promoted by RFC-075.
+
+## Persistence and Runtime
+
+RFC-075 introduces:
+
+- no database table;
+- no repository;
+- no persisted parser catalog;
+- no Alembic migration;
+- no filesystem discovery;
+- no dynamic package scanning;
+- no Runtime wiring;
+- no Composition Root wiring;
+- no Bootstrap wiring;
+- no API endpoint.
+
+Canonical Alembic head remains:
+
+`0005`
+
+## Concrete Parser Technology
+
+RFC-075 SHALL NOT select or implement:
+
+- PDF parser;
+- DOCX parser;
+- spreadsheet parser;
+- plain-text parser;
+- OCR engine;
+- image parser;
+- vendor-specific parser SDK.
+
+Concrete parser technology remains separately governed.
+
+## Initial Technical Surface After Acceptance
+
+If AD-061 is later Accepted and Git Durable, the initial RFC-075 technical
+implementation may be limited to new files:
+
+- `backend/app/document_parsing/resolver.py`;
+- `backend/app/document_parsing/dispatching_parser.py`;
+- `tests/document_parsing/test_document_content_parser_resolution.py`;
+- `tests/document_parsing/test_document_content_parser_resolution_architecture.py`.
+
+RFC-075 technical implementation SHALL NOT require modification of:
+
+- `backend/app/document_parsing/parser.py`;
+- `backend/app/services/document_content_parsing_application_service.py`;
+- RFC-073 content-access implementation;
+- database schema or migrations.
+
+Any required change outside the accepted initial surface must return to
+architecture review before implementation.
+
+## Required TDD Evidence
+
+Focused RFC-075 tests SHALL prove at minimum:
+
+1. resolver contract is persistence-neutral;
+2. resolver selection input is canonical `DocumentContentMediaType`;
+3. dispatcher implements `DocumentContentParser`;
+4. dispatcher resolves from `descriptor.media_type`;
+5. resolver is called exactly once;
+6. resolved parser is called exactly once;
+7. descriptor object identity is preserved;
+8. payload object identity is preserved;
+9. dispatcher itself performs no payload lifecycle operation;
+10. unresolved canonical media type fails with
+    `DocumentContentParserUnsupportedMediaTypeError`;
+11. no fallback parser is attempted;
+12. `DocumentContentParserInvalidContentError` propagates unchanged;
+13. operational parser failures propagate unchanged;
+14. empty text passes unchanged;
+15. non-`str` delegate output is not coerced by RFC-075 and remains rejected by
+    the existing RFC-074 Application boundary;
+16. existing RFC-074 Application service remains unchanged;
+17. no Generic Registry, Plugin Registry, Service Registry, Runtime,
+    Composition or Bootstrap ownership is duplicated;
+18. no concrete parser technology is introduced.
+
+## Explicit Deferrals
+
+Outside RFC-075:
+
+- registry-backed resolver adapter;
+- controlled parser registration;
+- parser factories;
+- parser lifecycle;
+- parser discovery;
+- concrete parser adapters;
+- media-type aliases;
+- fallback chains;
+- OCR;
+- metadata/table/page extraction;
+- chunking;
+- parsed-result persistence;
+- Document Library;
+- automatic Knowledge ingestion;
+- Search;
+- Vector;
+- Graph;
+- RAG;
+- LLM;
+- AI Agents;
+- Runtime / Composition / Bootstrap integration;
+- HTTP/API exposure;
+- schema/migrations;
+- parser sandboxing;
+- production-security readiness.
+
+## Architecture Gate
+
+AD-061:
+
+**ACCEPTED — GIT DURABILITY PENDING**
+
+Architecture review:
+
+**PASS — NO REMAINING REFINE / NO BLOCKED ITEM**
+
+Implementation:
+
+**NOT AUTHORIZED**
+
+No production or test code change is authorized before accepted-contract
+Git durability and the separate implementation-entry gate.
+
+
+---
+
+## AD-061 Architecture Acceptance Gate
+
+**Record Classification: Architecture Acceptance Governance Record**
+
+Related workstream:
+
+**RFC-075 — Canonical Document Content Parser Resolution & Dispatch Foundation**
+
+Durable selection commit:
+
+`66a252310b14d868cfac90d3f23a2f7bc269fe64`
+
+Architecture review:
+
+**PASS — NO REMAINING REFINE / NO BLOCKED ITEM**
+
+Architecture Decision:
+
+**AD-061 — ACCEPTED / GIT DURABILITY PENDING**
+
+### Accepted Contract
+
+RFC-075 establishes:
+
+- persistence-neutral `DocumentContentParserResolver`;
+- canonical `DispatchingDocumentContentParser`;
+- resolution exclusively by canonical `DocumentContentMediaType`;
+- dispatch behind the existing RFC-074 `DocumentContentParser` dependency;
+- no change to RFC-074 Application service.
+
+Accepted conceptual resolver contract:
+
+`resolve(*, media_type: DocumentContentMediaType) -> DocumentContentParser`
+
+Accepted flow:
+
+**RFC-074 APPLICATION → DISPATCHING PARSER → RESOLVE BY CANONICAL MEDIA TYPE → DELEGATE PARSER → RETURN EXACT RESULT**
+
+### Accepted Ownership
+
+RFC-073:
+
+**VERIFIED CONTENT ACCESS / PAYLOAD LIFETIME**
+
+RFC-074:
+
+**APPLICATION PARSING ORCHESTRATION / RESULT-TYPE VALIDATION**
+
+RFC-075:
+
+**PARSER RESOLUTION / DISPATCH ONLY**
+
+RFC-065:
+
+**PREPARED DOCUMENT-TO-KNOWLEDGE INGESTION**
+
+### Accepted Resolution Rules
+
+Resolution is exact against canonical media type.
+
+No:
+
+- filename inference;
+- extension inference;
+- source-reference inference;
+- payload sniffing;
+- wildcard resolution;
+- aliases;
+- fallback;
+- default parser;
+- parser chain.
+
+Unresolved canonical media type fails closed using:
+
+`DocumentContentParserUnsupportedMediaTypeError`
+
+No competing public unsupported-media-type error is introduced.
+
+### Accepted Dispatch Rules
+
+The dispatcher:
+
+- resolves exactly once;
+- invokes exactly one resolved parser once;
+- preserves descriptor identity;
+- preserves payload identity;
+- returns delegate result unchanged;
+- owns no payload lifecycle;
+- performs no text normalization/coercion;
+- performs no persistence.
+
+RFC-074 retains:
+
+**NON-STR → TYPEERROR / NO COERCION**
+
+### Registry Boundary
+
+AD-006 remains unchanged.
+
+RFC-075 introduces no new general-purpose registry and changes no:
+
+- Generic Registry;
+- Plugin Registry;
+- Service Registry.
+
+Registry-backed resolver implementation and parser registration remain
+separately governed.
+
+### Accepted Initial Technical Surface
+
+After accepted-contract Git durability and a separate implementation-entry
+gate, RFC-075 implementation may be limited to:
+
+- `backend/app/document_parsing/resolver.py`;
+- `backend/app/document_parsing/dispatching_parser.py`;
+- `tests/document_parsing/test_document_content_parser_resolution.py`;
+- `tests/document_parsing/test_document_content_parser_resolution_architecture.py`.
+
+No modification is authorized to:
+
+- `backend/app/document_parsing/parser.py`;
+- `backend/app/services/document_content_parsing_application_service.py`;
+- RFC-073 content-access implementation;
+- database schema or migrations.
+
+### Preserved Deferrals
+
+Concrete parsers, parser registration/factories/lifecycle/discovery,
+registry-backed resolver adapter, fallback, OCR, extraction models, chunking,
+parsed-result persistence, Document Library, automatic Knowledge ingestion,
+Search/Vector/Graph/RAG/LLM, AI Agents, Runtime/Composition/Bootstrap,
+HTTP/API, schema/migrations, parser sandboxing and production-security
+readiness remain outside RFC-075.
+
+Canonical Alembic head remains:
+
+`0005`
+
+### Acceptance Gate State
+
+AD-061:
+
+**ACCEPTED — GIT DURABILITY PENDING**
+
+Acceptance authoring:
+
+**COMPLETE — REVIEW PENDING**
+
+Acceptance staging:
+
+**NOT PERFORMED**
+
+Acceptance commit:
+
+**NOT YET CREATED**
+
+Acceptance push:
+
+**NOT PERFORMED**
+
+Implementation:
+
+**NOT AUTHORIZED**
+
+Do not begin implementation before AD-061 accepted-contract Git durability and
+a separate implementation-entry gate.
