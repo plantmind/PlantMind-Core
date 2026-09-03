@@ -20823,3 +20823,203 @@ Implementation:
 
 Do not begin implementation before AD-061 accepted-contract Git durability and
 a separate implementation-entry gate.
+
+
+---
+
+## RFC-075 / AD-061 Engineering Closure Record
+
+**Record Classification: Non-Decision Engineering Closure Governance Record**
+
+This record creates no new Architecture Decision.
+
+It does not amend, replace, supersede or rewrite AD-061.
+
+AD-061 remains:
+
+**ACCEPTED / COMMITTED / PUSHED / EXACT IDENTITY VERIFIED**
+
+### Durable RFC-075 Commit Chain
+
+Selection commit:
+
+`66a252310b14d868cfac90d3f23a2f7bc269fe64`
+
+Accepted-contract commit:
+
+`9c2ea1afce195f75ae4898ad05187fa5de74a9c9`
+
+Technical implementation commit:
+
+`336ddbd414ded52cecec963506cf9cccb3bd96e5`
+
+Technical implementation parent:
+
+`9c2ea1afce195f75ae4898ad05187fa5de74a9c9`
+
+Technical Git durability:
+
+**PASS — LOCAL / TRACKING / REMOTE EXACT**
+
+Working tree at engineering-closure entry:
+
+**CLEAN**
+
+### Delivered Technical Boundary
+
+RFC-075 establishes the persistence-neutral parser-resolution port:
+
+`app.document_parsing.resolver.DocumentContentParserResolver`
+
+and the canonical dispatching parser:
+
+`app.document_parsing.dispatching_parser.DispatchingDocumentContentParser`
+
+The accepted successful flow is:
+
+**RFC-074 APPLICATION → DISPATCHING PARSER → RESOLVE BY CANONICAL MEDIA TYPE → DELEGATE PARSER → RETURN EXACT RESULT**
+
+Resolution uses only:
+
+`DocumentContentMediaType`
+
+The dispatcher remains behind the existing RFC-074:
+
+`DocumentContentParser`
+
+dependency.
+
+RFC-074 Application service remains byte-identical.
+
+### Verified Runtime Contract
+
+The RFC-075 implementation:
+
+- resolves using the exact `descriptor.media_type` object;
+- invokes the resolver exactly once;
+- invokes exactly one resolved parser exactly once;
+- preserves descriptor object identity;
+- preserves borrowed payload object identity;
+- performs no payload read, seek, tell, fileno or close operation;
+- performs no payload retention, caching, replacement or persistence;
+- returns the delegate parser result unchanged;
+- performs no text normalization or coercion;
+- propagates parser contract failures unchanged;
+- propagates operational parser failures unchanged;
+- introduces no fallback, wildcard, alias, filename inference,
+  extension inference or content sniffing.
+
+RFC-074 retains ownership of:
+
+**NON-STR → TYPEERROR / NO COERCION**
+
+### Verified Engineering Evidence
+
+Focused RFC-075 verification:
+
+**24 passed**
+
+RFC-074 plus RFC-075 impacted verification:
+
+**50 passed**
+
+Full PlantMind regression:
+
+**1078 passed**
+
+Canonical Alembic head:
+
+`0005`
+
+Reviewed four-file patch SHA-256:
+
+`90c620b06bbaee949e9a550d12a2fd5e5f8e11e27c22d090cd3b57daebe338fa`
+
+Native Git diff SHA-256:
+
+`abaacf3965286e8622553ac6dd6b5b05be2ddfb4ae7b9e394898871e11a256d9`
+
+### Preserved Responsibility Boundaries
+
+RFC-073 remains the verified Document Content access and payload-lifetime owner.
+
+RFC-074 remains the canonical parsing Application boundary and result-type
+validation owner.
+
+RFC-075 owns parser resolution and dispatch only.
+
+RFC-065 remains the prepared Document-to-Knowledge ingestion owner.
+
+AD-006 Generic Registry, Plugin Registry and Service Registry responsibilities
+remain unchanged.
+
+No registry-backed resolver, parser registration, parser factory, parser
+lifecycle or automatic parser discovery is introduced.
+
+### Preserved Deferrals
+
+RFC-075 closure does not promote:
+
+- concrete PDF, DOCX, spreadsheet, text, image or OCR parsers;
+- parser aliases, fallback chains or default parsers;
+- metadata, page, table or structure extraction;
+- chunking;
+- parsed-result persistence;
+- Document Library behavior;
+- automatic Knowledge ingestion;
+- Search, Vector, Graph, RAG or LLM capabilities;
+- AI Agents;
+- Runtime, Composition Root or Bootstrap wiring;
+- HTTP/API exposure;
+- schema or Alembic migration changes;
+- parser sandboxing;
+- production-security or deployment-readiness claims.
+
+The legacy `app.knowledge.document_parser` seam remains unpromoted.
+
+### Closure Governance State
+
+Technical implementation:
+
+**COMPLETE / COMMITTED / PUSHED / EXACT IDENTITY VERIFIED**
+
+Engineering closure documentation:
+
+**AUTHORED — REVIEW PENDING**
+
+Engineering closure staging:
+
+**NOT PERFORMED**
+
+Engineering closure commit:
+
+**NOT YET CREATED**
+
+Engineering closure push:
+
+**NOT PERFORMED**
+
+RFC-075 terminal closure:
+
+**NOT YET CLAIMED**
+
+Post-closure Source-of-Truth reconciliation:
+
+**PENDING — SEPARATE GATE AFTER DURABLE ENGINEERING CLOSURE**
+
+Last fully closed RFC remains:
+
+**RFC-074**
+
+Successor workstream:
+
+**NONE SELECTED / NOT AUTHORIZED**
+
+### Next Exact Action
+
+Review the complete five-document RFC-075 engineering closure documentation.
+
+Do not stage until that review passes.
+
+Do not claim RFC-075 terminal closure before durable engineering closure,
+post-closure reconciliation and final reconciliation verification.

@@ -9761,3 +9761,107 @@ deferred.
 Acceptance authoring is complete locally.
 
 No staging, commit, push or implementation has been performed.
+
+
+---
+
+## 2026-09-03 — RFC-075 / AD-061 Engineering Closure Documentation
+
+**Append-Only Engineering Closure Record**
+
+RFC-075 selection commit:
+
+`66a252310b14d868cfac90d3f23a2f7bc269fe64`
+
+AD-061 accepted-contract commit:
+
+`9c2ea1afce195f75ae4898ad05187fa5de74a9c9`
+
+RFC-075 technical implementation commit:
+
+`336ddbd414ded52cecec963506cf9cccb3bd96e5`
+
+Technical Git durability:
+
+**PASS — LOCAL / TRACKING / REMOTE EXACT**
+
+### Delivered Boundary
+
+RFC-075 delivered:
+
+- `DocumentContentParserResolver`;
+- `DispatchingDocumentContentParser`;
+- exact resolution by canonical `DocumentContentMediaType`;
+- dispatch behind the existing RFC-074 parser port;
+- no change to RFC-074 Application service.
+
+The dispatcher preserves descriptor and payload identity, invokes one resolver
+and one parser, and passes results and failures unchanged.
+
+### Verification
+
+Focused RFC-075:
+
+**24 passed**
+
+RFC-074 plus RFC-075 impacted:
+
+**50 passed**
+
+Full PlantMind regression:
+
+**1078 passed**
+
+Alembic:
+
+`0005`
+
+Reviewed patch SHA-256:
+
+`90c620b06bbaee949e9a550d12a2fd5e5f8e11e27c22d090cd3b57daebe338fa`
+
+Native Git diff SHA-256:
+
+`abaacf3965286e8622553ac6dd6b5b05be2ddfb4ae7b9e394898871e11a256d9`
+
+### Preserved Architecture
+
+RFC-073 payload ownership remains unchanged.
+
+RFC-074 Application orchestration and result validation remain unchanged.
+
+RFC-065 Knowledge-ingestion ownership remains unchanged.
+
+AD-006 registry responsibilities remain unchanged.
+
+No concrete parser, OCR, fallback, parser registry/registration,
+Document Library, chunking, automatic Knowledge ingestion,
+Search/Vector/Graph/RAG/LLM, Runtime/Composition/Bootstrap,
+API, schema/migration or production-readiness capability is promoted.
+
+### Closure State
+
+Engineering closure documentation:
+
+**AUTHORED — REVIEW PENDING**
+
+Engineering closure commit:
+
+**NOT YET CREATED**
+
+RFC-075 terminal closure:
+
+**NOT YET CLAIMED**
+
+Post-closure Source-of-Truth reconciliation:
+
+**PENDING**
+
+Successor:
+
+**NONE SELECTED / NOT AUTHORIZED**
+
+### Next Exact Action
+
+Review the complete five-document RFC-075 engineering closure documentation
+before staging.

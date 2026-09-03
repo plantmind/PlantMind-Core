@@ -7,15 +7,23 @@
 | Project | PlantMind PM-001 |
 | Branch | `feature/engineering-platform` |
 | Last Fully Closed RFC | RFC-074 — Canonical Document Content Parsing Application Boundary — Fully Closed and Source-of-Truth Reconciled |
-| Active RFC | RFC-075 — Canonical Document Content Parser Resolution & Dispatch Foundation — AD-061 Accepted / Git Durability Pending |
-| Selected Architecture Workstream | RFC-075 — Canonical Document Content Parser Resolution & Dispatch Foundation — Selection Committed / Pushed / Exact Identity Verified |
+| Active RFC | RFC-075 — Canonical Document Content Parser Resolution & Dispatch Foundation — Technical Implementation Git Durable / Engineering Closure Documentation Authored / Review Pending |
+| Selected Architecture Workstream | RFC-075 — Canonical Document Content Parser Resolution & Dispatch Foundation — AD-061 Accepted / Technical Implementation Git Durable |
 | Proposed Successor RFC | None — RFC-075 is the selected active architecture workstream |
 | RFC-075 Selection State | Durable — Committed, Pushed and Exact Identity Verified |
 | RFC-075 Predecessor Baseline | `a86ce4534174e8b815313e2205fa18ecb8f5ef04` — RFC-074 terminal closure |
 | RFC-075 Selection Commit | `66a252310b14d868cfac90d3f23a2f7bc269fe64` — committed / pushed / exact identity verified |
-| RFC-075 Architecture Decision Candidate | AD-061 — Accepted / Git Durability Pending |
-| RFC-075 Architecture Contract State | Accepted / Architecture Review Passed / Git Durability Pending |
-| Architecture Decision | AD-060 — Accepted / Committed / Pushed / Exact Identity Verified |
+| RFC-075 Accepted Contract Commit | `9c2ea1afce195f75ae4898ad05187fa5de74a9c9` — committed / pushed / exact identity verified |
+| RFC-075 Technical Implementation Commit | `336ddbd414ded52cecec963506cf9cccb3bd96e5` — committed / pushed / exact identity verified |
+| RFC-075 Technical Implementation State | Complete / Committed / Pushed / Exact Identity Verified |
+| RFC-075 Focused Verification | 24 passed |
+| RFC-074 + RFC-075 Impacted Verification | 50 passed |
+| RFC-075 Full Regression Baseline | 1078 passed |
+| RFC-075 Engineering Closure State | Documentation Authored / Review Pending |
+| RFC-075 Post-Closure Reconciliation | Pending — Separate Gate After Durable Engineering Closure |
+| RFC-075 Architecture Decision Candidate | AD-061 — Accepted / Committed / Pushed / Exact Identity Verified |
+| RFC-075 Architecture Contract State | Accepted / Architecture Review Passed / Committed / Pushed / Exact Identity Verified |
+| Architecture Decision | AD-061 — Accepted / Committed / Pushed / Exact Identity Verified |
 | RFC-074 Selection State | Durable — Committed, Pushed and Exact Identity Verified |
 | RFC-074 Selection Commit | `b5d1e7fe434378ac7ee90912ac40932d5c5451eb` — committed / pushed / exact identity verified |
 | RFC-074 Architecture Contract State | Accepted / Architecture Review Passed / Committed / Pushed / Exact Identity Verified |
@@ -62,7 +70,7 @@
 | RFC-069 Reconciliation Commit | `231e0cc66862c797e299fdb71ff20da8a39e8ae2` |
 | RFC-069 Reconciliation Push | Verified |
 | RFC-069 Local / Tracking / Remote Reconciliation Identity | Verified |
-| Test Baseline | 1028 passed |
+| Test Baseline | 1078 passed |
 | RFC-070 Engineering Closure Commit | `ab4438b02a8f34f83b462e3d8a86b4b5ab5d1092` |
 | RFC-070 Engineering Closure State | Complete, Pushed and Verified |
 | RFC-070 Local / Tracking / Remote Closure Identity | Verified |
@@ -5293,3 +5301,137 @@ Implementation:
 Next action:
 
 Review AD-061 acceptance before staging.
+
+
+---
+
+## RFC-075 / AD-061 Engineering Closure Handoff
+
+### Durable Anchors
+
+Selection:
+
+`66a252310b14d868cfac90d3f23a2f7bc269fe64`
+
+AD-061 accepted contract:
+
+`9c2ea1afce195f75ae4898ad05187fa5de74a9c9`
+
+Technical implementation:
+
+`336ddbd414ded52cecec963506cf9cccb3bd96e5`
+
+Technical Local / Tracking / Remote identity:
+
+**PASS — EXACT**
+
+Working tree at closure entry:
+
+**CLEAN**
+
+### Delivered Result
+
+Canonical resolver:
+
+`app.document_parsing.resolver.DocumentContentParserResolver`
+
+Canonical dispatcher:
+
+`app.document_parsing.dispatching_parser.DispatchingDocumentContentParser`
+
+Resolution identity:
+
+`DocumentContentMediaType`
+
+Canonical flow:
+
+**RFC-074 APPLICATION → DISPATCHING PARSER → RESOLVE BY CANONICAL MEDIA TYPE → DELEGATE PARSER → RETURN EXACT RESULT**
+
+RFC-074 parser contract and Application service remain unchanged.
+
+### Verification
+
+RFC-075 focused:
+
+**24 passed**
+
+RFC-074 plus RFC-075 impacted:
+
+**50 passed**
+
+Full regression:
+
+**1078 passed**
+
+Alembic:
+
+`0005`
+
+Reviewed technical patch:
+
+`90c620b06bbaee949e9a550d12a2fd5e5f8e11e27c22d090cd3b57daebe338fa`
+
+Native Git diff:
+
+`abaacf3965286e8622553ac6dd6b5b05be2ddfb4ae7b9e394898871e11a256d9`
+
+### Preserved Ownership
+
+RFC-073:
+
+**PAYLOAD ACCESS / LIFETIME**
+
+RFC-074:
+
+**APPLICATION PARSING ORCHESTRATION / RESULT VALIDATION**
+
+RFC-075:
+
+**PARSER RESOLUTION / DISPATCH**
+
+RFC-065:
+
+**PREPARED KNOWLEDGE INGESTION**
+
+No concrete parser, registry-backed resolution, parser registration,
+fallback, OCR, chunking, Document Library, downstream RAG/LLM,
+Runtime/Composition/Bootstrap, schema/migration or production-security scope
+is promoted.
+
+### Current Handoff State
+
+AD-061:
+
+**ACCEPTED / COMMITTED / PUSHED / EXACT IDENTITY VERIFIED**
+
+Technical implementation:
+
+**COMPLETE / COMMITTED / PUSHED / EXACT IDENTITY VERIFIED**
+
+Engineering closure documentation:
+
+**AUTHORED — REVIEW PENDING**
+
+Engineering closure commit:
+
+**NOT YET CREATED**
+
+RFC-075 terminal closure:
+
+**NOT YET CLAIMED**
+
+Post-closure Source-of-Truth reconciliation:
+
+**PENDING**
+
+Successor:
+
+**NONE / NOT AUTHORIZED**
+
+### Next Exact Action
+
+Review:
+
+`PLANTMIND-RFC075-CLOSURE-DOCUMENTATION-REVIEW.txt`
+
+Do not stage until closure documentation review passes.

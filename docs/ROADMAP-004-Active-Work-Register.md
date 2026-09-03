@@ -18573,3 +18573,120 @@ Implementation:
 ### Next Gate
 
 Chief Architect AD-061 architecture-acceptance review.
+
+
+---
+
+## RFC-075 Engineering Closure Gate
+
+### Workstream
+
+**RFC-075 — Canonical Document Content Parser Resolution & Dispatch Foundation**
+
+Architecture:
+
+**AD-061 — ACCEPTED / GIT DURABLE**
+
+Selection commit:
+
+`66a252310b14d868cfac90d3f23a2f7bc269fe64`
+
+Accepted-contract commit:
+
+`9c2ea1afce195f75ae4898ad05187fa5de74a9c9`
+
+Technical implementation commit:
+
+`336ddbd414ded52cecec963506cf9cccb3bd96e5`
+
+Technical Local / Tracking / Remote identity:
+
+**PASS — EXACT**
+
+### Technical Outcome
+
+Resolver:
+
+`DocumentContentParserResolver`
+
+Dispatcher:
+
+`DispatchingDocumentContentParser`
+
+Resolution key:
+
+`DocumentContentMediaType`
+
+Flow:
+
+**RFC-074 APPLICATION → DISPATCHING PARSER → RESOLVE BY CANONICAL MEDIA TYPE → DELEGATE PARSER → RETURN EXACT RESULT**
+
+Focused RFC-075:
+
+**24 passed**
+
+RFC-074 plus RFC-075 impacted:
+
+**50 passed**
+
+Full regression:
+
+**1078 passed**
+
+Alembic:
+
+`0005`
+
+### Preserved Boundary
+
+RFC-075 owns resolution/dispatch only.
+
+No concrete parser, parser registration, registry-backed resolver, fallback,
+OCR, chunking, Document Library, automatic Knowledge ingestion,
+Search/Vector/Graph/RAG/LLM, Runtime/Composition/Bootstrap,
+API, migration or production-security scope is promoted.
+
+### Current Gate
+
+Technical implementation:
+
+**COMPLETE / COMMITTED / PUSHED / EXACT IDENTITY VERIFIED**
+
+Engineering closure documentation:
+
+**AUTHORED — REVIEW PENDING**
+
+Closure staging:
+
+**NOT PERFORMED**
+
+Closure commit:
+
+**NOT YET CREATED**
+
+Closure push:
+
+**NOT PERFORMED**
+
+Post-closure Source-of-Truth reconciliation:
+
+**NOT STARTED — MUST FOLLOW DURABLE CLOSURE**
+
+RFC-075 terminal closure:
+
+**NOT YET CLAIMED**
+
+Last fully closed RFC:
+
+**RFC-074**
+
+Successor selection:
+
+**NOT AUTHORIZED**
+
+### Next Exact Action
+
+Review the RFC-075 engineering closure documentation.
+
+No staging, commit, push, reconciliation, final-verification record or
+successor selection until the closure documentation review passes.

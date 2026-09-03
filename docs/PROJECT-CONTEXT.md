@@ -10,17 +10,24 @@
 | Deployment Model | On-Premise |
 | Development Branch | `feature/engineering-platform` |
 | Last Fully Closed RFC | RFC-074 — Canonical Document Content Parsing Application Boundary — Fully Closed and Source-of-Truth Reconciled |
-| Active RFC | RFC-075 — Canonical Document Content Parser Resolution & Dispatch Foundation — AD-061 Accepted / Git Durability Pending |
-| Selected Architecture Workstream | RFC-075 — Canonical Document Content Parser Resolution & Dispatch Foundation — Selection Committed / Pushed / Exact Identity Verified |
+| Active RFC | RFC-075 — Canonical Document Content Parser Resolution & Dispatch Foundation — Technical Implementation Git Durable / Engineering Closure Documentation Authored / Review Pending |
+| Selected Architecture Workstream | RFC-075 — Canonical Document Content Parser Resolution & Dispatch Foundation — AD-061 Accepted / Technical Implementation Git Durable |
 | Proposed Successor RFC | None — RFC-075 is the selected active architecture workstream |
 | RFC-075 Selection State | Durable — Committed, Pushed and Exact Identity Verified |
 | RFC-075 Predecessor Baseline | `a86ce4534174e8b815313e2205fa18ecb8f5ef04` — RFC-074 terminal closure |
 | RFC-075 Selection Commit | `66a252310b14d868cfac90d3f23a2f7bc269fe64` — committed / pushed / exact identity verified |
-| RFC-075 Architecture Decision Candidate | AD-061 — Accepted / Git Durability Pending |
-| RFC-075 Architecture Contract State | Accepted / Architecture Review Passed / Git Durability Pending |
+| RFC-075 Accepted Contract Commit | `9c2ea1afce195f75ae4898ad05187fa5de74a9c9` — committed / pushed / exact identity verified |
+| RFC-075 Technical Implementation Commit | `336ddbd414ded52cecec963506cf9cccb3bd96e5` — committed / pushed / exact identity verified |
+| RFC-075 Technical Implementation State | Complete / Committed / Pushed / Exact Identity Verified |
+| RFC-075 Focused Verification | 24 passed |
+| RFC-074 + RFC-075 Impacted Verification | 50 passed |
+| RFC-075 Engineering Closure State | Documentation Authored / Review Pending |
+| RFC-075 Post-Closure Reconciliation | Pending — Separate Gate After Durable Engineering Closure |
+| RFC-075 Architecture Decision Candidate | AD-061 — Accepted / Committed / Pushed / Exact Identity Verified |
+| RFC-075 Architecture Contract State | Accepted / Architecture Review Passed / Committed / Pushed / Exact Identity Verified |
 | RFC-069 Selection Commit | `5d7794352029576e0b62c2ac8cbfa248fe11961d` |
 | RFC-070 Selection Commit | `13cfccc08d8c0a3b891990d38edaf9fc48874a5e` |
-| Architecture Decision | AD-060 — Accepted / Committed / Pushed / Exact Identity Verified |
+| Architecture Decision | AD-061 — Accepted / Committed / Pushed / Exact Identity Verified |
 | RFC-074 Selection State | Durable — Committed, Pushed and Exact Identity Verified |
 | RFC-074 Selection Commit | `b5d1e7fe434378ac7ee90912ac40932d5c5451eb` — committed / pushed / exact identity verified |
 | RFC-074 Architecture Contract State | Accepted / Architecture Review Passed / Committed / Pushed / Exact Identity Verified |
@@ -64,7 +71,7 @@
 | RFC-069 Engineering Closure Commit | `63790de5312c69c709e2249b56e91995a00426b6` |
 | RFC-069 Post-Closure Reconciliation Commit | `231e0cc66862c797e299fdb71ff20da8a39e8ae2` |
 | RFC-069 Reconciliation Verification | PASS — Committed, Pushed, Exact Local / Tracking / Remote Identity Verified |
-| Test Baseline | 1054 passed |
+| Test Baseline | 1078 passed |
 | RFC-070 Engineering Closure Commit | `ab4438b02a8f34f83b462e3d8a86b4b5ab5d1092` |
 | RFC-070 Engineering Closure State | Complete, Pushed and Verified |
 | RFC-070 Post-Closure Reconciliation | Complete, Pushed and Verified |
@@ -5953,3 +5960,121 @@ Next gate:
 
 Review the complete five-document AD-061 architecture acceptance candidate
 before staging.
+
+
+---
+
+## RFC-075 / AD-061 Engineering Closure State
+
+### Durable RFC-075 Chain
+
+Selection commit:
+
+`66a252310b14d868cfac90d3f23a2f7bc269fe64`
+
+Accepted-contract commit:
+
+`9c2ea1afce195f75ae4898ad05187fa5de74a9c9`
+
+Technical implementation commit:
+
+`336ddbd414ded52cecec963506cf9cccb3bd96e5`
+
+Technical Local / Tracking / Remote identity:
+
+**PASS — EXACT**
+
+Working tree at closure entry:
+
+**CLEAN**
+
+### Delivered Capability
+
+Canonical resolver port:
+
+`app.document_parsing.resolver.DocumentContentParserResolver`
+
+Canonical dispatcher:
+
+`app.document_parsing.dispatching_parser.DispatchingDocumentContentParser`
+
+Accepted flow:
+
+**RFC-074 APPLICATION → DISPATCHING PARSER → RESOLVE BY CANONICAL MEDIA TYPE → DELEGATE PARSER → RETURN EXACT RESULT**
+
+Resolution identity:
+
+`DocumentContentMediaType`
+
+RFC-074 Application service remains byte-identical.
+
+### Verified Engineering Evidence
+
+Focused RFC-075 verification:
+
+**24 passed**
+
+RFC-074 plus RFC-075 impacted verification:
+
+**50 passed**
+
+Full PlantMind regression:
+
+**1078 passed**
+
+Canonical Alembic head:
+
+`0005`
+
+Reviewed technical patch:
+
+`90c620b06bbaee949e9a550d12a2fd5e5f8e11e27c22d090cd3b57daebe338fa`
+
+Native technical diff:
+
+`abaacf3965286e8622553ac6dd6b5b05be2ddfb4ae7b9e394898871e11a256d9`
+
+### Preserved Boundaries
+
+RFC-073 owns payload access and lifetime.
+
+RFC-074 owns parsing Application orchestration and result validation.
+
+RFC-075 owns resolution and dispatch only.
+
+RFC-065 owns prepared Knowledge ingestion.
+
+No concrete parser, parser registry/registration, fallback, OCR, chunking,
+Document Library, automatic Knowledge ingestion, Search/Vector/Graph/RAG/LLM,
+Runtime/Composition/Bootstrap, API, schema/migration or production-security
+capability is promoted.
+
+### Closure Governance State
+
+Engineering closure documentation:
+
+**AUTHORED — REVIEW PENDING**
+
+Engineering closure commit:
+
+**NOT YET CREATED**
+
+RFC-075 terminal closure:
+
+**NOT YET CLAIMED**
+
+Post-closure Source-of-Truth reconciliation:
+
+**PENDING — SEPARATE GATE AFTER DURABLE CLOSURE**
+
+Last fully closed RFC:
+
+**RFC-074**
+
+Successor:
+
+**NONE SELECTED / NOT AUTHORIZED**
+
+### Next Exact Action
+
+Review RFC-075 engineering closure documentation before staging.
