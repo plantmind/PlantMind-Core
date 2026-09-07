@@ -10039,3 +10039,103 @@ durable reconciliation commit:
 
 Its own Git durability is verified externally without another RFC-075
 Source-of-Truth record.
+
+
+---
+
+## 2026-09-07 — RFC-076 / AD-062 Selection and Architecture Candidate Authored
+
+### Durable Starting Point
+
+RFC-075 terminal commit:
+
+`fc480caf5ef1ac91a24eb3177434d5daa2feed09`
+
+RFC-075 state:
+
+**FULLY CLOSED AND SOURCE-OF-TRUTH RECONCILED**
+
+### Selected Candidate
+
+**RFC-076 — Canonical Document Content Parser Binding & Registry-Backed Resolver Adapter**
+
+Architecture candidate:
+
+**AD-062 — Canonical Document Content Parser Binding & Registry-Backed Resolver Adapter**
+
+### Candidate Direction
+
+The proposed design introduces:
+
+- immutable canonical parser bindings;
+- construction-time controlled registration;
+- a registry-backed resolver adapter;
+- private `Registry[DocumentContentParserBinding]` lookup;
+- binding suppliers inside Generic Registry;
+- parser-factory invocation only after registry lookup;
+- preservation of parser-factory exceptions, including `KeyError`;
+- no new general-purpose registry.
+
+### Preserved Scope
+
+No concrete parser, OCR, fallback, Runtime/Composition/Bootstrap wiring,
+Document Library, chunking, RAG/LLM, API or migration capability is selected.
+
+### Current State
+
+Combined selection and architecture authoring:
+
+**COMPLETE — REVIEW PENDING**
+
+AD-062 acceptance:
+
+**NOT PERFORMED**
+
+Implementation:
+
+**NOT AUTHORIZED**
+
+Staging:
+
+**NOT PERFORMED**
+
+Commit:
+
+**NOT PERFORMED**
+
+Push:
+
+**NOT PERFORMED**
+
+
+---
+
+## 2026-09-08 — RFC-076 / AD-062 Combined Acceptance Authored
+
+RFC-075 terminal baseline:
+
+`fc480caf5ef1ac91a24eb3177434d5daa2feed09`
+
+RFC-076 selection review:
+
+**PASS**
+
+AD-062 V2 review:
+
+**PASS**
+
+Accepted direction:
+
+- immutable canonical parser bindings;
+- private `Registry[DocumentContentParserBinding]`;
+- binding-supplier lookup inside Generic Registry;
+- parser-factory execution after successful lookup;
+- unchanged parser-factory exception propagation;
+- no Generic Registry modification.
+
+RFC-076 selection and AD-062 acceptance are awaiting one combined Git
+durability transaction.
+
+Implementation remains:
+
+**NOT AUTHORIZED**

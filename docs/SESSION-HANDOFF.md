@@ -7,9 +7,13 @@
 | Project | PlantMind PM-001 |
 | Branch | `feature/engineering-platform` |
 | Last Fully Closed RFC | RFC-075 — Canonical Document Content Parser Resolution & Dispatch Foundation — Fully Closed and Source-of-Truth Reconciled |
-| Active RFC | None — RFC-075 Fully Closed and Source-of-Truth Reconciled; successor selection not started |
-| Selected Architecture Workstream | None — RFC-075 completed; successor not selected |
-| Proposed Successor RFC | None — successor selection has not started |
+| Active RFC | RFC-076 — Canonical Document Content Parser Binding & Registry-Backed Resolver Adapter — Selection Approved / AD-062 Accepted / Combined Git Durability Pending |
+| Selected Architecture Workstream | RFC-076 — Canonical Document Content Parser Binding & Registry-Backed Resolver Adapter — Architecture Review Passed / Acceptance Authored |
+| Proposed Successor RFC | None — RFC-076 is the selected candidate workstream |
+| RFC-076 Predecessor Baseline | `fc480caf5ef1ac91a24eb3177434d5daa2feed09` — RFC-075 terminal closure |
+| RFC-076 Selection State | Approved / Combined Acceptance Authored / Git Durability Pending |
+| RFC-076 Architecture Decision Candidate | AD-062 — Accepted / Git Durability Pending |
+| RFC-076 Implementation Authorization | No |
 | RFC-075 Selection State | Durable — Committed, Pushed and Exact Identity Verified |
 | RFC-075 Predecessor Baseline | `a86ce4534174e8b815313e2205fa18ecb8f5ef04` — RFC-074 terminal closure |
 | RFC-075 Selection Commit | `66a252310b14d868cfac90d3f23a2f7bc269fe64` — committed / pushed / exact identity verified |
@@ -97,7 +101,7 @@
 | Alembic Head | `0005` |
 | Authoritative Environment | `PlantMind-Core/.venv` |
 | RFC-069 State | Fully Closed and Source-of-Truth Reconciled |
-| Successor RFC Selection | None — RFC-075 fully closed; successor selection not started |
+| Successor RFC Selection | RFC-076 — Selection Approved / AD-062 Accepted / Combined Git Durability Pending |
 ## Recent Engineering Sequence
 
 - RFC-025 — Core Plugin Framework
@@ -5645,3 +5649,115 @@ This record intentionally records only already durable commits through:
 `846437f2af50df800973a8bbe62328c6df115fc2`
 
 Its own future Git commit identity is intentionally not predicted.
+
+
+---
+
+## RFC-076 / AD-062 Combined Selection and Architecture Handoff
+
+### Durable Baseline
+
+RFC-075 final commit:
+
+`fc480caf5ef1ac91a24eb3177434d5daa2feed09`
+
+RFC-075 is fully closed.
+
+### Selected Candidate
+
+**RFC-076 — Canonical Document Content Parser Binding & Registry-Backed Resolver Adapter**
+
+Architecture candidate:
+
+**AD-062 — Canonical Document Content Parser Binding & Registry-Backed Resolver Adapter**
+
+### Proposed Boundary
+
+RFC-076 owns only:
+
+- canonical immutable parser bindings;
+- controlled construction-time registration;
+- the registry-backed resolver adapter.
+
+RFC-075 resolver and dispatcher remain unchanged.
+
+The existing Generic Registry is reused internally as:
+
+`Registry[DocumentContentParserBinding]`
+
+It resolves an internal binding supplier only.
+
+The actual parser factory executes after successful registry lookup so factory
+failures, including `KeyError`, remain unchanged.
+
+The Generic Registry is neither duplicated nor modified.
+
+### Current Handoff State
+
+Combined selection and architecture authoring:
+
+**COMPLETE — REVIEW PENDING**
+
+AD-062:
+
+**PROPOSED — REVIEW PENDING**
+
+Implementation:
+
+**NOT AUTHORIZED**
+
+Staging:
+
+**NOT PERFORMED**
+
+Commit:
+
+**NOT PERFORMED**
+
+Push:
+
+**NOT PERFORMED**
+
+### Next Exact Action
+
+Review:
+
+`PLANTMIND-RFC076-AD062-ACCEPTANCE-REVIEW.txt`
+
+
+---
+
+## RFC-076 / AD-062 Combined Acceptance Handoff
+
+RFC-075 terminal baseline:
+
+`fc480caf5ef1ac91a24eb3177434d5daa2feed09`
+
+RFC-076 selection review:
+
+**PASS**
+
+AD-062 V2 architecture review:
+
+**PASS**
+
+RFC-076 selection:
+
+**APPROVED / GIT DURABILITY PENDING**
+
+AD-062:
+
+**ACCEPTED / GIT DURABILITY PENDING**
+
+The accepted adapter uses private binding-supplier lookup and executes parser
+factories only after successful Generic Registry resolution.
+
+Factory failures, including `KeyError`, remain operational factory failures.
+
+Implementation:
+
+**NOT AUTHORIZED**
+
+Next review artifact:
+
+`PLANTMIND-RFC076-AD062-ACCEPTANCE-REVIEW.txt`

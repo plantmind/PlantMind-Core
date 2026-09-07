@@ -18898,3 +18898,102 @@ records only already durable commits through:
 
 Its own Git durability is verified externally and requires no additional
 RFC-075 Source-of-Truth record.
+
+
+---
+
+## RFC-076 / AD-062 Combined Selection and Architecture Gate
+
+### Durable Entry
+
+RFC-075 terminal commit:
+
+`fc480caf5ef1ac91a24eb3177434d5daa2feed09`
+
+RFC-075:
+
+**FULLY CLOSED AND SOURCE-OF-TRUTH RECONCILED**
+
+### Selected Candidate
+
+**RFC-076 — Canonical Document Content Parser Binding & Registry-Backed Resolver Adapter**
+
+Architecture candidate:
+
+**AD-062 — Canonical Document Content Parser Binding & Registry-Backed Resolver Adapter**
+
+### Proposed Outcome
+
+Establish:
+
+- canonical immutable parser bindings;
+- controlled construction-time binding registration;
+- a registry-backed resolver adapter;
+- private `Registry[DocumentContentParserBinding]` lookup;
+- binding-supplier lookup separated from parser-factory execution;
+- exact canonical media-type resolution;
+- unchanged propagation of parser-factory failures;
+- no duplicate Generic Registry framework.
+
+### Hard Deferrals
+
+No concrete parser, OCR, fallback, hot registration, automatic discovery,
+Runtime/Composition/Bootstrap, Document Library, chunking,
+Search/Vector/Graph/RAG/LLM, API, migration or production-security scope.
+
+### Gate State
+
+Combined authoring:
+
+**COMPLETE — REVIEW PENDING**
+
+AD-062 acceptance:
+
+**NOT PERFORMED**
+
+Technical implementation:
+
+**NOT AUTHORIZED**
+
+Staging / Commit / Push:
+
+**NONE**
+
+### Next Gate
+
+Chief Architect RFC-076 / AD-062 combined selection and architecture review.
+
+
+---
+
+## RFC-076 / AD-062 Combined Acceptance Gate
+
+RFC-076:
+
+**SELECTION APPROVED / GIT DURABILITY PENDING**
+
+AD-062:
+
+**ACCEPTED / GIT DURABILITY PENDING**
+
+Accepted architecture:
+
+- canonical immutable binding;
+- private registry of bindings;
+- binding supplier lookup;
+- parser-factory execution only after successful lookup;
+- unchanged factory exception propagation;
+- no Generic Registry modification;
+- no concrete parser technology.
+
+Implementation:
+
+**NOT AUTHORIZED**
+
+Staging / commit / push:
+
+**NOT PERFORMED**
+
+Next gate:
+
+Combined acceptance review, then one Git durability transaction.

@@ -10,9 +10,13 @@
 | Deployment Model | On-Premise |
 | Development Branch | `feature/engineering-platform` |
 | Last Fully Closed RFC | RFC-075 — Canonical Document Content Parser Resolution & Dispatch Foundation — Fully Closed and Source-of-Truth Reconciled |
-| Active RFC | None — RFC-075 Fully Closed and Source-of-Truth Reconciled; successor selection not started |
-| Selected Architecture Workstream | None — RFC-075 completed; successor not selected |
-| Proposed Successor RFC | None — successor selection has not started |
+| Active RFC | RFC-076 — Canonical Document Content Parser Binding & Registry-Backed Resolver Adapter — Selection Approved / AD-062 Accepted / Combined Git Durability Pending |
+| Selected Architecture Workstream | RFC-076 — Canonical Document Content Parser Binding & Registry-Backed Resolver Adapter — Architecture Review Passed / Acceptance Authored |
+| Proposed Successor RFC | None — RFC-076 is the selected candidate workstream |
+| RFC-076 Predecessor Baseline | `fc480caf5ef1ac91a24eb3177434d5daa2feed09` — RFC-075 terminal closure |
+| RFC-076 Selection State | Approved / Combined Acceptance Authored / Git Durability Pending |
+| RFC-076 Architecture Decision Candidate | AD-062 — Accepted / Git Durability Pending |
+| RFC-076 Implementation Authorization | No |
 | RFC-075 Selection State | Durable — Committed, Pushed and Exact Identity Verified |
 | RFC-075 Predecessor Baseline | `a86ce4534174e8b815313e2205fa18ecb8f5ef04` — RFC-074 terminal closure |
 | RFC-075 Selection Commit | `66a252310b14d868cfac90d3f23a2f7bc269fe64` — committed / pushed / exact identity verified |
@@ -6325,3 +6329,117 @@ predicted.
 
 Its own commit, push and exact identity verification form an external Git
 durability gate and do not require another RFC-075 Source-of-Truth record.
+
+
+---
+
+## RFC-076 / AD-062 Selection and Architecture Candidate State
+
+### Durable Predecessor
+
+RFC-075 terminal commit:
+
+`fc480caf5ef1ac91a24eb3177434d5daa2feed09`
+
+RFC-075 remains fully closed and Source-of-Truth reconciled.
+
+### Selected Workstream
+
+**RFC-076 — Canonical Document Content Parser Binding & Registry-Backed Resolver Adapter**
+
+### Architecture Candidate
+
+**AD-062 — Canonical Document Content Parser Binding & Registry-Backed Resolver Adapter**
+
+Status:
+
+**PROPOSED — REVIEW PENDING**
+
+### Proposed Technical Direction
+
+- immutable `DocumentContentParserBinding`;
+- canonical binding by `DocumentContentMediaType`;
+- private reuse of `Registry[DocumentContentParserBinding]`;
+- internal Generic Registry suppliers return bindings, not parsers;
+- parser factories execute only after successful registry lookup;
+- `RegistryBackedDocumentContentParserResolver`;
+- exact missing-key translation to the existing unsupported-media-type error;
+- unchanged propagation of parser-factory failures, including `KeyError`;
+- no public registry mutation;
+- no concrete parser technology.
+
+### Current Gate
+
+Selection and architecture candidate:
+
+**AUTHORED — REVIEW PENDING**
+
+Formal Git durability:
+
+**PENDING**
+
+AD-062 acceptance:
+
+**NOT PERFORMED**
+
+Implementation:
+
+**NOT AUTHORIZED**
+
+Test baseline remains:
+
+**1078 passed**
+
+Alembic remains:
+
+`0005`
+
+### Next Exact Action
+
+Review the complete RFC-076 / AD-062 combined selection and architecture
+candidate before any staging.
+
+
+---
+
+## RFC-076 / AD-062 Combined Acceptance State
+
+Durable predecessor:
+
+`fc480caf5ef1ac91a24eb3177434d5daa2feed09`
+
+RFC-076 selection:
+
+**APPROVED / GIT DURABILITY PENDING**
+
+AD-062:
+
+**ACCEPTED / GIT DURABILITY PENDING**
+
+Accepted resolver design:
+
+- `DocumentContentParserBinding`;
+- private `Registry[DocumentContentParserBinding]`;
+- binding suppliers inside Generic Registry;
+- parser factories invoked outside Generic Registry lookup;
+- factory `KeyError` and other operational failures preserved unchanged;
+- missing canonical media type translated to existing unsupported-media error;
+- duplicate canonical binding translated to the canonical duplicate-binding
+  configuration error.
+
+Test baseline remains:
+
+**1078 passed**
+
+Alembic remains:
+
+`0005`
+
+Implementation:
+
+**NOT AUTHORIZED**
+
+Next gate:
+
+Chief Architect review of the combined acceptance record, followed by one
+staging / commit / push durability gate.

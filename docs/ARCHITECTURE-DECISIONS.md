@@ -21365,3 +21365,466 @@ Remote identity and clean working tree is an external Git durability gate.
 
 That external Git gate does not require another RFC-075 Source-of-Truth
 record.
+
+
+---
+
+## RFC-076 Successor Workstream Selection Record
+
+**Record Classification: Non-Decision Successor Selection Record**
+
+RFC-075 remains:
+
+**FULLY CLOSED AND SOURCE-OF-TRUTH RECONCILED**
+
+RFC-075 terminal commit:
+
+`fc480caf5ef1ac91a24eb3177434d5daa2feed09`
+
+### Selected Successor Candidate
+
+**RFC-076 — Canonical Document Content Parser Binding & Registry-Backed Resolver Adapter**
+
+### Evidence-Based Reason
+
+RFC-075 established:
+
+- canonical `DocumentContentParserResolver`;
+- canonical `DispatchingDocumentContentParser`;
+- exact resolution input through `DocumentContentMediaType`;
+- dispatch behind the existing RFC-074 parser port.
+
+RFC-075 intentionally did not establish:
+
+- a concrete resolver implementation;
+- canonical parser bindings;
+- controlled registration;
+- a registry-backed resolver adapter;
+- concrete parser technology;
+- Runtime or Composition wiring.
+
+PlantMind already has an accepted Generic Registry mechanism.
+
+RFC-076 shall determine how a specialized Document Content parser adapter may
+reuse that mechanism without creating another general-purpose registry.
+
+### Selection State
+
+RFC-076 selection and AD-062 architecture candidate:
+
+**REVIEWED — SELECTION APPROVED / AD-062 ACCEPTED LOCALLY**
+
+Formal Git-durable selection and architecture contract:
+
+**PENDING COMBINED ACCEPTANCE COMMIT / PUSH**
+
+Implementation:
+
+**NOT AUTHORIZED**
+
+
+# AD-062 — Canonical Document Content Parser Binding & Registry-Backed Resolver Adapter
+
+## Status
+
+**ACCEPTED — GIT DURABILITY PENDING**
+
+Related workstream:
+
+**RFC-076 — Canonical Document Content Parser Binding & Registry-Backed Resolver Adapter**
+
+Durable predecessor:
+
+`fc480caf5ef1ac91a24eb3177434d5daa2feed09`
+
+Latest Git-durable Accepted Architecture Decision remains:
+
+**AD-061**
+
+AD-062 is Accepted locally; its Git durability is pending.
+
+## Context
+
+The canonical parsing stack currently contains:
+
+- `DocumentContentParser`;
+- `DocumentContentParserResolver`;
+- `DispatchingDocumentContentParser`;
+- RFC-074 parsing Application orchestration.
+
+The remaining immediate gap is the absence of a concrete resolver adapter that
+can associate canonical media types with parser factories.
+
+The existing PlantMind Generic Registry already owns generic name-to-factory
+registration semantics.
+
+AD-062 shall not duplicate that mechanism.
+
+## Decision Candidate
+
+RFC-076 SHALL introduce an immutable canonical parser binding:
+
+`app.document_parsing.binding.DocumentContentParserBinding`
+
+with conceptual fields:
+
+- `media_type: DocumentContentMediaType`;
+- `factory: Callable[[], DocumentContentParser]`.
+
+RFC-076 SHALL also introduce an infrastructure adapter:
+
+`app.infrastructure.document_parsing.registry_backed_resolver.RegistryBackedDocumentContentParserResolver`
+
+which implements:
+
+`DocumentContentParserResolver`
+
+and internally composes the existing:
+
+`Registry[DocumentContentParserBinding]`
+
+The Generic Registry SHALL store internal zero-argument suppliers that return
+canonical bindings.
+
+It SHALL NOT directly store or invoke parser factories.
+
+## Canonical Binding Rules
+
+A binding SHALL:
+
+1. receive exactly one canonical `DocumentContentMediaType`;
+2. receive exactly one zero-argument parser factory;
+3. be immutable;
+4. reject a non-`DocumentContentMediaType`;
+5. reject a non-callable factory;
+6. contain no filename, extension, source reference or payload;
+7. contain no alias, fallback order or wildcard rule.
+
+The normalized:
+
+`DocumentContentMediaType.value`
+
+shall be the only registry key.
+
+No second media-type normalization mechanism is introduced.
+
+## Construction and Registration Rules
+
+The registry-backed resolver SHALL:
+
+1. receive a finite iterable of canonical bindings;
+2. snapshot that iterable exactly once;
+3. reject any item that is not a `DocumentContentParserBinding`;
+4. build one private `Registry[DocumentContentParserBinding]`;
+5. register each canonical key with an internal zero-argument supplier that
+   returns the exact corresponding binding;
+6. never register `binding.factory` directly in the Generic Registry;
+7. reject duplicate canonical media-type bindings during construction;
+8. expose no public `register`, `clear` or mutable registry operation;
+9. expose no global or module-level parser registry.
+
+Duplicate normalized media-type registration SHALL fail closed through
+the canonical configuration failure:
+
+`app.document_parsing.binding.DocumentContentParserDuplicateBindingError`
+
+The adapter may translate the existing Generic Registry
+`DuplicateRegistrationError` into this error while preserving the cause.
+
+## Resolution Rules
+
+`RegistryBackedDocumentContentParserResolver.resolve(...)` SHALL:
+
+1. receive only canonical `DocumentContentMediaType`;
+2. reject any other media-type input with `TypeError` before registry lookup;
+3. resolve one `DocumentContentParserBinding` using `media_type.value`;
+4. invoke the resolved binding's parser factory exactly once and only after
+   Generic Registry resolution has returned successfully;
+5. reject a non-`DocumentContentParser` factory result with `TypeError`;
+6. return the resulting `DocumentContentParser`;
+7. perform no caching itself;
+8. perform no parser lifecycle management beyond invoking the resolved
+   binding's factory;
+9. perform no fallback, wildcard, alias or content sniffing.
+
+A factory may return a stable instance or a new instance.
+
+That policy remains factory-owned.
+
+The adapter SHALL register binding suppliers rather than parser factories
+because the existing Generic Registry invokes its registered supplier inside
+its registration-miss translation boundary.
+
+The actual parser factory SHALL therefore execute only after
+`Registry.resolve(...)` has returned the canonical binding.
+
+This separation ensures that a parser-factory exception, including `KeyError`,
+cannot be misclassified as a missing registry key.
+
+The adapter SHALL NOT silently coerce an invalid factory result.
+
+A non-`DocumentContentParser` factory result SHALL raise `TypeError`.
+
+## Unsupported Media Type
+
+The adapter SHALL translate the existing Generic Registry:
+
+`RegistrationNotFoundError`
+
+into the existing canonical parser failure:
+
+`DocumentContentParserUnsupportedMediaTypeError`
+
+The original registry failure SHALL remain available as the exception cause.
+
+No new competing unsupported-media-type error is introduced.
+
+## Failure Propagation
+
+Parser factory operational failures SHALL propagate unchanged.
+
+This requirement explicitly includes `KeyError`.
+
+A `KeyError` raised by a registered parser factory SHALL NOT be translated to:
+
+- `RegistrationNotFoundError`;
+- `DocumentContentParserUnsupportedMediaTypeError`.
+
+The adapter SHALL not catch and wrap arbitrary factory or parser failures.
+
+Duplicate binding is a construction/configuration failure.
+
+Unsupported media type is a registry-lookup resolution failure.
+
+Parser-factory failure is an operational factory failure.
+
+These three failure categories SHALL remain distinct.
+
+## Registry Integrity
+
+AD-006 Generic Registry ownership remains unchanged.
+
+RFC-076 SHALL NOT:
+
+- modify `Registry[T]`;
+- modify `PluginRegistry`;
+- modify `ServiceRegistry`;
+- create another generic registry framework;
+- expose Generic Registry mutation through the resolver;
+- implement automatic discovery;
+- scan Python packages;
+- import parser plugins dynamically.
+
+The Generic Registry remains an internal implementation detail of the adapter.
+
+## Preserved RFC Ownership
+
+RFC-073 remains the verified payload-access and payload-lifetime owner.
+
+RFC-074 remains the parsing Application orchestration and result-validation
+owner.
+
+RFC-075 remains the canonical resolver port and dispatch owner.
+
+RFC-076 candidate owns only:
+
+- immutable parser bindings;
+- controlled construction-time registration;
+- the registry-backed resolver adapter.
+
+RFC-065 remains the prepared Document-to-Knowledge ingestion owner.
+
+## Explicit Deferrals
+
+RFC-076 SHALL NOT introduce:
+
+- PDF, DOCX, spreadsheet, text, image or OCR parser implementations;
+- Runtime, Composition Root or Bootstrap wiring;
+- parser plugin discovery;
+- parser hot registration;
+- parser deregistration;
+- configuration-file loading;
+- parser aliases;
+- fallback chains;
+- default parser behavior;
+- payload sniffing;
+- parsed-result persistence;
+- Document Library behavior;
+- chunking;
+- automatic Knowledge ingestion;
+- Search, Vector, Graph, RAG or LLM capability;
+- AI Agents;
+- HTTP/API exposure;
+- database schema or Alembic migrations;
+- production parser sandboxing;
+- production-security readiness claims.
+
+Canonical Alembic head remains:
+
+`0005`
+
+## Candidate Initial Technical Surface
+
+If AD-062 is Accepted and Git Durable, the technical implementation may be
+limited to:
+
+- `backend/app/document_parsing/binding.py`;
+- `backend/app/infrastructure/document_parsing/registry_backed_resolver.py`;
+- a package marker only where required;
+- focused binding/resolver tests;
+- focused architecture tests.
+
+No change is expected to:
+
+- `backend/app/document_parsing/parser.py`;
+- `backend/app/document_parsing/resolver.py`;
+- `backend/app/document_parsing/dispatching_parser.py`;
+- RFC-074 Application service;
+- Generic Registry implementation;
+- schema or migrations.
+
+Any required change outside this accepted surface must return to architecture
+review.
+
+## Required TDD Evidence
+
+Tests SHALL prove at minimum:
+
+1. binding immutability;
+2. canonical media-type-only binding identity;
+3. invalid binding media type rejection;
+4. non-callable factory rejection;
+5. resolver implements `DocumentContentParserResolver`;
+6. the bindings iterable is consumed exactly once;
+7. a non-`DocumentContentParserBinding` item is rejected;
+8. parser factories are not invoked during resolver construction;
+9. normalized media type is the exact registry key;
+10. the private Generic Registry contains binding suppliers rather than parser
+    factories;
+11. the internal supplier returns the exact binding object;
+12. duplicate normalized media types fail during construction;
+13. no public mutation API exists;
+14. non-`DocumentContentMediaType` resolution input fails before lookup;
+15. missing media type maps to
+    `DocumentContentParserUnsupportedMediaTypeError`;
+16. the original `RegistrationNotFoundError` remains the exception cause;
+17. the selected parser factory is invoked exactly once per resolution;
+18. a parser-factory `KeyError` propagates as the same exception instance and
+    is not translated to unsupported media type;
+19. other parser-factory exceptions propagate unchanged;
+20. invalid parser-factory result raises `TypeError`;
+21. no parser caching is performed by the adapter;
+22. RFC-075 resolver and dispatcher remain unchanged;
+23. Generic Registry implementation remains unchanged;
+24. no concrete parser or Runtime/Composition/Bootstrap wiring is introduced.
+
+## Architecture Gate
+
+AD-062:
+
+**ACCEPTED — GIT DURABILITY PENDING**
+
+Architecture review:
+
+**PASS — NO REMAINING REFINE / NO BLOCKED ITEM**
+
+Implementation:
+
+**NOT AUTHORIZED**
+
+No Production or test code change is authorized before combined selection /
+accepted-contract Git durability and a separate implementation-entry gate.
+
+
+---
+
+## RFC-076 / AD-062 Combined Architecture Acceptance Record
+
+**Record Classification: Combined Selection and Architecture Acceptance**
+
+Durable predecessor:
+
+`fc480caf5ef1ac91a24eb3177434d5daa2feed09`
+
+RFC-076 selection review:
+
+**PASS**
+
+AD-062 V2 architecture review:
+
+**PASS — NO REMAINING REFINE**
+
+RFC-076 selection:
+
+**APPROVED / GIT DURABILITY PENDING**
+
+AD-062:
+
+**ACCEPTED / GIT DURABILITY PENDING**
+
+### Accepted Contract
+
+RFC-076 owns only:
+
+- immutable `DocumentContentParserBinding`;
+- controlled construction-time parser binding registration;
+- `RegistryBackedDocumentContentParserResolver`.
+
+The adapter privately uses:
+
+`Registry[DocumentContentParserBinding]`
+
+The Generic Registry stores binding suppliers only.
+
+Parser factories execute only after successful Generic Registry lookup.
+
+A parser-factory failure, including `KeyError`, propagates unchanged and cannot
+be translated into unsupported media type.
+
+Missing registry key maps to:
+
+`DocumentContentParserUnsupportedMediaTypeError`
+
+with the original `RegistrationNotFoundError` preserved as cause.
+
+Duplicate canonical media type maps to:
+
+`DocumentContentParserDuplicateBindingError`
+
+with the original `DuplicateRegistrationError` preserved as cause.
+
+No Generic Registry, Plugin Registry or Service Registry implementation is
+modified or duplicated.
+
+### Preserved Deferrals
+
+No concrete parser, OCR, fallback, automatic discovery, hot registration,
+Runtime/Composition/Bootstrap wiring, Document Library, chunking,
+Search/Vector/Graph/RAG/LLM, API, schema/migration or production-security
+capability is accepted by AD-062.
+
+### Gate State
+
+Combined acceptance authoring:
+
+**COMPLETE — REVIEW PENDING**
+
+Staging:
+
+**NOT PERFORMED**
+
+Commit:
+
+**NOT YET CREATED**
+
+Push:
+
+**NOT PERFORMED**
+
+Implementation:
+
+**NOT AUTHORIZED**
+
+Next gate:
+
+Review this combined acceptance record before the single durability gate.
