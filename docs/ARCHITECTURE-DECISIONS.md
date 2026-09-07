@@ -21427,7 +21427,7 @@ Implementation:
 
 ## Status
 
-**ACCEPTED — GIT DURABILITY PENDING**
+**ACCEPTED / GIT DURABLE**
 
 Related workstream:
 
@@ -21437,11 +21437,9 @@ Durable predecessor:
 
 `fc480caf5ef1ac91a24eb3177434d5daa2feed09`
 
-Latest Git-durable Accepted Architecture Decision remains:
+Latest Git-durable Accepted Architecture Decision is:
 
-**AD-061**
-
-AD-062 is Accepted locally; its Git durability is pending.
+**AD-062**
 
 ## Context
 
@@ -21722,18 +21720,31 @@ Tests SHALL prove at minimum:
 
 AD-062:
 
-**ACCEPTED — GIT DURABILITY PENDING**
+**ACCEPTED / GIT DURABLE**
 
 Architecture review:
 
 **PASS — NO REMAINING REFINE / NO BLOCKED ITEM**
 
-Implementation:
+Technical implementation:
 
-**NOT AUTHORIZED**
+**COMPLETE / COMMITTED / PUSHED / EXACT IDENTITY VERIFIED**
 
-No Production or test code change is authorized before combined selection /
-accepted-contract Git durability and a separate implementation-entry gate.
+Focused verification:
+
+**33 passed**
+
+RFC-075 plus RFC-076 impacted verification:
+
+**57 passed**
+
+Full PlantMind regression:
+
+**1111 passed**
+
+Canonical Alembic head:
+
+`0005`
 
 
 ---
@@ -21828,3 +21839,178 @@ Implementation:
 Next gate:
 
 Review this combined acceptance record before the single durability gate.
+
+
+---
+
+## Current Architecture Governance State — RFC-076 Compact Final Closure and Reconciliation Verification
+
+**Record Classification: Non-Decision Compact Terminal Governance Record**
+
+This record creates no new Architecture Decision.
+
+It does not amend, replace, supersede or rewrite AD-062.
+
+AD-062 remains:
+
+**ACCEPTED / GIT DURABLE**
+
+RFC-076 — Canonical Document Content Parser Binding & Registry-Backed Resolver Adapter is documented as:
+
+**FULLY CLOSED AND SOURCE-OF-TRUTH RECONCILED**
+
+### Verified Durable Commit Chain
+
+Combined selection and accepted-contract commit:
+
+`bb70c1611f973a8918c7e67ddeb859567eb004c5`
+
+Technical implementation commit:
+
+`483daa3444d1d1e5625f04829eab9b7c4d27d575`
+
+Technical implementation parent:
+
+`bb70c1611f973a8918c7e67ddeb859567eb004c5`
+
+Technical implementation push:
+
+**PASS**
+
+Exact Local / Tracking / Remote technical identity:
+
+**PASS**
+
+Ahead / behind:
+
+**0 / 0**
+
+Working tree at compact-closure entry:
+
+**CLEAN**
+
+### Delivered Technical Boundary
+
+RFC-076 delivered:
+
+- immutable `DocumentContentParserBinding`;
+- `DocumentContentParserDuplicateBindingError`;
+- `RegistryBackedDocumentContentParserResolver`;
+- private `Registry[DocumentContentParserBinding]`;
+- construction-time registration of binding suppliers;
+- parser-factory execution only after successful registry lookup;
+- canonical resolution by `DocumentContentMediaType.value`.
+
+### Verified Failure Semantics
+
+Duplicate canonical media type:
+
+**DocumentContentParserDuplicateBindingError**
+
+Preserved cause:
+
+**DuplicateRegistrationError**
+
+Missing canonical media type:
+
+**DocumentContentParserUnsupportedMediaTypeError**
+
+Preserved cause:
+
+**RegistrationNotFoundError**
+
+Parser-factory `KeyError`:
+
+**PROPAGATES AS THE SAME OPERATIONAL EXCEPTION**
+
+Other parser-factory failures:
+
+**PROPAGATE UNCHANGED**
+
+Invalid parser-factory result:
+
+**TYPEERROR**
+
+The adapter performs no parser caching.
+
+Factory-owned stable-instance or new-instance policy remains unchanged.
+
+### Final Engineering Verification
+
+Focused RFC-076:
+
+**33 passed**
+
+RFC-075 plus RFC-076 impacted:
+
+**57 passed**
+
+Full PlantMind regression:
+
+**1111 passed**
+
+Canonical Alembic head:
+
+`0005`
+
+Reviewed and committed technical patch SHA-256:
+
+`8120fff46e515ecc8b9184d0b4f23c007563d1b1396b7443c187238c59dcd58a`
+
+### Preserved Architecture
+
+RFC-073 remains the verified Document Content access and payload-lifetime
+owner.
+
+RFC-074 remains the canonical parsing Application boundary and result-type
+validation owner.
+
+RFC-075 remains the canonical resolver port and dispatch owner.
+
+RFC-076 owns immutable parser binding and the registry-backed resolver adapter
+only.
+
+RFC-065 remains the prepared Document-to-Knowledge ingestion owner.
+
+AD-006 Generic Registry, Plugin Registry and Service Registry responsibilities
+remain unchanged.
+
+The existing Generic Registry implementation remains byte-preserved.
+
+No concrete PDF, DOCX, spreadsheet, text, image or OCR parser is introduced.
+
+No fallback, default parser, alias, payload sniffing, automatic discovery,
+hot registration, Runtime/Composition/Bootstrap wiring, Document Library,
+chunking, automatic Knowledge ingestion, Search/Vector/Graph/RAG/LLM,
+AI Agent, API, schema/migration or production-security capability is promoted.
+
+### Governed State After RFC-076
+
+Last fully closed RFC:
+
+**RFC-076**
+
+Active RFC:
+
+**NONE**
+
+Selected successor:
+
+**NONE**
+
+Successor-workstream selection has not started.
+
+### Non-Self-Referential Compact Final Record
+
+This compact terminal record intentionally records only commits already
+Git Durable through the technical implementation commit:
+
+`483daa3444d1d1e5625f04829eab9b7c4d27d575`
+
+It does not predict the future Git commit hash that will persist this
+five-document closure and reconciliation record.
+
+Verification of that future commit, push, exact Local / Tracking / Remote
+identity and clean working tree is an external Git durability gate.
+
+That external gate does not require another RFC-076 Source-of-Truth record.

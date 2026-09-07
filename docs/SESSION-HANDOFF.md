@@ -6,14 +6,20 @@
 |---|---|
 | Project | PlantMind PM-001 |
 | Branch | `feature/engineering-platform` |
-| Last Fully Closed RFC | RFC-075 — Canonical Document Content Parser Resolution & Dispatch Foundation — Fully Closed and Source-of-Truth Reconciled |
-| Active RFC | RFC-076 — Canonical Document Content Parser Binding & Registry-Backed Resolver Adapter — Selection Approved / AD-062 Accepted / Combined Git Durability Pending |
-| Selected Architecture Workstream | RFC-076 — Canonical Document Content Parser Binding & Registry-Backed Resolver Adapter — Architecture Review Passed / Acceptance Authored |
-| Proposed Successor RFC | None — RFC-076 is the selected candidate workstream |
+| Last Fully Closed RFC | RFC-076 — Canonical Document Content Parser Binding & Registry-Backed Resolver Adapter — Fully Closed and Source-of-Truth Reconciled |
+| Active RFC | None — RFC-076 Fully Closed and Source-of-Truth Reconciled; successor selection not started |
+| Selected Architecture Workstream | None — RFC-076 completed; successor not selected |
+| Proposed Successor RFC | None — successor selection has not started |
 | RFC-076 Predecessor Baseline | `fc480caf5ef1ac91a24eb3177434d5daa2feed09` — RFC-075 terminal closure |
-| RFC-076 Selection State | Approved / Combined Acceptance Authored / Git Durability Pending |
-| RFC-076 Architecture Decision Candidate | AD-062 — Accepted / Git Durability Pending |
-| RFC-076 Implementation Authorization | No |
+| RFC-076 Selection State | Durable — Committed, Pushed and Exact Identity Verified |
+| RFC-076 Architecture Decision Candidate | AD-062 — Accepted / Committed / Pushed / Exact Identity Verified |
+| RFC-076 Implementation Authorization | Completed under AD-062 — Technical Implementation Committed / Pushed / Exact Identity Verified |
+| RFC-076 Selection / Accepted Contract Commit | `bb70c1611f973a8918c7e67ddeb859567eb004c5` — committed / pushed / exact identity verified |
+| RFC-076 Technical Implementation Commit | `483daa3444d1d1e5625f04829eab9b7c4d27d575` — committed / pushed / exact identity verified |
+| RFC-076 Technical Implementation State | Complete / Committed / Pushed / Exact Identity Verified |
+| RFC-076 Focused Verification | 33 passed |
+| RFC-075 + RFC-076 Impacted Verification | 57 passed |
+| RFC-076 State | Fully Closed and Source-of-Truth Reconciled |
 | RFC-075 Selection State | Durable — Committed, Pushed and Exact Identity Verified |
 | RFC-075 Predecessor Baseline | `a86ce4534174e8b815313e2205fa18ecb8f5ef04` — RFC-074 terminal closure |
 | RFC-075 Selection Commit | `66a252310b14d868cfac90d3f23a2f7bc269fe64` — committed / pushed / exact identity verified |
@@ -31,7 +37,7 @@
 | RFC-075 State | Fully Closed and Source-of-Truth Reconciled |
 | RFC-075 Architecture Decision Candidate | AD-061 — Accepted / Committed / Pushed / Exact Identity Verified |
 | RFC-075 Architecture Contract State | Accepted / Architecture Review Passed / Committed / Pushed / Exact Identity Verified |
-| Architecture Decision | AD-061 — Accepted / Committed / Pushed / Exact Identity Verified |
+| Architecture Decision | AD-062 — Accepted / Committed / Pushed / Exact Identity Verified |
 | RFC-074 Selection State | Durable — Committed, Pushed and Exact Identity Verified |
 | RFC-074 Selection Commit | `b5d1e7fe434378ac7ee90912ac40932d5c5451eb` — committed / pushed / exact identity verified |
 | RFC-074 Architecture Contract State | Accepted / Architecture Review Passed / Committed / Pushed / Exact Identity Verified |
@@ -78,7 +84,7 @@
 | RFC-069 Reconciliation Commit | `231e0cc66862c797e299fdb71ff20da8a39e8ae2` |
 | RFC-069 Reconciliation Push | Verified |
 | RFC-069 Local / Tracking / Remote Reconciliation Identity | Verified |
-| Test Baseline | 1078 passed |
+| Test Baseline | 1111 passed |
 | RFC-070 Engineering Closure Commit | `ab4438b02a8f34f83b462e3d8a86b4b5ab5d1092` |
 | RFC-070 Engineering Closure State | Complete, Pushed and Verified |
 | RFC-070 Local / Tracking / Remote Closure Identity | Verified |
@@ -101,7 +107,7 @@
 | Alembic Head | `0005` |
 | Authoritative Environment | `PlantMind-Core/.venv` |
 | RFC-069 State | Fully Closed and Source-of-Truth Reconciled |
-| Successor RFC Selection | RFC-076 — Selection Approved / AD-062 Accepted / Combined Git Durability Pending |
+| Successor RFC Selection | None — RFC-076 fully closed; successor selection not started |
 ## Recent Engineering Sequence
 
 - RFC-025 — Core Plugin Framework
@@ -5761,3 +5767,70 @@ Implementation:
 Next review artifact:
 
 `PLANTMIND-RFC076-AD062-ACCEPTANCE-REVIEW.txt`
+
+
+---
+
+## RFC-076 Compact Final Closure and Reconciliation Handoff
+
+RFC-076 — Canonical Document Content Parser Binding & Registry-Backed Resolver Adapter is:
+
+**FULLY CLOSED AND SOURCE-OF-TRUTH RECONCILED**
+
+AD-062 is:
+
+**ACCEPTED / GIT DURABLE**
+
+### Durable Anchors
+
+Selection / accepted contract:
+
+`bb70c1611f973a8918c7e67ddeb859567eb004c5`
+
+Technical implementation:
+
+`483daa3444d1d1e5625f04829eab9b7c4d27d575`
+
+Technical Local / Tracking / Remote:
+
+**PASS — EXACT**
+
+### Final Technical State
+
+- RFC-076 focused: **33 passed**;
+- RFC-075 plus RFC-076 impacted: **57 passed**;
+- full regression: **1111 passed**;
+- Alembic: `0005`;
+- Generic Registry modification: **NONE**;
+- parser-factory `KeyError` propagation: **VERIFIED**.
+
+### Delivered Boundary
+
+Canonical binding:
+
+`app.document_parsing.binding.DocumentContentParserBinding`
+
+Registry-backed resolver:
+
+`app.infrastructure.document_parsing.registry_backed_resolver.RegistryBackedDocumentContentParserResolver`
+
+RFC-073, RFC-074, RFC-075, RFC-076, RFC-065 and AD-006 ownership boundaries
+remain coordinated and unchanged outside RFC-076's accepted responsibility.
+
+No concrete parser or downstream AI capability is promoted.
+
+### Handoff Control
+
+Active RFC:
+
+**NONE**
+
+Selected successor:
+
+**NONE**
+
+Successor selection must start separately through evidence-based governance.
+
+This compact final record intentionally does not predict its own future Git
+commit identity. One external Git durability gate completes RFC-076 without
+another reconciliation or final-record cycle.

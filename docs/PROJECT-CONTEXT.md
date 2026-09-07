@@ -9,14 +9,20 @@
 | Status | Active Development |
 | Deployment Model | On-Premise |
 | Development Branch | `feature/engineering-platform` |
-| Last Fully Closed RFC | RFC-075 — Canonical Document Content Parser Resolution & Dispatch Foundation — Fully Closed and Source-of-Truth Reconciled |
-| Active RFC | RFC-076 — Canonical Document Content Parser Binding & Registry-Backed Resolver Adapter — Selection Approved / AD-062 Accepted / Combined Git Durability Pending |
-| Selected Architecture Workstream | RFC-076 — Canonical Document Content Parser Binding & Registry-Backed Resolver Adapter — Architecture Review Passed / Acceptance Authored |
-| Proposed Successor RFC | None — RFC-076 is the selected candidate workstream |
+| Last Fully Closed RFC | RFC-076 — Canonical Document Content Parser Binding & Registry-Backed Resolver Adapter — Fully Closed and Source-of-Truth Reconciled |
+| Active RFC | None — RFC-076 Fully Closed and Source-of-Truth Reconciled; successor selection not started |
+| Selected Architecture Workstream | None — RFC-076 completed; successor not selected |
+| Proposed Successor RFC | None — successor selection has not started |
 | RFC-076 Predecessor Baseline | `fc480caf5ef1ac91a24eb3177434d5daa2feed09` — RFC-075 terminal closure |
-| RFC-076 Selection State | Approved / Combined Acceptance Authored / Git Durability Pending |
-| RFC-076 Architecture Decision Candidate | AD-062 — Accepted / Git Durability Pending |
-| RFC-076 Implementation Authorization | No |
+| RFC-076 Selection State | Durable — Committed, Pushed and Exact Identity Verified |
+| RFC-076 Architecture Decision Candidate | AD-062 — Accepted / Committed / Pushed / Exact Identity Verified |
+| RFC-076 Implementation Authorization | Completed under AD-062 — Technical Implementation Committed / Pushed / Exact Identity Verified |
+| RFC-076 Selection / Accepted Contract Commit | `bb70c1611f973a8918c7e67ddeb859567eb004c5` — committed / pushed / exact identity verified |
+| RFC-076 Technical Implementation Commit | `483daa3444d1d1e5625f04829eab9b7c4d27d575` — committed / pushed / exact identity verified |
+| RFC-076 Technical Implementation State | Complete / Committed / Pushed / Exact Identity Verified |
+| RFC-076 Focused Verification | 33 passed |
+| RFC-075 + RFC-076 Impacted Verification | 57 passed |
+| RFC-076 State | Fully Closed and Source-of-Truth Reconciled |
 | RFC-075 Selection State | Durable — Committed, Pushed and Exact Identity Verified |
 | RFC-075 Predecessor Baseline | `a86ce4534174e8b815313e2205fa18ecb8f5ef04` — RFC-074 terminal closure |
 | RFC-075 Selection Commit | `66a252310b14d868cfac90d3f23a2f7bc269fe64` — committed / pushed / exact identity verified |
@@ -35,7 +41,7 @@
 | RFC-075 Architecture Contract State | Accepted / Architecture Review Passed / Committed / Pushed / Exact Identity Verified |
 | RFC-069 Selection Commit | `5d7794352029576e0b62c2ac8cbfa248fe11961d` |
 | RFC-070 Selection Commit | `13cfccc08d8c0a3b891990d38edaf9fc48874a5e` |
-| Architecture Decision | AD-061 — Accepted / Committed / Pushed / Exact Identity Verified |
+| Architecture Decision | AD-062 — Accepted / Committed / Pushed / Exact Identity Verified |
 | RFC-074 Selection State | Durable — Committed, Pushed and Exact Identity Verified |
 | RFC-074 Selection Commit | `b5d1e7fe434378ac7ee90912ac40932d5c5451eb` — committed / pushed / exact identity verified |
 | RFC-074 Architecture Contract State | Accepted / Architecture Review Passed / Committed / Pushed / Exact Identity Verified |
@@ -79,7 +85,7 @@
 | RFC-069 Engineering Closure Commit | `63790de5312c69c709e2249b56e91995a00426b6` |
 | RFC-069 Post-Closure Reconciliation Commit | `231e0cc66862c797e299fdb71ff20da8a39e8ae2` |
 | RFC-069 Reconciliation Verification | PASS — Committed, Pushed, Exact Local / Tracking / Remote Identity Verified |
-| Test Baseline | 1078 passed |
+| Test Baseline | 1111 passed |
 | RFC-070 Engineering Closure Commit | `ab4438b02a8f34f83b462e3d8a86b4b5ab5d1092` |
 | RFC-070 Engineering Closure State | Complete, Pushed and Verified |
 | RFC-070 Post-Closure Reconciliation | Complete, Pushed and Verified |
@@ -6443,3 +6449,118 @@ Next gate:
 
 Chief Architect review of the combined acceptance record, followed by one
 staging / commit / push durability gate.
+
+
+---
+
+## RFC-076 Compact Final Closure and Source-of-Truth Reconciliation State
+
+### Final State
+
+RFC-076 — Canonical Document Content Parser Binding & Registry-Backed Resolver Adapter is:
+
+**FULLY CLOSED AND SOURCE-OF-TRUTH RECONCILED**
+
+AD-062 — Canonical Document Content Parser Binding & Registry-Backed Resolver Adapter is:
+
+**ACCEPTED / GIT DURABLE**
+
+### Durable Commit Chain
+
+Selection and accepted contract:
+
+`bb70c1611f973a8918c7e67ddeb859567eb004c5`
+
+Technical implementation:
+
+`483daa3444d1d1e5625f04829eab9b7c4d27d575`
+
+Technical Local / Tracking / Remote:
+
+**PASS — EXACT**
+
+Ahead / behind:
+
+**0 / 0**
+
+Working tree at record entry:
+
+**CLEAN**
+
+### Delivered Capability
+
+Canonical binding:
+
+`app.document_parsing.binding.DocumentContentParserBinding`
+
+Duplicate-binding error:
+
+`app.document_parsing.binding.DocumentContentParserDuplicateBindingError`
+
+Registry-backed resolver:
+
+`app.infrastructure.document_parsing.registry_backed_resolver.RegistryBackedDocumentContentParserResolver`
+
+Private registry value:
+
+`Registry[DocumentContentParserBinding]`
+
+Parser factory execution occurs only after successful binding lookup.
+
+Factory `KeyError` and other operational failures propagate unchanged.
+
+### Final Verification
+
+RFC-076 focused:
+
+**33 passed**
+
+RFC-075 plus RFC-076 impacted:
+
+**57 passed**
+
+Full regression:
+
+**1111 passed**
+
+Alembic:
+
+`0005`
+
+Technical patch:
+
+`8120fff46e515ecc8b9184d0b4f23c007563d1b1396b7443c187238c59dcd58a`
+
+### Preserved Boundaries
+
+RFC-073 owns content access and payload lifetime.
+
+RFC-074 owns parsing Application orchestration and result validation.
+
+RFC-075 owns the parser resolver port and dispatch.
+
+RFC-076 owns immutable binding and the registry-backed resolver adapter.
+
+RFC-065 owns prepared Knowledge ingestion.
+
+AD-006 Generic Registry ownership remains unchanged.
+
+No concrete parser, OCR, fallback, discovery, Runtime/Composition/Bootstrap,
+Document Library, chunking, Search/Vector/Graph/RAG/LLM, API or migration
+capability is promoted.
+
+### Governed State
+
+Active RFC:
+
+**NONE**
+
+Selected successor:
+
+**NONE**
+
+Successor selection has not started.
+
+This is a non-self-referential compact terminal record. Its own future Git
+commit and push are verified externally without another RFC-076 documentation
+cycle.

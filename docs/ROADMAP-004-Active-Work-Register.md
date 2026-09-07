@@ -18997,3 +18997,66 @@ Staging / commit / push:
 Next gate:
 
 Combined acceptance review, then one Git durability transaction.
+
+
+---
+
+## RFC-076 Compact Final Closure and Reconciliation Gate
+
+### Status
+
+**FULLY CLOSED AND SOURCE-OF-TRUTH RECONCILED**
+
+Workstream:
+
+**RFC-076 — Canonical Document Content Parser Binding & Registry-Backed Resolver Adapter**
+
+Architecture:
+
+**AD-062 — ACCEPTED / GIT DURABLE**
+
+### Durable Evidence
+
+- selection / accepted-contract commit: `bb70c1611f973a8918c7e67ddeb859567eb004c5`;
+- technical implementation commit: `483daa3444d1d1e5625f04829eab9b7c4d27d575`;
+- technical patch: `8120fff46e515ecc8b9184d0b4f23c007563d1b1396b7443c187238c59dcd58a`;
+- exact Local / Tracking / Remote identity: **PASS**;
+- ahead / behind: **0 / 0**;
+- working tree: **CLEAN**.
+
+### Verification
+
+- RFC-076 focused: **33 passed**;
+- RFC-075 plus RFC-076 impacted: **57 passed**;
+- full regression: **1111 passed**;
+- Alembic head: `0005`.
+
+### Delivered Boundary
+
+- immutable parser bindings;
+- private `Registry[DocumentContentParserBinding]`;
+- registry-backed resolver adapter;
+- parser-factory execution after successful lookup;
+- unchanged factory failure propagation;
+- no Generic Registry modification.
+
+### Preserved Deferrals
+
+No concrete parser, OCR, fallback, automatic discovery,
+Runtime/Composition/Bootstrap, Document Library, chunking,
+Search/Vector/Graph/RAG/LLM, API, migration or production-security scope.
+
+### Current Control
+
+Active RFC:
+
+**NONE**
+
+Selected successor:
+
+**NONE**
+
+Successor selection has not started.
+
+This compact final record requires only one external commit/push durability
+verification and no additional RFC-076 reconciliation cycle.

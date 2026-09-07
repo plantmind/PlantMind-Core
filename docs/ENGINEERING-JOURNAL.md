@@ -10139,3 +10139,61 @@ durability transaction.
 Implementation remains:
 
 **NOT AUTHORIZED**
+
+
+---
+
+## 2026-09-08 — RFC-076 Compact Engineering Closure and Reconciliation Verification
+
+RFC-076 — Canonical Document Content Parser Binding & Registry-Backed Resolver Adapter is documented as:
+
+**FULLY CLOSED AND SOURCE-OF-TRUTH RECONCILED**
+
+Architecture Decision:
+
+**AD-062 — ACCEPTED / GIT DURABLE**
+
+### Durable Commit Chain
+
+- combined selection / accepted contract: `bb70c1611f973a8918c7e67ddeb859567eb004c5`;
+- technical implementation: `483daa3444d1d1e5625f04829eab9b7c4d27d575`.
+
+### Delivered Boundary
+
+- immutable canonical parser binding;
+- private binding-valued Generic Registry reuse;
+- registry-backed resolver adapter;
+- binding supplier lookup before parser-factory invocation;
+- unchanged parser-factory failure propagation;
+- no Generic Registry modification.
+
+### Final Verification
+
+- RFC-076 focused: **33 passed**;
+- RFC-075 plus RFC-076 impacted: **57 passed**;
+- full regression: **1111 passed**;
+- Alembic: `0005`;
+- technical Local / Tracking / Remote: **EXACT**;
+- ahead / behind: **0 / 0**;
+- working tree: **CLEAN**.
+
+### Preserved Scope
+
+No concrete parser, OCR, fallback, automatic discovery,
+Runtime/Composition/Bootstrap wiring, Document Library, chunking,
+Search/Vector/Graph/RAG/LLM, API, migration or production-security capability
+is promoted.
+
+### Governed State
+
+Active RFC:
+
+**NONE**
+
+Selected successor:
+
+**NONE**
+
+This compact record is non-self-referential. Its own future commit and push
+are verified by one external Git durability gate and require no further
+RFC-076 documentation cycle.
