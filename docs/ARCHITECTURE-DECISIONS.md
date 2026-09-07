@@ -21186,3 +21186,182 @@ Do not stage reconciliation until that review passes.
 
 Do not declare RFC-075 fully closed until reconciliation Git durability and the
 separate final reconciliation verification record are complete.
+
+
+---
+
+## Current Architecture Governance State — RFC-075 Final Source-of-Truth Reconciliation Verification
+
+**Record Classification: Non-Decision Final Governance Verification**
+
+This record creates no new Architecture Decision.
+
+It does not amend, replace, supersede or rewrite AD-061.
+
+AD-061 remains the latest Accepted and Git-durable Architecture Decision.
+
+RFC-075 — Canonical Document Content Parser Resolution & Dispatch Foundation is:
+
+**FULLY CLOSED AND SOURCE-OF-TRUTH RECONCILED**
+
+### Verified Durable Commit Chain
+
+Selection commit:
+
+`66a252310b14d868cfac90d3f23a2f7bc269fe64`
+
+Accepted-contract commit:
+
+`9c2ea1afce195f75ae4898ad05187fa5de74a9c9`
+
+Technical implementation commit:
+
+`336ddbd414ded52cecec963506cf9cccb3bd96e5`
+
+Engineering closure commit:
+
+`6764b6e2cbd9b50974bf6ad6ba6e3efb966257aa`
+
+Post-closure reconciliation commit:
+
+`846437f2af50df800973a8bbe62328c6df115fc2`
+
+### Verified Reconciliation Git State
+
+Reconciliation parent:
+
+`6764b6e2cbd9b50974bf6ad6ba6e3efb966257aa`
+
+Reconciliation push:
+
+**PASS**
+
+Exact Local / Tracking / Remote reconciliation identity:
+
+**PASS**
+
+Ahead / behind:
+
+**0 / 0**
+
+Working tree after reconciliation push:
+
+**CLEAN**
+
+Reconciliation surface:
+
+**EXACTLY FIVE MAINTAINED SOURCE-OF-TRUTH DOCUMENTS**
+
+Production-code changes in reconciliation:
+
+**NONE**
+
+Test-file changes in reconciliation:
+
+**NONE**
+
+### Final Technical Verification
+
+Focused RFC-075 verification:
+
+**24 passed**
+
+RFC-074 plus RFC-075 impacted verification:
+
+**50 passed**
+
+Full PlantMind regression:
+
+**1078 passed**
+
+Canonical Alembic head:
+
+`0005`
+
+Reviewed technical patch SHA-256:
+
+`90c620b06bbaee949e9a550d12a2fd5e5f8e11e27c22d090cd3b57daebe338fa`
+
+Native technical Git diff SHA-256:
+
+`abaacf3965286e8622553ac6dd6b5b05be2ddfb4ae7b9e394898871e11a256d9`
+
+Engineering-closure diff SHA-256:
+
+`b228c2b8d8447689eccecc62e46f83702acccd7c6b8b813f56de654bfb094ea6`
+
+Post-closure reconciliation diff SHA-256:
+
+`f04d088550fbcb9c213338021ae2d25dfd68296683ecc9f8f5c5faf02e0bcebe`
+
+### Preserved Architecture
+
+Canonical parser-resolution port:
+
+`app.document_parsing.resolver.DocumentContentParserResolver`
+
+Canonical dispatching parser:
+
+`app.document_parsing.dispatching_parser.DispatchingDocumentContentParser`
+
+Canonical resolution identity:
+
+`DocumentContentMediaType`
+
+Accepted flow:
+
+**RFC-074 APPLICATION → DISPATCHING PARSER → RESOLVE BY CANONICAL MEDIA TYPE → DELEGATE PARSER → RETURN EXACT RESULT**
+
+RFC-073 remains the verified Document Content access and payload-lifetime
+owner.
+
+RFC-074 remains the canonical parsing Application boundary and result-type
+validation owner.
+
+RFC-075 remains the parser-resolution and dispatch owner only.
+
+RFC-065 remains the prepared Document-to-Knowledge ingestion owner.
+
+AD-006 registry responsibilities remain unchanged.
+
+No concrete parser, registry-backed resolver, parser registration,
+fallback, content sniffing, OCR, chunking, Document Library,
+automatic Knowledge ingestion, Search/Vector/Graph/RAG/LLM,
+Runtime/Composition/Bootstrap, API, schema/migration or production-security
+capability is promoted by this final governance record.
+
+The legacy `app.knowledge.document_parser` seam remains unpromoted.
+
+Production deployment conformance remains separately governed.
+
+### Successor Governance
+
+Active RFC:
+
+**NONE**
+
+Selected successor:
+
+**NONE**
+
+Successor-workstream selection has not started.
+
+Any successor must be selected separately through evidence-based governance.
+
+### Non-Self-Referential Final Record
+
+This final verification record is intentionally non-self-referential.
+
+It records only commits that were already Git Durable through the
+reconciliation commit:
+
+`846437f2af50df800973a8bbe62328c6df115fc2`
+
+It does not predict or require the future Git commit hash that will persist
+this final verification record.
+
+Verification of this record's own commit, push, exact Local / Tracking /
+Remote identity and clean working tree is an external Git durability gate.
+
+That external Git gate does not require another RFC-075 Source-of-Truth
+record.
