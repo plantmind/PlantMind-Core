@@ -7,20 +7,21 @@
 | Project | PlantMind PM-001 |
 | Branch | `feature/engineering-platform` |
 | Last Fully Closed RFC | RFC-074 — Canonical Document Content Parsing Application Boundary — Fully Closed and Source-of-Truth Reconciled |
-| Active RFC | RFC-075 — Canonical Document Content Parser Resolution & Dispatch Foundation — Technical Implementation Git Durable / Engineering Closure Documentation Authored / Review Pending |
-| Selected Architecture Workstream | RFC-075 — Canonical Document Content Parser Resolution & Dispatch Foundation — AD-061 Accepted / Technical Implementation Git Durable |
+| Active RFC | RFC-075 — Canonical Document Content Parser Resolution & Dispatch Foundation — Engineering Closure Git Durable / Post-Closure Source-of-Truth Reconciliation Authored / Review Pending |
+| Selected Architecture Workstream | RFC-075 — Canonical Document Content Parser Resolution & Dispatch Foundation — AD-061 Accepted / Technical and Engineering Closure Git Durable |
 | Proposed Successor RFC | None — RFC-075 is the selected active architecture workstream |
 | RFC-075 Selection State | Durable — Committed, Pushed and Exact Identity Verified |
 | RFC-075 Predecessor Baseline | `a86ce4534174e8b815313e2205fa18ecb8f5ef04` — RFC-074 terminal closure |
 | RFC-075 Selection Commit | `66a252310b14d868cfac90d3f23a2f7bc269fe64` — committed / pushed / exact identity verified |
 | RFC-075 Accepted Contract Commit | `9c2ea1afce195f75ae4898ad05187fa5de74a9c9` — committed / pushed / exact identity verified |
 | RFC-075 Technical Implementation Commit | `336ddbd414ded52cecec963506cf9cccb3bd96e5` — committed / pushed / exact identity verified |
+| RFC-075 Engineering Closure Commit | `6764b6e2cbd9b50974bf6ad6ba6e3efb966257aa` — committed / pushed / exact identity verified |
 | RFC-075 Technical Implementation State | Complete / Committed / Pushed / Exact Identity Verified |
 | RFC-075 Focused Verification | 24 passed |
 | RFC-074 + RFC-075 Impacted Verification | 50 passed |
 | RFC-075 Full Regression Baseline | 1078 passed |
-| RFC-075 Engineering Closure State | Documentation Authored / Review Pending |
-| RFC-075 Post-Closure Reconciliation | Pending — Separate Gate After Durable Engineering Closure |
+| RFC-075 Engineering Closure State | Complete / Committed / Pushed / Exact Identity Verified |
+| RFC-075 Post-Closure Reconciliation | Authored / Review Pending |
 | RFC-075 Architecture Decision Candidate | AD-061 — Accepted / Committed / Pushed / Exact Identity Verified |
 | RFC-075 Architecture Contract State | Accepted / Architecture Review Passed / Committed / Pushed / Exact Identity Verified |
 | Architecture Decision | AD-061 — Accepted / Committed / Pushed / Exact Identity Verified |
@@ -5435,3 +5436,112 @@ Review:
 `PLANTMIND-RFC075-CLOSURE-DOCUMENTATION-REVIEW.txt`
 
 Do not stage until closure documentation review passes.
+
+
+---
+
+## RFC-075 Post-Closure Source-of-Truth Reconciliation Handoff
+
+### Durable Anchors
+
+Selection:
+
+`66a252310b14d868cfac90d3f23a2f7bc269fe64`
+
+Accepted contract:
+
+`9c2ea1afce195f75ae4898ad05187fa5de74a9c9`
+
+Technical implementation:
+
+`336ddbd414ded52cecec963506cf9cccb3bd96e5`
+
+Engineering closure:
+
+`6764b6e2cbd9b50974bf6ad6ba6e3efb966257aa`
+
+Closure Local / Tracking / Remote:
+
+**PASS — EXACT**
+
+Working tree:
+
+**CLEAN**
+
+### Preserved Result
+
+Canonical resolver:
+
+`app.document_parsing.resolver.DocumentContentParserResolver`
+
+Canonical dispatcher:
+
+`app.document_parsing.dispatching_parser.DispatchingDocumentContentParser`
+
+Resolution identity:
+
+`DocumentContentMediaType`
+
+RFC-073 payload ownership remains unchanged.
+
+RFC-074 Application parsing and result validation remain unchanged.
+
+RFC-075 owns resolution and dispatch only.
+
+RFC-065 Knowledge-ingestion ownership remains unchanged.
+
+### Verification
+
+RFC-075 focused:
+
+**24 passed**
+
+RFC-074 plus RFC-075 impacted:
+
+**50 passed**
+
+Full regression:
+
+**1078 passed**
+
+Alembic:
+
+`0005`
+
+### Current Handoff State
+
+Engineering closure:
+
+**COMPLETE / COMMITTED / PUSHED / EXACT IDENTITY VERIFIED**
+
+Post-closure reconciliation:
+
+**AUTHORED — REVIEW PENDING**
+
+Reconciliation commit:
+
+**NOT YET CREATED**
+
+Final reconciliation verification:
+
+**NOT YET CREATED**
+
+RFC-075 terminal closure:
+
+**NOT YET CLAIMED**
+
+Last fully closed RFC:
+
+**RFC-074**
+
+Successor:
+
+**NONE / NOT AUTHORIZED**
+
+### Next Exact Action
+
+Review:
+
+`PLANTMIND-RFC075-POST-CLOSURE-RECONCILIATION-REVIEW.txt`
+
+Do not stage before reconciliation review passes.
