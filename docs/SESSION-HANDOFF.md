@@ -6,14 +6,22 @@
 |---|---|
 | Project | PlantMind PM-001 |
 | Branch | `feature/engineering-platform` |
-| Last Fully Closed RFC | RFC-076 — Canonical Document Content Parser Binding & Registry-Backed Resolver Adapter — Fully Closed and Source-of-Truth Reconciled |
-| Active RFC | RFC-077 — Canonical UTF-8 Plain Text Document Content Parser — Selection Approved / AD-063 Accepted / Combined Git Durability Pending |
-| Selected Architecture Workstream | RFC-077 — Canonical UTF-8 Plain Text Document Content Parser — Architecture Review Passed / Acceptance Authored |
-| Proposed Successor RFC | None — RFC-077 is the selected candidate workstream |
+| Last Fully Closed RFC | RFC-077 — Canonical UTF-8 Plain Text Document Content Parser — Fully Closed and Source-of-Truth Reconciled |
+| Active RFC | None — RFC-077 Fully Closed and Source-of-Truth Reconciled; successor selection not started |
+| Selected Architecture Workstream | None — RFC-077 completed; successor not selected |
+| Proposed Successor RFC | None — successor selection has not started |
 | RFC-077 Predecessor Baseline | `529e74866be2a1591a104f7c290c61518a916426` — RFC-076 terminal closure |
-| RFC-077 Selection State | Approved / Combined Acceptance Authored / Git Durability Pending |
-| RFC-077 Architecture Decision Candidate | AD-063 — Accepted / Git Durability Pending |
-| RFC-077 Implementation Authorization | No |
+| RFC-077 Selection State | Durable — Committed, Pushed and Exact Identity Verified |
+| RFC-077 Architecture Decision Candidate | AD-063 — Accepted / Committed / Pushed / Exact Identity Verified |
+| RFC-077 Implementation Authorization | Completed under AD-063 — Technical Implementation Committed / Pushed / Exact Identity Verified |
+| RFC-077 Selection / Accepted Contract Commit | `e74e0317e0c9c760553f948f73f00ad7d60efd13` — committed / pushed / exact identity verified |
+| RFC-077 Technical Implementation Commit | `3434ba2f0b0fec2c90a832a8d05f3c1b3da112be` — committed / pushed / exact identity verified |
+| RFC-077 Architecture Contract State | Accepted / Architecture Review Passed / Committed / Pushed / Exact Identity Verified |
+| RFC-077 Technical Implementation State | Complete / Committed / Pushed / Exact Identity Verified |
+| RFC-077 Focused Verification | 44 passed |
+| RFC-075 + RFC-076 + RFC-077 Impacted Verification | 101 passed |
+| RFC-077 Full Regression Baseline | 1155 passed |
+| RFC-077 State | Fully Closed and Source-of-Truth Reconciled |
 | RFC-076 Predecessor Baseline | `fc480caf5ef1ac91a24eb3177434d5daa2feed09` — RFC-075 terminal closure |
 | RFC-076 Selection State | Durable — Committed, Pushed and Exact Identity Verified |
 | RFC-076 Architecture Decision Candidate | AD-062 — Accepted / Committed / Pushed / Exact Identity Verified |
@@ -41,7 +49,7 @@
 | RFC-075 State | Fully Closed and Source-of-Truth Reconciled |
 | RFC-075 Architecture Decision Candidate | AD-061 — Accepted / Committed / Pushed / Exact Identity Verified |
 | RFC-075 Architecture Contract State | Accepted / Architecture Review Passed / Committed / Pushed / Exact Identity Verified |
-| Architecture Decision | AD-062 — Accepted / Committed / Pushed / Exact Identity Verified |
+| Architecture Decision | AD-063 — Accepted / Committed / Pushed / Exact Identity Verified |
 | RFC-074 Selection State | Durable — Committed, Pushed and Exact Identity Verified |
 | RFC-074 Selection Commit | `b5d1e7fe434378ac7ee90912ac40932d5c5451eb` — committed / pushed / exact identity verified |
 | RFC-074 Architecture Contract State | Accepted / Architecture Review Passed / Committed / Pushed / Exact Identity Verified |
@@ -88,7 +96,7 @@
 | RFC-069 Reconciliation Commit | `231e0cc66862c797e299fdb71ff20da8a39e8ae2` |
 | RFC-069 Reconciliation Push | Verified |
 | RFC-069 Local / Tracking / Remote Reconciliation Identity | Verified |
-| Test Baseline | 1111 passed |
+| Test Baseline | 1155 passed |
 | RFC-070 Engineering Closure Commit | `ab4438b02a8f34f83b462e3d8a86b4b5ab5d1092` |
 | RFC-070 Engineering Closure State | Complete, Pushed and Verified |
 | RFC-070 Local / Tracking / Remote Closure Identity | Verified |
@@ -111,7 +119,7 @@
 | Alembic Head | `0005` |
 | Authoritative Environment | `PlantMind-Core/.venv` |
 | RFC-069 State | Fully Closed and Source-of-Truth Reconciled |
-| Successor RFC Selection | RFC-077 — Selection Approved / AD-063 Accepted / Combined Git Durability Pending |
+| Successor RFC Selection | None — RFC-077 fully closed; successor selection not started |
 ## Recent Engineering Sequence
 
 - RFC-025 — Core Plugin Framework
@@ -5956,3 +5964,69 @@ Implementation:
 Next review artifact:
 
 `PLANTMIND-RFC077-AD063-ACCEPTANCE-REVIEW.txt`
+
+
+---
+
+## RFC-077 Compact Final Closure and Reconciliation Handoff
+
+RFC-077 — Canonical UTF-8 Plain Text Document Content Parser is:
+
+**FULLY CLOSED AND SOURCE-OF-TRUTH RECONCILED**
+
+AD-063 is:
+
+**ACCEPTED / GIT DURABLE**
+
+### Durable Anchors
+
+Selection / accepted contract:
+
+`e74e0317e0c9c760553f948f73f00ad7d60efd13`
+
+Technical implementation:
+
+`3434ba2f0b0fec2c90a832a8d05f3c1b3da112be`
+
+Technical Local / Tracking / Remote:
+
+**PASS — EXACT**
+
+### Final Technical State
+
+- RFC-077 focused: **44 passed**;
+- RFC-075 plus RFC-076 plus RFC-077 impacted: **101 passed**;
+- full regression: **1155 passed**;
+- Alembic: `0005`;
+- strict UTF-8 policy: **VERIFIED**;
+- one-leading-BOM policy: **VERIFIED**;
+- exact text and newline preservation: **VERIFIED**;
+- external dependency: **NONE**;
+- Runtime wiring: **NONE**.
+
+### Delivered Boundary
+
+Concrete parser:
+
+`app.infrastructure.document_parsing.utf8_plain_text_parser.Utf8PlainTextDocumentContentParser`
+
+RFC-073 through RFC-077, RFC-065 and AD-006 ownership boundaries remain
+coordinated and unchanged outside RFC-077's accepted responsibility.
+
+No downstream parser-registration or AI capability is promoted.
+
+### Handoff Control
+
+Active RFC:
+
+**NONE**
+
+Selected successor:
+
+**NONE**
+
+Successor selection must start separately through evidence-based governance.
+
+This compact final record intentionally does not predict its own future Git
+commit identity. One external Git durability gate completes RFC-077 without
+another reconciliation or final-record cycle.

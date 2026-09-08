@@ -19168,3 +19168,68 @@ Staging / commit / push:
 Next gate:
 
 Combined acceptance review, then one Git durability transaction.
+
+
+---
+
+## RFC-077 Compact Final Closure and Reconciliation Gate
+
+### Status
+
+**FULLY CLOSED AND SOURCE-OF-TRUTH RECONCILED**
+
+Workstream:
+
+**RFC-077 — Canonical UTF-8 Plain Text Document Content Parser**
+
+Architecture:
+
+**AD-063 — ACCEPTED / GIT DURABLE**
+
+### Durable Evidence
+
+- selection / accepted-contract commit: `e74e0317e0c9c760553f948f73f00ad7d60efd13`;
+- technical implementation commit: `3434ba2f0b0fec2c90a832a8d05f3c1b3da112be`;
+- technical patch: `a3ed6eef6dfd4ce288589d5eee85b69059e493af00b1a2facad16d66a4846d85`;
+- exact Local / Tracking / Remote identity: **PASS**;
+- ahead / behind: **0 / 0**;
+- working tree: **CLEAN**.
+
+### Verification
+
+- RFC-077 focused: **44 passed**;
+- RFC-075 plus RFC-076 plus RFC-077 impacted: **101 passed**;
+- full regression: **1155 passed**;
+- Alembic head: `0005`.
+
+### Delivered Boundary
+
+- exact canonical `text/plain`;
+- strict incremental UTF-8 decoding;
+- one optional leading UTF-8 BOM removed;
+- exact remaining Unicode and newline preservation;
+- fixed 1 MiB forward-only reads;
+- existing canonical errors with cause preservation;
+- no external dependency or Runtime wiring.
+
+### Preserved Deferrals
+
+No encoding detection, non-UTF-8 support, fallback, parser registration,
+PDF, DOCX, spreadsheet, OCR, metadata extraction,
+Runtime/Composition/Bootstrap, Document Library, chunking,
+Search/Vector/Graph/RAG/LLM, API, migration or production-security scope.
+
+### Current Control
+
+Active RFC:
+
+**NONE**
+
+Selected successor:
+
+**NONE**
+
+Successor selection has not started.
+
+This compact final record requires only one external commit/push durability
+verification and no additional RFC-077 reconciliation cycle.

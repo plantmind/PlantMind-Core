@@ -10310,3 +10310,63 @@ Implementation remains:
 Staging / commit / push:
 
 **NOT PERFORMED**
+
+
+---
+
+## 2026-09-08 — RFC-077 Compact Engineering Closure and Reconciliation Verification
+
+RFC-077 — Canonical UTF-8 Plain Text Document Content Parser is documented as:
+
+**FULLY CLOSED AND SOURCE-OF-TRUTH RECONCILED**
+
+Architecture Decision:
+
+**AD-063 — ACCEPTED / GIT DURABLE**
+
+### Durable Commit Chain
+
+- selection / accepted contract: `e74e0317e0c9c760553f948f73f00ad7d60efd13`;
+- technical implementation: `3434ba2f0b0fec2c90a832a8d05f3c1b3da112be`.
+
+### Delivered Boundary
+
+- exact canonical `text/plain`;
+- strict incremental UTF-8 decoding;
+- one optional leading BOM removed;
+- all later Unicode and newline sequences preserved;
+- fixed 1 MiB forward-only reads;
+- invalid UTF-8 mapped to the existing invalid-content error with cause;
+- operational read failures propagated unchanged;
+- no external dependency or Runtime wiring.
+
+### Final Verification
+
+- RFC-077 focused: **44 passed**;
+- RFC-075 plus RFC-076 plus RFC-077 impacted: **101 passed**;
+- full regression: **1155 passed**;
+- Alembic: `0005`;
+- technical Local / Tracking / Remote: **EXACT**;
+- ahead / behind: **0 / 0**;
+- working tree: **CLEAN**.
+
+### Preserved Scope
+
+No encoding detection, non-UTF-8 support, fallback, PDF, DOCX, spreadsheet,
+OCR, metadata extraction, parser registration, Runtime/Composition/Bootstrap
+wiring, Document Library, chunking, Search/Vector/Graph/RAG/LLM, API,
+migration or production-security capability is promoted.
+
+### Governed State
+
+Active RFC:
+
+**NONE**
+
+Selected successor:
+
+**NONE**
+
+This compact record is non-self-referential. Its own future commit and push
+are verified by one external Git durability gate and require no further
+RFC-077 documentation cycle.

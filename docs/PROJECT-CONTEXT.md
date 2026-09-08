@@ -9,14 +9,22 @@
 | Status | Active Development |
 | Deployment Model | On-Premise |
 | Development Branch | `feature/engineering-platform` |
-| Last Fully Closed RFC | RFC-076 — Canonical Document Content Parser Binding & Registry-Backed Resolver Adapter — Fully Closed and Source-of-Truth Reconciled |
-| Active RFC | RFC-077 — Canonical UTF-8 Plain Text Document Content Parser — Selection Approved / AD-063 Accepted / Combined Git Durability Pending |
-| Selected Architecture Workstream | RFC-077 — Canonical UTF-8 Plain Text Document Content Parser — Architecture Review Passed / Acceptance Authored |
-| Proposed Successor RFC | None — RFC-077 is the selected candidate workstream |
+| Last Fully Closed RFC | RFC-077 — Canonical UTF-8 Plain Text Document Content Parser — Fully Closed and Source-of-Truth Reconciled |
+| Active RFC | None — RFC-077 Fully Closed and Source-of-Truth Reconciled; successor selection not started |
+| Selected Architecture Workstream | None — RFC-077 completed; successor not selected |
+| Proposed Successor RFC | None — successor selection has not started |
 | RFC-077 Predecessor Baseline | `529e74866be2a1591a104f7c290c61518a916426` — RFC-076 terminal closure |
-| RFC-077 Selection State | Approved / Combined Acceptance Authored / Git Durability Pending |
-| RFC-077 Architecture Decision Candidate | AD-063 — Accepted / Git Durability Pending |
-| RFC-077 Implementation Authorization | No |
+| RFC-077 Selection State | Durable — Committed, Pushed and Exact Identity Verified |
+| RFC-077 Architecture Decision Candidate | AD-063 — Accepted / Committed / Pushed / Exact Identity Verified |
+| RFC-077 Implementation Authorization | Completed under AD-063 — Technical Implementation Committed / Pushed / Exact Identity Verified |
+| RFC-077 Selection / Accepted Contract Commit | `e74e0317e0c9c760553f948f73f00ad7d60efd13` — committed / pushed / exact identity verified |
+| RFC-077 Technical Implementation Commit | `3434ba2f0b0fec2c90a832a8d05f3c1b3da112be` — committed / pushed / exact identity verified |
+| RFC-077 Architecture Contract State | Accepted / Architecture Review Passed / Committed / Pushed / Exact Identity Verified |
+| RFC-077 Technical Implementation State | Complete / Committed / Pushed / Exact Identity Verified |
+| RFC-077 Focused Verification | 44 passed |
+| RFC-075 + RFC-076 + RFC-077 Impacted Verification | 101 passed |
+| RFC-077 Full Regression Baseline | 1155 passed |
+| RFC-077 State | Fully Closed and Source-of-Truth Reconciled |
 | RFC-076 Predecessor Baseline | `fc480caf5ef1ac91a24eb3177434d5daa2feed09` — RFC-075 terminal closure |
 | RFC-076 Selection State | Durable — Committed, Pushed and Exact Identity Verified |
 | RFC-076 Architecture Decision Candidate | AD-062 — Accepted / Committed / Pushed / Exact Identity Verified |
@@ -45,7 +53,7 @@
 | RFC-075 Architecture Contract State | Accepted / Architecture Review Passed / Committed / Pushed / Exact Identity Verified |
 | RFC-069 Selection Commit | `5d7794352029576e0b62c2ac8cbfa248fe11961d` |
 | RFC-070 Selection Commit | `13cfccc08d8c0a3b891990d38edaf9fc48874a5e` |
-| Architecture Decision | AD-062 — Accepted / Committed / Pushed / Exact Identity Verified |
+| Architecture Decision | AD-063 — Accepted / Committed / Pushed / Exact Identity Verified |
 | RFC-074 Selection State | Durable — Committed, Pushed and Exact Identity Verified |
 | RFC-074 Selection Commit | `b5d1e7fe434378ac7ee90912ac40932d5c5451eb` — committed / pushed / exact identity verified |
 | RFC-074 Architecture Contract State | Accepted / Architecture Review Passed / Committed / Pushed / Exact Identity Verified |
@@ -89,7 +97,7 @@
 | RFC-069 Engineering Closure Commit | `63790de5312c69c709e2249b56e91995a00426b6` |
 | RFC-069 Post-Closure Reconciliation Commit | `231e0cc66862c797e299fdb71ff20da8a39e8ae2` |
 | RFC-069 Reconciliation Verification | PASS — Committed, Pushed, Exact Local / Tracking / Remote Identity Verified |
-| Test Baseline | 1111 passed |
+| Test Baseline | 1155 passed |
 | RFC-070 Engineering Closure Commit | `ab4438b02a8f34f83b462e3d8a86b4b5ab5d1092` |
 | RFC-070 Engineering Closure State | Complete, Pushed and Verified |
 | RFC-070 Post-Closure Reconciliation | Complete, Pushed and Verified |
@@ -6696,3 +6704,127 @@ Alembic remains:
 
 Review the combined RFC-077 / AD-063 acceptance record, then perform one
 staging / commit / push durability transaction.
+
+
+---
+
+## RFC-077 Compact Final Closure and Source-of-Truth Reconciliation State
+
+### Final State
+
+RFC-077 — Canonical UTF-8 Plain Text Document Content Parser is:
+
+**FULLY CLOSED AND SOURCE-OF-TRUTH RECONCILED**
+
+AD-063 — Canonical UTF-8 Plain Text Document Content Parser Contract is:
+
+**ACCEPTED / GIT DURABLE**
+
+### Durable Commit Chain
+
+Selection and accepted contract:
+
+`e74e0317e0c9c760553f948f73f00ad7d60efd13`
+
+Technical implementation:
+
+`3434ba2f0b0fec2c90a832a8d05f3c1b3da112be`
+
+Technical Local / Tracking / Remote:
+
+**PASS — EXACT**
+
+Ahead / behind:
+
+**0 / 0**
+
+Working tree at record entry:
+
+**CLEAN**
+
+### Delivered Capability
+
+Concrete parser:
+
+`app.infrastructure.document_parsing.utf8_plain_text_parser.Utf8PlainTextDocumentContentParser`
+
+Canonical media type:
+
+`text/plain`
+
+Encoding:
+
+**STRICT UTF-8**
+
+Decoder:
+
+`utf-8-sig`
+
+Read size:
+
+`1024 * 1024`
+
+Exactly one optional leading UTF-8 BOM is removed.
+
+All later Unicode text and newline sequences are preserved exactly.
+
+Invalid UTF-8 maps to the existing invalid-content failure with the
+originating `UnicodeDecodeError` preserved as cause.
+
+### Final Verification
+
+RFC-077 focused:
+
+**44 passed**
+
+RFC-075 plus RFC-076 plus RFC-077 impacted:
+
+**101 passed**
+
+Full regression:
+
+**1155 passed**
+
+Alembic:
+
+`0005`
+
+Technical patch:
+
+`a3ed6eef6dfd4ce288589d5eee85b69059e493af00b1a2facad16d66a4846d85`
+
+### Preserved Boundaries
+
+RFC-073 owns verified content access and payload lifetime.
+
+RFC-074 owns parsing Application orchestration and result validation.
+
+RFC-075 owns parser resolution and dispatch.
+
+RFC-076 owns binding and registry-backed resolution.
+
+RFC-077 owns strict UTF-8 plain-text decoding only.
+
+RFC-065 owns prepared Knowledge ingestion.
+
+AD-006 registry ownership remains unchanged.
+
+No parser registration, Runtime wiring, non-UTF-8 support, PDF, DOCX,
+spreadsheet, OCR, Document Library, chunking, Search/Vector/Graph/RAG/LLM,
+API or migration capability is promoted.
+
+### Governed State
+
+Active RFC:
+
+**NONE**
+
+Selected successor:
+
+**NONE**
+
+Successor selection has not started.
+
+This is a non-self-referential compact terminal record. Its own future Git
+commit and push are verified externally without another RFC-077 documentation
+cycle.

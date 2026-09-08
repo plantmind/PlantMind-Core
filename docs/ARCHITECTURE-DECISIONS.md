@@ -22073,7 +22073,7 @@ Implementation:
 
 ## Status
 
-**ACCEPTED — GIT DURABILITY PENDING**
+**ACCEPTED / GIT DURABLE**
 
 Related workstream:
 
@@ -22083,11 +22083,9 @@ Durable predecessor:
 
 `529e74866be2a1591a104f7c290c61518a916426`
 
-Latest Git-durable Accepted Architecture Decision remains:
+Latest Git-durable Accepted Architecture Decision is:
 
-**AD-062**
-
-AD-063 is Accepted locally; its Git durability is pending.
+**AD-063**
 
 ## Context
 
@@ -22471,19 +22469,31 @@ Tests SHALL prove at minimum:
 
 AD-063:
 
-**ACCEPTED — GIT DURABILITY PENDING**
+**ACCEPTED / GIT DURABLE**
 
 Architecture review:
 
 **PASS — NO REMAINING REFINE / NO BLOCKED ITEM**
 
-Implementation:
+Technical implementation:
 
-**NOT AUTHORIZED**
+**COMPLETE / COMMITTED / PUSHED / EXACT IDENTITY VERIFIED**
 
-No Production or test code change is authorized before the combined
-selection / accepted-contract Git durability gate and a separate
-implementation-entry review.
+Focused verification:
+
+**44 passed**
+
+RFC-075 plus RFC-076 plus RFC-077 impacted verification:
+
+**101 passed**
+
+Full PlantMind regression:
+
+**1155 passed**
+
+Canonical Alembic head:
+
+`0005`
 
 
 ---
@@ -22691,3 +22701,161 @@ Implementation:
 Next gate:
 
 Review this combined acceptance record before one Git durability transaction.
+
+
+---
+
+## Current Architecture Governance State — RFC-077 Compact Final Closure and Reconciliation Verification
+
+**Record Classification: Non-Decision Compact Terminal Governance Record**
+
+This record creates no new Architecture Decision.
+
+It does not amend, replace, supersede or rewrite AD-063.
+
+AD-063 remains:
+
+**ACCEPTED / GIT DURABLE**
+
+RFC-077 — Canonical UTF-8 Plain Text Document Content Parser is documented as:
+
+**FULLY CLOSED AND SOURCE-OF-TRUTH RECONCILED**
+
+### Verified Durable Commit Chain
+
+Selection and accepted-contract commit:
+
+`e74e0317e0c9c760553f948f73f00ad7d60efd13`
+
+Technical implementation commit:
+
+`3434ba2f0b0fec2c90a832a8d05f3c1b3da112be`
+
+Technical implementation parent:
+
+`e74e0317e0c9c760553f948f73f00ad7d60efd13`
+
+Technical implementation push:
+
+**PASS**
+
+Exact Local / Tracking / Remote technical identity:
+
+**PASS**
+
+Ahead / behind:
+
+**0 / 0**
+
+Working tree at compact-closure entry:
+
+**CLEAN**
+
+### Delivered Technical Boundary
+
+RFC-077 delivered:
+
+- `Utf8PlainTextDocumentContentParser`;
+- exact canonical `text/plain` support;
+- strict incremental standard-library `utf-8-sig` decoding;
+- removal of exactly one optional leading UTF-8 BOM;
+- preservation of every later Unicode code point and newline sequence;
+- fixed positive 1 MiB forward-only payload reads;
+- existing canonical unsupported-media and invalid-content failures;
+- preservation of the originating `UnicodeDecodeError` as cause;
+- unchanged propagation of operational payload-read failures.
+
+### Verified Parser Semantics
+
+Invalid descriptor input fails before payload access.
+
+Unsupported media type fails before payload access.
+
+The parser performs no seek, tell, fileno, close, reopen or second pass.
+
+The parser does not re-verify descriptor digest or byte length.
+
+The parser introduces no complete raw-payload replay buffer, spool or
+temporary file.
+
+No external parser or encoding-detection dependency is introduced.
+
+No Runtime, Composition Root, Bootstrap, binding or registration wiring is
+introduced.
+
+### Final Engineering Verification
+
+Focused RFC-077:
+
+**44 passed**
+
+RFC-075 plus RFC-076 plus RFC-077 impacted:
+
+**101 passed**
+
+Full PlantMind regression:
+
+**1155 passed**
+
+Canonical Alembic head:
+
+`0005`
+
+Reviewed and committed technical patch SHA-256:
+
+`a3ed6eef6dfd4ce288589d5eee85b69059e493af00b1a2facad16d66a4846d85`
+
+### Preserved Architecture
+
+RFC-073 remains the verified Document Content access, integrity and
+payload-lifetime owner.
+
+RFC-074 remains the canonical parsing Application boundary and result-type
+validation owner.
+
+RFC-075 remains parser resolution and dispatch owner.
+
+RFC-076 remains immutable parser binding and registry-backed resolver owner.
+
+RFC-077 owns strict UTF-8 decoding for canonical `text/plain` only.
+
+RFC-065 remains prepared Document-to-Knowledge ingestion owner.
+
+AD-006 registry responsibilities remain unchanged.
+
+No non-UTF-8 support, encoding detection, fallback, default parser, PDF,
+DOCX, spreadsheet, image, OCR, metadata extraction, parser registration,
+Runtime/Composition/Bootstrap wiring, Document Library, chunking, automatic
+Knowledge ingestion, Search/Vector/Graph/RAG/LLM, AI Agent, API,
+schema/migration or production-security capability is promoted.
+
+### Governed State After RFC-077
+
+Last fully closed RFC:
+
+**RFC-077**
+
+Active RFC:
+
+**NONE**
+
+Selected successor:
+
+**NONE**
+
+Successor-workstream selection has not started.
+
+### Non-Self-Referential Compact Final Record
+
+This compact terminal record intentionally records only commits already Git
+Durable through the technical implementation commit:
+
+`3434ba2f0b0fec2c90a832a8d05f3c1b3da112be`
+
+It does not predict the future Git commit hash that will persist this
+five-document closure and reconciliation record.
+
+Verification of that future commit, push, exact Local / Tracking / Remote
+identity and clean working tree is an external Git durability gate.
+
+That external gate does not require another RFC-077 Source-of-Truth record.
