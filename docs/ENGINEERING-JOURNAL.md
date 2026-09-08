@@ -10197,3 +10197,116 @@ Selected successor:
 This compact record is non-self-referential. Its own future commit and push
 are verified by one external Git durability gate and require no further
 RFC-076 documentation cycle.
+
+
+---
+
+## 2026-09-08 — RFC-077 / AD-063 Selection and Architecture Candidate Authored
+
+### Durable Starting Point
+
+RFC-076 terminal commit:
+
+`529e74866be2a1591a104f7c290c61518a916426`
+
+RFC-076 remains:
+
+**FULLY CLOSED AND SOURCE-OF-TRUTH RECONCILED**
+
+### Selected Candidate
+
+**RFC-077 — Canonical UTF-8 Plain Text Document Content Parser**
+
+Architecture candidate:
+
+**AD-063 — Canonical UTF-8 Plain Text Document Content Parser Contract**
+
+### Candidate Direction
+
+The proposed first concrete parser:
+
+- supports exact canonical `text/plain`;
+- uses strict incremental `utf-8-sig` decoding;
+- removes exactly one leading UTF-8 BOM;
+- preserves all remaining decoded text and newline sequences;
+- uses bounded forward-only reads;
+- maps `UnicodeDecodeError` to the existing invalid-content error;
+- introduces no external parser dependency or Runtime wiring.
+
+### Current State
+
+Combined selection and architecture authoring:
+
+**COMPLETE — REVIEW PENDING**
+
+AD-063 acceptance:
+
+**NOT PERFORMED**
+
+Implementation:
+
+**NOT AUTHORIZED**
+
+Staging:
+
+**NOT PERFORMED**
+
+Commit:
+
+**NOT PERFORMED**
+
+Push:
+
+**NOT PERFORMED**
+
+
+---
+
+## 2026-09-08 — RFC-077 / AD-063 Combined Acceptance Authored
+
+RFC-076 terminal baseline:
+
+`529e74866be2a1591a104f7c290c61518a916426`
+
+RFC-077 selection review:
+
+**PASS**
+
+AD-063 architecture review:
+
+**PASS — NO REMAINING REFINE**
+
+RFC-077 selection:
+
+**APPROVED / GIT DURABILITY PENDING**
+
+AD-063:
+
+**ACCEPTED / GIT DURABILITY PENDING**
+
+### Accepted Direction
+
+The first concrete parser:
+
+- supports exact canonical `text/plain`;
+- validates descriptor and media type before payload access;
+- uses strict incremental standard-library `utf-8-sig` decoding;
+- removes exactly one optional leading UTF-8 BOM;
+- preserves all later Unicode text and newline sequences;
+- uses fixed 1 MiB forward-only bounded reads;
+- maps `UnicodeDecodeError` to the existing invalid-content error with cause;
+- propagates payload-read operational failures unchanged;
+- introduces no raw full-payload buffer, external dependency or Runtime wiring.
+
+### Current State
+
+Selection and architecture acceptance await one combined Git durability
+transaction.
+
+Implementation remains:
+
+**NOT AUTHORIZED**
+
+Staging / commit / push:
+
+**NOT PERFORMED**

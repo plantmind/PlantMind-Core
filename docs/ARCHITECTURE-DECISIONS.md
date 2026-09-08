@@ -22014,3 +22014,680 @@ Verification of that future commit, push, exact Local / Tracking / Remote
 identity and clean working tree is an external Git durability gate.
 
 That external gate does not require another RFC-076 Source-of-Truth record.
+
+
+---
+
+## RFC-077 Successor Workstream Selection Record
+
+**Record Classification: Non-Decision Successor Selection Record**
+
+RFC-076 remains:
+
+**FULLY CLOSED AND SOURCE-OF-TRUTH RECONCILED**
+
+RFC-076 terminal commit:
+
+`529e74866be2a1591a104f7c290c61518a916426`
+
+### Selected Successor Candidate
+
+**RFC-077 — Canonical UTF-8 Plain Text Document Content Parser**
+
+### Evidence-Based Reason
+
+RFC-074 established the canonical parsing Application boundary.
+
+RFC-075 established parser resolution and dispatch.
+
+RFC-076 established immutable parser bindings and the registry-backed resolver
+adapter.
+
+The canonical parser stack still has no concrete parser implementation.
+
+The lowest-risk first concrete capability is deterministic plain-text decoding
+using only the Python standard library.
+
+A Runtime / Composition workstream before any concrete parser would preserve a
+fail-closed stack without delivering parsing value.
+
+A PDF or OCR parser would require external parser technology and separate
+resource, sandboxing and production-security review.
+
+### Selection State
+
+RFC-077 selection and AD-063 architecture candidate:
+
+**REVIEWED — SELECTION APPROVED / AD-063 ACCEPTED LOCALLY**
+
+Formal Git-durable selection and architecture contract:
+
+**PENDING COMBINED ACCEPTANCE COMMIT / PUSH**
+
+Implementation:
+
+**NOT AUTHORIZED**
+
+
+# AD-063 — Canonical UTF-8 Plain Text Document Content Parser Contract
+
+## Status
+
+**ACCEPTED — GIT DURABILITY PENDING**
+
+Related workstream:
+
+**RFC-077 — Canonical UTF-8 Plain Text Document Content Parser**
+
+Durable predecessor:
+
+`529e74866be2a1591a104f7c290c61518a916426`
+
+Latest Git-durable Accepted Architecture Decision remains:
+
+**AD-062**
+
+AD-063 is Accepted locally; its Git durability is pending.
+
+## Context
+
+The accepted parser port is:
+
+`app.document_parsing.parser.DocumentContentParser`
+
+It receives:
+
+- one verified canonical `DocumentContentDescriptor`;
+- one borrowed binary readable payload;
+- and returns one `str`.
+
+The canonical content model intentionally excludes media-type parameters such
+as `charset`.
+
+Character-encoding detection, declaration, conversion and normalization were
+deferred from the Document Content foundation to concrete parser
+responsibility.
+
+The parser stack now requires one deterministic first concrete parser without
+introducing third-party parser technology, Runtime wiring or a new persistence
+boundary.
+
+## Decision Candidate
+
+RFC-077 SHALL introduce:
+
+`app.infrastructure.document_parsing.utf8_plain_text_parser.Utf8PlainTextDocumentContentParser`
+
+The class SHALL implement:
+
+`DocumentContentParser`
+
+It SHALL be stateless and reusable.
+
+It SHALL define no mutable module-level or process-global state.
+
+It SHALL require no constructor dependency.
+
+## Supported Canonical Media Type
+
+The parser SHALL support exactly:
+
+`text/plain`
+
+Support SHALL be determined only from:
+
+`descriptor.media_type.value`
+
+The value is already canonicalized by `DocumentContentMediaType`.
+
+The parser SHALL NOT:
+
+- parse or infer a `charset` parameter;
+- use a filename or extension;
+- inspect a source reference;
+- sniff payload content to choose an encoding;
+- accept wildcard or alias media types;
+- fall back to another parser.
+
+A descriptor whose media type is not exactly `text/plain` SHALL raise the
+existing:
+
+`DocumentContentParserUnsupportedMediaTypeError`
+
+This failure SHALL occur before the first payload read.
+
+No new unsupported-media-type error is introduced.
+
+## Descriptor Contract
+
+The parser SHALL require an actual:
+
+`DocumentContentDescriptor`
+
+A non-descriptor input SHALL raise `TypeError` before payload access.
+
+The parser SHALL preserve descriptor identity and SHALL NOT mutate the
+descriptor.
+
+The parser SHALL NOT re-verify:
+
+- `descriptor.byte_length`;
+- `descriptor.digest`;
+- repository state;
+- store state.
+
+Those responsibilities remain with RFC-073 verified Document Content access.
+
+## Canonical Encoding Policy
+
+`text/plain` selected for this parser SHALL mean:
+
+**STRICT UTF-8**
+
+The parser SHALL use deterministic strict UTF-8 decoding.
+
+It SHALL NOT perform:
+
+- encoding detection;
+- encoding fallback;
+- replacement-character recovery;
+- locale-dependent decoding;
+- platform-default decoding;
+- transcoding from UTF-16, UTF-32, Latin-1 or another encoding;
+- Unicode normalization;
+- case normalization;
+- whitespace trimming;
+- control-character filtering.
+
+Non-UTF-8 bytes SHALL fail closed as invalid parser content.
+
+## UTF-8 BOM Policy
+
+A UTF-8 BOM byte sequence at absolute parser-input byte position zero:
+
+`EF BB BF`
+
+SHALL be accepted and omitted from the returned text.
+
+A BOM SHALL NOT be required.
+
+Exactly one leading UTF-8 BOM SHALL be consumed as the encoding signature.
+
+A second consecutive BOM or any U+FEFF occurring after the initial signature
+position SHALL remain in the returned text as U+FEFF.
+
+UTF-16 and UTF-32 BOMs SHALL NOT trigger alternate decoding and SHALL fail under
+strict UTF-8 when their bytes are invalid UTF-8.
+
+The BOM decision SHALL remain correct when the three BOM bytes arrive across
+multiple payload reads.
+
+## Newline and Text Preservation
+
+After the optional leading UTF-8 BOM is removed, the parser SHALL preserve the
+decoded Unicode text exactly.
+
+It SHALL NOT translate or normalize:
+
+- LF;
+- CRLF;
+- CR;
+- mixed newline sequences.
+
+It SHALL preserve:
+
+- leading and trailing whitespace;
+- empty lines;
+- tabs;
+- NUL and other valid decoded code points;
+- internal U+FEFF;
+- a second leading U+FEFF after one consumed UTF-8 BOM.
+
+An empty payload SHALL be valid and SHALL return the empty string.
+
+## Bounded Streaming Decode
+
+The parser SHALL consume the borrowed payload from its current position to EOF
+in one forward pass.
+
+It SHALL use a fixed positive bounded read size:
+
+`1024 * 1024` bytes
+
+It SHALL use a Python standard-library incremental:
+
+`utf-8-sig`
+
+decoder with strict error handling.
+
+This SHALL allow:
+
+- a UTF-8 BOM to be divided across reads;
+- a multibyte UTF-8 code point to be divided across reads;
+- incomplete trailing sequences to fail during final decoder flush.
+
+The parser SHALL NOT:
+
+- call `read()` without a positive size;
+- call `seek`;
+- call `tell`;
+- call `fileno`;
+- close the borrowed payload;
+- reopen the payload;
+- perform a second pass;
+- retain the payload after return or failure;
+- pre-buffer the complete raw payload.
+
+The returned `str` necessarily materializes the decoded textual result under
+the existing parser port. RFC-077 introduces no separate raw-byte replay
+buffer, spool or temporary file.
+
+## Payload Read Contract
+
+Every successful payload `read(size)` result SHALL be an exact `bytes` value.
+
+A non-`bytes` read result SHALL raise `TypeError`.
+
+The exact empty bytes value:
+
+`b""`
+
+SHALL indicate EOF.
+
+Operational payload-read failures, including `OSError`, SHALL propagate
+unchanged.
+
+The parser SHALL NOT translate an operational read failure into invalid
+content.
+
+## Invalid UTF-8 Failure Contract
+
+A strict UTF-8 decoding failure, including an incomplete trailing sequence,
+SHALL raise the existing:
+
+`DocumentContentParserInvalidContentError`
+
+The originating:
+
+`UnicodeDecodeError`
+
+SHALL remain available as `__cause__`.
+
+The invalid-content message SHALL NOT embed raw payload bytes.
+
+No partial text SHALL be returned after decoding failure.
+
+No new encoding-specific public exception hierarchy is introduced.
+
+## Dependency and Layering Contract
+
+The implementation SHALL use only the Python standard library and existing
+PlantMind contracts.
+
+It SHALL NOT add or import:
+
+- encoding-detection packages;
+- PDF libraries;
+- DOCX libraries;
+- spreadsheet libraries;
+- OCR libraries;
+- parser subprocesses;
+- external services.
+
+The concrete parser SHALL live in the infrastructure Document Content parsing
+adapter package.
+
+It MAY import only the accepted parser port and canonical Document Content
+domain types from higher-level PlantMind contracts.
+
+It SHALL NOT depend on:
+
+- repositories;
+- stores;
+- SQLAlchemy;
+- Alembic;
+- API;
+- Application services;
+- Runtime;
+- Composition Root;
+- Bootstrap;
+- Generic Registry;
+- parser binding or resolver implementation;
+- Knowledge ingestion;
+- Search, Vector, Graph, RAG, LLM or Agents.
+
+## Preserved RFC Ownership
+
+RFC-073 remains the verified content-access, integrity and payload-lifetime
+owner.
+
+RFC-074 remains parsing Application orchestration and result-type validation
+owner.
+
+RFC-075 remains parser resolution and dispatch owner.
+
+RFC-076 remains immutable parser binding and registry-backed resolver owner.
+
+RFC-077 candidate owns only deterministic strict UTF-8 decoding for canonical
+`text/plain`.
+
+RFC-065 remains prepared Document-to-Knowledge ingestion owner.
+
+AD-006 registry responsibilities remain unchanged.
+
+## Explicit Deferrals
+
+RFC-077 SHALL NOT introduce:
+
+- binding or registration of this parser into Runtime;
+- Composition Root or Bootstrap wiring;
+- a default parser;
+- fallback or alias behavior;
+- encoding detection;
+- support for non-UTF-8 text;
+- configurable encoding;
+- configurable newline conversion;
+- Unicode normalization or sanitization;
+- parser-local payload-size policy;
+- buffering, spooling or temporary-file infrastructure;
+- PDF, DOCX, spreadsheet, image or OCR parsing;
+- metadata, table, page or structure extraction;
+- parsed-result persistence;
+- Document Library behavior;
+- chunking;
+- automatic Knowledge ingestion;
+- Search, Vector, Graph, RAG or LLM capability;
+- AI Agents;
+- HTTP/API exposure;
+- database schema or Alembic migrations;
+- production parser sandboxing;
+- production-security or deployment-readiness claims.
+
+Canonical Alembic head remains:
+
+`0005`
+
+## Candidate Initial Technical Surface
+
+If AD-063 is Accepted and Git Durable, implementation may be limited to new
+files:
+
+- `backend/app/infrastructure/document_parsing/utf8_plain_text_parser.py`;
+- `tests/document_parsing/test_utf8_plain_text_document_content_parser.py`;
+- `tests/document_parsing/test_utf8_plain_text_document_content_parser_architecture.py`.
+
+No package marker is required because the infrastructure Document Content
+parsing package already exists.
+
+No change is expected to:
+
+- `backend/app/document_parsing/parser.py`;
+- `backend/app/document_parsing/resolver.py`;
+- `backend/app/document_parsing/dispatching_parser.py`;
+- `backend/app/document_parsing/binding.py`;
+- `backend/app/infrastructure/document_parsing/registry_backed_resolver.py`;
+- RFC-073 content-access implementation;
+- RFC-074 parsing Application service;
+- Generic Registry implementation;
+- domain models;
+- schema or migrations;
+- requirements files.
+
+Any required change outside this candidate surface must return to architecture
+review.
+
+## Required TDD Evidence
+
+Tests SHALL prove at minimum:
+
+1. the parser implements `DocumentContentParser`;
+2. the parser is stateless and retains no descriptor or payload;
+3. non-`DocumentContentDescriptor` input fails before payload read;
+4. a media type other than exact `text/plain` fails before payload read;
+5. empty UTF-8 plain text returns the empty string;
+6. ASCII and multilingual UTF-8 decode exactly;
+7. multibyte code points decode across arbitrary read boundaries;
+8. UTF-8 without BOM is accepted unchanged;
+9. one leading UTF-8 BOM is removed;
+10. a split leading UTF-8 BOM is removed;
+11. a second or internal U+FEFF is preserved;
+12. LF, CRLF, CR and mixed newlines are preserved exactly;
+13. leading/trailing whitespace, tabs, NUL and valid controls are preserved;
+14. invalid UTF-8 raises `DocumentContentParserInvalidContentError`;
+15. the originating `UnicodeDecodeError` remains the cause;
+16. incomplete trailing UTF-8 fails during final decoder flush;
+17. a non-`bytes` read result raises `TypeError`;
+18. payload-read operational failure propagates as the same exception;
+19. every read uses the fixed positive bounded size;
+20. no seek, tell, fileno, close, reopen or second pass occurs;
+21. no complete raw-payload buffering is performed;
+22. descriptor digest and byte length are not re-verified;
+23. RFC-073 through RFC-076 owned files remain byte-identical;
+24. no external parser/encoding dependency or requirements change is introduced;
+25. no binding, registry, Runtime, Composition or Bootstrap wiring is added;
+26. no schema or migration is added.
+
+## Architecture Gate
+
+AD-063:
+
+**ACCEPTED — GIT DURABILITY PENDING**
+
+Architecture review:
+
+**PASS — NO REMAINING REFINE / NO BLOCKED ITEM**
+
+Implementation:
+
+**NOT AUTHORIZED**
+
+No Production or test code change is authorized before the combined
+selection / accepted-contract Git durability gate and a separate
+implementation-entry review.
+
+
+---
+
+## RFC-077 / AD-063 Combined Architecture Acceptance Record
+
+**Record Classification: Combined Selection and Architecture Acceptance**
+
+Durable predecessor:
+
+`529e74866be2a1591a104f7c290c61518a916426`
+
+RFC-077 selection review:
+
+**PASS**
+
+AD-063 architecture review:
+
+**PASS — NO REMAINING REFINE**
+
+RFC-077 selection:
+
+**APPROVED / GIT DURABILITY PENDING**
+
+AD-063:
+
+**ACCEPTED / GIT DURABILITY PENDING**
+
+### Accepted Parser Boundary
+
+RFC-077 owns only deterministic strict UTF-8 decoding for canonical:
+
+`text/plain`
+
+The accepted concrete parser is:
+
+`app.infrastructure.document_parsing.utf8_plain_text_parser.Utf8PlainTextDocumentContentParser`
+
+It implements the existing:
+
+`app.document_parsing.parser.DocumentContentParser`
+
+It is stateless, reusable, constructor-dependency-free and contains no mutable
+module-level or process-global state.
+
+### Accepted Input and Media-Type Rules
+
+The parser requires an actual:
+
+`DocumentContentDescriptor`
+
+Invalid descriptor input fails with `TypeError` before payload access.
+
+Only exact canonical:
+
+`descriptor.media_type.value == "text/plain"`
+
+is accepted.
+
+Any other canonical media type fails with the existing:
+
+`DocumentContentParserUnsupportedMediaTypeError`
+
+before the first payload read.
+
+No filename, extension, source reference, wildcard, alias, fallback or content
+sniffing participates in media-type selection.
+
+### Accepted UTF-8 and BOM Policy
+
+Decoding is:
+
+**STRICT UTF-8**
+
+The implementation uses the Python standard-library incremental:
+
+`utf-8-sig`
+
+decoder with strict error handling.
+
+Exactly one optional leading UTF-8 BOM at parser-input byte position zero is
+accepted and removed.
+
+A second consecutive BOM and every later decoded U+FEFF remain part of the
+returned text.
+
+No encoding detection, fallback, replacement recovery, platform-default
+decoding, transcoding, Unicode normalization, case normalization, trimming or
+control-character filtering is permitted.
+
+### Accepted Streaming and Preservation Rules
+
+The parser reads from the borrowed payload's current position to EOF in one
+forward pass using the fixed positive bounded read size:
+
+`1024 * 1024` bytes
+
+It performs no unbounded read, seek, tell, fileno, close, reopen, second pass,
+payload retention, raw-payload replay buffer, spool or temporary file.
+
+Incremental decoding must remain correct when:
+
+- the UTF-8 BOM is split across reads;
+- a multibyte UTF-8 code point is split across reads;
+- an incomplete final code point is detected during decoder flush.
+
+After optional leading-BOM removal, the returned Unicode text preserves
+exactly:
+
+- LF, CRLF, CR and mixed newline sequences;
+- leading and trailing whitespace;
+- empty lines;
+- tabs;
+- NUL and other valid decoded code points;
+- internal or second U+FEFF.
+
+An empty payload returns the empty string.
+
+The returned `str` is the parser-port result; no separate complete raw-byte
+buffer is introduced.
+
+### Accepted Failure Semantics
+
+Every successful `payload.read(size)` result must be an exact `bytes` value.
+
+A non-`bytes` read result raises `TypeError`.
+
+The exact value `b""` means EOF.
+
+Operational payload-read failures, including `OSError`, propagate unchanged.
+
+A strict UTF-8 failure, including an incomplete trailing sequence, raises the
+existing:
+
+`DocumentContentParserInvalidContentError`
+
+The original `UnicodeDecodeError` remains the exception cause.
+
+The wrapper message contains no raw payload bytes, and no partial text is
+returned.
+
+### Preserved Ownership and Deferrals
+
+RFC-073 retains verified content access, integrity and payload-lifetime
+ownership.
+
+RFC-074 retains parsing Application orchestration and result validation.
+
+RFC-075 retains parser resolution and dispatch.
+
+RFC-076 retains immutable parser binding and registry-backed resolution.
+
+RFC-077 owns strict UTF-8 plain-text decoding only.
+
+RFC-065 retains prepared Knowledge-ingestion ownership.
+
+AD-006 registry responsibilities remain unchanged.
+
+No parser registration, Runtime/Composition/Bootstrap wiring, size-policy
+framework, non-UTF-8 support, PDF, DOCX, spreadsheet, image, OCR, metadata
+extraction, persistence, Document Library, chunking, Search/Vector/Graph/RAG,
+LLM, Agent, API, schema, migration or production-security capability is
+accepted by AD-063.
+
+No external dependency or requirements-file change is authorized.
+
+Canonical Alembic head remains:
+
+`0005`
+
+### Accepted Initial Technical Surface
+
+After Git durability and a separate implementation-entry review, the initial
+technical surface may be limited to these new files:
+
+- `backend/app/infrastructure/document_parsing/utf8_plain_text_parser.py`;
+- `tests/document_parsing/test_utf8_plain_text_document_content_parser.py`;
+- `tests/document_parsing/test_utf8_plain_text_document_content_parser_architecture.py`.
+
+All RFC-073 through RFC-076 owned files, domain models, requirements files,
+schema and migrations are expected to remain unchanged.
+
+### Gate State
+
+Combined acceptance authoring:
+
+**COMPLETE — REVIEW PENDING**
+
+Staging:
+
+**NOT PERFORMED**
+
+Commit:
+
+**NOT YET CREATED**
+
+Push:
+
+**NOT PERFORMED**
+
+Implementation:
+
+**NOT AUTHORIZED**
+
+Next gate:
+
+Review this combined acceptance record before one Git durability transaction.

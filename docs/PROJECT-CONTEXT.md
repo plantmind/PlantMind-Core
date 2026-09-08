@@ -10,9 +10,13 @@
 | Deployment Model | On-Premise |
 | Development Branch | `feature/engineering-platform` |
 | Last Fully Closed RFC | RFC-076 — Canonical Document Content Parser Binding & Registry-Backed Resolver Adapter — Fully Closed and Source-of-Truth Reconciled |
-| Active RFC | None — RFC-076 Fully Closed and Source-of-Truth Reconciled; successor selection not started |
-| Selected Architecture Workstream | None — RFC-076 completed; successor not selected |
-| Proposed Successor RFC | None — successor selection has not started |
+| Active RFC | RFC-077 — Canonical UTF-8 Plain Text Document Content Parser — Selection Approved / AD-063 Accepted / Combined Git Durability Pending |
+| Selected Architecture Workstream | RFC-077 — Canonical UTF-8 Plain Text Document Content Parser — Architecture Review Passed / Acceptance Authored |
+| Proposed Successor RFC | None — RFC-077 is the selected candidate workstream |
+| RFC-077 Predecessor Baseline | `529e74866be2a1591a104f7c290c61518a916426` — RFC-076 terminal closure |
+| RFC-077 Selection State | Approved / Combined Acceptance Authored / Git Durability Pending |
+| RFC-077 Architecture Decision Candidate | AD-063 — Accepted / Git Durability Pending |
+| RFC-077 Implementation Authorization | No |
 | RFC-076 Predecessor Baseline | `fc480caf5ef1ac91a24eb3177434d5daa2feed09` — RFC-075 terminal closure |
 | RFC-076 Selection State | Durable — Committed, Pushed and Exact Identity Verified |
 | RFC-076 Architecture Decision Candidate | AD-062 — Accepted / Committed / Pushed / Exact Identity Verified |
@@ -6564,3 +6568,131 @@ Successor selection has not started.
 This is a non-self-referential compact terminal record. Its own future Git
 commit and push are verified externally without another RFC-076 documentation
 cycle.
+
+
+---
+
+## RFC-077 / AD-063 Selection and Architecture Candidate State
+
+### Durable Predecessor
+
+RFC-076 terminal commit:
+
+`529e74866be2a1591a104f7c290c61518a916426`
+
+RFC-076 remains fully closed and Source-of-Truth reconciled.
+
+### Selected Workstream
+
+**RFC-077 — Canonical UTF-8 Plain Text Document Content Parser**
+
+### Architecture Candidate
+
+**AD-063 — Canonical UTF-8 Plain Text Document Content Parser Contract**
+
+Status:
+
+**PROPOSED — REVIEW PENDING**
+
+### Proposed Technical Direction
+
+- one infrastructure adapter implementing `DocumentContentParser`;
+- exact canonical `text/plain` support;
+- strict incremental UTF-8 decoding;
+- one optional leading UTF-8 BOM removed;
+- exact newline and Unicode preservation thereafter;
+- bounded forward-only binary reads;
+- invalid UTF-8 translated to the existing invalid-content error with cause;
+- no encoding detection, dependency addition or Runtime wiring.
+
+### Current Gate
+
+Selection and architecture candidate:
+
+**AUTHORED — REVIEW PENDING**
+
+Formal Git durability:
+
+**PENDING**
+
+AD-063 acceptance:
+
+**NOT PERFORMED**
+
+Implementation:
+
+**NOT AUTHORIZED**
+
+Test baseline remains:
+
+**1111 passed**
+
+Alembic remains:
+
+`0005`
+
+### Next Exact Action
+
+Review the complete RFC-077 / AD-063 combined selection and architecture
+candidate before any staging.
+
+
+---
+
+## RFC-077 / AD-063 Combined Acceptance State
+
+### Durable Predecessor
+
+RFC-076 terminal commit:
+
+`529e74866be2a1591a104f7c290c61518a916426`
+
+### Reviewed and Accepted Direction
+
+RFC-077 selection:
+
+**APPROVED / GIT DURABILITY PENDING**
+
+AD-063:
+
+**ACCEPTED / GIT DURABILITY PENDING**
+
+The accepted parser contract establishes:
+
+- exact canonical `text/plain` support;
+- strict incremental UTF-8 decoding;
+- removal of one optional leading UTF-8 BOM only;
+- exact preservation of all later decoded Unicode text and newline sequences;
+- 1 MiB bounded forward-only reads;
+- no seek, close, reopen, second pass or complete raw-payload buffer;
+- invalid UTF-8 mapped to the existing invalid-content error with
+  `UnicodeDecodeError` preserved as cause;
+- unchanged operational read-failure propagation;
+- no external dependency, Runtime binding or migration.
+
+### Current Gate
+
+Combined acceptance authoring:
+
+**COMPLETE — REVIEW PENDING**
+
+Formal Git durability:
+
+**PENDING**
+
+Implementation:
+
+**NOT AUTHORIZED**
+
+Test baseline remains:
+
+**1111 passed**
+
+Alembic remains:
+
+`0005`
+
+### Next Exact Action
+
+Review the combined RFC-077 / AD-063 acceptance record, then perform one
+staging / commit / push durability transaction.

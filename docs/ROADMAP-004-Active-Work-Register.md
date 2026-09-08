@@ -19060,3 +19060,111 @@ Successor selection has not started.
 
 This compact final record requires only one external commit/push durability
 verification and no additional RFC-076 reconciliation cycle.
+
+
+---
+
+## RFC-077 / AD-063 Combined Selection and Architecture Gate
+
+### Durable Entry
+
+RFC-076 terminal commit:
+
+`529e74866be2a1591a104f7c290c61518a916426`
+
+RFC-076:
+
+**FULLY CLOSED AND SOURCE-OF-TRUTH RECONCILED**
+
+### Selected Candidate
+
+**RFC-077 — Canonical UTF-8 Plain Text Document Content Parser**
+
+Architecture candidate:
+
+**AD-063 — Canonical UTF-8 Plain Text Document Content Parser Contract**
+
+### Proposed Outcome
+
+Establish the first concrete parser with:
+
+- exact `text/plain` support;
+- strict incremental UTF-8 decoding;
+- deterministic one-leading-BOM removal;
+- exact newline and decoded-text preservation;
+- bounded forward-only reads;
+- existing canonical parser errors;
+- no external dependency.
+
+### Hard Deferrals
+
+No Runtime binding/wiring, encoding detection, non-UTF-8 support, PDF, DOCX,
+spreadsheet, image, OCR, metadata extraction, chunking,
+Document Library, Search/Vector/Graph/RAG/LLM, API, migration or
+production-security scope.
+
+### Gate State
+
+Combined authoring:
+
+**COMPLETE — REVIEW PENDING**
+
+AD-063 acceptance:
+
+**NOT PERFORMED**
+
+Technical implementation:
+
+**NOT AUTHORIZED**
+
+Staging / Commit / Push:
+
+**NONE**
+
+### Next Gate
+
+Chief Architect RFC-077 / AD-063 combined selection and architecture review.
+
+
+---
+
+## RFC-077 / AD-063 Combined Acceptance Gate
+
+RFC-077:
+
+**SELECTION APPROVED / GIT DURABILITY PENDING**
+
+AD-063:
+
+**ACCEPTED / GIT DURABILITY PENDING**
+
+### Accepted Architecture
+
+- exact canonical `text/plain`;
+- strict incremental `utf-8-sig` decoding;
+- one optional leading UTF-8 BOM removed;
+- exact remaining Unicode and newline preservation;
+- fixed 1 MiB bounded forward-only reads;
+- existing unsupported-media and invalid-content errors;
+- `UnicodeDecodeError` retained as invalid-content cause;
+- operational read failures unchanged;
+- no complete raw-payload buffering;
+- no dependency, Runtime wiring or migration.
+
+### Preserved Deferrals
+
+No registration, fallback, encoding detection, non-UTF-8 support, PDF, DOCX,
+spreadsheet, OCR, metadata extraction, persistence, Document Library,
+chunking, Search/Vector/Graph/RAG/LLM, API or production-security scope.
+
+Implementation:
+
+**NOT AUTHORIZED**
+
+Staging / commit / push:
+
+**NOT PERFORMED**
+
+Next gate:
+
+Combined acceptance review, then one Git durability transaction.

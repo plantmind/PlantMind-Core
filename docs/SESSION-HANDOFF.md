@@ -7,9 +7,13 @@
 | Project | PlantMind PM-001 |
 | Branch | `feature/engineering-platform` |
 | Last Fully Closed RFC | RFC-076 — Canonical Document Content Parser Binding & Registry-Backed Resolver Adapter — Fully Closed and Source-of-Truth Reconciled |
-| Active RFC | None — RFC-076 Fully Closed and Source-of-Truth Reconciled; successor selection not started |
-| Selected Architecture Workstream | None — RFC-076 completed; successor not selected |
-| Proposed Successor RFC | None — successor selection has not started |
+| Active RFC | RFC-077 — Canonical UTF-8 Plain Text Document Content Parser — Selection Approved / AD-063 Accepted / Combined Git Durability Pending |
+| Selected Architecture Workstream | RFC-077 — Canonical UTF-8 Plain Text Document Content Parser — Architecture Review Passed / Acceptance Authored |
+| Proposed Successor RFC | None — RFC-077 is the selected candidate workstream |
+| RFC-077 Predecessor Baseline | `529e74866be2a1591a104f7c290c61518a916426` — RFC-076 terminal closure |
+| RFC-077 Selection State | Approved / Combined Acceptance Authored / Git Durability Pending |
+| RFC-077 Architecture Decision Candidate | AD-063 — Accepted / Git Durability Pending |
+| RFC-077 Implementation Authorization | No |
 | RFC-076 Predecessor Baseline | `fc480caf5ef1ac91a24eb3177434d5daa2feed09` — RFC-075 terminal closure |
 | RFC-076 Selection State | Durable — Committed, Pushed and Exact Identity Verified |
 | RFC-076 Architecture Decision Candidate | AD-062 — Accepted / Committed / Pushed / Exact Identity Verified |
@@ -107,7 +111,7 @@
 | Alembic Head | `0005` |
 | Authoritative Environment | `PlantMind-Core/.venv` |
 | RFC-069 State | Fully Closed and Source-of-Truth Reconciled |
-| Successor RFC Selection | None — RFC-076 fully closed; successor selection not started |
+| Successor RFC Selection | RFC-077 — Selection Approved / AD-063 Accepted / Combined Git Durability Pending |
 ## Recent Engineering Sequence
 
 - RFC-025 — Core Plugin Framework
@@ -5834,3 +5838,121 @@ Successor selection must start separately through evidence-based governance.
 This compact final record intentionally does not predict its own future Git
 commit identity. One external Git durability gate completes RFC-076 without
 another reconciliation or final-record cycle.
+
+
+---
+
+## RFC-077 / AD-063 Combined Selection and Architecture Handoff
+
+### Durable Baseline
+
+RFC-076 final commit:
+
+`529e74866be2a1591a104f7c290c61518a916426`
+
+RFC-076 is fully closed.
+
+### Selected Candidate
+
+**RFC-077 — Canonical UTF-8 Plain Text Document Content Parser**
+
+Architecture candidate:
+
+**AD-063 — Canonical UTF-8 Plain Text Document Content Parser Contract**
+
+### Proposed Boundary
+
+RFC-077 owns only deterministic strict UTF-8 decoding for canonical
+`text/plain`.
+
+It uses bounded forward-only reads, removes one optional leading UTF-8 BOM and
+preserves all later decoded text exactly.
+
+RFC-073 through RFC-076 responsibilities remain unchanged.
+
+No parser registration, Runtime wiring or external parser technology is
+introduced.
+
+### Current Handoff State
+
+Combined selection and architecture authoring:
+
+**COMPLETE — REVIEW PENDING**
+
+AD-063:
+
+**PROPOSED — REVIEW PENDING**
+
+Implementation:
+
+**NOT AUTHORIZED**
+
+Staging:
+
+**NOT PERFORMED**
+
+Commit:
+
+**NOT PERFORMED**
+
+Push:
+
+**NOT PERFORMED**
+
+### Next Exact Action
+
+Review:
+
+`PLANTMIND-RFC077-AD063-ACCEPTANCE-REVIEW.txt`
+
+
+---
+
+## RFC-077 / AD-063 Combined Acceptance Handoff
+
+RFC-076 terminal baseline:
+
+`529e74866be2a1591a104f7c290c61518a916426`
+
+RFC-077 selection review:
+
+**PASS**
+
+AD-063 architecture review:
+
+**PASS — NO REMAINING REFINE**
+
+RFC-077 selection:
+
+**APPROVED / GIT DURABILITY PENDING**
+
+AD-063:
+
+**ACCEPTED / GIT DURABILITY PENDING**
+
+### Accepted Parser Contract
+
+The parser supports exact canonical `text/plain`, uses strict incremental
+`utf-8-sig` decoding, removes one optional leading UTF-8 BOM and preserves all
+remaining decoded text and newline sequences exactly.
+
+It uses fixed 1 MiB forward-only reads and performs no seek, close, reopen,
+second pass or complete raw-payload buffering.
+
+Invalid UTF-8 maps to the existing invalid-content error with the originating
+`UnicodeDecodeError` preserved as cause.
+
+Operational payload-read failures remain unchanged.
+
+RFC-073 through RFC-076 responsibilities remain unchanged.
+
+No parser registration, Runtime wiring, external parser technology or
+migration is introduced.
+
+Implementation:
+
+**NOT AUTHORIZED**
+
+Next review artifact:
+
+`PLANTMIND-RFC077-AD063-ACCEPTANCE-REVIEW.txt`
