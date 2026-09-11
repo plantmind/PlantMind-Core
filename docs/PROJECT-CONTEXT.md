@@ -10,9 +10,17 @@
 | Deployment Model | On-Premise |
 | Development Branch | `feature/engineering-platform` |
 | Last Fully Closed RFC | RFC-077 — Canonical UTF-8 Plain Text Document Content Parser — Fully Closed and Source-of-Truth Reconciled |
-| Active RFC | None — RFC-077 Fully Closed and Source-of-Truth Reconciled; successor selection not started |
-| Selected Architecture Workstream | None — RFC-077 completed; successor not selected |
-| Proposed Successor RFC | None — successor selection has not started |
+| Active RFC | RFC-078 — Canonical Document Content Parsing Composition Boundary & Plain-Text Binding — Selection Approved / AD-064 Accepted / Combined Git Durability Pending |
+| Selected Architecture Workstream | RFC-078 — Canonical Document Content Parsing Composition Boundary & Plain-Text Binding — Architecture V2 Review Passed / Acceptance Authored |
+| Proposed Successor RFC | None — RFC-078 is the selected refined candidate workstream |
+| RFC-078 Predecessor Baseline | `36832df98433231095e257092f3b8815d1cfa573` — RFC-077 terminal closure |
+| RFC-078 Selection State | Approved / Combined Acceptance Authored / Git Durability Pending |
+| RFC-078 Architecture Decision Candidate | AD-064 — Accepted / Git Durability Pending |
+| RFC-078 Architecture Contract State | V2 Review Passed / Accepted Locally / Git Durability Pending |
+| RFC-078 Implementation Authorization | No |
+| RFC-078 Default CompositionRoot Modification | Explicitly Not Authorized |
+| RFC-078 Access Infrastructure Ownership | Caller-Supplied / No Repository or Store Construction |
+| RFC-078 RFC-077 Test Adaptation | Exactly one architecture guard adaptation; no RFC-077 Production change |
 | RFC-077 Predecessor Baseline | `529e74866be2a1591a104f7c290c61518a916426` — RFC-076 terminal closure |
 | RFC-077 Selection State | Durable — Committed, Pushed and Exact Identity Verified |
 | RFC-077 Architecture Decision Candidate | AD-063 — Accepted / Committed / Pushed / Exact Identity Verified |
@@ -6828,3 +6836,217 @@ Successor selection has not started.
 This is a non-self-referential compact terminal record. Its own future Git
 commit and push are verified externally without another RFC-077 documentation
 cycle.
+
+
+---
+
+## RFC-078 / AD-064 Refined Selection and Architecture Candidate State
+
+### Durable Predecessor
+
+RFC-077 terminal commit:
+
+`36832df98433231095e257092f3b8815d1cfa573`
+
+RFC-077 remains fully closed and Source-of-Truth reconciled.
+
+### Review Refinement
+
+The evidence-supported next sequence is composition plus canonical
+plain-text binding.
+
+The selected boundary is intentionally narrower than default Runtime
+integration because the parsing Application service depends on verified
+content access, whose repositories and store are not owned by the current
+default `CompositionRoot`.
+
+### Selected Workstream
+
+**RFC-078 — Canonical Document Content Parsing Composition Boundary & Plain-Text Binding**
+
+### Architecture Candidate
+
+**AD-064 — Canonical Document Content Parsing Composition Boundary & Plain-Text Binding Contract**
+
+Status:
+
+**PROPOSED — REVIEW PENDING**
+
+### Proposed Technical Direction
+
+- dedicated opt-in composition module;
+- caller-supplied `DocumentContentAccessApplicationService`;
+- exact `text/plain` binding;
+- stable composed `Utf8PlainTextDocumentContentParser`;
+- registry-backed resolver;
+- dispatching parser;
+- parsing Application service;
+- immutable isolated composition result;
+- no default CompositionRoot, Runtime, Bootstrap, main, persistence, API,
+  schema or migration change.
+
+### Current Gate
+
+Selection and architecture candidate:
+
+**AUTHORED — REVIEW PENDING**
+
+Formal Git durability:
+
+**PENDING**
+
+AD-064 acceptance:
+
+**NOT PERFORMED**
+
+Implementation:
+
+**NOT AUTHORIZED**
+
+Test baseline remains:
+
+**1155 passed**
+
+Alembic remains:
+
+`0005`
+
+### Next Exact Action
+
+Review the refined RFC-078 / AD-064 selection and architecture candidate before
+any staging.
+
+
+---
+
+## RFC-078 / AD-064 Architecture V2 Refinement State
+
+### V1 Finding
+
+The opt-in composition boundary is the correct successor direction.
+
+The V1 technical surface was incomplete because the committed RFC-077
+architecture test still enforces zero backend references to the concrete
+plain-text parser.
+
+### V2 Contract
+
+RFC-078 may modify exactly one existing test:
+
+`tests/document_parsing/test_utf8_plain_text_document_content_parser_architecture.py`
+
+That test must permit exactly one Production reference:
+
+`backend/app/core/composition/document_content_parsing.py`
+
+and continue rejecting all other references.
+
+### Preserved Architecture
+
+All RFC-077 Production files remain byte-identical.
+
+The default CompositionRoot, Runtime, Bootstrap, `app.main`, ServiceContainer,
+persistence and API remain unchanged.
+
+### Current Gate
+
+AD-064 V2:
+
+**PROPOSED — REVIEW PENDING**
+
+Implementation:
+
+**NOT AUTHORIZED**
+
+Test baseline control:
+
+**1155 passed**
+
+Alembic:
+
+`0005`
+
+Staging / Commit / Push:
+
+**NONE**
+
+
+---
+
+## RFC-078 / AD-064 Combined Acceptance State
+
+### Durable Predecessor
+
+RFC-077 terminal commit:
+
+`36832df98433231095e257092f3b8815d1cfa573`
+
+### Review Result
+
+RFC-078 selection:
+
+**APPROVED / GIT DURABILITY PENDING**
+
+AD-064 V1:
+
+**REFINE — CLOSED**
+
+AD-064 V2:
+
+**PASS — ACCEPTED / GIT DURABILITY PENDING**
+
+### Accepted Boundary
+
+RFC-078 creates one dedicated opt-in composition boundary with:
+
+- caller-supplied `DocumentContentAccessApplicationService`;
+- one stable UTF-8 plain-text parser;
+- exact `text/plain` binding;
+- one registry-backed resolver;
+- one dispatcher;
+- one parsing Application service;
+- one frozen isolated composition result.
+
+The default CompositionRoot, Runtime, Bootstrap, main, repositories, content
+store, database/filesystem adapters and API remain unchanged.
+
+### Accepted Successor Test Adaptation
+
+Exactly one existing test may change:
+
+`tests/document_parsing/test_utf8_plain_text_document_content_parser_architecture.py`
+
+It must allow exactly one Production reference:
+
+`backend/app/core/composition/document_content_parsing.py`
+
+and reject all others.
+
+No RFC-077 Production file changes.
+
+### Current Gate
+
+Combined acceptance authoring:
+
+**COMPLETE — REVIEW PENDING**
+
+Formal Git durability:
+
+**PENDING**
+
+Implementation:
+
+**NOT AUTHORIZED**
+
+Test baseline remains:
+
+**1155 passed**
+
+Alembic remains:
+
+`0005`
+
+### Next Exact Action
+
+Review this combined acceptance record, then perform one selection /
+accepted-contract staging, commit and push transaction.

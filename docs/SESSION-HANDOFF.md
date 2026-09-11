@@ -7,9 +7,17 @@
 | Project | PlantMind PM-001 |
 | Branch | `feature/engineering-platform` |
 | Last Fully Closed RFC | RFC-077 — Canonical UTF-8 Plain Text Document Content Parser — Fully Closed and Source-of-Truth Reconciled |
-| Active RFC | None — RFC-077 Fully Closed and Source-of-Truth Reconciled; successor selection not started |
-| Selected Architecture Workstream | None — RFC-077 completed; successor not selected |
-| Proposed Successor RFC | None — successor selection has not started |
+| Active RFC | RFC-078 — Canonical Document Content Parsing Composition Boundary & Plain-Text Binding — Selection Approved / AD-064 Accepted / Combined Git Durability Pending |
+| Selected Architecture Workstream | RFC-078 — Canonical Document Content Parsing Composition Boundary & Plain-Text Binding — Architecture V2 Review Passed / Acceptance Authored |
+| Proposed Successor RFC | None — RFC-078 is the selected refined candidate workstream |
+| RFC-078 Predecessor Baseline | `36832df98433231095e257092f3b8815d1cfa573` — RFC-077 terminal closure |
+| RFC-078 Selection State | Approved / Combined Acceptance Authored / Git Durability Pending |
+| RFC-078 Architecture Decision Candidate | AD-064 — Accepted / Git Durability Pending |
+| RFC-078 Architecture Contract State | V2 Review Passed / Accepted Locally / Git Durability Pending |
+| RFC-078 Implementation Authorization | No |
+| RFC-078 Default CompositionRoot Modification | Explicitly Not Authorized |
+| RFC-078 Access Infrastructure Ownership | Caller-Supplied / No Repository or Store Construction |
+| RFC-078 RFC-077 Test Adaptation | Exactly one architecture guard adaptation; no RFC-077 Production change |
 | RFC-077 Predecessor Baseline | `529e74866be2a1591a104f7c290c61518a916426` — RFC-076 terminal closure |
 | RFC-077 Selection State | Durable — Committed, Pushed and Exact Identity Verified |
 | RFC-077 Architecture Decision Candidate | AD-063 — Accepted / Committed / Pushed / Exact Identity Verified |
@@ -119,7 +127,7 @@
 | Alembic Head | `0005` |
 | Authoritative Environment | `PlantMind-Core/.venv` |
 | RFC-069 State | Fully Closed and Source-of-Truth Reconciled |
-| Successor RFC Selection | None — RFC-077 fully closed; successor selection not started |
+| Successor RFC Selection | RFC-078 Selected / AD-064 Accepted / Combined Git Durability Pending |
 ## Recent Engineering Sequence
 
 - RFC-025 — Core Plugin Framework
@@ -6030,3 +6038,199 @@ Successor selection must start separately through evidence-based governance.
 This compact final record intentionally does not predict its own future Git
 commit identity. One external Git durability gate completes RFC-077 without
 another reconciliation or final-record cycle.
+
+
+---
+
+## RFC-078 / AD-064 Refined Selection and Architecture Handoff
+
+### Durable Baseline
+
+RFC-077 final commit:
+
+`36832df98433231095e257092f3b8815d1cfa573`
+
+RFC-077 is fully closed.
+
+### Chief Architect Refinement
+
+The next sequence remains composition plus plain-text binding.
+
+The workstream is narrowed from default Runtime composition to a dedicated
+opt-in composition boundary so that repository, content-store and payload
+lifecycle ownership remain outside RFC-078.
+
+### Selected Refined Candidate
+
+**RFC-078 — Canonical Document Content Parsing Composition Boundary & Plain-Text Binding**
+
+Architecture candidate:
+
+**AD-064 — Canonical Document Content Parsing Composition Boundary & Plain-Text Binding Contract**
+
+### Proposed Boundary
+
+The composition builder accepts one existing
+`DocumentContentAccessApplicationService`.
+
+It composes:
+
+- one UTF-8 plain-text parser;
+- one exact `text/plain` binding;
+- one registry-backed resolver;
+- one dispatcher;
+- one parsing Application service;
+- one immutable composition result.
+
+It does not modify the default `CompositionRoot`, Runtime, Bootstrap, main,
+ServiceContainer, persistence or API.
+
+### Current Handoff State
+
+Refined selection and architecture authoring:
+
+**COMPLETE — REVIEW PENDING**
+
+AD-064:
+
+**PROPOSED — REVIEW PENDING**
+
+Implementation:
+
+**NOT AUTHORIZED**
+
+Staging / Commit / Push:
+
+**NOT PERFORMED**
+
+### Next Exact Action
+
+Review:
+
+`PLANTMIND-RFC078-AD064-REFINED-SELECTION-ARCHITECTURE-REVIEW.txt`
+
+
+---
+
+## RFC-078 / AD-064 Architecture V2 Refinement Handoff
+
+### Finding
+
+The V1 opt-in composition design is retained.
+
+The V1 technical surface is refined because RFC-077's committed architecture
+test still requires zero Production references to the plain-text parser.
+
+### V2 Exact Adaptation
+
+Modify only:
+
+`tests/document_parsing/test_utf8_plain_text_document_content_parser_architecture.py`
+
+so its backend-wide scan requires exactly:
+
+`backend/app/core/composition/document_content_parsing.py`
+
+as the sole Production reference outside the parser module itself.
+
+### Preserved State
+
+- all RFC-077 Production files unchanged;
+- default CompositionRoot unchanged;
+- Runtime / Bootstrap / main unchanged;
+- persistence / API unchanged;
+- no dynamic import workaround;
+- no other existing test changed.
+
+### Gate
+
+AD-064 V2:
+
+**PROPOSED — REVIEW PENDING**
+
+Implementation:
+
+**NOT AUTHORIZED**
+
+Staging / Commit / Push:
+
+**NOT PERFORMED**
+
+### Next Exact Action
+
+Review:
+
+`PLANTMIND-RFC078-AD064-ARCHITECTURE-V2-REVIEW.txt`
+
+
+---
+
+## RFC-078 / AD-064 Combined Acceptance Handoff
+
+RFC-077 terminal baseline:
+
+`36832df98433231095e257092f3b8815d1cfa573`
+
+RFC-078 selection review:
+
+**PASS**
+
+AD-064 V1:
+
+**REFINE — CLOSED BY V2**
+
+AD-064 V2:
+
+**PASS — NO REMAINING REFINE**
+
+RFC-078:
+
+**SELECTED / GIT DURABILITY PENDING**
+
+AD-064:
+
+**ACCEPTED / GIT DURABILITY PENDING**
+
+### Accepted Object Graph
+
+Caller-supplied verified content access composes with:
+
+1. UTF-8 plain-text parser;
+2. exact `text/plain` binding;
+3. registry-backed resolver;
+4. dispatcher;
+5. parsing Application service;
+6. frozen composition result.
+
+No content access occurs during construction.
+
+The default CompositionRoot and platform runtime remain unchanged.
+
+### Exact Successor Test Adaptation
+
+Modify only:
+
+`tests/document_parsing/test_utf8_plain_text_document_content_parser_architecture.py`
+
+to permit only:
+
+`backend/app/core/composition/document_content_parsing.py`
+
+as the sole Production parser reference.
+
+No other RFC-073 through RFC-077 test and no RFC-077 Production file may
+change.
+
+### Handoff Gate
+
+Implementation:
+
+**NOT AUTHORIZED**
+
+Staging / Commit / Push:
+
+**NOT PERFORMED**
+
+Next review artifact:
+
+`PLANTMIND-RFC078-AD064-ACCEPTANCE-REVIEW.txt`

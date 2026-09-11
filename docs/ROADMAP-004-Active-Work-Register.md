@@ -19233,3 +19233,181 @@ Successor selection has not started.
 
 This compact final record requires only one external commit/push durability
 verification and no additional RFC-077 reconciliation cycle.
+
+
+---
+
+## RFC-078 / AD-064 Refined Selection and Architecture Gate
+
+### Durable Entry
+
+RFC-077 terminal commit:
+
+`36832df98433231095e257092f3b8815d1cfa573`
+
+RFC-077:
+
+**FULLY CLOSED AND SOURCE-OF-TRUTH RECONCILED**
+
+### Evidence Review
+
+Composition and canonical plain-text binding are the correct next sequence.
+
+Direct default Runtime composition is deferred because verified content access
+depends on repositories and a content store that are outside the current
+parser-only successor boundary.
+
+### Selected Refined Candidate
+
+**RFC-078 — Canonical Document Content Parsing Composition Boundary & Plain-Text Binding**
+
+Architecture candidate:
+
+**AD-064 — Canonical Document Content Parsing Composition Boundary & Plain-Text Binding Contract**
+
+### Proposed Outcome
+
+Establish one opt-in composition boundary that:
+
+- accepts caller-supplied verified content access;
+- composes exact `text/plain` binding;
+- composes parser, registry-backed resolver and dispatcher;
+- injects the dispatcher into the parsing Application service;
+- returns an immutable isolated object graph;
+- leaves the default platform composition unchanged.
+
+### Hard Deferrals
+
+No default CompositionRoot, Runtime, Bootstrap, main, ServiceContainer,
+persistence, database, filesystem, API, PDF/OCR, chunking, Knowledge
+ingestion, RAG/LLM, migration or production-security scope.
+
+### Gate State
+
+Refined authoring:
+
+**COMPLETE — REVIEW PENDING**
+
+AD-064 acceptance:
+
+**NOT PERFORMED**
+
+Technical implementation:
+
+**NOT AUTHORIZED**
+
+Staging / Commit / Push:
+
+**NONE**
+
+### Next Gate
+
+Chief Architect RFC-078 / AD-064 refined selection and architecture review.
+
+
+---
+
+## RFC-078 / AD-064 Architecture V2 Refinement Gate
+
+### Review Finding
+
+The selected composition boundary remains valid.
+
+The V1 three-new-file surface omitted the committed RFC-077 zero-reference
+architecture guard, which would fail as soon as the canonical RFC-078
+composition module references the plain-text parser.
+
+### V2 Authorized Candidate Surface
+
+New:
+
+- `backend/app/core/composition/document_content_parsing.py`;
+- `tests/core/test_document_content_parsing_composition.py`;
+- `tests/core/test_document_content_parsing_composition_architecture.py`.
+
+Narrow adaptation:
+
+- `tests/document_parsing/test_utf8_plain_text_document_content_parser_architecture.py`.
+
+The adapted guard permits only the dedicated RFC-078 composition module and
+rejects every other Production reference.
+
+### Deferrals Preserved
+
+No existing Production mutation, default CompositionRoot integration, Runtime,
+Bootstrap, main, persistence, API, dynamic discovery, additional parser,
+requirements or migration change.
+
+### Gate State
+
+AD-064 V2 authoring:
+
+**COMPLETE — REVIEW PENDING**
+
+Acceptance:
+
+**NOT PERFORMED**
+
+Implementation:
+
+**NOT AUTHORIZED**
+
+Staging / Commit / Push:
+
+**NONE**
+
+
+---
+
+## RFC-078 / AD-064 Combined Acceptance Gate
+
+RFC-078:
+
+**SELECTION APPROVED / GIT DURABILITY PENDING**
+
+AD-064:
+
+**ACCEPTED / GIT DURABILITY PENDING**
+
+### Accepted Composition
+
+- dedicated opt-in composition module;
+- caller-supplied verified content-access service;
+- exact canonical `text/plain` binding;
+- UTF-8 plain-text parser;
+- registry-backed resolver;
+- dispatching parser;
+- parsing Application service;
+- immutable isolated composition result.
+
+### Accepted Guard Transition
+
+Only:
+
+`tests/document_parsing/test_utf8_plain_text_document_content_parser_architecture.py`
+
+may be adapted to permit exactly:
+
+`backend/app/core/composition/document_content_parsing.py`
+
+as the sole Production reference outside the parser module.
+
+No other existing test and no RFC-077 Production file may change.
+
+### Preserved Containment
+
+No default CompositionRoot, Runtime, Bootstrap, main, ServiceContainer,
+repository/store/database/filesystem construction, API, additional parser,
+requirements or migration change.
+
+Implementation:
+
+**NOT AUTHORIZED**
+
+Staging / commit / push:
+
+**NOT PERFORMED**
+
+Next gate:
+
+Combined acceptance review, followed by one Git durability transaction.

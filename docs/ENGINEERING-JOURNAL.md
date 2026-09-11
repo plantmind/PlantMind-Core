@@ -10370,3 +10370,191 @@ Selected successor:
 This compact record is non-self-referential. Its own future commit and push
 are verified by one external Git durability gate and require no further
 RFC-077 documentation cycle.
+
+
+---
+
+## 2026-09-10 — RFC-078 / AD-064 Refined Selection and Architecture Candidate Authored
+
+### Durable Starting Point
+
+RFC-077 terminal commit:
+
+`36832df98433231095e257092f3b8815d1cfa573`
+
+RFC-077 remains:
+
+**FULLY CLOSED AND SOURCE-OF-TRUTH RECONCILED**
+
+### Evidence Review Result
+
+The successor sequence is correct:
+
+**COMPOSITION AND PLAIN-TEXT BINDING NEXT**
+
+The initial Runtime-composition label was narrowed to avoid pulling
+Document Content repositories, store lifecycle and access infrastructure into
+the default core `CompositionRoot`.
+
+### Selected Refined Candidate
+
+**RFC-078 — Canonical Document Content Parsing Composition Boundary & Plain-Text Binding**
+
+Architecture candidate:
+
+**AD-064 — Canonical Document Content Parsing Composition Boundary & Plain-Text Binding Contract**
+
+### Candidate Direction
+
+The proposed boundary:
+
+- accepts one caller-supplied `DocumentContentAccessApplicationService`;
+- builds one isolated plain-text parser graph;
+- binds exact canonical `text/plain`;
+- composes resolver, dispatcher and parsing Application service;
+- returns one immutable composition result;
+- leaves default `CompositionRoot`, Runtime, Bootstrap, main, persistence,
+  ServiceContainer and API unchanged.
+
+### Current State
+
+Refined selection and architecture authoring:
+
+**COMPLETE — REVIEW PENDING**
+
+AD-064 acceptance:
+
+**NOT PERFORMED**
+
+Implementation:
+
+**NOT AUTHORIZED**
+
+Staging / commit / push:
+
+**NOT PERFORMED**
+
+
+---
+
+## 2026-09-10 — RFC-078 / AD-064 Architecture V2 Refinement Authored
+
+### Review Finding
+
+The dedicated opt-in composition direction remains correct.
+
+The V1 proposed technical surface omitted one required successor-governance
+adaptation: RFC-077's architecture test currently requires zero backend
+references to the plain-text parser.
+
+A real RFC-078 composition module must create that first governed reference.
+
+### V2 Resolution
+
+AD-064 now authorizes exactly one existing-test modification:
+
+`tests/document_parsing/test_utf8_plain_text_document_content_parser_architecture.py`
+
+The adapted test must allow only:
+
+`backend/app/core/composition/document_content_parsing.py`
+
+and reject every other Production reference.
+
+### Preserved Boundary
+
+- no RFC-077 Production file changes;
+- no default CompositionRoot modification;
+- no Runtime, Bootstrap, `app.main`, API or persistence integration;
+- no dynamic import or test-evasion indirection;
+- no second parser reference;
+- no additional existing-test modification.
+
+### State
+
+AD-064:
+
+**PROPOSED — ARCHITECTURE V2 REVIEW PENDING**
+
+Implementation:
+
+**NOT AUTHORIZED**
+
+Staging / Commit / Push:
+
+**NOT PERFORMED**
+
+
+---
+
+## 2026-09-10 — RFC-078 / AD-064 Combined Acceptance Authored
+
+RFC-077 terminal baseline:
+
+`36832df98433231095e257092f3b8815d1cfa573`
+
+RFC-078 selection review:
+
+**PASS**
+
+AD-064 V1 review:
+
+**REFINE — CLOSED BY V2**
+
+AD-064 V2 review:
+
+**PASS — NO REMAINING REFINE**
+
+RFC-078 selection:
+
+**APPROVED / GIT DURABILITY PENDING**
+
+AD-064:
+
+**ACCEPTED / GIT DURABILITY PENDING**
+
+### Accepted Direction
+
+RFC-078 establishes a dedicated opt-in parser-composition module that:
+
+- accepts one caller-supplied content-access service;
+- creates one isolated UTF-8 plain-text parser graph;
+- binds exact canonical `text/plain`;
+- composes registry-backed resolver, dispatcher and parsing Application
+  service;
+- returns one frozen composition result;
+- performs no content access during construction;
+- leaves the default CompositionRoot, Runtime, Bootstrap, main, persistence
+  and API unchanged.
+
+### Governed RFC-077 Test Transition
+
+Exactly one existing architecture test may change:
+
+`tests/document_parsing/test_utf8_plain_text_document_content_parser_architecture.py`
+
+It permits only the dedicated RFC-078 Production reference:
+
+`backend/app/core/composition/document_content_parsing.py`
+
+and rejects every other Production reference.
+
+No RFC-077 Production code changes.
+
+### Current State
+
+Combined acceptance authoring:
+
+**COMPLETE — REVIEW PENDING**
+
+Formal Git durability:
+
+**PENDING**
+
+Implementation:
+
+**NOT AUTHORIZED**
+
+Staging / commit / push:
+
+**NOT PERFORMED**
