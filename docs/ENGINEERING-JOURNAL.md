@@ -10558,3 +10558,136 @@ Implementation:
 Staging / commit / push:
 
 **NOT PERFORMED**
+
+
+---
+
+## 2026-09-11 — RFC-078 Implementation Block and AD-064 Amendment A1 Authoring
+
+### Durable Baseline
+
+RFC-078 / AD-064 accepted-contract commit:
+
+`fb97304eda791d5f513fb918608503960df08755`
+
+### TDD Attempt Result
+
+- TDD RED: **VERIFIED**;
+- RFC-078 focused: **51 passed**;
+- RFC-075 through RFC-078 impacted: **139 passed**;
+- full regression: **1191 passed / 2 failed**;
+- staging / commit / push: **NONE**.
+
+### Root Cause
+
+The dedicated opt-in RFC-078 module correctly imports RFC-073 content access
+and RFC-074 parsing services.
+
+Two predecessor architecture tests scan all modules under
+`app.core.composition` and still require zero such references.
+
+### Safe Recovery
+
+The exact technical attempt was snapshotted outside the repository.
+
+The three untracked files were removed and the RFC-077 guard was restored to
+accepted bytes.
+
+The repository returned to the clean accepted-contract baseline before
+Source-of-Truth amendment authoring.
+
+### Amendment A1
+
+Amendment A1 proposes exact-reference transitions for:
+
+- `tests/services/test_document_content_access_architecture.py`;
+- `tests/services/test_document_content_parsing_architecture.py`;
+
+in addition to the already accepted transition in:
+
+- `tests/document_parsing/test_utf8_plain_text_document_content_parser_architecture.py`.
+
+Each predecessor guard must require the sole reference to be:
+
+`backend/app/core/composition/document_content_parsing.py`
+
+and reject all additional references.
+
+### State
+
+AD-064 remains Accepted and Git Durable.
+
+Amendment A1:
+
+**PROPOSED — REVIEW PENDING**
+
+Implementation:
+
+**BLOCKED**
+
+Staging / Commit / Push:
+
+**NOT PERFORMED**
+
+
+---
+
+## 2026-09-11 — AD-064 Amendment A1 Acceptance Authored
+
+Durable accepted-contract baseline:
+
+`fb97304eda791d5f513fb918608503960df08755`
+
+Amendment A1 review:
+
+**PASS — NO REMAINING REFINE**
+
+Amendment A1:
+
+**ACCEPTED / GIT DURABILITY PENDING**
+
+### Accepted Change
+
+Exactly three architecture guards may recognize the dedicated opt-in
+composition module as their sole Production reference:
+
+- `tests/document_parsing/test_utf8_plain_text_document_content_parser_architecture.py`;
+- `tests/services/test_document_content_access_architecture.py`;
+- `tests/services/test_document_content_parsing_architecture.py`.
+
+The complete allowed reference set remains:
+
+`["backend/app/core/composition/document_content_parsing.py"]`
+
+No other existing test and no existing Production file may change.
+
+### Preserved Containment
+
+Default CompositionRoot, Runtime, Bootstrap, main, ServiceContainer,
+persistence and API remain unchanged.
+
+### Verified Safe Baseline
+
+- restored parser stack: **101 passed**;
+- restored full regression: **1155 passed**;
+- Alembic: `0005`;
+- blocked technical snapshot: **PRESENT / BYTE VERIFIED**;
+- repository Production/test mutation: **NONE**.
+
+### Current State
+
+Acceptance authoring:
+
+**COMPLETE — REVIEW PENDING**
+
+Git durability:
+
+**PENDING**
+
+Implementation:
+
+**BLOCKED**
+
+Staging / commit / push:
+
+**NOT PERFORMED**

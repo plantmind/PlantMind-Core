@@ -23694,3 +23694,365 @@ Implementation:
 Next gate:
 
 Review this combined acceptance record before one Git durability transaction.
+
+
+---
+
+## RFC-078 Implementation-Entry Regression Conflict Record
+
+**Record Classification: Implementation-Evidence Architecture Conflict**
+
+Durable RFC-078 / AD-064 accepted-contract baseline:
+
+`fb97304eda791d5f513fb918608503960df08755`
+
+The first RFC-078 TDD implementation attempt produced:
+
+- RFC-078 focused verification: **51 passed**;
+- RFC-075 through RFC-078 impacted verification: **139 passed**;
+- full PlantMind regression: **1191 passed / 2 failed**;
+- staging: **NONE**;
+- commit: **NONE**;
+- push: **NONE**.
+
+The two failures were:
+
+- `tests/services/test_document_content_access_architecture.py::test_default_runtime_and_composition_do_not_import_rfc073_service`;
+- `tests/services/test_document_content_parsing_architecture.py::test_default_runtime_and_composition_do_not_import_rfc074`.
+
+Both predecessor guards scan every Python file below:
+
+`backend/app/core/composition`
+
+together with Runtime and Bootstrap files, and require zero references to
+their respective Application services.
+
+The accepted dedicated opt-in module:
+
+`backend/app/core/composition/document_content_parsing.py`
+
+must import both services to assemble the accepted RFC-078 object graph.
+
+The failures therefore expose an omitted successor-transition rule in AD-064.
+They do not indicate a defect in the composed object graph, parser, binding,
+resolver, dispatcher or Application service.
+
+The blocked technical work was snapshotted outside the repository and the
+repository was restored to the clean Git-durable accepted-contract baseline
+before this amendment was authored.
+
+
+# AD-064 Amendment A1 — Dedicated Opt-In Composition Guard Harmonization
+
+## Status
+
+**ACCEPTED — GIT DURABILITY PENDING**
+
+Related workstream:
+
+**RFC-078 — Canonical Document Content Parsing Composition Boundary & Plain-Text Binding**
+
+Amended decision:
+
+**AD-064 — ACCEPTED / GIT DURABLE**
+
+Durable accepted-contract baseline:
+
+`fb97304eda791d5f513fb918608503960df08755`
+
+## Amendment Purpose
+
+AD-064 already distinguishes:
+
+- the default platform `CompositionRoot` and host runtime;
+- the dedicated opt-in RFC-078 composition boundary.
+
+Two predecessor architecture tests predate that distinction and classify every
+module below `app.core.composition` as default runtime composition.
+
+Amendment A1 harmonizes those guards with the accepted dedicated opt-in
+boundary without weakening default-runtime containment.
+
+## Authorized Existing-Test Adaptations
+
+RFC-078 may modify exactly these three existing tests:
+
+1. `tests/document_parsing/test_utf8_plain_text_document_content_parser_architecture.py`;
+2. `tests/services/test_document_content_access_architecture.py`;
+3. `tests/services/test_document_content_parsing_architecture.py`.
+
+No other existing test may change.
+
+No existing Production file may change.
+
+The first test remains the already accepted RFC-077 successor transition.
+
+The second and third tests are newly authorized by Amendment A1.
+
+## Exact RFC-073 Guard Transition
+
+The function:
+
+`test_default_runtime_and_composition_do_not_import_rfc073_service`
+
+shall continue scanning:
+
+- every `backend/app/core/composition/**/*.py` file;
+- `backend/app/core/runtime.py`;
+- `backend/app/core/bootstrap.py`;
+- `backend/app/core/bootstrap_manager.py`.
+
+Its marker remains:
+
+`app.services.document_content_access_application_service`
+
+The complete reference set shall equal exactly:
+
+`["backend/app/core/composition/document_content_parsing.py"]`
+
+The guard shall reject every additional reference.
+
+It shall not exclude the dedicated module from scanning.
+
+It shall not use wildcard, prefix, directory or open-ended allow-list logic.
+
+## Exact RFC-074 Guard Transition
+
+The function:
+
+`test_default_runtime_and_composition_do_not_import_rfc074`
+
+shall continue scanning the same complete file surface.
+
+Its marker remains:
+
+`app.services.document_content_parsing_application_service`
+
+The complete reference set shall equal exactly:
+
+`["backend/app/core/composition/document_content_parsing.py"]`
+
+The guard shall reject every additional reference.
+
+It shall not exclude the dedicated module from scanning.
+
+It shall not use wildcard, prefix, directory or open-ended allow-list logic.
+
+## Default Runtime Containment Preserved
+
+The exact allowed module is opt-in and is not imported or returned by:
+
+- `CompositionRoot`;
+- `PlatformComposition`;
+- `build_platform_composition`;
+- `app.core.composition.__init__`;
+- `Runtime`;
+- `BootstrapManager`;
+- `app.main`;
+- `ServiceContainer`.
+
+Those files remain byte-preserved.
+
+The amendment does not claim that document parsing is enabled in the default
+FastAPI host.
+
+## Accepted Technical Surface After Amendment A1
+
+New files remain:
+
+- `backend/app/core/composition/document_content_parsing.py`;
+- `tests/core/test_document_content_parsing_composition.py`;
+- `tests/core/test_document_content_parsing_composition_architecture.py`.
+
+Existing-test adaptations become exactly:
+
+- `tests/document_parsing/test_utf8_plain_text_document_content_parser_architecture.py`;
+- `tests/services/test_document_content_access_architecture.py`;
+- `tests/services/test_document_content_parsing_architecture.py`.
+
+Existing Production modifications remain:
+
+**NONE**
+
+Package-export, requirements, schema and migration modifications remain:
+
+**NONE**
+
+Any additional file change returns to architecture review.
+
+## Required Verification After Amendment Durability
+
+A resumed RFC-078 implementation shall prove:
+
+- RFC-078 composition behavior and architecture: **PASS**;
+- all three exact successor-transition guards: **PASS**;
+- RFC-078 focused verification including the two predecessor guards:
+  **53 passed**;
+- RFC-075 through RFC-078 impacted verification including the two predecessor
+  guards: **141 passed**;
+- full PlantMind regression: **1193 passed**;
+- canonical Alembic head: `0005`;
+- no default CompositionRoot, Runtime, Bootstrap, main, persistence or API
+  mutation;
+- no existing Production mutation;
+- no fourth existing-test modification.
+
+## Gate
+
+AD-064 Amendment A1 review:
+
+**PASS — NO REMAINING REFINE / NO BLOCKED ITEM**
+
+AD-064 Amendment A1:
+
+**ACCEPTED — GIT DURABILITY PENDING**
+
+RFC-078 implementation:
+
+**BLOCKED UNTIL AMENDMENT A1 GIT DURABILITY AND A SEPARATE RESUMPTION ENTRY REVIEW**
+
+Staging / Commit / Push:
+
+**NOT PERFORMED**
+
+
+---
+
+## AD-064 Amendment A1 Acceptance Record
+
+**Record Classification: Architecture Amendment Acceptance**
+
+Durable AD-064 accepted-contract baseline:
+
+`fb97304eda791d5f513fb918608503960df08755`
+
+Amendment proposal diff SHA-256:
+
+`d53fe59edb1064c49156fa04bdaea7ac55af9d6230f29c6fd3128fe8fb78f9fd`
+
+Blocked technical snapshot patch SHA-256:
+
+`2ae0094c864e505bb1c71dcfd314c2f4f6582ab4f857182d862bbd73b01f9272`
+
+### Review Result
+
+AD-064 Amendment A1 architecture review:
+
+**PASS — NO REMAINING REFINE / NO BLOCKED ITEM**
+
+Amendment A1:
+
+**ACCEPTED / GIT DURABILITY PENDING**
+
+This acceptance creates no new Architecture Decision.
+
+It amends only AD-064's governed successor-test surface.
+
+All unmodified AD-064 provisions remain authoritative.
+
+### Accepted Conflict Resolution
+
+The dedicated opt-in module:
+
+`backend/app/core/composition/document_content_parsing.py`
+
+is not the default platform `CompositionRoot`.
+
+It may be the sole Production reference detected by each of these existing
+architecture guards:
+
+- `tests/document_parsing/test_utf8_plain_text_document_content_parser_architecture.py`;
+- `tests/services/test_document_content_access_architecture.py`;
+- `tests/services/test_document_content_parsing_architecture.py`.
+
+Each complete guard result must equal exactly:
+
+`["backend/app/core/composition/document_content_parsing.py"]`
+
+No guard may exclude the dedicated module from its scan.
+
+No wildcard, prefix, directory or open-ended allow-list is accepted.
+
+Any second Production reference fails closed.
+
+### Accepted Technical Surface
+
+New files:
+
+- `backend/app/core/composition/document_content_parsing.py`;
+- `tests/core/test_document_content_parsing_composition.py`;
+- `tests/core/test_document_content_parsing_composition_architecture.py`.
+
+Existing-test adaptations:
+
+- `tests/document_parsing/test_utf8_plain_text_document_content_parser_architecture.py`;
+- `tests/services/test_document_content_access_architecture.py`;
+- `tests/services/test_document_content_parsing_architecture.py`.
+
+Existing Production modifications:
+
+**NONE**
+
+Other existing-test modifications:
+
+**NONE**
+
+Package export, requirements, schema and migration modifications:
+
+**NONE**
+
+### Default Runtime Containment
+
+The following remain byte-preserved and must not import or return the dedicated
+composition:
+
+- `CompositionRoot`;
+- `PlatformComposition`;
+- `build_platform_composition`;
+- `app.core.composition.__init__`;
+- `Runtime`;
+- `BootstrapManager`;
+- `app.main`;
+- `ServiceContainer`.
+
+The amendment does not enable parsing in the default FastAPI host.
+
+### Accepted Resumption Verification
+
+After Amendment A1 is Git Durable and a separate resumption-entry review
+passes, RFC-078 must prove:
+
+- focused: **53 passed**;
+- RFC-075 through RFC-078 impacted: **141 passed**;
+- full regression: **1193 passed**;
+- Alembic head: `0005`;
+- no existing Production modification;
+- no fourth existing-test modification;
+- no default Runtime, Bootstrap, main, persistence or API mutation.
+
+### Gate State
+
+Acceptance authoring:
+
+**COMPLETE — REVIEW PENDING**
+
+Staging:
+
+**NOT PERFORMED**
+
+Commit:
+
+**NOT YET CREATED**
+
+Push:
+
+**NOT PERFORMED**
+
+Implementation:
+
+**BLOCKED**
+
+Next gate:
+
+Chief Architect Amendment A1 acceptance review before one Git durability
+transaction.

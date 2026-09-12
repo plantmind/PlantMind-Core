@@ -19411,3 +19411,108 @@ Staging / commit / push:
 Next gate:
 
 Combined acceptance review, followed by one Git durability transaction.
+
+
+---
+
+## RFC-078 AD-064 Amendment A1 Gate
+
+### Implementation Evidence
+
+- focused: **51 passed**;
+- impacted: **139 passed**;
+- full: **1191 passed / 2 architecture guard failures**;
+- technical staging / commit / push: **NONE**.
+
+### Conflict
+
+The accepted dedicated opt-in composition module necessarily imports the
+RFC-073 access service and RFC-074 parsing service.
+
+Two predecessor guards still treat every module under `core/composition` as
+default runtime composition.
+
+### Proposed Amendment
+
+Authorize exact-reference transitions in:
+
+- `tests/services/test_document_content_access_architecture.py`;
+- `tests/services/test_document_content_parsing_architecture.py`;
+
+while retaining the RFC-077 transition in:
+
+- `tests/document_parsing/test_utf8_plain_text_document_content_parser_architecture.py`.
+
+Each complete reference set must equal only:
+
+`["backend/app/core/composition/document_content_parsing.py"]`
+
+No exclusion-based weakening and no open-ended allow-list is permitted.
+
+### Exact Post-Amendment Surface
+
+- three new RFC-078 files;
+- three existing architecture-test adaptations;
+- zero existing Production modifications;
+- zero package-export, requirements, schema or migration changes.
+
+### Gate State
+
+AD-064 Amendment A1:
+
+**ACCEPTED — GIT DURABILITY PENDING**
+
+Implementation:
+
+**BLOCKED PENDING AMENDMENT GIT DURABILITY AND RESUMPTION ENTRY REVIEW**
+
+Next gate:
+
+Chief Architect AD-064 Amendment A1 acceptance review.
+
+
+---
+
+## RFC-078 AD-064 Amendment A1 Acceptance Gate
+
+### Review
+
+Amendment A1 architecture review:
+
+**PASS — NO REMAINING REFINE**
+
+Amendment status:
+
+**ACCEPTED / GIT DURABILITY PENDING**
+
+### Accepted Surface
+
+- three new RFC-078 files;
+- exactly three existing architecture-test adaptations;
+- zero existing Production modifications;
+- zero package-export, requirements, schema or migration changes.
+
+Each transitioned guard requires the complete reference set:
+
+`["backend/app/core/composition/document_content_parsing.py"]`
+
+### Verified Baseline
+
+- parser stack: **101 passed**;
+- full regression: **1155 passed**;
+- Alembic: `0005`;
+- technical snapshot: **PRESENT / BYTE VERIFIED**.
+
+### Gate State
+
+Implementation:
+
+**BLOCKED**
+
+Staging / Commit / Push:
+
+**NOT PERFORMED**
+
+Next gate:
+
+Review the complete Amendment A1 acceptance record before Git durability.

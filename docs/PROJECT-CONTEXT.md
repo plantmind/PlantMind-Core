@@ -10,17 +10,22 @@
 | Deployment Model | On-Premise |
 | Development Branch | `feature/engineering-platform` |
 | Last Fully Closed RFC | RFC-077 — Canonical UTF-8 Plain Text Document Content Parser — Fully Closed and Source-of-Truth Reconciled |
-| Active RFC | RFC-078 — Canonical Document Content Parsing Composition Boundary & Plain-Text Binding — Selection Approved / AD-064 Accepted / Combined Git Durability Pending |
-| Selected Architecture Workstream | RFC-078 — Canonical Document Content Parsing Composition Boundary & Plain-Text Binding — Architecture V2 Review Passed / Acceptance Authored |
+| Active RFC | RFC-078 — Canonical Document Content Parsing Composition Boundary & Plain-Text Binding — AD-064 Amendment A1 Accepted / Git Durability Pending / Implementation Blocked |
+| Selected Architecture Workstream | RFC-078 — Canonical Document Content Parsing Composition Boundary & Plain-Text Binding — AD-064 Git Durable / Amendment A1 Accepted / Git Durability Pending |
 | Proposed Successor RFC | None — RFC-078 is the selected refined candidate workstream |
 | RFC-078 Predecessor Baseline | `36832df98433231095e257092f3b8815d1cfa573` — RFC-077 terminal closure |
-| RFC-078 Selection State | Approved / Combined Acceptance Authored / Git Durability Pending |
-| RFC-078 Architecture Decision Candidate | AD-064 — Accepted / Git Durability Pending |
-| RFC-078 Architecture Contract State | V2 Review Passed / Accepted Locally / Git Durability Pending |
-| RFC-078 Implementation Authorization | No |
+| RFC-078 Selection State | Durable — Accepted Contract Committed / Pushed / Exact Identity Verified |
+| RFC-078 Architecture Decision Candidate | AD-064 — Accepted / Git Durable; Amendment A1 Accepted / Git Durability Pending |
+| RFC-078 Architecture Contract State | AD-064 Accepted / Git Durable; Amendment A1 Accepted / Git Durability Pending |
+| RFC-078 Implementation Authorization | Blocked — Amendment A1 Git Durability and Resumption Entry Review Required |
 | RFC-078 Default CompositionRoot Modification | Explicitly Not Authorized |
 | RFC-078 Access Infrastructure Ownership | Caller-Supplied / No Repository or Store Construction |
 | RFC-078 RFC-077 Test Adaptation | Exactly one architecture guard adaptation; no RFC-077 Production change |
+| RFC-078 Blocked TDD Evidence | 51 focused passed / 139 impacted passed / full 1191 passed and 2 architecture guard failures |
+| AD-064 Amendment A1 | Accepted / Git Durability Pending — Exact RFC-073, RFC-074 and RFC-077 guard harmonization |
+| RFC-078 Exact Existing-Test Adaptations After A1 | Three total / no existing Production changes |
+| AD-064 Amendment A1 Review Result | PASS — No Remaining Refine / Acceptance Authored |
+| AD-064 Amendment A1 Technical Snapshot Patch | `2ae0094c864e505bb1c71dcfd314c2f4f6582ab4f857182d862bbd73b01f9272` |
 | RFC-077 Predecessor Baseline | `529e74866be2a1591a104f7c290c61518a916426` — RFC-076 terminal closure |
 | RFC-077 Selection State | Durable — Committed, Pushed and Exact Identity Verified |
 | RFC-077 Architecture Decision Candidate | AD-063 — Accepted / Committed / Pushed / Exact Identity Verified |
@@ -61,7 +66,7 @@
 | RFC-075 Architecture Contract State | Accepted / Architecture Review Passed / Committed / Pushed / Exact Identity Verified |
 | RFC-069 Selection Commit | `5d7794352029576e0b62c2ac8cbfa248fe11961d` |
 | RFC-070 Selection Commit | `13cfccc08d8c0a3b891990d38edaf9fc48874a5e` |
-| Architecture Decision | AD-063 — Accepted / Committed / Pushed / Exact Identity Verified |
+| Architecture Decision | AD-064 — Accepted / Committed / Pushed / Exact Identity Verified; Amendment A1 Accepted / Git Durability Pending |
 | RFC-074 Selection State | Durable — Committed, Pushed and Exact Identity Verified |
 | RFC-074 Selection Commit | `b5d1e7fe434378ac7ee90912ac40932d5c5451eb` — committed / pushed / exact identity verified |
 | RFC-074 Architecture Contract State | Accepted / Architecture Review Passed / Committed / Pushed / Exact Identity Verified |
@@ -7050,3 +7055,138 @@ Alembic remains:
 
 Review this combined acceptance record, then perform one selection /
 accepted-contract staging, commit and push transaction.
+
+
+---
+
+## RFC-078 AD-064 Amendment A1 State
+
+### Durable Accepted Contract
+
+`fb97304eda791d5f513fb918608503960df08755`
+
+### Blocked Implementation Evidence
+
+RFC-078 focused:
+
+**51 passed**
+
+RFC-075 through RFC-078 impacted:
+
+**139 passed**
+
+Full regression:
+
+**1191 passed / 2 failed**
+
+The failures are confined to the predecessor default-runtime/composition
+guards for RFC-073 and RFC-074.
+
+### Amendment A1 Candidate
+
+**AD-064 Amendment A1 — Dedicated Opt-In Composition Guard Harmonization**
+
+It permits exactly three existing-test adaptations in total:
+
+- RFC-077 parser-reference guard;
+- RFC-073 content-access default-composition guard;
+- RFC-074 parsing-service default-composition guard.
+
+For all three, the sole allowed Production reference is the dedicated opt-in
+module:
+
+`backend/app/core/composition/document_content_parsing.py`
+
+No default runtime file is allowed to reference the services or parser.
+
+### Current State
+
+Technical attempt:
+
+**SNAPSHOTTED OUTSIDE REPOSITORY**
+
+Repository technical baseline:
+
+**RESTORED CLEAN**
+
+AD-064 Amendment A1:
+
+**ACCEPTED — GIT DURABILITY PENDING**
+
+Implementation:
+
+**BLOCKED PENDING AMENDMENT GIT DURABILITY AND RESUMPTION ENTRY REVIEW**
+
+Expected post-amendment verification:
+
+- focused: **53 passed**;
+- impacted: **141 passed**;
+- full: **1193 passed**;
+- Alembic: `0005`.
+
+No staging, commit or push has been performed for Amendment A1.
+
+
+---
+
+## RFC-078 AD-064 Amendment A1 Acceptance State
+
+### Review Result
+
+**PASS — NO REMAINING REFINE**
+
+AD-064 remains:
+
+**ACCEPTED / GIT DURABLE**
+
+Amendment A1 is:
+
+**ACCEPTED / GIT DURABILITY PENDING**
+
+### Accepted Guard Surface
+
+Exactly these three existing architecture tests may change:
+
+- `tests/document_parsing/test_utf8_plain_text_document_content_parser_architecture.py`;
+- `tests/services/test_document_content_access_architecture.py`;
+- `tests/services/test_document_content_parsing_architecture.py`.
+
+Their sole allowed Production reference is:
+
+`backend/app/core/composition/document_content_parsing.py`
+
+No existing Production file and no fourth existing test may change.
+
+### Corrected Source-of-Truth State
+
+The latest Git-durable Architecture Decision is AD-064.
+
+The prior generic Architecture Decision and RFC-078 contract-state rows have
+been reconciled accordingly.
+
+### Baseline and Snapshot
+
+Accepted contract:
+
+`fb97304eda791d5f513fb918608503960df08755`
+
+Technical snapshot patch:
+
+`2ae0094c864e505bb1c71dcfd314c2f4f6582ab4f857182d862bbd73b01f9272`
+
+Restored baseline:
+
+- parser stack: **101 passed**;
+- full regression: **1155 passed**;
+- Alembic: `0005`.
+
+### Current Gate
+
+Implementation remains blocked until:
+
+1. Amendment A1 is committed and pushed with exact identity;
+2. the technical snapshot is revalidated in a separate resumption-entry gate.
+
+Staging / commit / push for Amendment A1:
+
+**NOT PERFORMED**

@@ -7,17 +7,22 @@
 | Project | PlantMind PM-001 |
 | Branch | `feature/engineering-platform` |
 | Last Fully Closed RFC | RFC-077 — Canonical UTF-8 Plain Text Document Content Parser — Fully Closed and Source-of-Truth Reconciled |
-| Active RFC | RFC-078 — Canonical Document Content Parsing Composition Boundary & Plain-Text Binding — Selection Approved / AD-064 Accepted / Combined Git Durability Pending |
-| Selected Architecture Workstream | RFC-078 — Canonical Document Content Parsing Composition Boundary & Plain-Text Binding — Architecture V2 Review Passed / Acceptance Authored |
+| Active RFC | RFC-078 — Canonical Document Content Parsing Composition Boundary & Plain-Text Binding — AD-064 Amendment A1 Accepted / Git Durability Pending / Implementation Blocked |
+| Selected Architecture Workstream | RFC-078 — Canonical Document Content Parsing Composition Boundary & Plain-Text Binding — AD-064 Git Durable / Amendment A1 Accepted / Git Durability Pending |
 | Proposed Successor RFC | None — RFC-078 is the selected refined candidate workstream |
 | RFC-078 Predecessor Baseline | `36832df98433231095e257092f3b8815d1cfa573` — RFC-077 terminal closure |
-| RFC-078 Selection State | Approved / Combined Acceptance Authored / Git Durability Pending |
-| RFC-078 Architecture Decision Candidate | AD-064 — Accepted / Git Durability Pending |
-| RFC-078 Architecture Contract State | V2 Review Passed / Accepted Locally / Git Durability Pending |
-| RFC-078 Implementation Authorization | No |
+| RFC-078 Selection State | Durable — Accepted Contract Committed / Pushed / Exact Identity Verified |
+| RFC-078 Architecture Decision Candidate | AD-064 — Accepted / Git Durable; Amendment A1 Accepted / Git Durability Pending |
+| RFC-078 Architecture Contract State | AD-064 Accepted / Git Durable; Amendment A1 Accepted / Git Durability Pending |
+| RFC-078 Implementation Authorization | Blocked — Amendment A1 Git Durability and Resumption Entry Review Required |
 | RFC-078 Default CompositionRoot Modification | Explicitly Not Authorized |
 | RFC-078 Access Infrastructure Ownership | Caller-Supplied / No Repository or Store Construction |
 | RFC-078 RFC-077 Test Adaptation | Exactly one architecture guard adaptation; no RFC-077 Production change |
+| RFC-078 Blocked TDD Evidence | 51 focused passed / 139 impacted passed / full 1191 passed and 2 architecture guard failures |
+| AD-064 Amendment A1 | Accepted / Git Durability Pending — Exact RFC-073, RFC-074 and RFC-077 guard harmonization |
+| RFC-078 Exact Existing-Test Adaptations After A1 | Three total / no existing Production changes |
+| AD-064 Amendment A1 Review Result | PASS — No Remaining Refine / Acceptance Authored |
+| AD-064 Amendment A1 Technical Snapshot Patch | `2ae0094c864e505bb1c71dcfd314c2f4f6582ab4f857182d862bbd73b01f9272` |
 | RFC-077 Predecessor Baseline | `529e74866be2a1591a104f7c290c61518a916426` — RFC-076 terminal closure |
 | RFC-077 Selection State | Durable — Committed, Pushed and Exact Identity Verified |
 | RFC-077 Architecture Decision Candidate | AD-063 — Accepted / Committed / Pushed / Exact Identity Verified |
@@ -57,7 +62,7 @@
 | RFC-075 State | Fully Closed and Source-of-Truth Reconciled |
 | RFC-075 Architecture Decision Candidate | AD-061 — Accepted / Committed / Pushed / Exact Identity Verified |
 | RFC-075 Architecture Contract State | Accepted / Architecture Review Passed / Committed / Pushed / Exact Identity Verified |
-| Architecture Decision | AD-063 — Accepted / Committed / Pushed / Exact Identity Verified |
+| Architecture Decision | AD-064 — Accepted / Committed / Pushed / Exact Identity Verified; Amendment A1 Accepted / Git Durability Pending |
 | RFC-074 Selection State | Durable — Committed, Pushed and Exact Identity Verified |
 | RFC-074 Selection Commit | `b5d1e7fe434378ac7ee90912ac40932d5c5451eb` — committed / pushed / exact identity verified |
 | RFC-074 Architecture Contract State | Accepted / Architecture Review Passed / Committed / Pushed / Exact Identity Verified |
@@ -127,7 +132,7 @@
 | Alembic Head | `0005` |
 | Authoritative Environment | `PlantMind-Core/.venv` |
 | RFC-069 State | Fully Closed and Source-of-Truth Reconciled |
-| Successor RFC Selection | RFC-078 Selected / AD-064 Accepted / Combined Git Durability Pending |
+| Successor RFC Selection | RFC-078 Selected / AD-064 Git Durable / Amendment A1 Accepted / Git Durability Pending |
 ## Recent Engineering Sequence
 
 - RFC-025 — Core Plugin Framework
@@ -6234,3 +6239,117 @@ Staging / Commit / Push:
 Next review artifact:
 
 `PLANTMIND-RFC078-AD064-ACCEPTANCE-REVIEW.txt`
+
+
+---
+
+## RFC-078 AD-064 Amendment A1 Handoff
+
+### What Happened
+
+The first implementation attempt passed:
+
+- TDD RED;
+- 51 focused tests;
+- 139 impacted tests.
+
+Full regression then stopped with exactly two predecessor architecture guard
+failures.
+
+No staging, commit or push occurred.
+
+### Safe Repository State
+
+The exact attempted technical surface was copied to an out-of-repository
+snapshot.
+
+The repository was restored to accepted commit:
+
+`fb97304eda791d5f513fb918608503960df08755`
+
+before Amendment A1 authoring.
+
+### Amendment Required
+
+AD-064 Amendment A1 must authorize exact transitions in:
+
+- `tests/services/test_document_content_access_architecture.py`;
+- `tests/services/test_document_content_parsing_architecture.py`;
+
+in addition to the accepted RFC-077 guard transition.
+
+Each must require the only service/parser reference to be:
+
+`backend/app/core/composition/document_content_parsing.py`
+
+and must reject all other Production references.
+
+### Current Gate
+
+AD-064 Amendment A1:
+
+**ACCEPTED — GIT DURABILITY PENDING**
+
+Implementation:
+
+**BLOCKED PENDING AMENDMENT GIT DURABILITY AND RESUMPTION ENTRY REVIEW**
+
+Staging / Commit / Push:
+
+**NOT PERFORMED**
+
+Next artifact:
+
+`PLANTMIND-RFC078-AD064-AMENDMENT-A1-REVIEW.txt`
+
+
+---
+
+## RFC-078 AD-064 Amendment A1 Acceptance Handoff
+
+### Accepted State
+
+AD-064:
+
+**ACCEPTED / GIT DURABLE**
+
+Amendment A1 review:
+
+**PASS**
+
+Amendment A1:
+
+**ACCEPTED / GIT DURABILITY PENDING**
+
+### Exact Authorized Existing-Test Changes
+
+- `tests/document_parsing/test_utf8_plain_text_document_content_parser_architecture.py`;
+- `tests/services/test_document_content_access_architecture.py`;
+- `tests/services/test_document_content_parsing_architecture.py`.
+
+Each complete reference set must equal only:
+
+`["backend/app/core/composition/document_content_parsing.py"]`
+
+No fourth existing test and no existing Production file may change.
+
+### Recovery Assets
+
+Technical snapshot directory:
+
+`~/Downloads/PLANTMIND-RFC078-BLOCKED-TECHNICAL-SNAPSHOT-20260911-222008`
+
+Snapshot patch:
+
+`2ae0094c864e505bb1c71dcfd314c2f4f6582ab4f857182d862bbd73b01f9272`
+
+The repository remains at the restored accepted technical baseline.
+
+### Next Exact Action
+
+Review:
+
+`PLANTMIND-RFC078-AD064-AMENDMENT-A1-ACCEPTANCE-REVIEW.txt`
+
+Do not restore the technical snapshot before Amendment A1 Git durability and a
+separate resumption-entry gate.
