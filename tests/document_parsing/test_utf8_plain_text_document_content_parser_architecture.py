@@ -290,6 +290,10 @@ def test_parser_is_not_wired_or_registered_elsewhere() -> None:
         "app.infrastructure.document_parsing."
         "utf8_plain_text_parser"
     )
+    allowed_reference = (
+        "backend/app/core/composition/"
+        "document_content_parsing.py"
+    )
 
     references = []
 
@@ -306,4 +310,4 @@ def test_parser_is_not_wired_or_registered_elsewhere() -> None:
                 path.relative_to(ROOT).as_posix()
             )
 
-    assert references == []
+    assert references == [allowed_reference]

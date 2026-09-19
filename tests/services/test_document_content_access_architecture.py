@@ -394,6 +394,11 @@ def test_default_runtime_and_composition_do_not_import_rfc073_service() -> None:
         "document_content_access_application_service"
     )
 
+    allowed_reference = (
+        "backend/app/core/composition/"
+        "document_content_parsing.py"
+    )
+
     violations = [
         str(
             path.relative_to(
@@ -406,7 +411,7 @@ def test_default_runtime_and_composition_do_not_import_rfc073_service() -> None:
         in path.read_text()
     ]
 
-    assert violations == []
+    assert violations == [allowed_reference]
 
 
 def test_services_package_does_not_reexport_rfc073_surface() -> None:

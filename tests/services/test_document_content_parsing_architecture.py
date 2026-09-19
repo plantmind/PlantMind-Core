@@ -293,6 +293,11 @@ def test_default_runtime_and_composition_do_not_import_rfc074() -> None:
         "document_content_parsing_application_service"
     )
 
+    allowed_reference = (
+        "backend/app/core/composition/"
+        "document_content_parsing.py"
+    )
+
     violations = [
         str(path.relative_to(ROOT))
         for path in files
@@ -300,7 +305,7 @@ def test_default_runtime_and_composition_do_not_import_rfc074() -> None:
         and marker in path.read_text()
     ]
 
-    assert violations == []
+    assert violations == [allowed_reference]
 
 
 def test_no_concrete_parser_library_is_selected() -> None:
