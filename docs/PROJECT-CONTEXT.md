@@ -9,21 +9,29 @@
 | Status | Active Development |
 | Deployment Model | On-Premise |
 | Development Branch | `feature/engineering-platform` |
-| Last Fully Closed RFC | RFC-077 — Canonical UTF-8 Plain Text Document Content Parser — Fully Closed and Source-of-Truth Reconciled |
-| Active RFC | RFC-078 — Canonical Document Content Parsing Composition Boundary & Plain-Text Binding — AD-064 Amendment A1 Accepted / Git Durability Pending / Implementation Blocked |
-| Selected Architecture Workstream | RFC-078 — Canonical Document Content Parsing Composition Boundary & Plain-Text Binding — AD-064 Git Durable / Amendment A1 Accepted / Git Durability Pending |
-| Proposed Successor RFC | None — RFC-078 is the selected refined candidate workstream |
+| Last Fully Closed RFC | RFC-078 — Canonical Document Content Parsing Composition Boundary & Plain-Text Binding — Fully Closed and Source-of-Truth Reconciled |
+| Active RFC | None — RFC-078 Fully Closed and Source-of-Truth Reconciled; successor selection not started |
+| Selected Architecture Workstream | None — RFC-078 completed; successor not selected |
+| Proposed Successor RFC | None — successor selection has not started |
 | RFC-078 Predecessor Baseline | `36832df98433231095e257092f3b8815d1cfa573` — RFC-077 terminal closure |
 | RFC-078 Selection State | Durable — Accepted Contract Committed / Pushed / Exact Identity Verified |
-| RFC-078 Architecture Decision Candidate | AD-064 — Accepted / Git Durable; Amendment A1 Accepted / Git Durability Pending |
-| RFC-078 Architecture Contract State | AD-064 Accepted / Git Durable; Amendment A1 Accepted / Git Durability Pending |
-| RFC-078 Implementation Authorization | Blocked — Amendment A1 Git Durability and Resumption Entry Review Required |
+| RFC-078 Architecture Decision Candidate | AD-064 — Accepted / Committed / Pushed / Exact Identity Verified; Amendment A1 — Accepted / Committed / Pushed / Exact Identity Verified |
+| RFC-078 Architecture Contract State | AD-064 + Amendment A1 — Accepted / Git Durable / Technical Implementation Complete |
+| RFC-078 Implementation Authorization | Completed under AD-064 + Amendment A1 — Technical Implementation Committed / Pushed / Exact Identity Verified |
 | RFC-078 Default CompositionRoot Modification | Explicitly Not Authorized |
 | RFC-078 Access Infrastructure Ownership | Caller-Supplied / No Repository or Store Construction |
-| RFC-078 RFC-077 Test Adaptation | Exactly one architecture guard adaptation; no RFC-077 Production change |
+| RFC-078 RFC-077 Test Adaptation | Governed under Amendment A1 — one of exactly three architecture-guard adaptations |
 | RFC-078 Blocked TDD Evidence | 51 focused passed / 139 impacted passed / full 1191 passed and 2 architecture guard failures |
-| AD-064 Amendment A1 | Accepted / Git Durability Pending — Exact RFC-073, RFC-074 and RFC-077 guard harmonization |
+| AD-064 Amendment A1 | Accepted / Committed / Pushed / Exact Identity Verified — RFC-073 / RFC-074 / RFC-077 guard harmonization |
 | RFC-078 Exact Existing-Test Adaptations After A1 | Three total / no existing Production changes |
+| RFC-078 Accepted Contract Commit | `fb97304eda791d5f513fb918608503960df08755` — committed / pushed / exact identity verified |
+| RFC-078 Amendment A1 Commit | `1b13558a24f9073c96615b97d894240cbf024bb2` — committed / pushed / exact identity verified |
+| RFC-078 Technical Implementation Commit | `72757f3ab7280a6b55fd336e0a7170dfabc3c1c1` — committed / pushed / exact identity verified |
+| RFC-078 Technical Implementation State | Complete / Committed / Pushed / Exact Identity Verified |
+| RFC-078 Focused Verification | 53 passed |
+| RFC-075 + RFC-076 + RFC-077 + RFC-078 Impacted Verification | 141 passed |
+| RFC-078 Full Regression Baseline | 1193 passed |
+| RFC-078 State | Fully Closed and Source-of-Truth Reconciled |
 | AD-064 Amendment A1 Review Result | PASS — No Remaining Refine / Acceptance Authored |
 | AD-064 Amendment A1 Technical Snapshot Patch | `2ae0094c864e505bb1c71dcfd314c2f4f6582ab4f857182d862bbd73b01f9272` |
 | RFC-077 Predecessor Baseline | `529e74866be2a1591a104f7c290c61518a916426` — RFC-076 terminal closure |
@@ -66,7 +74,7 @@
 | RFC-075 Architecture Contract State | Accepted / Architecture Review Passed / Committed / Pushed / Exact Identity Verified |
 | RFC-069 Selection Commit | `5d7794352029576e0b62c2ac8cbfa248fe11961d` |
 | RFC-070 Selection Commit | `13cfccc08d8c0a3b891990d38edaf9fc48874a5e` |
-| Architecture Decision | AD-064 — Accepted / Committed / Pushed / Exact Identity Verified; Amendment A1 Accepted / Git Durability Pending |
+| Architecture Decision | AD-064 — Accepted / Committed / Pushed / Exact Identity Verified; Amendment A1 — Accepted / Committed / Pushed / Exact Identity Verified |
 | RFC-074 Selection State | Durable — Committed, Pushed and Exact Identity Verified |
 | RFC-074 Selection Commit | `b5d1e7fe434378ac7ee90912ac40932d5c5451eb` — committed / pushed / exact identity verified |
 | RFC-074 Architecture Contract State | Accepted / Architecture Review Passed / Committed / Pushed / Exact Identity Verified |
@@ -110,7 +118,7 @@
 | RFC-069 Engineering Closure Commit | `63790de5312c69c709e2249b56e91995a00426b6` |
 | RFC-069 Post-Closure Reconciliation Commit | `231e0cc66862c797e299fdb71ff20da8a39e8ae2` |
 | RFC-069 Reconciliation Verification | PASS — Committed, Pushed, Exact Local / Tracking / Remote Identity Verified |
-| Test Baseline | 1155 passed |
+| Test Baseline | 1193 passed |
 | RFC-070 Engineering Closure Commit | `ab4438b02a8f34f83b462e3d8a86b4b5ab5d1092` |
 | RFC-070 Engineering Closure State | Complete, Pushed and Verified |
 | RFC-070 Post-Closure Reconciliation | Complete, Pushed and Verified |
@@ -7190,3 +7198,67 @@ Implementation remains blocked until:
 Staging / commit / push for Amendment A1:
 
 **NOT PERFORMED**
+
+
+---
+
+## RFC-078 Compact Final Closure and Source-of-Truth Reconciliation State
+
+### Durable Chain
+
+Accepted contract:
+
+`fb97304eda791d5f513fb918608503960df08755`
+
+AD-064 Amendment A1:
+
+`1b13558a24f9073c96615b97d894240cbf024bb2`
+
+Technical implementation:
+
+`72757f3ab7280a6b55fd336e0a7170dfabc3c1c1`
+
+### Final Technical Outcome
+
+RFC-078 delivered one dedicated opt-in canonical Document Content parsing
+composition without changing the default platform composition.
+
+The technical surface contains:
+
+- three new RFC-078 files;
+- three governed existing architecture-test adaptations;
+- zero existing Production modifications.
+
+### Verification
+
+- focused: **53 passed**;
+- impacted: **141 passed**;
+- full regression: **1193 passed**;
+- Alembic: `0005`;
+- Local / Tracking / Remote: **EXACT**;
+- working tree: **CLEAN**.
+
+### Final State
+
+RFC-078:
+
+**FULLY CLOSED AND SOURCE-OF-TRUTH RECONCILED**
+
+AD-064:
+
+**ACCEPTED / GIT DURABLE**
+
+AD-064 Amendment A1:
+
+**ACCEPTED / GIT DURABLE**
+
+Active RFC:
+
+**NONE**
+
+Selected successor:
+
+**NONE**
+
+The future commit of this compact closure record is intentionally not predicted.
+Its Git durability is verified by one external gate.

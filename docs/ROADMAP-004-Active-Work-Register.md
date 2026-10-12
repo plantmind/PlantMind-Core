@@ -19516,3 +19516,50 @@ Staging / Commit / Push:
 Next gate:
 
 Review the complete Amendment A1 acceptance record before Git durability.
+
+
+---
+
+## RFC-078 Compact Final Closure and Reconciliation Gate
+
+### Durable Chain
+
+- accepted contract: `fb97304eda791d5f513fb918608503960df08755`;
+- Amendment A1: `1b13558a24f9073c96615b97d894240cbf024bb2`;
+- technical implementation: `72757f3ab7280a6b55fd336e0a7170dfabc3c1c1`.
+
+### Delivered Result
+
+- dedicated opt-in parsing composition;
+- caller-supplied content access;
+- exact `text/plain` binding;
+- isolated parser/resolver/dispatcher/Application graph;
+- three governed architecture-guard adaptations;
+- zero existing Production modifications.
+
+### Final Verification
+
+- RFC-078 focused: **53 passed**;
+- RFC-075 through RFC-078 impacted: **141 passed**;
+- full regression: **1193 passed**;
+- Alembic: `0005`;
+- technical Git durability: **PASS**.
+
+### Final State
+
+RFC-078:
+
+**FULLY CLOSED AND SOURCE-OF-TRUTH RECONCILED**
+
+Active RFC:
+
+**NONE**
+
+Selected successor:
+
+**NONE**
+
+Next gate:
+
+Review this compact five-document closure record, then perform one Git
+durability transaction. No further RFC-078 reconciliation cycle is required.

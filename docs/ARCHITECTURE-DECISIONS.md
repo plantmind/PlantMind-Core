@@ -24056,3 +24056,196 @@ Next gate:
 
 Chief Architect Amendment A1 acceptance review before one Git durability
 transaction.
+
+
+---
+
+## Current Architecture Governance State — RFC-078 Compact Final Closure and Reconciliation Verification
+
+**Record Classification: Non-Decision Compact Terminal Governance Record**
+
+This record creates no new Architecture Decision.
+
+It does not amend, replace or supersede AD-064 or Amendment A1.
+
+AD-064 remains:
+
+**ACCEPTED / GIT DURABLE**
+
+AD-064 Amendment A1 remains:
+
+**ACCEPTED / GIT DURABLE**
+
+RFC-078 — Canonical Document Content Parsing Composition Boundary & Plain-Text Binding is documented as:
+
+**FULLY CLOSED AND SOURCE-OF-TRUTH RECONCILED**
+
+### Verified Durable Commit Chain
+
+Selection and accepted-contract commit:
+
+`fb97304eda791d5f513fb918608503960df08755`
+
+AD-064 Amendment A1 acceptance commit:
+
+`1b13558a24f9073c96615b97d894240cbf024bb2`
+
+Technical implementation commit:
+
+`72757f3ab7280a6b55fd336e0a7170dfabc3c1c1`
+
+Technical implementation parent:
+
+`1b13558a24f9073c96615b97d894240cbf024bb2`
+
+Technical implementation push:
+
+**PASS**
+
+Exact Local / Tracking / Remote technical identity:
+
+**PASS**
+
+Ahead / behind:
+
+**0 / 0**
+
+Working tree at compact-closure entry:
+
+**CLEAN**
+
+### Delivered Technical Boundary
+
+RFC-078 delivered the dedicated opt-in composition module:
+
+`app.core.composition.document_content_parsing`
+
+with:
+
+- immutable `DocumentContentParsingComposition`;
+- `build_document_content_parsing_composition(...)`;
+- caller-supplied `DocumentContentAccessApplicationService`;
+- exact canonical `text/plain` binding;
+- one `Utf8PlainTextDocumentContentParser`;
+- one `RegistryBackedDocumentContentParserResolver`;
+- one `DispatchingDocumentContentParser`;
+- one `DocumentContentParsingApplicationService`;
+- an isolated object graph per builder invocation.
+
+The default platform `CompositionRoot` is not modified.
+
+The default FastAPI host does not automatically enable this composition.
+
+### Amendment A1 Guard Harmonization
+
+Exactly three existing architecture tests were adapted:
+
+- `tests/document_parsing/test_utf8_plain_text_document_content_parser_architecture.py`;
+- `tests/services/test_document_content_access_architecture.py`;
+- `tests/services/test_document_content_parsing_architecture.py`.
+
+For each governed reference scan, the sole accepted Production reference is:
+
+`backend/app/core/composition/document_content_parsing.py`
+
+No wildcard, prefix, directory or open-ended allow-list is introduced.
+
+No fourth existing test is modified.
+
+No existing Production file is modified.
+
+### Final Engineering Verification
+
+Focused RFC-078:
+
+**53 passed**
+
+RFC-075 plus RFC-076 plus RFC-077 plus RFC-078 impacted:
+
+**141 passed**
+
+Full PlantMind regression:
+
+**1193 passed**
+
+Canonical Alembic head:
+
+`0005`
+
+Reviewed technical patch SHA-256:
+
+`d38aef6ce4662f3f7aa24651a5d33c65871944cb1b0381b7a3d1a5efc28ddd97`
+
+Committed native technical diff SHA-256:
+
+`19268e63141e567cc45ece0b7538ea594df52979e0de0f6345c5734815b52e49`
+
+### Preserved Architecture
+
+RFC-073 remains verified Document Content access, integrity and payload-lifetime owner.
+
+RFC-074 remains parsing Application orchestration and result validation owner.
+
+RFC-075 remains parser resolution and dispatch owner.
+
+RFC-076 remains immutable parser binding and registry-backed resolver owner.
+
+RFC-077 remains strict UTF-8 canonical `text/plain` parser owner.
+
+RFC-078 owns only the explicit opt-in composition of those accepted boundaries.
+
+RFC-065 remains prepared Document-to-Knowledge ingestion owner.
+
+AD-006 registry responsibilities remain unchanged.
+
+The following remain unchanged:
+
+- default `CompositionRoot`;
+- `PlatformComposition`;
+- `build_platform_composition`;
+- composition package exports;
+- `ServiceContainer`;
+- Runtime;
+- Bootstrap;
+- `app.main`;
+- repositories and stores;
+- database and filesystem adapters;
+- API exposure;
+- requirements;
+- schema and migrations.
+
+No PDF, DOCX, spreadsheet, image or OCR parser, parser discovery, fallback,
+Document Library, parsed-result persistence, chunking, automatic Knowledge
+ingestion, Search/Vector/Graph/RAG/LLM, AI Agent, API or production-security
+capability is promoted by RFC-078.
+
+### Governed State After RFC-078
+
+Last fully closed RFC:
+
+**RFC-078**
+
+Active RFC:
+
+**NONE**
+
+Selected successor:
+
+**NONE**
+
+Successor-workstream selection has not started.
+
+### Non-Self-Referential Compact Final Record
+
+This compact terminal record intentionally records only commits already Git
+Durable through:
+
+`72757f3ab7280a6b55fd336e0a7170dfabc3c1c1`
+
+It does not predict the future Git commit hash that will persist this
+five-document closure and reconciliation record.
+
+Verification of that future commit, push, exact Local / Tracking / Remote
+identity and clean working tree is one external Git durability gate.
+
+That external gate requires no additional RFC-078 Source-of-Truth cycle.

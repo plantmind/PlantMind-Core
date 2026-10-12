@@ -10691,3 +10691,78 @@ Implementation:
 Staging / commit / push:
 
 **NOT PERFORMED**
+
+
+---
+
+## 2026-10-12 — RFC-078 Compact Engineering Closure and Reconciliation Verification
+
+RFC-078 — Canonical Document Content Parsing Composition Boundary & Plain-Text Binding is documented as:
+
+**FULLY CLOSED AND SOURCE-OF-TRUTH RECONCILED**
+
+Architecture governance:
+
+- AD-064: **ACCEPTED / GIT DURABLE**;
+- Amendment A1: **ACCEPTED / GIT DURABLE**.
+
+### Durable Commit Chain
+
+- accepted contract: `fb97304eda791d5f513fb918608503960df08755`;
+- Amendment A1: `1b13558a24f9073c96615b97d894240cbf024bb2`;
+- technical implementation: `72757f3ab7280a6b55fd336e0a7170dfabc3c1c1`.
+
+### Delivered Boundary
+
+RFC-078 delivered:
+
+- dedicated opt-in Document Content parsing composition;
+- caller-supplied verified content-access service;
+- exact `text/plain` binding;
+- UTF-8 plain-text parser;
+- registry-backed resolver;
+- dispatcher;
+- parsing Application service;
+- isolated immutable composition result;
+- three exact architecture-guard successor adaptations.
+
+No existing Production file was modified.
+
+### Final Verification
+
+- RFC-078 focused: **53 passed**;
+- RFC-075 through RFC-078 impacted: **141 passed**;
+- full regression: **1193 passed**;
+- Alembic: `0005`;
+- technical Local / Tracking / Remote: **EXACT**;
+- ahead / behind: **0 / 0**;
+- working tree: **CLEAN**;
+- reviewed patch: `d38aef6ce4662f3f7aa24651a5d33c65871944cb1b0381b7a3d1a5efc28ddd97`;
+- committed native diff: `19268e63141e567cc45ece0b7538ea594df52979e0de0f6345c5734815b52e49`.
+
+### Preserved Scope
+
+No default CompositionRoot, Runtime, Bootstrap, main, ServiceContainer,
+persistence, API, requirements, schema or migration change.
+
+No additional parser technology, fallback, discovery, Document Library,
+chunking, Knowledge promotion, Search/Vector/Graph/RAG/LLM or AI Agent
+capability is promoted.
+
+### Governed State
+
+Last fully closed RFC:
+
+**RFC-078**
+
+Active RFC:
+
+**NONE**
+
+Selected successor:
+
+**NONE**
+
+This compact record is non-self-referential. Its own future commit and push are
+verified by one external Git durability gate and require no further RFC-078
+documentation cycle.
