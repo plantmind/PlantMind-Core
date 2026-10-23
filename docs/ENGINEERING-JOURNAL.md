@@ -10766,3 +10766,19 @@ Selected successor:
 This compact record is non-self-referential. Its own future commit and push are
 verified by one external Git durability gate and require no further RFC-078
 documentation cycle.
+
+
+---
+
+## Post-RFC-078 — Local document pipeline regression coverage
+
+Classification: test-only maintenance; no new architecture decision or RFC.
+Predecessor: `86b3593268eb2d2a387ab525a5de7893372b0aa2`.
+Test file: `tests/integration/test_document_content_local_pipeline.py`.
+Test SHA-256: `c5d84c51185aa326526c68392d7fe4a5a903b8b6c0c6680eff4cc45bc5619e76`.
+Verification for this change: 8 integration tests; 1201 full regression tests; Alembic `0005`.
+Uses real adapters with isolated temporary SQLite and filesystem fixtures.
+No existing test or Production code changes; no default host or schema changes.
+PostgreSQL deployment, concurrency and production security are not verified.
+RFC-078 stays closed; its historical closure baseline remains 1193.
+Active RFC: none. Successor: not selected.
