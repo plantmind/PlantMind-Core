@@ -7,9 +7,9 @@
 | Project | PlantMind PM-001 |
 | Branch | `feature/engineering-platform` |
 | Last Fully Closed RFC | RFC-078 — Canonical Document Content Parsing Composition Boundary & Plain-Text Binding — Fully Closed and Source-of-Truth Reconciled |
-| Active RFC | None — RFC-078 Fully Closed and Source-of-Truth Reconciled; successor selection not started |
-| Selected Architecture Workstream | None — RFC-078 completed; successor not selected |
-| Proposed Successor RFC | None — successor selection has not started |
+| Active RFC | RFC-079 — contract accepted; implementation requires successful Git gate |
+| Selected Architecture Workstream | RFC-079 — Explicit Parsed-Document Knowledge Ingestion |
+| Proposed Successor RFC | None — RFC-079 selected; no later successor selected |
 | RFC-078 Predecessor Baseline | `36832df98433231095e257092f3b8815d1cfa573` — RFC-077 terminal closure |
 | RFC-078 Selection State | Durable — Accepted Contract Committed / Pushed / Exact Identity Verified |
 | RFC-078 Architecture Decision Candidate | AD-064 — Accepted / Committed / Pushed / Exact Identity Verified; Amendment A1 — Accepted / Committed / Pushed / Exact Identity Verified |
@@ -70,7 +70,7 @@
 | RFC-075 State | Fully Closed and Source-of-Truth Reconciled |
 | RFC-075 Architecture Decision Candidate | AD-061 — Accepted / Committed / Pushed / Exact Identity Verified |
 | RFC-075 Architecture Contract State | Accepted / Architecture Review Passed / Committed / Pushed / Exact Identity Verified |
-| Architecture Decision | AD-064 — Accepted / Committed / Pushed / Exact Identity Verified; Amendment A1 — Accepted / Committed / Pushed / Exact Identity Verified |
+| Architecture Decision | AD-065 — Accepted for RFC-079; see external Git durability gate |
 | RFC-074 Selection State | Durable — Committed, Pushed and Exact Identity Verified |
 | RFC-074 Selection Commit | `b5d1e7fe434378ac7ee90912ac40932d5c5451eb` — committed / pushed / exact identity verified |
 | RFC-074 Architecture Contract State | Accepted / Architecture Review Passed / Committed / Pushed / Exact Identity Verified |
@@ -140,7 +140,7 @@
 | Alembic Head | `0005` |
 | Authoritative Environment | `PlantMind-Core/.venv` |
 | RFC-069 State | Fully Closed and Source-of-Truth Reconciled |
-| Successor RFC Selection | None — RFC-078 Fully Closed / successor selection not started |
+| Successor RFC Selection | RFC-079 selected under AD-065; external Git gate required |
 ## Recent Engineering Sequence
 
 - RFC-025 — Core Plugin Framework
@@ -6427,3 +6427,21 @@ Next review artifact:
 
 After review, commit and push this exact five-document record once. No further
 RFC-078 closure record is required.
+
+
+---
+
+## RFC-079 / AD-065 — Selection and contract acceptance
+
+RFC-079 selected: Explicit Parsed-Document Knowledge Ingestion.
+Architecture review: PASS. AD-065: ACCEPTED.
+Predecessor: `d21b109eda9e514ef50ae77faccaa80a1e945665`. Reviewed draft contract SHA-256: `187351f75568c99f2a1fc179ed5177d3343fdedfb3b71ff53f46ddf5c4b402f0`.
+Scope: one new application module and three new tests; no existing Production/test changes.
+Parse once, validate identity and nonblank text, then delegate once to existing ingestion.
+No automatic write on parse, retry, deduplication, host/API wiring or schema change.
+Acceptance gate verifies: 8 existing integration tests, 1201 full regression tests, Alembic 0005.
+Commit/push identity is verified externally; this record does not predict its own commit.
+Implementation entry is authorized only after the acceptance Git gate succeeds.
+Next: implement and test the exact four-file scope; technical work is a separate change.
+RFC-078 remains closed; its historical baseline remains 1193.
+PostgreSQL deployment, production security and content truth are not certified.

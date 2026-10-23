@@ -24249,3 +24249,95 @@ Verification of that future commit, push, exact Local / Tracking / Remote
 identity and clean working tree is one external Git durability gate.
 
 That external gate requires no additional RFC-078 Source-of-Truth cycle.
+
+
+---
+
+# AD-065 — Explicit Parsed-Document Knowledge Ingestion Application Boundary
+
+Status: ACCEPTED. Git durability is verified by the external acceptance gate.
+Related workstream: RFC-079 (selected; implementation requires successful Git gate).
+Baseline: d21b109eda9e514ef50ae77faccaa80a1e945665.
+Baseline at draft authoring: 1201 passed; Alembic 0005. Acceptance re-verification is required below.
+
+## Purpose and ownership
+Support Release 0.4 Knowledge Intelligence by explicitly passing extracted text
+into the existing DocumentKnowledgeIngestionApplicationService.
+RFC-074 retains parsing orchestration. RFC-078 remains opt-in composition.
+RFC-065 retains Knowledge Capture and canonical document lineage delegation.
+RFC-064 retains Knowledge-and-lineage transaction ownership.
+No existing owner or production workload-entry authority is replaced.
+
+## Accepted application contract
+Module: app.services.parsed_document_knowledge_ingestion_application_service.
+Class: ParsedDocumentKnowledgeIngestionApplicationService.
+Injected keyword-only dependencies: parsing_service (DocumentContentParsingApplicationService)
+and ingestion_service (DocumentKnowledgeIngestionApplicationService).
+Neither dependency is constructed or registered by this service.
+Method: ingest(request) -> existing DocumentKnowledgeIngestionResult.
+Request: ParsedDocumentKnowledgeIngestionRequest; frozen, slots, keyword-only.
+Fields: document_id: EntityId; kind: str; title: str;
+subject: KnowledgeCaptureSubject | None = None.
+No caller content override, source metadata, generated identity or timestamp.
+Kind/title/subject validation and normalization remain owned by Knowledge Capture.
+
+## Explicit call sequence and rejection rules
+1. Reject a wrong request type or non-EntityId document_id before any service call.
+2. Call parsing_service.parse(DocumentContentParsingRequest(document_id=...)) once.
+3. Require DocumentContentParsingResult, DocumentContentDescriptor and str types;
+   wrong types raise TypeError. Require descriptor.document_id == request.document_id;
+   mismatch raises ValueError before ingestion.
+4. Reject empty or whitespace-only parsed text with ValueError before ingestion.
+   This is a new rule for this operation only, not a change to parsing behavior.
+5. Call ingestion_service.ingest(...) once with the same document_id, kind, title,
+   subject and exact extracted text. Do not strip, rewrite, summarize or chunk text.
+6. Return the exact existing ingestion result, only after that invocation returns.
+Parsing and payload cleanup must finish before ingestion starts. A parsing,
+cleanup, type, identity or empty-text failure must make no ingestion call.
+
+## Failure, transaction and trust boundaries
+Predecessor exceptions propagate unchanged. No retry, compensation or synthetic success.
+Post-commit cleanup errors may mean Knowledge/lineage writes already committed;
+this wrapper must not claim rollback or retry them.
+Repeated explicit requests may create additional Knowledge records. No exactly-once,
+idempotency or deduplication guarantee is added.
+Parsing reads are not in the Knowledge/lineage write transaction.
+Lineage remains document identity -> Knowledge identity; it does not persist the
+parsed descriptor/digest or establish byte-version provenance.
+Calling parse alone still performs no Knowledge write. Calling this method explicitly
+is not an authorization check, human-approval record or validation of content truth.
+Current real integration uses text/plain; the wrapper does not select parser formats.
+
+## Exact planned technical scope
+One new application module and three new test files (paths recorded with this contract).
+No existing Production or test file changes, no package exports, no default
+CompositionRoot/Runtime/Bootstrap/main/API wiring, and no database/store construction.
+No new dependencies, schema, migrations, parser technology, RAG/LLM or security claims.
+Existing predecessor architecture guards must pass unchanged. Any conflict returns
+to review; do not weaken or silently amend those guards.
+
+## Required implementation evidence
+Unit tests: exact request contract, call ordering/counts, exact text/metadata,
+result identity, pre-ingestion failures, exception identity and repeated requests.
+Architecture tests: allowed application dependencies, no persistence/host ownership,
+no import-time graph creation and unchanged predecessor boundaries.
+Local integration: real existing parsing, access, repositories and ingestion coordinator
+with isolated temporary storage; successful canonical lineage and failure behavior.
+SQLite evidence does not certify PostgreSQL, concurrency, security or production.
+Retain the existing 8 pipeline regression tests; run focused and full regression.
+Do not predict a passing new test count before implementing and running tests.
+
+## Gate
+Architecture review: PASS. RFC-079 is selected and AD-065 is Accepted.
+This records contract acceptance only, not technical implementation.
+The external gate must pass 8 existing integration tests, 1201 full regression tests,
+Alembic head 0005, exact five-document commit/push identity and clean working tree.
+Only after that gate passes is implementation entry authorized within the exact
+four-file scope above. Technical work remains a separate change.
+No extra documentation-only gate is required before implementation. RFC-078 stays closed.
+
+### Planned new technical files
+- `backend/app/services/parsed_document_knowledge_ingestion_application_service.py`
+- `tests/services/test_parsed_document_knowledge_ingestion_application_service.py`
+- `tests/services/test_parsed_document_knowledge_ingestion_architecture.py`
+- `tests/integration/test_parsed_document_knowledge_ingestion_local_pipeline.py`

@@ -19579,3 +19579,21 @@ No existing test or Production code changes; no default host or schema changes.
 PostgreSQL deployment, concurrency and production security are not verified.
 RFC-078 stays closed; its historical closure baseline remains 1193.
 Active RFC: none. Successor: not selected.
+
+
+---
+
+## RFC-079 / AD-065 — Selection and contract acceptance
+
+RFC-079 selected: Explicit Parsed-Document Knowledge Ingestion.
+Architecture review: PASS. AD-065: ACCEPTED.
+Predecessor: `d21b109eda9e514ef50ae77faccaa80a1e945665`. Reviewed draft contract SHA-256: `187351f75568c99f2a1fc179ed5177d3343fdedfb3b71ff53f46ddf5c4b402f0`.
+Scope: one new application module and three new tests; no existing Production/test changes.
+Parse once, validate identity and nonblank text, then delegate once to existing ingestion.
+No automatic write on parse, retry, deduplication, host/API wiring or schema change.
+Acceptance gate verifies: 8 existing integration tests, 1201 full regression tests, Alembic 0005.
+Commit/push identity is verified externally; this record does not predict its own commit.
+Implementation entry is authorized only after the acceptance Git gate succeeds.
+Next: implement and test the exact four-file scope; technical work is a separate change.
+RFC-078 remains closed; its historical baseline remains 1193.
+PostgreSQL deployment, production security and content truth are not certified.
