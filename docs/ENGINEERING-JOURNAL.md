@@ -10800,3 +10800,31 @@ Implementation entry is authorized only after the acceptance Git gate succeeds.
 Next: implement and test the exact four-file scope; technical work is a separate change.
 RFC-078 remains closed; its historical baseline remains 1193.
 PostgreSQL deployment, production security and content truth are not certified.
+
+
+---
+
+## RFC-079 — Compact engineering closure and source-of-truth reconciliation
+
+Classification: completion evidence, not a new architecture decision.
+AD-065: Accepted / Git Durable at `29bf2ce1f255a7e15554f05bcfb8b44adef712f1`. Its contract is unchanged.
+Technical implementation: `12cf0bf907c992e5e5d6a8e1277876ccf4cf6d22`.
+Reviewed technical diff SHA-256: `d719523b239c5c57e3e9c82493e0cf9b82f2b13d80d6957b7dee78b6f84bcabc`.
+Delivered: request validation, one parse, result/identity/nonblank-text checks,
+then one delegation to existing ingestion and return of its exact result.
+The wrapper forwards extracted text unchanged; existing Knowledge-domain normalization remains.
+Parsing alone remains read-only. Existing exceptions propagate; no retry or deduplication is added.
+Knowledge/lineage transaction ownership remains with RFC-064 and RFC-065.
+Post-commit cleanup errors may follow committed writes; no rollback claim or retry is made.
+Verification required by this closure gate: RFC-079 40 passed; existing pipeline 8 passed;
+full regression 1241 passed; Alembic head 0005.
+Integration evidence uses temporary SQLite and filesystem fixtures only.
+No PostgreSQL deployment, concurrency, security, authorization or content-truth certification.
+No default host/API wiring, schema, dependencies or predecessor code/tests changed.
+RFC-079 state: FULLY_CLOSED_AND_SOURCE_OF_TRUTH_RECONCILED.
+Active RFC: NONE. Selected successor: NONE. Next: separate evidence-based successor selection.
+RFC-078 remains closed; historical counts 1193 and 1201 remain historical.
+This completion declaration takes effect only after this exact five-document record
+passes tests, commit/push identity verification and a clean working-tree check.
+Its own future commit hash is deliberately not predicted.
+No additional RFC-079 closure or reconciliation record is required after that gate.

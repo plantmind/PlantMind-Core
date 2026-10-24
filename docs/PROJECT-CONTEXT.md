@@ -9,10 +9,10 @@
 | Status | Active Development |
 | Deployment Model | On-Premise |
 | Development Branch | `feature/engineering-platform` |
-| Last Fully Closed RFC | RFC-078 — Canonical Document Content Parsing Composition Boundary & Plain-Text Binding — Fully Closed and Source-of-Truth Reconciled |
-| Active RFC | RFC-079 — contract accepted; implementation requires successful Git gate |
-| Selected Architecture Workstream | RFC-079 — Explicit Parsed-Document Knowledge Ingestion |
-| Proposed Successor RFC | None — RFC-079 selected; no later successor selected |
+| Last Fully Closed RFC | RFC-079 — Explicit Parsed-Document Knowledge Ingestion — Fully Closed and Source-of-Truth Reconciled |
+| Active RFC | None — RFC-079 completed; successor not selected |
+| Selected Architecture Workstream | None — RFC-079 completed |
+| Proposed Successor RFC | None — successor selection not started |
 | RFC-078 Predecessor Baseline | `36832df98433231095e257092f3b8815d1cfa573` — RFC-077 terminal closure |
 | RFC-078 Selection State | Durable — Accepted Contract Committed / Pushed / Exact Identity Verified |
 | RFC-078 Architecture Decision Candidate | AD-064 — Accepted / Committed / Pushed / Exact Identity Verified; Amendment A1 — Accepted / Committed / Pushed / Exact Identity Verified |
@@ -74,7 +74,7 @@
 | RFC-075 Architecture Contract State | Accepted / Architecture Review Passed / Committed / Pushed / Exact Identity Verified |
 | RFC-069 Selection Commit | `5d7794352029576e0b62c2ac8cbfa248fe11961d` |
 | RFC-070 Selection Commit | `13cfccc08d8c0a3b891990d38edaf9fc48874a5e` |
-| Architecture Decision | AD-065 — Accepted for RFC-079; see external Git durability gate |
+| Architecture Decision | AD-065 — Accepted / Git Durable; RFC-079 implementation complete |
 | RFC-074 Selection State | Durable — Committed, Pushed and Exact Identity Verified |
 | RFC-074 Selection Commit | `b5d1e7fe434378ac7ee90912ac40932d5c5451eb` — committed / pushed / exact identity verified |
 | RFC-074 Architecture Contract State | Accepted / Architecture Review Passed / Committed / Pushed / Exact Identity Verified |
@@ -118,7 +118,7 @@
 | RFC-069 Engineering Closure Commit | `63790de5312c69c709e2249b56e91995a00426b6` |
 | RFC-069 Post-Closure Reconciliation Commit | `231e0cc66862c797e299fdb71ff20da8a39e8ae2` |
 | RFC-069 Reconciliation Verification | PASS — Committed, Pushed, Exact Local / Tracking / Remote Identity Verified |
-| Test Baseline | 1201 passed |
+| Test Baseline | 1241 passed |
 | RFC-070 Engineering Closure Commit | `ab4438b02a8f34f83b462e3d8a86b4b5ab5d1092` |
 | RFC-070 Engineering Closure State | Complete, Pushed and Verified |
 | RFC-070 Post-Closure Reconciliation | Complete, Pushed and Verified |
@@ -7280,3 +7280,31 @@ Implementation entry is authorized only after the acceptance Git gate succeeds.
 Next: implement and test the exact four-file scope; technical work is a separate change.
 RFC-078 remains closed; its historical baseline remains 1193.
 PostgreSQL deployment, production security and content truth are not certified.
+
+
+---
+
+## RFC-079 — Compact engineering closure and source-of-truth reconciliation
+
+Classification: completion evidence, not a new architecture decision.
+AD-065: Accepted / Git Durable at `29bf2ce1f255a7e15554f05bcfb8b44adef712f1`. Its contract is unchanged.
+Technical implementation: `12cf0bf907c992e5e5d6a8e1277876ccf4cf6d22`.
+Reviewed technical diff SHA-256: `d719523b239c5c57e3e9c82493e0cf9b82f2b13d80d6957b7dee78b6f84bcabc`.
+Delivered: request validation, one parse, result/identity/nonblank-text checks,
+then one delegation to existing ingestion and return of its exact result.
+The wrapper forwards extracted text unchanged; existing Knowledge-domain normalization remains.
+Parsing alone remains read-only. Existing exceptions propagate; no retry or deduplication is added.
+Knowledge/lineage transaction ownership remains with RFC-064 and RFC-065.
+Post-commit cleanup errors may follow committed writes; no rollback claim or retry is made.
+Verification required by this closure gate: RFC-079 40 passed; existing pipeline 8 passed;
+full regression 1241 passed; Alembic head 0005.
+Integration evidence uses temporary SQLite and filesystem fixtures only.
+No PostgreSQL deployment, concurrency, security, authorization or content-truth certification.
+No default host/API wiring, schema, dependencies or predecessor code/tests changed.
+RFC-079 state: FULLY_CLOSED_AND_SOURCE_OF_TRUTH_RECONCILED.
+Active RFC: NONE. Selected successor: NONE. Next: separate evidence-based successor selection.
+RFC-078 remains closed; historical counts 1193 and 1201 remain historical.
+This completion declaration takes effect only after this exact five-document record
+passes tests, commit/push identity verification and a clean working-tree check.
+Its own future commit hash is deliberately not predicted.
+No additional RFC-079 closure or reconciliation record is required after that gate.
