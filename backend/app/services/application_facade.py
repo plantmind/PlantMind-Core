@@ -11,6 +11,18 @@ from app.domain.operational_workload_evidence import (
     ApplicationFacadeEntryEvidence,
 )
 
+from app.services.parsed_document_knowledge_ingestion_application_service import (
+    ParsedDocumentKnowledgeIngestionApplicationService,
+    ParsedDocumentKnowledgeIngestionRequest,
+)
+from app.services.document_knowledge_ingestion_application_service import (
+    DocumentKnowledgeIngestionResult,
+)
+
+
+class ApplicationFacadeDocumentIngestionNotConfiguredError(RuntimeError):
+    """The opt-in document ingestion dependency has not been supplied."""
+
 
 class ApplicationFacade:
     """Stable application-level entry point.
@@ -22,8 +34,11 @@ class ApplicationFacade:
     def __init__(
         self,
         gateway: IntegrationGateway | None = None,
+        *,
+        parsed_document_knowledge_ingestion_service: ParsedDocumentKnowledgeIngestionApplicationService | None = None,
     ) -> None:
         self._gateway = gateway or IntegrationGateway()
+        self._parsed_document_knowledge_ingestion_service = parsed_document_knowledge_ingestion_service
 
     def analyze(
         self,
@@ -38,3 +53,14 @@ class ApplicationFacade:
             observations,
             facade_entry_evidence=facade_entry_evidence,
         )
+
+    def ingest_document_knowledge(
+        self,
+        request: ParsedDocumentKnowledgeIngestionRequest,
+    ) -> DocumentKnowledgeIngestionResult:
+        """Explicitly delegate ingestion; no default wiring or automatic retry."""
+        if self._parsed_document_knowledge_ingestion_service is None:
+            raise ApplicationFacadeDocumentIngestionNotConfiguredError(
+                "Document knowledge ingestion is not configured."
+            )
+        return self._parsed_document_knowledge_ingestion_service.ingest(request)
