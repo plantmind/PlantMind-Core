@@ -7,9 +7,9 @@
 | Project | PlantMind PM-001 |
 | Branch | `feature/engineering-platform` |
 | Last Fully Closed RFC | RFC-079 — Explicit Parsed-Document Knowledge Ingestion — Fully Closed and Source-of-Truth Reconciled |
-| Active RFC | None — RFC-079 completed; successor not selected |
-| Selected Architecture Workstream | None — RFC-079 completed |
-| Proposed Successor RFC | None — successor selection not started |
+| Active RFC | RFC-080 — AD-066 accepted; implementation requires successful Git gate |
+| Selected Architecture Workstream | RFC-080 — Opt-In Document Knowledge Ingestion Through ApplicationFacade |
+| Proposed Successor RFC | None — RFC-080 selected; no later successor selected |
 | RFC-078 Predecessor Baseline | `36832df98433231095e257092f3b8815d1cfa573` — RFC-077 terminal closure |
 | RFC-078 Selection State | Durable — Accepted Contract Committed / Pushed / Exact Identity Verified |
 | RFC-078 Architecture Decision Candidate | AD-064 — Accepted / Committed / Pushed / Exact Identity Verified; Amendment A1 — Accepted / Committed / Pushed / Exact Identity Verified |
@@ -70,7 +70,7 @@
 | RFC-075 State | Fully Closed and Source-of-Truth Reconciled |
 | RFC-075 Architecture Decision Candidate | AD-061 — Accepted / Committed / Pushed / Exact Identity Verified |
 | RFC-075 Architecture Contract State | Accepted / Architecture Review Passed / Committed / Pushed / Exact Identity Verified |
-| Architecture Decision | AD-065 — Accepted / Git Durable; RFC-079 implementation complete |
+| Architecture Decision | AD-066 — Accepted for RFC-080; external Git durability gate required |
 | RFC-074 Selection State | Durable — Committed, Pushed and Exact Identity Verified |
 | RFC-074 Selection Commit | `b5d1e7fe434378ac7ee90912ac40932d5c5451eb` — committed / pushed / exact identity verified |
 | RFC-074 Architecture Contract State | Accepted / Architecture Review Passed / Committed / Pushed / Exact Identity Verified |
@@ -140,7 +140,7 @@
 | Alembic Head | `0005` |
 | Authoritative Environment | `PlantMind-Core/.venv` |
 | RFC-069 State | Fully Closed and Source-of-Truth Reconciled |
-| Successor RFC Selection | None — RFC-079 closed; successor selection not started |
+| Successor RFC Selection | RFC-080 selected under AD-066; external Git gate required |
 ## Recent Engineering Sequence
 
 - RFC-025 — Core Plugin Framework
@@ -6473,3 +6473,21 @@ This completion declaration takes effect only after this exact five-document rec
 passes tests, commit/push identity verification and a clean working-tree check.
 Its own future commit hash is deliberately not predicted.
 No additional RFC-079 closure or reconciliation record is required after that gate.
+
+
+---
+
+## RFC-080 / AD-066 — Selection and contract acceptance
+
+RFC-080 selected: Opt-In Document Knowledge Ingestion Through ApplicationFacade.
+Architecture and evidence-guard source review: PASS. AD-066: ACCEPTED.
+Predecessor: `88629f57e2546c214c9edf030e77227006193787`. Reviewed draft contract SHA-256: `15d6b594a8f698c6af4c5baeca6990fb6445fb055f5097a24f2bcd7f2470a40e`.
+Scope: modify application_facade.py only in existing Production; add three tests.
+Preserve analyze, canonical Domain evidence imports, existing tests and default composition.
+No dependency configured means explicit rejection; configured calls delegate once to RFC-079.
+No automatic construction/invocation, Runtime change, API exposure or security claim.
+Normal transitive module loading is not automatic construction or execution.
+The acceptance gate requires 10 evidence-guard tests, 1241 full regression tests, Alembic 0005,
+an exact five-document commit/push and a clean tree before implementation entry.
+No implementation is claimed. Next: the accepted four-file technical scope after that gate.
+The record does not predict its own commit. RFC-078 and RFC-079 remain closed.

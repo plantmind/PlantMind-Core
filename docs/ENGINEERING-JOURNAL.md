@@ -10828,3 +10828,21 @@ This completion declaration takes effect only after this exact five-document rec
 passes tests, commit/push identity verification and a clean working-tree check.
 Its own future commit hash is deliberately not predicted.
 No additional RFC-079 closure or reconciliation record is required after that gate.
+
+
+---
+
+## RFC-080 / AD-066 — Selection and contract acceptance
+
+RFC-080 selected: Opt-In Document Knowledge Ingestion Through ApplicationFacade.
+Architecture and evidence-guard source review: PASS. AD-066: ACCEPTED.
+Predecessor: `88629f57e2546c214c9edf030e77227006193787`. Reviewed draft contract SHA-256: `15d6b594a8f698c6af4c5baeca6990fb6445fb055f5097a24f2bcd7f2470a40e`.
+Scope: modify application_facade.py only in existing Production; add three tests.
+Preserve analyze, canonical Domain evidence imports, existing tests and default composition.
+No dependency configured means explicit rejection; configured calls delegate once to RFC-079.
+No automatic construction/invocation, Runtime change, API exposure or security claim.
+Normal transitive module loading is not automatic construction or execution.
+The acceptance gate requires 10 evidence-guard tests, 1241 full regression tests, Alembic 0005,
+an exact five-document commit/push and a clean tree before implementation entry.
+No implementation is claimed. Next: the accepted four-file technical scope after that gate.
+The record does not predict its own commit. RFC-078 and RFC-079 remain closed.

@@ -24369,3 +24369,107 @@ This completion declaration takes effect only after this exact five-document rec
 passes tests, commit/push identity verification and a clean working-tree check.
 Its own future commit hash is deliberately not predicted.
 No additional RFC-079 closure or reconciliation record is required after that gate.
+
+
+---
+
+# AD-066 — Opt-In Document Knowledge Ingestion Through ApplicationFacade
+
+Status: ACCEPTED. Related selected workstream: RFC-080; external Git gate required.
+Baseline: 88629f57e2546c214c9edf030e77227006193787.
+Draft baseline: 1241 passed; Alembic 0005. Acceptance re-verification is required below.
+
+## Intent and architectural ownership
+Extend the existing ApplicationFacade with one explicit typed command that delegates
+into RFC-079. Do not create a parallel facade or change the analysis workflow.
+This is an accepted extension of the facade's command surface, not authorization
+already granted by AD-065. The existing analyze -> gateway -> orchestration path
+continues to own observation analysis and its operational workload evidence.
+
+## Accepted public contract
+Preserve gateway as the existing optional positional-or-keyword constructor argument.
+Add only this optional keyword-only dependency:
+parsed_document_knowledge_ingestion_service:
+    ParsedDocumentKnowledgeIngestionApplicationService | None = None.
+Store the exact supplied instance; do not construct or globally resolve a replacement.
+Preserve self._gateway = gateway or IntegrationGateway() and analyze() unchanged.
+No setter, service registry, fallback implementation or new dependency protocol.
+
+Add method:
+ingest_document_knowledge(request: ParsedDocumentKnowledgeIngestionRequest)
+    -> DocumentKnowledgeIngestionResult.
+If the dependency is None, raise ApplicationFacadeDocumentIngestionNotConfiguredError
+(a RuntimeError subclass defined in application_facade.py) before invoking any service.
+Use an explicit None check, not a truthiness check. A supplied falsey instance is
+still a configured dependency. Unconfigured rejection takes precedence over request
+validation; it is not a security decision.
+When configured, delegate to its ingest(request) exactly once with the same request
+object and return the same result object. Request/content validation stays in RFC-079.
+Do not copy, normalize or reinterpret request, content, result or errors.
+Do not catch/retry/translate errors, including post-commit cleanup failures.
+Repeated explicit invocations delegate repeatedly; no deduplication is added.
+
+## Default host and import boundary
+Default CompositionRoot still constructs ApplicationFacade(gateway=integration_gateway).
+It must not inject or create an ingestion service; the new operation is unavailable
+on that default instance. No Runtime/Bootstrap/main/API/composition edits or exports.
+Explicit programmatic callers may construct a configured facade using caller-owned
+service instances. That does not enable an endpoint or authorize production traffic.
+Normal direct imports of service/request/result types in the services facade are
+allowed. They may load modules transitively through default host imports; therefore
+this contract promises no automatic construction/invocation, NOT zero transitive imports.
+Do not hide dependencies using dynamic imports, registries or source-scan workarounds.
+Preserve the existing RFC-079 direct-source containment test unchanged, and add
+behavioral proof that default composition cannot invoke ingestion.
+
+## Runtime and evidence boundary
+The new method must not call analyze, gateway.execute, request_operational, uuid4,
+or construct WorkflowExecution, ApplicationFacadeEntryEvidence or operational evidence.
+Successful Knowledge persistence is not evidence of observation-analysis execution.
+Runtime state and admission authority remain unchanged. This facade operation does
+not add admission, authentication, authorization, audit or human-approval enforcement.
+Future external exposure must separately satisfy those boundaries.
+
+## Exact planned technical surface
+Modify only backend/app/services/application_facade.py in existing Production.
+Add the three test files listed below. Do not change any existing test file.
+Do not change IntegrationGateway, OperationalTransitionApplicationService, RFC-079,
+parsing, capture, repositories, store, transaction coordinator, schema or requirements.
+Any additional required modification stops for scope review, not guard weakening.
+
+## Required verification
+Verify constructor compatibility (default, positional and keyword gateway), exact
+optional injection, disabled-default rejection, unchanged analyze and workload evidence,
+exact request/result identity, single delegation, error identity, no retry, repeated
+calls and no lifecycle/admission effects. Verify missing dependency causes no parse/write.
+The existing domain workload-evidence architecture guard has passed source review;
+retain its canonical Domain imports and single-owner definitions without modification.
+Add architecture tests for preserved analyze, no infrastructure/runtime ownership,
+unchanged default composition and explicit imports without dependency cycles.
+Add integration with existing real adapters in temporary SQLite/filesystem fixtures,
+using the facade entry rather than directly invoking RFC-079; verify persisted
+Knowledge/lineage and failure semantics, not merely delegation mocks.
+Run impacted predecessor tests and full regression without weakening/skipping tests.
+Do not predict the new passing total before implementation and execution.
+
+## Preserved limitations and gate
+No new parser formats, migrations, PostgreSQL deployment certification, UI/API,
+exactly-once guarantee, byte-version provenance or production-security claim.
+Existing Knowledge-domain outer-whitespace normalization remains authoritative.
+RFC-078 and RFC-079 remain closed; their historical records are not rewritten.
+Architecture and evidence-guard source review: PASS; no guard change authorized.
+Selection and contract acceptance share one five-document Git transaction.
+The external gate must pass 10 existing evidence-guard tests, 1241 full regression
+tests, Alembic head 0005, exact local/tracking/remote commit identity and clean tree.
+Only then is RFC-080 implementation entry authorized within the exact scope above.
+Technical implementation and compact closure remain separate verified changes.
+No additional documentation-only entry gate is required. No implementation is claimed here.
+
+### Planned new tests
+- `tests/services/test_application_facade_document_knowledge_ingestion.py`
+- `tests/services/test_application_facade_document_knowledge_ingestion_architecture.py`
+- `tests/integration/test_application_facade_document_knowledge_ingestion_local_pipeline.py`
+
+### Source evidence at baseline
+- `backend/app/services/application_facade.py`: `98061d7db7e86ff68547ab7174f9b5714927fca41a7f6b21840db0a43642c28a`
+- `tests/domain/test_operational_workload_evidence_architecture.py`: `23885f0641af63013c71ef853a36f76daf9664f6bb0b18619adbf85617c67fa4`
