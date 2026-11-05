@@ -1,6 +1,7 @@
-> Current checkpoint: RFC-080 selected; AD-066 Accepted.
-> Next: pass the acceptance Git gate, then implement only the accepted scope.
-> RFC-079 remains closed. Earlier checkpoints below are historical.
+> Current checkpoint: RFC-080 completed; no active RFC or selected successor.
+> Current full regression: 1277. Next: separate successor selection.
+> Effective after the compact closure Git gate; no further RFC-080 record required.
+> Earlier checkpoints below are historical; unrelated backlog remains unchanged.
 
 > **Current checkpoint: RFC-079 completed; no active RFC or selected successor.**
 > Current full regression: 1241. Next action: separate successor selection.
@@ -19652,3 +19653,35 @@ The acceptance gate requires 10 evidence-guard tests, 1241 full regression tests
 an exact five-document commit/push and a clean tree before implementation entry.
 No implementation is claimed. Next: the accepted four-file technical scope after that gate.
 The record does not predict its own commit. RFC-078 and RFC-079 remain closed.
+
+
+---
+
+## RFC-080 — Compact engineering closure and source-of-truth reconciliation
+
+Classification: completion evidence, not a new architecture decision.
+AD-066 Accepted / Git Durable at `90e1e7c71a19a985e4500b5bd53938a209ac7893`; its contract remains unchanged.
+Technical implementation: `68a9a86a750369425c39d02dd7b0b88b90caadc7`; live remote and reviewed blobs verified.
+Technical diff SHA-256: `b7f5e4a3f28a128ac29a09d97b2b1982b522106def73fac4e8c1000f82cde226`.
+Delivered: ApplicationFacade.ingest_document_knowledge with an optional keyword-only
+caller-supplied RFC-079 service; missing dependency raises the explicit configuration error.
+Configured calls delegate once with the same request and return the same result.
+No retry, exception translation, duplicate validation or deduplication was added.
+The gateway argument, analyze source and canonical Domain evidence imports are preserved.
+Ingestion creates no operational workload evidence and changes no Runtime/admission state.
+Default composition still does not configure ingestion; no endpoint or automatic wiring.
+Normal transitive module imports do not construct services or execute ingestion.
+Technical scope: one modified facade and three new tests; existing tests remain unchanged.
+No persistence, dependency, schema, migration, Runtime, Bootstrap or default host changes.
+Closure gate: RFC-080 36 passed; predecessor impacted 96 passed; full regression 1277 passed;
+Alembic head 0005. Subset counts are included in the full total.
+Integration evidence uses isolated temporary SQLite/filesystem, not PostgreSQL deployment.
+No production security, authorization, concurrency or byte-version provenance certification.
+Existing Knowledge normalization, transaction ownership and post-commit failure semantics remain.
+RFC-080 state: FULLY_CLOSED_AND_SOURCE_OF_TRUTH_RECONCILED.
+Active RFC: NONE. Selected successor: NONE. Next: separate successor-workstream selection.
+RFC-078 and RFC-079 remain closed; historical test baselines are preserved.
+This declaration becomes effective only after this exact five-document record passes
+tests, commit/push identity verification and a clean working-tree check.
+Its own future commit hash is deliberately not predicted. No additional RFC-080
+closure or reconciliation record is required after that gate succeeds.

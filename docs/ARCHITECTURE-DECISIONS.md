@@ -24473,3 +24473,35 @@ No additional documentation-only entry gate is required. No implementation is cl
 ### Source evidence at baseline
 - `backend/app/services/application_facade.py`: `98061d7db7e86ff68547ab7174f9b5714927fca41a7f6b21840db0a43642c28a`
 - `tests/domain/test_operational_workload_evidence_architecture.py`: `23885f0641af63013c71ef853a36f76daf9664f6bb0b18619adbf85617c67fa4`
+
+
+---
+
+## RFC-080 — Compact engineering closure and source-of-truth reconciliation
+
+Classification: completion evidence, not a new architecture decision.
+AD-066 Accepted / Git Durable at `90e1e7c71a19a985e4500b5bd53938a209ac7893`; its contract remains unchanged.
+Technical implementation: `68a9a86a750369425c39d02dd7b0b88b90caadc7`; live remote and reviewed blobs verified.
+Technical diff SHA-256: `b7f5e4a3f28a128ac29a09d97b2b1982b522106def73fac4e8c1000f82cde226`.
+Delivered: ApplicationFacade.ingest_document_knowledge with an optional keyword-only
+caller-supplied RFC-079 service; missing dependency raises the explicit configuration error.
+Configured calls delegate once with the same request and return the same result.
+No retry, exception translation, duplicate validation or deduplication was added.
+The gateway argument, analyze source and canonical Domain evidence imports are preserved.
+Ingestion creates no operational workload evidence and changes no Runtime/admission state.
+Default composition still does not configure ingestion; no endpoint or automatic wiring.
+Normal transitive module imports do not construct services or execute ingestion.
+Technical scope: one modified facade and three new tests; existing tests remain unchanged.
+No persistence, dependency, schema, migration, Runtime, Bootstrap or default host changes.
+Closure gate: RFC-080 36 passed; predecessor impacted 96 passed; full regression 1277 passed;
+Alembic head 0005. Subset counts are included in the full total.
+Integration evidence uses isolated temporary SQLite/filesystem, not PostgreSQL deployment.
+No production security, authorization, concurrency or byte-version provenance certification.
+Existing Knowledge normalization, transaction ownership and post-commit failure semantics remain.
+RFC-080 state: FULLY_CLOSED_AND_SOURCE_OF_TRUTH_RECONCILED.
+Active RFC: NONE. Selected successor: NONE. Next: separate successor-workstream selection.
+RFC-078 and RFC-079 remain closed; historical test baselines are preserved.
+This declaration becomes effective only after this exact five-document record passes
+tests, commit/push identity verification and a clean working-tree check.
+Its own future commit hash is deliberately not predicted. No additional RFC-080
+closure or reconciliation record is required after that gate succeeds.

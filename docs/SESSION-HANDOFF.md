@@ -6,10 +6,10 @@
 |---|---|
 | Project | PlantMind PM-001 |
 | Branch | `feature/engineering-platform` |
-| Last Fully Closed RFC | RFC-079 — Explicit Parsed-Document Knowledge Ingestion — Fully Closed and Source-of-Truth Reconciled |
-| Active RFC | RFC-080 — AD-066 accepted; implementation requires successful Git gate |
-| Selected Architecture Workstream | RFC-080 — Opt-In Document Knowledge Ingestion Through ApplicationFacade |
-| Proposed Successor RFC | None — RFC-080 selected; no later successor selected |
+| Last Fully Closed RFC | RFC-080 — Opt-In Document Knowledge Ingestion Through ApplicationFacade — Fully Closed and Source-of-Truth Reconciled |
+| Active RFC | None — RFC-080 completed; successor not selected |
+| Selected Architecture Workstream | None — RFC-080 completed |
+| Proposed Successor RFC | None — successor selection not started |
 | RFC-078 Predecessor Baseline | `36832df98433231095e257092f3b8815d1cfa573` — RFC-077 terminal closure |
 | RFC-078 Selection State | Durable — Accepted Contract Committed / Pushed / Exact Identity Verified |
 | RFC-078 Architecture Decision Candidate | AD-064 — Accepted / Committed / Pushed / Exact Identity Verified; Amendment A1 — Accepted / Committed / Pushed / Exact Identity Verified |
@@ -70,7 +70,7 @@
 | RFC-075 State | Fully Closed and Source-of-Truth Reconciled |
 | RFC-075 Architecture Decision Candidate | AD-061 — Accepted / Committed / Pushed / Exact Identity Verified |
 | RFC-075 Architecture Contract State | Accepted / Architecture Review Passed / Committed / Pushed / Exact Identity Verified |
-| Architecture Decision | AD-066 — Accepted for RFC-080; external Git durability gate required |
+| Architecture Decision | AD-066 — Accepted / Git Durable; RFC-080 implementation complete |
 | RFC-074 Selection State | Durable — Committed, Pushed and Exact Identity Verified |
 | RFC-074 Selection Commit | `b5d1e7fe434378ac7ee90912ac40932d5c5451eb` — committed / pushed / exact identity verified |
 | RFC-074 Architecture Contract State | Accepted / Architecture Review Passed / Committed / Pushed / Exact Identity Verified |
@@ -117,7 +117,7 @@
 | RFC-069 Reconciliation Commit | `231e0cc66862c797e299fdb71ff20da8a39e8ae2` |
 | RFC-069 Reconciliation Push | Verified |
 | RFC-069 Local / Tracking / Remote Reconciliation Identity | Verified |
-| Test Baseline | 1241 passed |
+| Test Baseline | 1277 passed |
 | RFC-070 Engineering Closure Commit | `ab4438b02a8f34f83b462e3d8a86b4b5ab5d1092` |
 | RFC-070 Engineering Closure State | Complete, Pushed and Verified |
 | RFC-070 Local / Tracking / Remote Closure Identity | Verified |
@@ -140,7 +140,7 @@
 | Alembic Head | `0005` |
 | Authoritative Environment | `PlantMind-Core/.venv` |
 | RFC-069 State | Fully Closed and Source-of-Truth Reconciled |
-| Successor RFC Selection | RFC-080 selected under AD-066; external Git gate required |
+| Successor RFC Selection | None — RFC-080 closed; successor selection not started |
 ## Recent Engineering Sequence
 
 - RFC-025 — Core Plugin Framework
@@ -6491,3 +6491,35 @@ The acceptance gate requires 10 evidence-guard tests, 1241 full regression tests
 an exact five-document commit/push and a clean tree before implementation entry.
 No implementation is claimed. Next: the accepted four-file technical scope after that gate.
 The record does not predict its own commit. RFC-078 and RFC-079 remain closed.
+
+
+---
+
+## RFC-080 — Compact engineering closure and source-of-truth reconciliation
+
+Classification: completion evidence, not a new architecture decision.
+AD-066 Accepted / Git Durable at `90e1e7c71a19a985e4500b5bd53938a209ac7893`; its contract remains unchanged.
+Technical implementation: `68a9a86a750369425c39d02dd7b0b88b90caadc7`; live remote and reviewed blobs verified.
+Technical diff SHA-256: `b7f5e4a3f28a128ac29a09d97b2b1982b522106def73fac4e8c1000f82cde226`.
+Delivered: ApplicationFacade.ingest_document_knowledge with an optional keyword-only
+caller-supplied RFC-079 service; missing dependency raises the explicit configuration error.
+Configured calls delegate once with the same request and return the same result.
+No retry, exception translation, duplicate validation or deduplication was added.
+The gateway argument, analyze source and canonical Domain evidence imports are preserved.
+Ingestion creates no operational workload evidence and changes no Runtime/admission state.
+Default composition still does not configure ingestion; no endpoint or automatic wiring.
+Normal transitive module imports do not construct services or execute ingestion.
+Technical scope: one modified facade and three new tests; existing tests remain unchanged.
+No persistence, dependency, schema, migration, Runtime, Bootstrap or default host changes.
+Closure gate: RFC-080 36 passed; predecessor impacted 96 passed; full regression 1277 passed;
+Alembic head 0005. Subset counts are included in the full total.
+Integration evidence uses isolated temporary SQLite/filesystem, not PostgreSQL deployment.
+No production security, authorization, concurrency or byte-version provenance certification.
+Existing Knowledge normalization, transaction ownership and post-commit failure semantics remain.
+RFC-080 state: FULLY_CLOSED_AND_SOURCE_OF_TRUTH_RECONCILED.
+Active RFC: NONE. Selected successor: NONE. Next: separate successor-workstream selection.
+RFC-078 and RFC-079 remain closed; historical test baselines are preserved.
+This declaration becomes effective only after this exact five-document record passes
+tests, commit/push identity verification and a clean working-tree check.
+Its own future commit hash is deliberately not predicted. No additional RFC-080
+closure or reconciliation record is required after that gate succeeds.
