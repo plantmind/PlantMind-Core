@@ -10,9 +10,9 @@
 | Deployment Model | On-Premise |
 | Development Branch | `feature/engineering-platform` |
 | Last Fully Closed RFC | RFC-080 — Opt-In Document Knowledge Ingestion Through ApplicationFacade — Fully Closed and Source-of-Truth Reconciled |
-| Active RFC | None — RFC-080 completed; successor not selected |
-| Selected Architecture Workstream | None — RFC-080 completed |
-| Proposed Successor RFC | None — successor selection not started |
+| Active RFC | RFC-081 — AD-067 accepted; implementation requires successful Git gate |
+| Selected Architecture Workstream | RFC-081 — Opt-In Document Knowledge Ingestion HTTP Boundary |
+| Proposed Successor RFC | None — RFC-081 selected; no later successor selected |
 | RFC-078 Predecessor Baseline | `36832df98433231095e257092f3b8815d1cfa573` — RFC-077 terminal closure |
 | RFC-078 Selection State | Durable — Accepted Contract Committed / Pushed / Exact Identity Verified |
 | RFC-078 Architecture Decision Candidate | AD-064 — Accepted / Committed / Pushed / Exact Identity Verified; Amendment A1 — Accepted / Committed / Pushed / Exact Identity Verified |
@@ -74,7 +74,7 @@
 | RFC-075 Architecture Contract State | Accepted / Architecture Review Passed / Committed / Pushed / Exact Identity Verified |
 | RFC-069 Selection Commit | `5d7794352029576e0b62c2ac8cbfa248fe11961d` |
 | RFC-070 Selection Commit | `13cfccc08d8c0a3b891990d38edaf9fc48874a5e` |
-| Architecture Decision | AD-066 — Accepted / Git Durable; RFC-080 implementation complete |
+| Architecture Decision | AD-067 — Accepted for RFC-081; external Git durability gate required |
 | RFC-074 Selection State | Durable — Committed, Pushed and Exact Identity Verified |
 | RFC-074 Selection Commit | `b5d1e7fe434378ac7ee90912ac40932d5c5451eb` — committed / pushed / exact identity verified |
 | RFC-074 Architecture Contract State | Accepted / Architecture Review Passed / Committed / Pushed / Exact Identity Verified |
@@ -7358,3 +7358,23 @@ This declaration becomes effective only after this exact five-document record pa
 tests, commit/push identity verification and a clean working-tree check.
 Its own future commit hash is deliberately not predicted. No additional RFC-080
 closure or reconciliation record is required after that gate succeeds.
+
+
+---
+
+## RFC-081 / AD-067 — Selection and contract acceptance
+
+RFC-081 selected: Opt-In Document Knowledge Ingestion HTTP Boundary.
+Architecture review: PASS. AD-067: ACCEPTED. No technical implementation claimed.
+Predecessor: `76bc24dc0f288f784187db52bd6a44363ece0092`. Reviewed draft contract SHA-256: `bc56078ae2a767c85836685245a69b7924122bd7edb3ca3cc27ab7bfab28ecfc`.
+Scope: one new API module, three new tests and one exact existing architecture-guard adaptation.
+Only canonical request-type import is permitted in the named API file; no direct service execution.
+Use the injected facade/Runtime; preserve existing admission and default host behavior.
+Explicit post-commit failures report committed; generic failures report unknown; no automatic retry.
+Acceptance requires 4 unchanged RFC-079 guard tests, existing API tests, full 1277 and Alembic 0005,
+then exact five-document commit/push identity and a clean tree before implementation entry.
+The guard is not modified in this documentation transaction. No packages or schema change.
+No default endpoint, production exposure, authentication or PostgreSQL certification is added.
+Commit identity is verified externally; this record does not predict its own hash.
+Next: implement the accepted scope after that gate; no further documentation-only entry step.
+RFC-080 stays closed. Its history and current baseline 1277 remain unchanged.

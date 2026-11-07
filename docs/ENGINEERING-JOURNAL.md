@@ -10878,3 +10878,23 @@ This declaration becomes effective only after this exact five-document record pa
 tests, commit/push identity verification and a clean working-tree check.
 Its own future commit hash is deliberately not predicted. No additional RFC-080
 closure or reconciliation record is required after that gate succeeds.
+
+
+---
+
+## RFC-081 / AD-067 — Selection and contract acceptance
+
+RFC-081 selected: Opt-In Document Knowledge Ingestion HTTP Boundary.
+Architecture review: PASS. AD-067: ACCEPTED. No technical implementation claimed.
+Predecessor: `76bc24dc0f288f784187db52bd6a44363ece0092`. Reviewed draft contract SHA-256: `bc56078ae2a767c85836685245a69b7924122bd7edb3ca3cc27ab7bfab28ecfc`.
+Scope: one new API module, three new tests and one exact existing architecture-guard adaptation.
+Only canonical request-type import is permitted in the named API file; no direct service execution.
+Use the injected facade/Runtime; preserve existing admission and default host behavior.
+Explicit post-commit failures report committed; generic failures report unknown; no automatic retry.
+Acceptance requires 4 unchanged RFC-079 guard tests, existing API tests, full 1277 and Alembic 0005,
+then exact five-document commit/push identity and a clean tree before implementation entry.
+The guard is not modified in this documentation transaction. No packages or schema change.
+No default endpoint, production exposure, authentication or PostgreSQL certification is added.
+Commit identity is verified externally; this record does not predict its own hash.
+Next: implement the accepted scope after that gate; no further documentation-only entry step.
+RFC-080 stays closed. Its history and current baseline 1277 remain unchanged.

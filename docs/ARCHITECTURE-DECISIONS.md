@@ -24505,3 +24505,141 @@ This declaration becomes effective only after this exact five-document record pa
 tests, commit/push identity verification and a clean working-tree check.
 Its own future commit hash is deliberately not predicted. No additional RFC-080
 closure or reconciliation record is required after that gate succeeds.
+
+
+---
+
+# AD-067 — Opt-In Document Knowledge Ingestion HTTP Boundary
+
+Status: ACCEPTED. Related selected workstream: RFC-081; external Git gate required.
+Baseline: 76bc24dc0f288f784187db52bd6a44363ece0092.
+Draft baseline: 1277 passed; Alembic 0005. Acceptance re-verification is required below.
+Local HTTP-client probe: PASS using httpx2 2.9.1; no dependency change required.
+
+## Purpose and ownership
+Expose an explicit HTTP command through the existing RFC-080 ApplicationFacade.
+Do not call RFC-079 or persistence services directly. Parsing, validation, provenance,
+Knowledge/lineage transactions and lifecycle ownership remain with their current owners.
+This is an opt-in router, not a new default host, public deployment or security release.
+
+## Factory, route and input
+New module: app.api.document_knowledge_ingestion.
+Factory: create_router(*, facade: ApplicationFacade, runtime: Runtime) -> APIRouter.
+Use the exact caller-owned instances; no fallback, global instance or service construction.
+Expose only POST /documents/{document_id}/knowledge. The path is not admission-exempt.
+Path document_id is a UUID converted to EntityId(value=document_id).
+JSON body: kind and title (strict nonblank strings), plus optional subject defaulting to None.
+Subject contains only subject_type (strict nonblank string) and subject_id (UUID).
+Reject additional body/subject fields, wrong scalar types and blank strings with 422.
+Check whitespace for rejection only; preserve original strings for application/domain handling.
+Do not invent a fixed enum of knowledge kinds or impose new domain normalization.
+Do not accept content, source/provenance, file paths, URLs, parser overrides or generated IDs.
+Convert subject to the existing KnowledgeCaptureSubject with its existing EntityId.
+Build one canonical ParsedDocumentKnowledgeIngestionRequest and delegate exactly once
+through facade.ingest_document_knowledge. No direct service.ingest call or automatic retry.
+
+## Admission and hosting
+Install a route dependency that reads the supplied runtime.is_request_admission_enabled
+on each request before invoking the facade. If false, raise 503 with the existing detail:
+PlantMind is not accepting operational requests.
+Never enable admission, request operational transition or fabricate workload evidence.
+The explicit host must use this same Runtime in the existing RequestAdmissionMiddleware;
+no changes to its default exemptions. The route check also prevents facade calls when
+that middleware is accidentally omitted. It is not authentication or authorization.
+With middleware, closed admission precedes validation. Without middleware, malformed input
+may be rejected by framework validation first; do not claim universal 503 precedence.
+The check is point-in-time, not an atomic admission lease or request-draining guarantee.
+No automatic mount in main, no default composition or Bootstrap modification.
+
+## Success response
+Return 201 only after facade invocation returns and the result has been validated.
+Body contains only document_id and knowledge_record_id as UUID strings, taken from the
+canonical result. Check DocumentKnowledgeIngestionResult, EntityId/UUID field types,
+lineage.document_id == requested ID and lineage.knowledge_record_id == record.id.
+Do not generate identifiers, return extracted text or invent a retrieval Location URL.
+A malformed result maps to the generic 500 outcome below; it cannot prove no write occurred.
+Repeated explicit requests may produce new records; no idempotency or exactly-once guarantee.
+
+## Explicit HTTP error policy
+Framework input validation remains 422 with no facade invocation; no global handler changes.
+Map only these named application exceptions to fixed, non-sensitive detail.code values:
+- ApplicationFacadeDocumentIngestionNotConfiguredError: 503 / INGESTION_NOT_CONFIGURED.
+- DocumentContentAccessDocumentNotFoundError or DocumentKnowledgeIngestionDocumentNotFoundError:
+  404 / DOCUMENT_NOT_FOUND.
+- DocumentContentAccessContentNotFoundError: 409 / DOCUMENT_CONTENT_NOT_AVAILABLE.
+- DocumentContentAccessIntegrityError: 409 / DOCUMENT_CONTENT_INTEGRITY_FAILURE.
+- DocumentContentParserUnsupportedMediaTypeError: 422 / DOCUMENT_MEDIA_TYPE_UNSUPPORTED.
+  This concerns the stored document format, not the HTTP JSON Content-Type.
+- DocumentContentParserInvalidContentError: 422 / DOCUMENT_CONTENT_INVALID.
+- KnowledgeLineageTransactionPostCommitCleanupError: 500 / INGESTION_COMMITTED_CLEANUP_FAILED,
+  with detail.persistence_outcome="committed" and detail.retry_recommended=false.
+  No record IDs are available on that exception; do not fabricate them or claim rollback.
+- Other Exception failures during delegation/result translation: 500 / INGESTION_FAILED,
+  with detail.persistence_outcome="unknown" and detail.retry_recommended=false.
+Do not classify arbitrary ValueError, TypeError or DomainException as client errors by
+message matching. RFC-079 blank extracted-text ValueError also uses the generic 500 in
+this bounded change because it has no distinguishable public exception type; improving
+that classification needs a separate reviewed application contract, not string matching.
+Do not catch BaseException, retry, set Retry-After or perform compensation/repair.
+Adapter-handled failures reveal no exception strings, SQL, paths, traces or stored content.
+Framework request-validation responses are unchanged and may reflect submitted input;
+this is not a claim of complete response sanitization or production security.
+
+## Narrow predecessor-guard adaptation
+Modify only test_default_host_does_not_import_new_boundary and directly required helpers
+in tests/services/test_parsed_document_knowledge_ingestion_architecture.py.
+All its other existing tests remain unchanged. Permit only a direct absolute ImportFrom
+of ParsedDocumentKnowledgeIngestionRequest, without alias, from its canonical service module,
+in the exact new backend/app/api/document_knowledge_ingestion.py file.
+Retain the original restrictions everywhere else in core/api/main. No directory wildcard,
+module alias, star import, re-export, dynamic import or reference to the concrete RFC-079
+service class in that API file. AST checks must verify the exact data-only import.
+This successor rule narrows the guard for one transport file; it does not reopen RFC-079
+or rewrite AD-065/AD-066. New architecture tests forbid direct service execution,
+infrastructure ownership and default-host wiring. Any additional conflict stops for review.
+
+## Exact accepted technical scope and verification
+One new API module; three new tests; one governed existing architecture-test adaptation.
+No other existing Production/test edits; no exports, settings, dependencies or migrations.
+Test strict input/UUID/subject validation, exact request mapping, real facade delegation,
+success IDs and wrong-result rejection, every named error, generic-error redaction,
+post-commit outcome, no retry, repeated calls, no import-time graph and default-host absence.
+Test live admission toggling on the same Runtime, closed admission preventing all use-case
+calls, route-only protection, middleware coverage and unchanged runtime/lifecycle state.
+Real integration uses an isolated temporary SQLite database and filesystem, a caller-built
+facade and TestClient. Exercise persistence, no writes on rejection, rollback on lineage
+failure and persisted rows after post-commit cleanup failure through the HTTP boundary.
+Use the working installed FastAPI/TestClient stack; do not import/install httpx by assumption.
+Run focused, affected predecessor and full regression without skips or guard weakening.
+New test counts are reported only after execution. Alembic head must remain 0005.
+
+## Limits and gate
+No UI, default endpoint registration, PostgreSQL deployment validation, auth/RBAC/audit,
+rate/body-size enforcement, concurrency, byte-version provenance or new parser format.
+Production exposure requires a separately approved host/security contract; do not enable it.
+Architecture review: PASS. RFC-081 is selected and AD-067 is Accepted.
+The external acceptance gate must pass 4 unchanged RFC-079 architecture tests,
+the existing API tests (count reported), 1277 full regression tests and Alembic head 0005.
+It must verify an exact five-document commit, local/tracking/live-remote identity
+and a clean working tree. Only then is technical implementation entry authorized.
+The exact guard adaptation is authorized for that later technical change, not applied here.
+No additional documentation-only entry gate is required. No implementation is claimed.
+Technical implementation and one compact closure follow as separate verified changes.
+RFC-080 remains fully closed; no additional RFC-080 record is required.
+
+### Planned technical files
+- A `backend/app/api/document_knowledge_ingestion.py`
+- A `tests/api/test_document_knowledge_ingestion_api.py`
+- A `tests/api/test_document_knowledge_ingestion_api_architecture.py`
+- A `tests/integration/test_document_knowledge_ingestion_http_pipeline.py`
+- M `tests/services/test_parsed_document_knowledge_ingestion_architecture.py` — exact data-only import exception; other tests unchanged.
+
+### Reviewed source identities
+- `backend/app/services/application_facade.py`: `3f9d53aaed7efa98c295f59fc5971e11a1a440724c42a9841b54932595a46b5b`
+- `tests/services/test_parsed_document_knowledge_ingestion_architecture.py`: `403e8f3ecd905a78846ff012ffa9ccb33797d3324fd2e07d5459f16d450a67b4`
+- `backend/app/api/request_admission.py`: `b1a5384d2912e125a2f27f5643f6da7aff92e49839ccd936a7106b85ac79f8b3`
+- `backend/app/domain/base.py`: `230b7ae0e832be20980924c2da9642cfb4c4688f0099091c172e56a768701774`
+- `backend/app/services/knowledge_capture_application_service.py`: `ccf04c35579c12229bf12bf8193644871b23e9a0d1e4e583d8ea9d2b0d6a32bc`
+- `backend/app/services/document_content_access_application_service.py`: `2ffe2984ad9e5e1b2cbb6860093cb26060b3911d40259bb678d7dde1458c5e0a`
+- `backend/app/document_parsing/parser.py`: `35ac46cfb17ed769a49c87df3e7cb5a7aa438bec60b5ff3511b6e40d7f557787`
+- `backend/app/knowledge_lineage_transaction/coordinator.py`: `c014d1721565380fe30c4dbfb7b7f136dfdcaae950cddb265035548754086c5f`
