@@ -39,12 +39,45 @@ def test_no_module_graph_or_transaction_control():
                 assert n.func.attr in {"parse", "ingest", "strip"}
 
 
+def _rfc081_request_import_allowed(source):
+    """Only one unaliased request-type import in the governed transport file."""
+    marker = "app.services.parsed_document_knowledge_ingestion_application_service"
+    forbidden = "ParsedDocumentKnowledgeIngestionApplicationService"
+    if source.count(marker) != 1 or forbidden in source:
+        return False
+    try:
+        tree = ast.parse(source)
+    except SyntaxError:
+        return False
+    imports = [n for n in ast.walk(tree) if isinstance(n, ast.ImportFrom) and n.module == marker]
+    if len(imports) != 1 or imports[0].level != 0:
+        return False
+    if [(n.name, n.asname) for n in imports[0].names] != [
+        ("ParsedDocumentKnowledgeIngestionRequest", None)
+    ]:
+        return False
+    for node in ast.walk(tree):
+        if isinstance(node, ast.Call):
+            if isinstance(node.func, ast.Name) and node.func.id in {"__import__", "eval", "exec"}:
+                return False
+            if isinstance(node.func, ast.Attribute) and node.func.attr == "import_module":
+                return False
+        if isinstance(node, (ast.Assign, ast.AnnAssign)) and isinstance(node.value, ast.Name):
+            if node.value.id == "ParsedDocumentKnowledgeIngestionRequest":
+                return False
+    return True
+
+
 def test_default_host_does_not_import_new_boundary():
     paths = list((ROOT / "backend/app/core").rglob("*.py"))
     paths += list((ROOT / "backend/app/api").rglob("*.py"))
     paths += [ROOT / "backend/app/main.py"]
+    allowed = ROOT / "backend/app/api/document_knowledge_ingestion.py"
     for path in paths:
         if path.is_file():
             content = path.read_text(encoding="utf-8")
-            assert "parsed_document_knowledge_ingestion_application_service" not in content
-            assert "ParsedDocumentKnowledgeIngestionApplicationService" not in content
+            if path == allowed:
+                assert _rfc081_request_import_allowed(content)
+            else:
+                assert "parsed_document_knowledge_ingestion_application_service" not in content
+                assert "ParsedDocumentKnowledgeIngestionApplicationService" not in content
