@@ -24643,3 +24643,40 @@ RFC-080 remains fully closed; no additional RFC-080 record is required.
 - `backend/app/services/document_content_access_application_service.py`: `2ffe2984ad9e5e1b2cbb6860093cb26060b3911d40259bb678d7dde1458c5e0a`
 - `backend/app/document_parsing/parser.py`: `35ac46cfb17ed769a49c87df3e7cb5a7aa438bec60b5ff3511b6e40d7f557787`
 - `backend/app/knowledge_lineage_transaction/coordinator.py`: `c014d1721565380fe30c4dbfb7b7f136dfdcaae950cddb265035548754086c5f`
+
+
+---
+
+## RFC-081 — Compact engineering closure and source-of-truth reconciliation
+
+Classification: completion evidence, not a new architecture decision.
+AD-067 Accepted / Git Durable at `c4fd57c28bdf41bf3c35d857481546b4a997dfc3`; accepted contract unchanged.
+Technical implementation: `60f1dec17bf100864f9e4fee5a74de39283e462b`.
+Reviewed technical diff SHA-256: `725e2055131b9db420c44308044f86d00eca9e3d8cdde9353324ea2be441c32b`.
+Delivered: opt-in POST /documents/{document_id}/knowledge through ApplicationFacade.
+Caller supplies facade and Runtime; live admission is checked before delegation.
+Strict nonblank request fields and UUIDs; no extra fields or content/provenance override.
+Successful responses contain validated canonical document and Knowledge IDs only.
+Named failures use fixed codes; post-commit cleanup reports committed without retry.
+Unexpected failures, including undifferentiated blank-text ValueError, report unknown/500.
+Framework input-validation responses remain unchanged; no comprehensive sanitization claim.
+Repeated explicit requests may create additional records; no deduplication guarantee.
+Technical scope: four new files and the single governed RFC-079 guard adaptation.
+The exact API file may import only the canonical request type from that service module;
+no direct service execution or default host wiring. Other predecessor tests are preserved.
+The integration-test expectation was corrected without changing Production: missing
+payload with a retained descriptor is an integrity failure, not content-not-available.
+Four independent content-state cases preserve no-write/no-repair checks.
+Closure gate: RFC-081 84 passed; existing API 27 passed; predecessor impacted 117 passed;
+full regression 1361 passed; Alembic head 0005. Subsets are included in the full count.
+Integration uses isolated temporary SQLite/filesystem; not PostgreSQL deployment proof.
+No default HTTP mount, automatic ingestion, dependency, schema or migration changes.
+No authentication/RBAC/audit, production security, concurrency or byte-version provenance certification.
+Runtime, Bootstrap, default composition and existing persistence ownership remain unchanged.
+RFC-081 state: FULLY_CLOSED_AND_SOURCE_OF_TRUTH_RECONCILED.
+Active RFC: NONE. Selected successor: NONE. Next: separate successor-workstream selection.
+RFC-080 remains closed; historical counts and decision contracts are preserved.
+This declaration takes effect only after this exact five-document record passes
+tests, commit/push identity verification and a clean working-tree check.
+Its own future commit hash is intentionally not predicted. No additional RFC-081
+closure or reconciliation record is required after that gate succeeds.
