@@ -25058,6 +25058,8 @@ Do not rerun the initial clean-tree technical writer or discard its candidate to
 
 ---
 
+> Historical A1 acceptance checkpoint; its Git gate and technical resumption completed, as recorded below.
+
 ## RFC-082 — AD-068 A1 acceptance and scoped technical resumption
 
 Exact A1 proposal and complete RFC-078 guard source review: PASS.
@@ -25083,3 +25085,44 @@ Technical review still precedes technical commit/push; RFC-082 remains active an
 RFC-078/RFC-080/RFC-081 remain closed; no later successor is selected.
 Default HTTP mount: NONE. Default ingestion: NOT CONFIGURED. No dependency/schema change
 or PostgreSQL deployment verification is introduced. Actual commit/test identities are reported on execution.
+
+
+---
+
+## RFC-082 — Compact engineering closure and source-of-truth reconciliation
+
+Classification: completion evidence under accepted AD-068 and A1; no new architecture decision.
+Original AD-068 accepted and Git durable at `0be27ee6d563aea1781630a2769b928d6d639bc0`; SHA-256 `a367dae36af101b05cc247e7cbd78939bfad047cd191d7bfdf78ae83fc10becd`.
+A1 accepted and Git durable at `53b444cdb83eb7562fb027a50b6893c190dff9a9`; SHA-256 `7a75b6af6105763bb4646d588ecfa9d9cef2891a9073f650e49d54c4356ca3ee`.
+Reviewed technical implementation is Git durable at `e751e787e4cdf39bd3eeb219ee1946cf15f4efeb`, parent `53b444cdb83eb7562fb027a50b6893c190dff9a9`.
+Technical diff SHA-256: `f9e4cd2c2368604b9b1846fd15286aec0daf412c180e2ecf4e98e6c8ee9bf421`. Both accepted contract blocks remain unchanged.
+Delivered: optional canonical parsed-ingestion service injection through CompositionRoot.build
+and build_platform_composition, retaining the existing three positional inputs and defaults.
+The new keyword-only input defaults to None; omission/None leaves ingestion unconfigured.
+Non-None inputs require the canonical service type before platform or plugin activity.
+Canonical subclasses, including falsey instances, preserve their exact identity without truth testing.
+The existing single facade receives the exact dependency; platform, container and operational
+transition share that facade. No extra service registration, graph builder or lifecycle ownership.
+Existing analysis wiring, Runtime/admission behavior and caller persistence ownership are preserved.
+Technical scope: one production file, three governed predecessor guards and three new test files.
+RFC-079 and RFC-080 guard changes enforce the accepted bounded composition shape; A1 updates
+only the fixed composition-root SHA-256 value in the RFC-078 guard; all its other bytes are preserved.
+The initial 392-pass/1-failure predecessor checkpoint is historical; A1 resolved that governed
+fingerprint conflict without altering the six-file candidate or replaying the two-factory TDD red.
+Successful retained evidence: adapted RFC-078 guard 20; governed predecessor guards 9;
+RFC-082 focused 98; RFC-081 focused 84; existing API 27; impacted composition/predecessors 393;
+full regression 1459 passed; Alembic head 0005. Groups overlap and are included in the full count.
+The technical publisher verified those successful witnesses against the exact committed source.
+This five-document closure revalidates retained evidence and protected source; it does not rerun
+pytest or Alembic. Current test baseline is 1459; historical 1361 evidence remains unchanged.
+Integration evidence uses caller-owned temporary SQLite/filesystem and the composed facade/Runtime.
+It covers closed-admission no-write and explicit opt-in HTTP persistence without default mounting.
+Default HTTP mount: NONE. Default ingestion: NOT CONFIGURED. No dependency/schema/migration change.
+No PostgreSQL deployment, production authentication/RBAC or security certification is claimed.
+RFC-078/RFC-080/RFC-081 remain closed. Recovery backups and other project copies are untouched.
+RFC-082 state: FULLY_CLOSED_AND_SOURCE_OF_TRUTH_RECONCILED. Active RFC: NONE.
+Selected successor: NONE. Next: separate successor-workstream selection.
+This terminal declaration takes effect only after the exact five-document commit/push gate
+verifies local HEAD, tracking and live remote identity, ahead/behind 0/0, and a clean saved tree.
+Its future commit hash is intentionally not predicted. No additional RFC-082 closure or
+reconciliation record is required after that gate succeeds.
