@@ -1,6 +1,6 @@
-> Current checkpoint: RFC-081 completed; no active RFC or selected successor.
-> Current full regression: 1361. Next: separate successor selection.
-> Effective after the compact closure Git gate; no further RFC-081 record required.
+> Current checkpoint: RFC-082 selected; AD-068 Accepted.
+> Next: pass the acceptance Git gate, then implement only the accepted scope.
+> RFC-081 remains closed; full regression baseline remains 1361.
 > Earlier records below are historical; unrelated backlog remains unchanged.
 
 > **Current checkpoint: RFC-079 completed; no active RFC or selected successor.**
@@ -19742,3 +19742,49 @@ This declaration takes effect only after this exact five-document record passes
 tests, commit/push identity verification and a clean working-tree check.
 Its own future commit hash is intentionally not predicted. No additional RFC-081
 closure or reconciliation record is required after that gate succeeds.
+
+
+---
+
+> Historical proposal record; superseded by the formal selection and acceptance below.
+
+## RFC-082 — Canonical platform ingestion composition proposal
+
+Status: PROPOSED / REVIEW PENDING. Draft AD-068 SHA-256: `006a575f7c5a4a34eed56b722d8dc231ea59a2cbd563b48c684c6aceadbc42fa`.
+Baseline: `8d9fe053a350b5d896c5f570bd794dda36a4b5d4`. RFC-081 remains fully closed.
+Propose one optional caller-built parsed-ingestion dependency in both existing
+platform factories, forwarded into the one shared ApplicationFacade.
+Validate the canonical type before graph construction; preserve None and falsey semantics.
+Proposed technical scope: one production composition file, two explicitly governed
+RFC-079/RFC-080 guard adaptations, and three new test files, as specified in AD-068.
+RFC-065 and all other predecessor guard scopes remain unchanged.
+Active RFC: NONE. Selected successor: NONE. Formal selection/acceptance: PENDING.
+Implementation: NOT AUTHORIZED. This is a five-document draft only.
+Historical full regression: 1361 passed; Alembic head: 0005. Neither rerun here.
+Default HTTP mount: NONE. Default ingestion: NOT CONFIGURED.
+No PostgreSQL deployment verification or production security claim.
+Next: review this draft, then a separate formal selection and acceptance Git gate.
+
+
+---
+
+## RFC-082 — Formal selection and AD-068 acceptance
+
+Architecture review: PASS. RFC-082 selected; AD-068 Accepted, subject to the Git gate.
+Parent baseline: `8d9fe053a350b5d896c5f570bd794dda36a4b5d4`. Reviewed draft contract SHA-256: `006a575f7c5a4a34eed56b722d8dc231ea59a2cbd563b48c684c6aceadbc42fa`.
+Accepted contract SHA-256: `a367dae36af101b05cc247e7cbd78939bfad047cd191d7bfdf78ae83fc10becd`. Functional scope unchanged from the reviewed draft.
+Scope: optional prebuilt canonical parsed-ingestion service in both existing platform factories;
+exact forwarding to the one shared facade; default None and caller resource ownership retained.
+Technical files: one existing composition file, two bounded predecessor guard adaptations,
+and three new test files, exactly as enumerated in AD-068. No additional graph builder.
+RFC-079 API exception/helper and the other four RFC-080 architecture tests remain byte-preserved.
+RFC-065 and other predecessor scopes remain unchanged. Both guard adaptations are not yet performed.
+Acceptance requires fresh 4/5/84/27 baseline groups, full 1361 regression and Alembic 0005.
+Those groups overlap; this entry does not assert they passed before the gate reports success.
+This five-document decision takes effect only after tests, commit/push identity verification
+and a clean saved-tree check succeed. Its future commit hash is not predicted.
+After success: Active RFC = RFC-082; selected workstream = RFC-082; AD-068 = Accepted / Git Durable.
+Implementation entry is authorized within accepted scope; technical implementation has not started.
+No further documentation-only entry record is required. Next: governed TDD technical candidate.
+RFC-080 and RFC-081 remain closed; default HTTP mount is absent and ingestion is unconfigured.
+No dependency/schema change, PostgreSQL deployment verification or production security claim.

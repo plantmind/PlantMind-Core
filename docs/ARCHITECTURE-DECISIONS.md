@@ -24680,3 +24680,195 @@ This declaration takes effect only after this exact five-document record passes
 tests, commit/push identity verification and a clean working-tree check.
 Its own future commit hash is intentionally not predicted. No additional RFC-081
 closure or reconciliation record is required after that gate succeeds.
+
+
+---
+
+# AD-068 — Opt-In Document Knowledge Ingestion in Canonical Platform Composition
+
+Status: ACCEPTED. Related selected workstream: RFC-082; external Git gate required.
+Selection and implementation authorization take effect only after the acceptance gate below succeeds.
+Baseline: `8d9fe053a350b5d896c5f570bd794dda36a4b5d4`.
+RFC-080 and RFC-081 remain fully closed; their accepted contracts remain unchanged.
+
+## Problem and bounded decision
+
+RFC-080 supplies an opt-in facade command, and RFC-081 supplies its opt-in HTTP router.
+The canonical platform factory still creates its facade with only the gateway, so
+callers cannot supply the accepted parsed-ingestion service through that factory.
+Expose optional dependency injection into that existing platform graph. Reuse the
+existing facade and caller-built service; introduce no additional composition builder.
+The caller can already combine the RFC-078 parsing builder and RFC-079 constructor.
+
+## Factory contract and compatibility
+
+Both CompositionRoot.build and build_platform_composition retain their existing
+three positional-or-keyword parameters, order, annotations and defaults.
+Add exactly one keyword-only parameter to both:
+`parsed_document_knowledge_ingestion_service: ParsedDocumentKnowledgeIngestionApplicationService | None = None`.
+Omission or explicit None leaves ingestion unconfigured. For every non-None value,
+CompositionRoot.build performs isinstance(value, ParsedDocumentKnowledgeIngestionApplicationService)
+before constructing any platform object or processing plugin registrations.
+Reject other values with TypeError at this boundary. This does not tighten the
+existing ApplicationFacade constructor or change its accepted direct-call contract.
+Canonical subclasses are accepted, including falsey instances. Do not evaluate the
+supplied dependency's truth value, call it, construct a replacement, or select a fallback.
+The compatibility wrapper forwards the exact input under the same keyword to build.
+
+## Single facade, identity and ownership
+
+Keep exactly one ApplicationFacade construction in the root, passing the existing
+integration_gateway plus the exact supplied parsed_document_knowledge_ingestion_service.
+The returned platform.application_facade, container.resolve(ApplicationFacade), and
+operational_transition_application_service.application_facade reference that same facade.
+Keep the gateway, orchestration, executor and operational-transition wiring unchanged.
+Do not replace the facade after construction, add a setter, or create a parallel facade.
+Do not register the supplied service separately or add fields to PlatformComposition.
+The added ingestion injection logic does not execute ingestion, construct a parsing/
+ingestion graph, acquire resources for the supplied service, start/stop it, or assume
+ownership of its lifecycle. Existing platform construction remains unchanged.
+The caller retains its database, session, transaction, repository and filesystem ownership.
+Default construction remains unconfigured; no import-free guarantee is introduced.
+
+## Governed predecessor guard adaptations
+
+1. In tests/services/test_parsed_document_knowledge_ingestion_architecture.py, adapt
+   only test_default_host_does_not_import_new_boundary and add one directly required
+   AST helper for the exact core/composition/composition_root.py file. Permit only the
+   direct, unaliased import of ParsedDocumentKnowledgeIngestionApplicationService
+   from its canonical module, its two optional parameter annotations, and its use
+   as the isinstance target in the early validation. Guard the exact keyword forwarding
+   into the sole facade and through the wrapper. For this new dependency, forbid service
+   construction, ingestion calls, separate registration, re-export, dynamic lookup,
+   and runtime actions driven by its presence. On its canonical import, forbid extra
+   imported symbols, aliases, wildcard imports, and equivalent bypasses. Preserve all
+   existing platform service construction and container registrations unchanged.
+   Preserve the existing RFC-081 API request-type-only exception and
+   _rfc081_request_import_allowed helper byte-for-byte; all other guard tests stay unchanged.
+   No directory-wide exclusion or permission for another core, API or host file.
+2. In tests/services/test_application_facade_document_knowledge_ingestion_architecture.py,
+   replace/rename only test_default_composition_still_supplies_only_gateway. The
+   replacement requires exactly one facade construction, its two exact keyword
+   forwards, and the keyword-only/default-None inputs on both factories.
+   Preserve the other four tests byte-for-byte, including the analyze source guard.
+
+These are accepted successor-governed adaptations, not silent weakening or reopening
+of predecessor workstreams. Their implementation requires successful acceptance verification and Git durability first.
+The RFC-065 lower-ingestion composition import and nonregistration guards remain
+unchanged: this root imports only the parsed service, not the lower ingestion module.
+RFC-073, RFC-078 and RFC-081 guards and all other existing tests remain unchanged.
+
+## Exact technical files after acceptance
+
+Modify only:
+- backend/app/core/composition/composition_root.py
+- tests/services/test_parsed_document_knowledge_ingestion_architecture.py
+- tests/services/test_application_facade_document_knowledge_ingestion_architecture.py
+
+Add only:
+- tests/core/test_document_knowledge_ingestion_composition.py
+- tests/core/test_document_knowledge_ingestion_composition_architecture.py
+- tests/integration/test_document_knowledge_ingestion_composition_http_pipeline.py
+
+Technical scope is one existing production file, two governed guard adaptations,
+and three new test files. No other production, test, documentation or configuration
+changes belong in the technical candidate. Selection/acceptance and compact closure
+use the established separate five-document scope.
+
+## Evidence and completion gates
+
+Demonstrate TDD red for the missing composition input, then green for both factories.
+Cover omitted/explicit None, valid canonical service, falsey canonical subclass,
+wrong-type rejection before graph/plugin activity, existing positional compatibility,
+exact service forwarding, and the one shared facade throughout the platform graph.
+Show default unconfigured behavior, no ingestion during composition, no extra service
+registration and preserved analysis wiring. Separate builds create distinct platform-
+owned facade, Runtime and container instances while preserving the exact identity of
+any explicitly reused caller-owned dependency.
+Architecture evidence must enforce the bounded import/forwarding shape and both
+governed exceptions without weakening the preserved predecessor guard functions.
+
+Use the actual canonical parsed-ingestion service and existing temporary SQLite /
+filesystem adapters for an opt-in HTTP journey through the composed facade. Supply
+that platform's same Runtime to the existing router and admission middleware.
+Verify closed-admission no-write behavior, successful canonical IDs and persisted
+Knowledge/lineage, no implicit ingestion on build, rollback/no-write failures, and
+the existing committed-versus-unknown failure semantics without automatic retry.
+Missing payload with a retained descriptor remains an integrity failure; preserve
+the four independent RFC-081 content-state cases. Tests may explicitly enable
+admission; the composition change itself must not enable or transition Runtime.
+Include wrapper forwarding coverage and at least one real composed HTTP success
+journey; stubs alone do not establish the integration contract.
+
+After formal acceptance, verify new focused tests, impacted composition/predecessor
+and existing API tests, full regression, Alembic head 0005, exact file scope, and
+unchanged protected source. Record actual counts; do not predict a new total.
+The historical baseline is 1361 passed, with RFC-081 focused 84, existing API 27,
+and impacted predecessors 117 included in that full count. Draft creation did not rerun these tests; acceptance re-verification is required below.
+Technical review precedes technical commit/push; compact five-document closure follows
+verified technical Git durability. Do not claim closure from a green candidate alone.
+
+## Explicit limits
+
+No edits to ApplicationFacade, analyze, ingestion/parsing services, API router, main,
+package exports, Runtime, Bootstrap, settings, dependencies, schemas or migrations.
+No default HTTP mount, default ingestion activation, environment change, new graph
+builder, persistence owner, retry/deduplication guarantee, or wider parser scope.
+No production authentication/RBAC/security certification or PostgreSQL deployment claim.
+Keep recovery backups, other project copies, Downloads and editor buffers untouched.
+
+## Acceptance effectiveness gate
+
+Reverify RFC-079 guard 4, RFC-080 architecture 5, RFC-081 focused 84, existing API 27,
+full regression 1361 passed, and Alembic head 0005. These test groups overlap.
+Commit exactly the five accepted documents on the approved baseline and verify
+local HEAD, tracking and live remote identity, ahead/behind 0/0, and a clean saved tree.
+Only successful completion authorizes entry into the six technical files specified
+above, including the two bounded guard adaptations. Technical work has not started.
+No additional documentation-only implementation-entry gate is required.
+
+
+---
+
+> Historical proposal record; superseded by the formal selection and acceptance below.
+
+## RFC-082 — Canonical platform ingestion composition proposal
+
+Status: PROPOSED / REVIEW PENDING. Draft AD-068 SHA-256: `006a575f7c5a4a34eed56b722d8dc231ea59a2cbd563b48c684c6aceadbc42fa`.
+Baseline: `8d9fe053a350b5d896c5f570bd794dda36a4b5d4`. RFC-081 remains fully closed.
+Propose one optional caller-built parsed-ingestion dependency in both existing
+platform factories, forwarded into the one shared ApplicationFacade.
+Validate the canonical type before graph construction; preserve None and falsey semantics.
+Proposed technical scope: one production composition file, two explicitly governed
+RFC-079/RFC-080 guard adaptations, and three new test files, as specified in AD-068.
+RFC-065 and all other predecessor guard scopes remain unchanged.
+Active RFC: NONE. Selected successor: NONE. Formal selection/acceptance: PENDING.
+Implementation: NOT AUTHORIZED. This is a five-document draft only.
+Historical full regression: 1361 passed; Alembic head: 0005. Neither rerun here.
+Default HTTP mount: NONE. Default ingestion: NOT CONFIGURED.
+No PostgreSQL deployment verification or production security claim.
+Next: review this draft, then a separate formal selection and acceptance Git gate.
+
+
+---
+
+## RFC-082 — Formal selection and AD-068 acceptance
+
+Architecture review: PASS. RFC-082 selected; AD-068 Accepted, subject to the Git gate.
+Parent baseline: `8d9fe053a350b5d896c5f570bd794dda36a4b5d4`. Reviewed draft contract SHA-256: `006a575f7c5a4a34eed56b722d8dc231ea59a2cbd563b48c684c6aceadbc42fa`.
+Accepted contract SHA-256: `a367dae36af101b05cc247e7cbd78939bfad047cd191d7bfdf78ae83fc10becd`. Functional scope unchanged from the reviewed draft.
+Scope: optional prebuilt canonical parsed-ingestion service in both existing platform factories;
+exact forwarding to the one shared facade; default None and caller resource ownership retained.
+Technical files: one existing composition file, two bounded predecessor guard adaptations,
+and three new test files, exactly as enumerated in AD-068. No additional graph builder.
+RFC-079 API exception/helper and the other four RFC-080 architecture tests remain byte-preserved.
+RFC-065 and other predecessor scopes remain unchanged. Both guard adaptations are not yet performed.
+Acceptance requires fresh 4/5/84/27 baseline groups, full 1361 regression and Alembic 0005.
+Those groups overlap; this entry does not assert they passed before the gate reports success.
+This five-document decision takes effect only after tests, commit/push identity verification
+and a clean saved-tree check succeed. Its future commit hash is not predicted.
+After success: Active RFC = RFC-082; selected workstream = RFC-082; AD-068 = Accepted / Git Durable.
+Implementation entry is authorized within accepted scope; technical implementation has not started.
+No further documentation-only entry record is required. Next: governed TDD technical candidate.
+RFC-080 and RFC-081 remain closed; default HTTP mount is absent and ingestion is unconfigured.
+No dependency/schema change, PostgreSQL deployment verification or production security claim.
