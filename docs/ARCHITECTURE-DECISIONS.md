@@ -25126,3 +25126,205 @@ This terminal declaration takes effect only after the exact five-document commit
 verifies local HEAD, tracking and live remote identity, ahead/behind 0/0, and a clean saved tree.
 Its future commit hash is intentionally not predicted. No additional RFC-082 closure or
 reconciliation record is required after that gate succeeds.
+
+
+---
+
+# AD-069 — Explicit Opt-In Document Knowledge Ingestion HTTP Host
+
+Status: ACCEPTED; effectiveness requires the acceptance Git gate below.
+Related selected workstream: RFC-083; selection takes effect only when that gate succeeds.
+Baseline: `f72bcbea47051ff4ac5770a0183242cd51c71cb2`.
+Technical implementation entry is authorized only after successful acceptance verification and Git durability.
+RFC-082 remains fully closed; AD-068 and A1 and all predecessor contracts stay unchanged.
+
+## Problem and bounded decision
+
+RFC-080 exposes ingestion through ApplicationFacade, RFC-081 supplies its opt-in
+HTTP router, and RFC-082 injects the caller-built dependency into the canonical
+platform. The default main module still constructs its own unconfigured platform
+and does not mount ingestion. Supply an explicit HTTP host for an already-built
+platform so a caller can use these accepted boundaries together with the existing
+request-admission and bootstrap lifecycle. Preserve the default main module exactly.
+
+## Exact public surface and assembly
+
+Add backend/app/api/document_knowledge_ingestion_host.py with one public factory:
+`create_app(*, platform: PlatformComposition) -> FastAPI`.
+The platform argument is required and keyword-only; there is no default platform,
+configuration flag, builder callback or additional dependency input. Calling this
+separate factory explicitly opts into the ingestion-capable host.
+
+Before constructing FastAPI, creating routers or registering middleware, require
+isinstance(platform, PlatformComposition); reject other values with TypeError.
+Accept canonical subclasses, including falsey instances, without evaluating the
+platform's truth value. Do not replace, copy, rebuild or repair its components.
+Each successful factory call returns a fresh FastAPI instance and retains the exact
+supplied platform components. It does not execute bootstrap or any use case.
+
+Install the existing RequestAdmissionMiddleware once with platform.runtime and its
+unchanged default exemptions. Mount the existing operational-transition router with
+platform.operational_transition_application_service. Mount the RFC-081 ingestion
+router with the exact platform.application_facade and the same platform.runtime.
+Do not construct another facade, Runtime, container, bootstrap or service graph.
+
+Expose the existing GET / status and GET /health contracts alongside those two
+routers, without extra business endpoints or route prefixes. Reuse PlatformStatus,
+PlatformInfo and RuntimeInfo. Match main.py's metadata conventions: APP_NAME,
+VERSION and DEPLOYMENT_MODE come from app.config.settings; edition is Enterprise
+and the existing FastAPI description is retained. Read status and environment from
+the supplied platform.runtime at request time. Delegate health requests directly
+to the supplied platform.health.get_status(). Do not invent a configuration-provider
+API, snapshot Runtime state or introduce a second status/health schema.
+
+## Lifespan, admission and ownership
+
+The new application's lifespan calls platform.bootstrap.startup() once before
+entering its active body. After startup returns successfully, a try/finally around
+the lifespan body calls platform.bootstrap.shutdown() once on normal or exceptional
+exit. The factory itself performs no startup, shutdown or Runtime mutation.
+
+If startup raises, propagate that failure unchanged and do not add a shutdown call;
+the existing bootstrap owns its startup compensation. If the active body raises
+and shutdown succeeds, propagate the body failure. If shutdown raises, propagate
+that failure unchanged; a simultaneous body failure remains its normal Python
+exception context. Add no suppression, retry, error translation, ExceptionGroup
+policy or extra Runtime state transitions at this host boundary.
+
+The existing bootstrap remains responsible for readiness, admission and managed
+platform services/plugins. The host does not directly enable admission, request an
+operational transition, or run ingestion during assembly, startup, status, health
+or shutdown. Admission checks continue to read the same live Runtime through the
+existing middleware and router; exemptions remain exactly those already accepted.
+
+The caller constructs the platform and ingestion dependency and retains ownership
+of external database engines, sessions, transactions, repositories and filesystems.
+This host delegates only the existing platform bootstrap lifecycle. It does not
+acquire, close, dispose, register or start/stop the supplied ingestion dependency or
+its resources. No persistence graph or environment-based resource configuration is
+introduced. A platform is dedicated by its caller to one active host lifespan at
+a time; concurrent ownership by multiple apps or an external bootstrap caller is
+outside this contract. Add no global registry, reference count or sharing protocol.
+Independent supplied platforms must remain independent when their apps are used.
+
+## Default behavior and preserved transport contracts
+
+The new host may receive an ordinarily built, unconfigured platform. Do not inspect
+private facade fields or reject it during assembly. With admission open, ingestion
+then uses RFC-081's existing not-configured response. With admission closed, retain
+the existing admission response and no-call/no-write behavior, including middleware
+precedence over request validation. Reuse the router's request/response models,
+status codes, canonical IDs, fixed error mapping, committed-versus-unknown outcomes
+and no-automatic-retry semantics without modification or a second implementation.
+
+Keep app.main byte-for-byte unchanged, including its default platform and routes.
+Do not import app.main from the new host or re-export the new factory from package
+initializers. Importing the new module itself creates no app or platform graph and
+invokes no factory, bootstrap or use case. Existing transitive import behavior is
+unchanged; this is not a promise that all imported modules are side-effect-free.
+
+## Exact technical scope after formal acceptance
+
+Add only these four new files:
+- backend/app/api/document_knowledge_ingestion_host.py
+- tests/api/test_document_knowledge_ingestion_host.py
+- tests/api/test_document_knowledge_ingestion_host_architecture.py
+- tests/integration/test_document_knowledge_ingestion_host_local_pipeline.py
+
+All existing production, test, documentation, configuration and dependency files
+remain byte-preserved during the technical candidate. No predecessor guard
+adaptation is proposed or authorized. Preserve the RFC-078 main/bootstrap/root pins,
+RFC-079 bounded imports, RFC-080 facade protections, RFC-081 default-host guard and
+RFC-082 composition protections. Any newly discovered conflict requires specific
+scope review; it does not authorize changing a fingerprint or weakening a guard.
+Selection/acceptance and compact closure retain their separate five-document scope.
+
+## Evidence and completion gates
+
+Establish TDD red for the missing host module/factory, then focused green. Verify
+required input and early wrong-type rejection, falsey canonical subclasses, no
+assembly-time lifecycle/use-case calls, fresh apps, exact shared-component identity,
+and independent app/platform pairs. Verify metadata, live status/health, the two
+existing routers, unchanged exemptions, closed admission and default unconfigured
+behavior. Do not replace existing transport tests with mocked-only evidence.
+
+Exercise lifespan success, startup failure, body failure, shutdown failure and
+combined body/shutdown failure with the specified invocation counts and exception
+propagation. Also run a real composed bootstrap lifecycle: startup opens admission
+through bootstrap and shutdown closes it through bootstrap, without manual admission
+enabling in the successful managed-host journey. Startup/status/health/shutdown must
+not invoke ingestion or operational-transition use cases.
+
+Use the canonical configured pipeline with the existing temporary SQLite/filesystem
+adapters for a real HTTP ingestion success through this factory and managed lifespan.
+Verify canonical returned IDs and persisted Knowledge/lineage, closed-admission and
+invalid-input no-write behavior, representative existing failure outcomes, and
+caller-owned resource usability after host shutdown. Retain the four independent
+RFC-081 content-state cases and predecessor rollback/unknown-outcome coverage.
+
+Architecture evidence must constrain this host to transport/lifecycle assembly,
+forbid direct parsed/lower-ingestion/parser/infrastructure ownership and default-main
+wiring, and protect all existing files and governed guards. Reverify impacted
+bootstrap/admission/composition tests, RFC-081/RFC-082 focused tests, existing API
+tests, full regression and Alembic head 0005. Record actual counts; do not predict
+a new total. The current 1459-test baseline is retained evidence, not a fresh run
+performed by this draft or the source-review report; test groups overlap.
+
+Formal selection and AD-069 acceptance require a separate reviewed five-document
+acceptance commit, baseline regression/Alembic verification and local/tracking/live
+remote identity with clean saved state and ahead/behind 0/0. Only that successful
+gate authorizes entry into the four technical files above. Technical review precedes
+technical commit/push; compact closure follows verified technical Git durability.
+
+## Explicit limits
+
+No default HTTP mount or default ingestion configuration; no main refactor, new
+composition builder, shared lifecycle manager, dependency installation, schema or
+migration change, retry/deduplication guarantee, or wider parser scope. No server
+process, network listener, deployment, production authentication/RBAC/security
+certification or PostgreSQL deployment claim. Preserve the original repository,
+recovery backups, other project copies, Downloads and editor buffers.
+
+
+---
+
+> Historical proposal record; superseded by the formal selection and acceptance below.
+
+## RFC-083 — Opt-in document knowledge ingestion HTTP host proposal
+
+Status: PROPOSED / REVIEW PENDING. Draft AD-069 SHA-256: `01d079c2120cae7bf33713cdb9792e828ba9e2210d7f073483b2f4149b78c7ec`.
+Baseline: `f72bcbea47051ff4ac5770a0183242cd51c71cb2`. RFC-082 remains fully closed; AD-068 and A1 remain unchanged.
+Propose one explicit HTTP app factory receiving an existing PlatformComposition.
+Reuse its facade, Runtime, bootstrap, health and operational-transition service,
+and the existing route factories and admission middleware under the AD-069 contract.
+Proposed technical scope: four NEW files only; no existing source or guard edits.
+Active RFC: NONE. Selected successor: NONE. Formal selection/acceptance: PENDING.
+Implementation: NOT AUTHORIZED. This is a five-document proposal only.
+Historical full regression: 1459 passed; Alembic head: 0005. Neither rerun here.
+Default HTTP mount: NONE. Default ingestion: NOT CONFIGURED.
+No deployment, production authentication/RBAC or PostgreSQL verification claim.
+Next: draft review, then separate formal selection and acceptance Git gate.
+
+
+---
+
+## RFC-083 — Formal selection and AD-069 acceptance
+
+Architecture review: PASS. RFC-083 selected; AD-069 accepted, subject to the complete Git gate.
+Parent baseline: `f72bcbea47051ff4ac5770a0183242cd51c71cb2`. Reviewed draft contract SHA-256: `01d079c2120cae7bf33713cdb9792e828ba9e2210d7f073483b2f4149b78c7ec`.
+Accepted contract SHA-256: `bc6e4b85f044d099796604236d281cfa6b2b18a619bc8639db57dbfdaf00e672`. The substantive contract body remains unchanged.
+Scope: one explicit HTTP app factory receiving an existing PlatformComposition,
+reusing the exact facade, Runtime, bootstrap, health and operational-transition service.
+The accepted future technical scope is exactly four NEW files listed in AD-069.
+All existing production/test files and predecessor guards remain unchanged.
+No predecessor guard adaptation is authorized; technical implementation has not started.
+The acceptance gate requires fresh RFC-078 guard 20, governed predecessor guards 9,
+RFC-081 focused 84, RFC-082 focused 98, existing API 27, full regression 1459 passed,
+and Alembic head 0005. These groups overlap; no pass is claimed before the driver succeeds.
+Commit exactly the five accepted documents, verify local/tracking/live remote identity,
+ahead/behind 0/0 and a clean saved tree. This decision takes effect only after that gate.
+After success, entry into the four technical files is authorized within the accepted scope.
+No additional documentation-only entry record is required. Next: governed TDD technical candidate.
+RFC-078/RFC-080/RFC-081/RFC-082 remain closed; accepted AD-068 and A1 remain byte-exact.
+Default HTTP mount: NONE. Default ingestion: NOT CONFIGURED.
+No dependency/schema change, PostgreSQL deployment verification or production security claim.

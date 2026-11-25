@@ -10,9 +10,9 @@
 | Deployment Model | On-Premise |
 | Development Branch | `feature/engineering-platform` |
 | Last Fully Closed RFC | RFC-082 — Opt-In Document Knowledge Ingestion in Canonical Platform Composition — Fully Closed and Source-of-Truth Reconciled |
-| Active RFC | None — RFC-082 completed; successor not selected |
-| Selected Architecture Workstream | None — RFC-082 completed |
-| Proposed Successor RFC | None — successor selection not started |
+| Active RFC | RFC-083 — AD-069 accepted; implementation requires successful Git gate |
+| Selected Architecture Workstream | RFC-083 — Explicit Opt-In Document Knowledge Ingestion HTTP Host |
+| Proposed Successor RFC | None — RFC-083 selected; no later successor selected |
 | RFC-078 Predecessor Baseline | `36832df98433231095e257092f3b8815d1cfa573` — RFC-077 terminal closure |
 | RFC-078 Selection State | Durable — Accepted Contract Committed / Pushed / Exact Identity Verified |
 | RFC-078 Architecture Decision Candidate | AD-064 — Accepted / Committed / Pushed / Exact Identity Verified; Amendment A1 — Accepted / Committed / Pushed / Exact Identity Verified |
@@ -74,7 +74,7 @@
 | RFC-075 Architecture Contract State | Accepted / Architecture Review Passed / Committed / Pushed / Exact Identity Verified |
 | RFC-069 Selection Commit | `5d7794352029576e0b62c2ac8cbfa248fe11961d` |
 | RFC-070 Selection Commit | `13cfccc08d8c0a3b891990d38edaf9fc48874a5e` |
-| Architecture Decision | AD-068 and A1 — Accepted / Git Durable; RFC-082 implementation complete |
+| Architecture Decision | AD-069 — Accepted for RFC-083; external Git durability gate required |
 | RFC-074 Selection State | Durable — Committed, Pushed and Exact Identity Verified |
 | RFC-074 Selection Commit | `b5d1e7fe434378ac7ee90912ac40932d5c5451eb` — committed / pushed / exact identity verified |
 | RFC-074 Architecture Contract State | Accepted / Architecture Review Passed / Committed / Pushed / Exact Identity Verified |
@@ -7567,3 +7567,47 @@ This terminal declaration takes effect only after the exact five-document commit
 verifies local HEAD, tracking and live remote identity, ahead/behind 0/0, and a clean saved tree.
 Its future commit hash is intentionally not predicted. No additional RFC-082 closure or
 reconciliation record is required after that gate succeeds.
+
+
+---
+
+> Historical proposal record; superseded by the formal selection and acceptance below.
+
+## RFC-083 — Opt-in document knowledge ingestion HTTP host proposal
+
+Status: PROPOSED / REVIEW PENDING. Draft AD-069 SHA-256: `01d079c2120cae7bf33713cdb9792e828ba9e2210d7f073483b2f4149b78c7ec`.
+Baseline: `f72bcbea47051ff4ac5770a0183242cd51c71cb2`. RFC-082 remains fully closed; AD-068 and A1 remain unchanged.
+Propose one explicit HTTP app factory receiving an existing PlatformComposition.
+Reuse its facade, Runtime, bootstrap, health and operational-transition service,
+and the existing route factories and admission middleware under the AD-069 contract.
+Proposed technical scope: four NEW files only; no existing source or guard edits.
+Active RFC: NONE. Selected successor: NONE. Formal selection/acceptance: PENDING.
+Implementation: NOT AUTHORIZED. This is a five-document proposal only.
+Historical full regression: 1459 passed; Alembic head: 0005. Neither rerun here.
+Default HTTP mount: NONE. Default ingestion: NOT CONFIGURED.
+No deployment, production authentication/RBAC or PostgreSQL verification claim.
+Next: draft review, then separate formal selection and acceptance Git gate.
+
+
+---
+
+## RFC-083 — Formal selection and AD-069 acceptance
+
+Architecture review: PASS. RFC-083 selected; AD-069 accepted, subject to the complete Git gate.
+Parent baseline: `f72bcbea47051ff4ac5770a0183242cd51c71cb2`. Reviewed draft contract SHA-256: `01d079c2120cae7bf33713cdb9792e828ba9e2210d7f073483b2f4149b78c7ec`.
+Accepted contract SHA-256: `bc6e4b85f044d099796604236d281cfa6b2b18a619bc8639db57dbfdaf00e672`. The substantive contract body remains unchanged.
+Scope: one explicit HTTP app factory receiving an existing PlatformComposition,
+reusing the exact facade, Runtime, bootstrap, health and operational-transition service.
+The accepted future technical scope is exactly four NEW files listed in AD-069.
+All existing production/test files and predecessor guards remain unchanged.
+No predecessor guard adaptation is authorized; technical implementation has not started.
+The acceptance gate requires fresh RFC-078 guard 20, governed predecessor guards 9,
+RFC-081 focused 84, RFC-082 focused 98, existing API 27, full regression 1459 passed,
+and Alembic head 0005. These groups overlap; no pass is claimed before the driver succeeds.
+Commit exactly the five accepted documents, verify local/tracking/live remote identity,
+ahead/behind 0/0 and a clean saved tree. This decision takes effect only after that gate.
+After success, entry into the four technical files is authorized within the accepted scope.
+No additional documentation-only entry record is required. Next: governed TDD technical candidate.
+RFC-078/RFC-080/RFC-081/RFC-082 remain closed; accepted AD-068 and A1 remain byte-exact.
+Default HTTP mount: NONE. Default ingestion: NOT CONFIGURED.
+No dependency/schema change, PostgreSQL deployment verification or production security claim.
