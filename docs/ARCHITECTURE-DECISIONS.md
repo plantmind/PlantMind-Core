@@ -24872,3 +24872,214 @@ Implementation entry is authorized within accepted scope; technical implementati
 No further documentation-only entry record is required. Next: governed TDD technical candidate.
 RFC-080 and RFC-081 remain closed; default HTTP mount is absent and ingestion is unconfigured.
 No dependency/schema change, PostgreSQL deployment verification or production security claim.
+
+
+---
+
+# AD-068 Amendment A1 — Governed RFC-078 Composition-Root Fingerprint Reconciliation
+
+Status: ACCEPTED. This amendment takes effect only after its acceptance Git gate succeeds.
+Related active workstream: RFC-082.
+Accepted AD-068 commit: `0be27ee6d563aea1781630a2769b928d6d639bc0`.
+Original accepted AD-068 SHA-256: `a367dae36af101b05cc247e7cbd78939bfad047cd191d7bfdf78ae83fc10becd`.
+The original accepted AD-068 text and its acceptance record remain preserved.
+RFC-078, RFC-080 and RFC-081 remain fully closed; their historical evidence is not rewritten.
+
+## Evidence and problem
+
+The RFC-082 technical authoring run established the missing-input TDD red in both
+existing factories, then wrote the six files authorized by the original AD-068.
+The reported gates passed: RFC-082 focused 98, the two governed predecessor guard
+modules 9, RFC-081 focused 84, and existing API 27. These groups overlap.
+
+The impacted composition/predecessor gate reported 392 passed and one failure in:
+`tests/core/test_document_content_parsing_composition_architecture.py::test_default_composition_and_runtime_files_are_byte_preserved`.
+That existing RFC-078 guard pins the entire canonical composition-root file to its
+pre-RFC-082 fingerprint. The reported expected and actual SHA-256 values are:
+
+- Preserved pre-RFC-082 root: `563ad20be949c66e47298c20dff7a2c8e3de8afc5048fdc03eb71156c7d47138`.
+- Authored RFC-082 root: `12749403b5e707806fecb61278cd2f4afe10846709ebc918c501d8c19c368374`.
+
+This identifies a conflict between the intentional root change and a predecessor
+whole-file fingerprint. It does not establish a production behavior defect. The
+full regression and Alembic gate were not reached during this technical run.
+The last complete baseline remains 1361 passed and Alembic 0005, freshly verified
+at the original RFC-082 acceptance. No new full-regression result is claimed.
+
+The original AD-068 explicitly keeps RFC-078 guards unchanged and authorizes only
+two predecessor guard adaptations. A third adaptation therefore needs this explicit
+successor-governed amendment; it must not be performed as a silent test change.
+
+## Governed bounded guard adaptation
+
+After review of the exact accepted guard source and successful amendment acceptance,
+permit one additional existing test file to change:
+`tests/core/test_document_content_parsing_composition_architecture.py`.
+
+Within that file, change only the SHA-256 string value for the exact key
+`backend/app/core/composition/composition_root.py` in the unique
+`PRESERVED_PRODUCTION_SHA256` mapping, from the pre-RFC-082 value above to the authored
+RFC-082 value above. The new value is a single fixed successor fingerprint, not a set
+of accepted alternatives. Source verification must establish that the current guard
+equals its accepted Git blob and that the mapping/key/old value are unambiguous.
+
+Preserve every other mapping entry, every other preserved-source dictionary, all
+imports, all test/helper functions, and the existing assertion and test name exactly.
+Preserve every byte outside the targeted SHA-256 value. No explanatory code comment
+is required; the rationale and old/new identities are recorded in this amendment.
+
+Do not remove the root from preservation coverage, skip or mark the test as expected
+failure, weaken the assertion, accept both fingerprints, generate an expectation from
+the current disk bytes, or introduce a directory-wide or runtime-dependent exception.
+The already authored RFC-082 bounded AST guard and its mutation coverage continue to
+enforce the precise accepted root delta and preservation of the remaining platform
+graph. The existing six-file candidate remains unchanged by this amendment's repair.
+
+## Explicit override and resulting scope
+
+When accepted and effective, A1 supersedes the original AD-068 requirement that
+RFC-078 guards remain unchanged only for the single mapping value specified above.
+It also extends the original exact technical file list by that one existing guard
+file. All other original AD-068 requirements and prohibitions remain in force.
+
+The resulting technical scope is four modified files and three new files:
+
+Modify only:
+- backend/app/core/composition/composition_root.py
+- tests/services/test_parsed_document_knowledge_ingestion_architecture.py
+- tests/services/test_application_facade_document_knowledge_ingestion_architecture.py
+- tests/core/test_document_content_parsing_composition_architecture.py
+
+Add only:
+- tests/core/test_document_knowledge_ingestion_composition.py
+- tests/core/test_document_knowledge_ingestion_composition_architecture.py
+- tests/integration/test_document_knowledge_ingestion_composition_http_pipeline.py
+
+This is one production file, three governed predecessor guard adaptations, and
+three new test files. It adds no production behavior, API, configuration, dependency,
+schema, migration, resource ownership or default activation. ApplicationFacade,
+analyze, router/main, Runtime/Bootstrap, lower services and all other predecessor
+guards/tests remain protected by their existing accepted requirements.
+
+## Acceptance and candidate-preservation gate
+
+Amendment drafting and acceptance use the established five-document scope:
+docs/ARCHITECTURE-DECISIONS.md, docs/ENGINEERING-JOURNAL.md, docs/PROJECT-CONTEXT.md,
+docs/ROADMAP-004-Active-Work-Register.md and docs/SESSION-HANDOFF.md.
+Preserve the original accepted AD-068 block and hash as historical acceptance
+evidence; add A1 as an explicit, separately identified amendment.
+
+Before acceptance, review the exact existing RFC-078 guard source and its proposed
+one-value change, pin the six current candidate identities, and retain the original
+TDD, gate results, before/candidate snapshots and completed-write records.
+Draft creation itself does not authorize or perform the seventh technical-file edit.
+
+Following review, a successful docs-only amendment acceptance commit must contain
+exactly the five agreed documents, with the original acceptance commit as its parent,
+and preserve all six technical candidate files outside that commit. Verify local HEAD,
+tracking and live remote identity and ahead/behind 0/0. Verify the remaining working
+tree equals the six preserved candidate files and the index equals the amendment
+commit. The working tree is intentionally not clean; report that exact state.
+
+Do not stash, discard, reset, clean, restore or include the technical candidate in the
+amendment commit. Any unexpected source, index, branch, reference or candidate drift
+blocks the action and preserves work. Record actual amendment commit/diff/contract
+identities after execution; do not predict them.
+
+The original 1361-test baseline is evidence for the unchanged committed production
+tree at acceptance. Do not falsely require or claim a 1361-test clean run against the
+current authored candidate, whose known guard conflict is the subject of A1. Current
+partial gate results remain exactly as reported; no full technical green is implied.
+
+Only successful formal amendment acceptance and Git durability authorize the targeted
+RFC-078 guard edit and technical-regression resumption. No new implementation-entry
+document is required after that success.
+
+## Technical resumption and completion
+
+Keep the existing six candidate files and the valid two-factory TDD-red evidence.
+Do not rerun the initial clean-tree authoring command or restore production to replay
+red. Apply only the accepted mapping-value change after confirming its exact source
+and the preserved candidate identities.
+
+Then verify the adapted RFC-078 guard, the two already governed predecessor guards,
+RFC-082 focused tests, RFC-081 focused tests, existing API tests, impacted composition/
+predecessor tests, full regression, Alembic 0005, exact seven-file technical scope and
+all protected source. Record actual test counts. The expected full count is the
+1361-test baseline plus the actual new focused-test count; no success is preclaimed.
+
+Any additional incompatibility or required modification stops for specific scope
+review; A1 is not permission to update other fingerprints or suppress other failures.
+Technical review still precedes technical commit/push. Compact five-document closure
+still follows verified technical Git durability. RFC-082 remains active and is not
+closed by amendment acceptance or by a green technical candidate alone.
+
+## Unchanged operational limits
+
+Default HTTP remains unmounted and default ingestion remains unconfigured. Preserve
+the original repository, recovery backups, other project copies, Downloads, existing
+environments/caches and editor buffers. No dependency installation/update, production
+authentication/RBAC/security certification or PostgreSQL deployment claim is added.
+
+
+---
+
+> Historical A1 proposal and technical checkpoint; superseded by the A1 acceptance below.
+
+## RFC-082 — Technical checkpoint and AD-068 A1 proposal
+
+Accepted AD-068 / current HEAD: `0be27ee6d563aea1781630a2769b928d6d639bc0`. RFC-082 remains active; RFC-081 remains closed.
+Original accepted contract SHA-256: `a367dae36af101b05cc247e7cbd78939bfad047cd191d7bfdf78ae83fc10becd`.
+Technical checkpoint: six authorized files authored and partially verified; not committed.
+TDD red: missing composition input verified in both factories.
+Reported and retained evidence: RFC-082 focused 98 passed; governed guards 9 passed;
+RFC-081 focused 84 passed; existing API 27 passed; groups overlap.
+Impacted composition/predecessor gate: 392 passed, 1 failed (393 collected).
+Failure: `tests/core/test_document_content_parsing_composition_architecture.py::test_default_composition_and_runtime_files_are_byte_preserved`.
+Old root SHA-256: `563ad20be949c66e47298c20dff7a2c8e3de8afc5048fdc03eb71156c7d47138`; candidate root SHA-256: `12749403b5e707806fecb61278cd2f4afe10846709ebc918c501d8c19c368374`.
+Full technical regression and Alembic were not reached. Last complete baseline remains
+1361 passed / Alembic 0005 from original RFC-082 acceptance; no new full result is claimed.
+Preserved original technical evidence: `/private/var/folders/lc/fp0wl92n30vdj4jv80sspp1h0000gn/T/PlantMind-RFC082-technical-r3xs60sh`.
+AD-068 Amendment A1: PROPOSED / REVIEW PENDING; SHA-256 `75bd4ece2321750c05328fd1a3adb464c40e7ed02d46b33ab4b3764a769f797a`.
+The proposal would authorize one additional RFC-078 guard mapping value after its
+separate review and acceptance Git gate. No third guard edit is authorized or performed here.
+Accepted guard SHA-256: `2a2ac2d9fa5b4964461c7811a39fee7bd2eb9b27db93686cac17b6c43e39ddf5`; proposed guard SHA-256: `6b7d443ca6764e0b1098293a179ac15ed71eda6e6a9328624112af98220f3120`.
+Only the exact composition-root digest value would change; every other guard byte stays fixed.
+Original accepted scope remains one production file, two governed guards and three new tests.
+Proposed amended technical scope: one production file, three governed guards and three new tests.
+This step changes five documents only; it preserves all six candidate files and the unchanged guard.
+The original AD-068 accepted block and past acceptance records are preserved as history.
+No new successor selection; RFC-078/RFC-080/RFC-081 are not reopened.
+Default HTTP mount: NONE. Default ingestion: NOT CONFIGURED.
+No test rerun, application import, dependency installation, network, staging, commit or push.
+Next: review A1 and the exact one-value proposed guard diff; accept A1 before any guard repair.
+Do not rerun the initial clean-tree technical writer or discard its candidate to replay red.
+
+
+---
+
+## RFC-082 — AD-068 A1 acceptance and scoped technical resumption
+
+Exact A1 proposal and complete RFC-078 guard source review: PASS.
+Parent acceptance commit: `0be27ee6d563aea1781630a2769b928d6d639bc0`. Original AD-068 SHA-256: `a367dae36af101b05cc247e7cbd78939bfad047cd191d7bfdf78ae83fc10becd`.
+Reviewed A1 proposal SHA-256: `75bd4ece2321750c05328fd1a3adb464c40e7ed02d46b33ab4b3764a769f797a`. Accepted A1 SHA-256: `7a75b6af6105763bb4646d588ecfa9d9cef2891a9073f650e49d54c4356ca3ee`.
+A1 is accepted subject to its separate five-document commit/push/live-identity gate.
+The original accepted AD-068 block and historical proposal records remain preserved.
+Additional governed guard: `tests/core/test_document_content_parsing_composition_architecture.py`.
+Exact guard SHA-256 before: `2a2ac2d9fa5b4964461c7811a39fee7bd2eb9b27db93686cac17b6c43e39ddf5`; after: `6b7d443ca6764e0b1098293a179ac15ed71eda6e6a9328624112af98220f3120`.
+Reviewed one-value guard diff SHA-256: `f4d19649d077cc47a260def2833782abd67dc3c308b79c277891a32db28c7f73`.
+Only the fixed composition-root SHA-256 value changes; every other guard byte is preserved.
+The six reviewed technical candidate files remain unchanged and unstaged during acceptance.
+The acceptance commit contains exactly the five agreed documents. The index must equal that commit;
+the working tree intentionally retains the six technical candidate files and is not clean.
+Only verified local/tracking/live-remote identity and ahead/behind 0/0 authorize the seventh-file edit.
+No further implementation-entry document is required. Preserve the two-factory TDD-red evidence.
+Prior evidence: RFC-082 98, governed guards 9, RFC-081 84, existing API 27 passed; groups overlap.
+Prior impacted evidence: 392 passed, 1 known root-fingerprint failure; full regression was not reached.
+Last complete baseline remains 1361 passed / Alembic 0005. No fresh full green is asserted here.
+After the Git gate, apply only the reviewed one-value guard change and run all required technical gates.
+Resulting technical scope: one production file, three governed guards, three new test files.
+Technical review still precedes technical commit/push; RFC-082 remains active and is not closed.
+RFC-078/RFC-080/RFC-081 remain closed; no later successor is selected.
+Default HTTP mount: NONE. Default ingestion: NOT CONFIGURED. No dependency/schema change
+or PostgreSQL deployment verification is introduced. Actual commit/test identities are reported on execution.
