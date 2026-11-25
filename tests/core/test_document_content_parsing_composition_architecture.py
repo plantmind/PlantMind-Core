@@ -48,7 +48,7 @@ EXPECTED_GUARD_SHA256 = "1a469b6799ac2cb1740b28ce9067129cda5845248b199f1fc86f48d
 PRESERVED_PRODUCTION_SHA256 = {'backend/app/core/bootstrap.py': '07736041461a3ebcc69f48f8560495f032176596da1a926197800a843bec0240',
  'backend/app/core/bootstrap_manager.py': '0bb6180ac20ef92117b1038554076083c9cf4adada615fc1d4c09f0e9f6837cf',
  'backend/app/core/composition/__init__.py': '269ae463ecfd1455c1bfda563d67643b7546ef9d6d13cc6f8f9febb2e06843a5',
- 'backend/app/core/composition/composition_root.py': '563ad20be949c66e47298c20dff7a2c8e3de8afc5048fdc03eb71156c7d47138',
+ 'backend/app/core/composition/composition_root.py': '12749403b5e707806fecb61278cd2f4afe10846709ebc918c501d8c19c368374',
  'backend/app/core/container/__init__.py': 'e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855',
  'backend/app/core/container/service_container.py': '3e66943d51d01fbadf191c3e421fef35c3c6906c5e058d7d5ed1897f3bfde434',
  'backend/app/core/registry/__init__.py': '390f439e19e0f83543f53d6d7c0a14a56227b1ce1dc535b6ac609f4b7e219adb',

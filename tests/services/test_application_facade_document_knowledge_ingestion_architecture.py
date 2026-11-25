@@ -63,11 +63,31 @@ def test_new_command_only_checks_none_then_delegates():
                    for n in ast.walk(method))
 
 
-def test_default_composition_still_supplies_only_gateway():
+def test_default_composition_has_explicit_optional_ingestion_input():
     path = ROOT / "backend/app/core/composition/composition_root.py"
     tree = ast.parse(path.read_text(encoding="utf-8"))
     calls = [n for n in ast.walk(tree) if isinstance(n, ast.Call)
              and isinstance(n.func, ast.Name) and n.func.id == "ApplicationFacade"]
     assert len(calls) == 1 and not calls[0].args
     assert [(k.arg, ast.unparse(k.value)) for k in calls[0].keywords] == [
-        ("gateway", "integration_gateway")]
+        ("gateway", "integration_gateway"),
+        ("parsed_document_knowledge_ingestion_service", "parsed_document_knowledge_ingestion_service")]
+    root = next(n for n in tree.body if isinstance(n, ast.ClassDef) and n.name == "CompositionRoot")
+    build = next(n for n in root.body if isinstance(n, ast.FunctionDef) and n.name == "build")
+    wrapper = next(n for n in tree.body if isinstance(n, ast.FunctionDef)
+                   and n.name == "build_platform_composition")
+    for factory in (build, wrapper):
+        assert [a.arg for a in factory.args.kwonlyargs] == ["parsed_document_knowledge_ingestion_service"]
+        assert ast.unparse(factory.args.kwonlyargs[0].annotation) == (
+            "ParsedDocumentKnowledgeIngestionApplicationService | None")
+        assert len(factory.args.kw_defaults) == 1
+        assert isinstance(factory.args.kw_defaults[0], ast.Constant)
+        assert factory.args.kw_defaults[0].value is None
+    forwards = [n for n in ast.walk(wrapper) if isinstance(n, ast.Call)
+                and ast.unparse(n.func) == "CompositionRoot.build"]
+    assert len(forwards) == 1 and not forwards[0].args
+    assert [(k.arg, ast.unparse(k.value)) for k in forwards[0].keywords] == [
+        ("plugin_registrations", "plugin_registrations"),
+        ("capability_availability_sources", "capability_availability_sources"),
+        ("mandatory_capability_policy", "mandatory_capability_policy"),
+        ("parsed_document_knowledge_ingestion_service", "parsed_document_knowledge_ingestion_service")]

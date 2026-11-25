@@ -35,6 +35,9 @@ from app.core.plugins.plugin_lifecycle_manager import (
 from app.core.runtime import Runtime
 from app.core.services.service_registry import ServiceRegistry
 from app.services.application_facade import ApplicationFacade
+from app.services.parsed_document_knowledge_ingestion_application_service import (
+    ParsedDocumentKnowledgeIngestionApplicationService,
+)
 from app.services.operational_transition_application_service import (
     OperationalTransitionApplicationService,
 )
@@ -79,7 +82,23 @@ class CompositionRoot:
             CapabilityAvailabilitySource
         ] = (),
         mandatory_capability_policy: MandatoryCapabilityPolicy | None = None,
+        *,
+        parsed_document_knowledge_ingestion_service: (
+            ParsedDocumentKnowledgeIngestionApplicationService | None
+        ) = None,
     ) -> PlatformComposition:
+        if (
+            parsed_document_knowledge_ingestion_service is not None
+            and not isinstance(
+                parsed_document_knowledge_ingestion_service,
+                ParsedDocumentKnowledgeIngestionApplicationService,
+            )
+        ):
+            raise TypeError(
+                "parsed_document_knowledge_ingestion_service must be a "
+                "ParsedDocumentKnowledgeIngestionApplicationService or None."
+            )
+
         container = ServiceContainer()
         configuration = ConfigurationProvider()
         logging = LoggingProvider()
@@ -141,6 +160,9 @@ class CompositionRoot:
         )
         application_facade = ApplicationFacade(
             gateway=integration_gateway,
+            parsed_document_knowledge_ingestion_service=(
+                parsed_document_knowledge_ingestion_service
+            ),
         )
 
         operational_transition_application_service = (
@@ -251,6 +273,10 @@ def build_platform_composition(
         CapabilityAvailabilitySource
     ] = (),
     mandatory_capability_policy: MandatoryCapabilityPolicy | None = None,
+    *,
+    parsed_document_knowledge_ingestion_service: (
+        ParsedDocumentKnowledgeIngestionApplicationService | None
+    ) = None,
 ) -> PlatformComposition:
     """Backward-compatible platform composition factory."""
 
@@ -258,4 +284,7 @@ def build_platform_composition(
         plugin_registrations=plugin_registrations,
         capability_availability_sources=capability_availability_sources,
         mandatory_capability_policy=mandatory_capability_policy,
+        parsed_document_knowledge_ingestion_service=(
+            parsed_document_knowledge_ingestion_service
+        ),
     )
