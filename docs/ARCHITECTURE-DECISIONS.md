@@ -25796,3 +25796,237 @@ No additional documentation-only entry record is required. Next: governed TDD te
 RFC-078/RFC-080/RFC-081/RFC-082/RFC-083 remain closed; accepted AD-069/AD-068/A1 remain byte-exact.
 Default HTTP mount: NONE. Default ingestion: NOT CONFIGURED.
 No schema/migration change, PostgreSQL deployment verification or production security claim.
+
+
+---
+
+# AD-070 Amendment A1 — Host AST Fingerprint Compatibility
+
+Status: ACCEPTED; effectiveness requires the complete amendment acceptance Git gate below.
+Related active workstream: RFC-084.
+Accepted AD-070 commit: `75d09f287e6c2a670ee1d4fe7e782010803aa8a2`.
+Original accepted AD-070 SHA-256: `9383fa0e14f0cd0f935f3e294bb9ad87fd566ebf182c62401b75a837c956db60`.
+Preserve that accepted block and all predecessor contracts/history byte-exact.
+RFC-078, RFC-080, RFC-081, RFC-082 and RFC-083 remain closed.
+
+## Evidence and the bounded incompatibility
+
+The v054 technical command stopped in ENTRY with blank error text, no reported
+started or completed writes, and no reported backup/log directory. No valid TDD red,
+focused green or new product-regression result was established by that attempt.
+
+The subsequent read-only v055 diagnostic reported Python 3.11.9, accepted HEAD and
+cached tracking at the commit above, the correct branch/index, exact saved bytes and
+Git modes for 462/462 tracked files, zero untracked files and no new candidate paths.
+The three governed baseline source fingerprints matched their reviewed values.
+That diagnostic did not run tests, import the application, change files or check the
+live remote. The last actual full baseline remains 1527 passed / Alembic 0005 from v053.
+
+For the unchanged approved host, raw source SHA-256 is
+`8bff3d357523e4ae56943992da6d109167c0ef8e43322270b92b071b0efa259d`.
+The default ast.dump on the actual Python 3.11.9 produced 6056 UTF-8 bytes and SHA-256
+`30f76d9ec9b4c54ba2af7a55bb7a491b5940df8614d8dbdadcb1a2bcc40c30a1`.
+That interpreter does not provide the show_empty option. The accepted frozen digest
+`0f63323383e0f57d70c1ffd1617dedb495dcf613e0e753a9a2394bb220947eb7`
+corresponds to the 6120-byte Python 3.12 representation of exactly the same source.
+The four function definitions acquire an empty type_params field in that schema,
+accounting for the 64-byte difference. Independent local Python 3.13 inspection also
+showed that its default dump omits empty lists; show_empty=True restores the 3.12 dump.
+Those assistant-side checks are not additional Mac/product test results.
+
+This confirms that the literal accepted default-dump formula cannot pass on the
+verified project interpreter despite exact approved source bytes. It identifies a
+deterministic entry-check incompatibility, not a production behavior defect or proof
+that the earlier blank exception had no other possible cause.
+
+AD-070 explicitly freezes both the digest and its default-dump formula. A silent
+change of that formula would not follow its literal requirement. This separately
+governed amendment clarifies only the AST representation; it does not replace the
+digest, weaken structural preservation, expand technical scope or change the runtime.
+
+## Canonical representation and immutable expectation
+
+When this amendment becomes accepted and effective, interpret the existing frozen
+host digest as the SHA-256 of the following explicit Python 3.12-compatible AST dump.
+Use the same normalization in the technical driver's original-host precheck and in
+the new architecture test's structural comparisons and final inverse-delta digest.
+The expected digest remains exactly
+`0f63323383e0f57d70c1ffd1617dedb495dcf613e0e753a9a2394bb220947eb7`.
+Do not accept version-specific alternative digests or derive an expected digest from
+current working-tree source. Keep every original raw-source pin and byte-exact inverse.
+
+Operate on a deep copy of the parsed AST; do not alter the input tree or global AST
+class definitions. Validate the following closed node schema and ordered fields.
+This is the reviewed host/authorized-delta schema, not permission to add those nodes
+to the host outside the existing strict structural checks.
+
+```text
+And, BitOr, Is, IsNot, Load, Not, NotEq, Or, Store: ()
+Assign: (targets, value, type_comment)
+AsyncFunctionDef: (name, args, body, decorator_list, returns, type_comment, type_params)
+Attribute: (value, attr, ctx)
+BinOp: (left, op, right)
+BoolOp: (op, values)
+Call: (func, args, keywords)
+Compare: (left, ops, comparators)
+Constant: (value, kind)
+Expr: (value)
+FunctionDef: (name, args, body, decorator_list, returns, type_comment, type_params)
+If: (test, body, orelse)
+ImportFrom: (module, names, level)
+Module: (body, type_ignores)
+Name: (id, ctx)
+Raise: (exc, cause)
+Return: (value)
+Subscript: (value, slice, ctx)
+Try: (body, handlers, orelse, finalbody)
+UnaryOp: (op, operand)
+Yield: (value)
+alias: (name, asname)
+arg: (arg, annotation, type_comment)
+arguments: (posonlyargs, args, vararg, kwonlyargs, kw_defaults, kwarg, defaults)
+keyword: (arg, value)
+```
+
+Reject unknown node classes, changed field order and any added or missing schema
+field, except the precise legacy exception below. Reject unknown input-instance attributes
+even when their values are empty or None. Only lineno, col_offset, end_lineno and
+end_col_offset may be ignored as source-location metadata. Do not silently discard
+an unrecognized semantic field, unknown node or new language feature.
+
+The sole legacy schema exception is FunctionDef or AsyncFunctionDef with exactly the
+listed field tuple minus its final type_params field. After validating the input,
+append that field in per-node schema metadata on the copy only. Supply [] only when
+its value is absent; if a value is already present,
+preserve it and require it to be a list. Never replace nonempty type parameters with
+an empty list. Validate all preserved child nodes under the same closed schema.
+On a native schema already containing type_params, require its list value and retain
+it exactly. No missing field on another node receives a synthesized default.
+
+Serialize the validated copy with ast.dump(include_attributes=False). If this installed
+ast.dump explicitly supports show_empty, pass show_empty=True; otherwise use the
+legacy signature, which already renders empty lists. Do not override annotate_fields,
+indent, or any other formatting default. This retains native handling of optional
+None fields while preserving required None values and None entries in lists; it is
+not a generic rule to remove every None. Unknown future schemas fail validation, and
+any future formatter output differing from the frozen digest fails the digest check.
+No unsupported interpreter is silently treated as equivalent.
+
+## Structural checks and exact repair scope
+
+All AD-070 structural delta obligations remain unchanged. Remove only the exact three
+authorized imports, the two optional arguments, the exact preassembly pair/type checks
+and the single conditional preparation-router mount, after validating their complete
+shape, purpose and arguments. Hash the entire remainder against the immutable digest.
+Preserve all existing mutation cases and checks for lifecycle, imports/dependencies,
+runtime writes, original/default routes, ownership, pair/type validation and identity.
+
+The technical file list remains three existing files plus four new files, exactly as
+AD-070 already permits. Relative to the seven assistant-prepared v054 candidates,
+only the not-yet-written new file tests/api/test_document_preparation_architecture.py
+needs the bounded normalization helper/schema and additional compatibility tests.
+Preserve its current frozen v054 source as historical evidence (SHA-256
+`3411cf59c28fe11a43b93f856c102640f1db399d07156a88e31821d2744a0885`).
+Keep every unrelated assertion, preservation mapping, import-boundary rule and test.
+The other six prepared candidate sources remain byte-exact. The external authoring
+driver receives the same normalizer and informative errors without widening writes.
+
+The three existing-file baselines remain:
+- backend/app/api/document_knowledge_ingestion_host.py:
+  `8bff3d357523e4ae56943992da6d109167c0ef8e43322270b92b071b0efa259d`.
+- tests/api/test_document_knowledge_ingestion_host.py:
+  `9b2fa529c4cc40dc320c7503fcf7a1c218382e66b7ef5275e3d39c780a7cfc3e`.
+- tests/api/test_document_knowledge_ingestion_host_architecture.py:
+  `57e912ef37a8fbf735fd5ded15e2bdcdddc4c8ed4df67c318ed9613c8ed83189`.
+
+Do not add a production module, existing guard adaptation, dependency, configuration,
+migration or new technical file. Do not modify the six unaffected candidates, accepted
+original contract, Python installation, virtual environment or any predecessor source.
+No skip/xfail, weakened inverse, broad removal rule or runtime hash allowlist is allowed.
+
+## Draft, acceptance and technical entry are separate gates
+
+Creating this draft changes only the established five documents. It does not authorize
+or perform a normalizer repair, candidate write, test run, acceptance commit or push.
+Preserve the original AD-070/AD-069/AD-068/A1 blocks, all earlier evidence and all seven
+prepared v054 candidates. RFC-084 remains the already selected active workstream.
+
+After exact amendment review, a separate docs-only acceptance gate must preserve the
+original accepted blocks, verify the same approved production/test tree, and publish
+exactly the five documents with parent 75d09f287e6c2a670ee1d4fe7e782010803aa8a2.
+Record actual amendment/diff hashes and local/tracking/live-remote identity, 0/0 and
+clean saved state. A draft or local preparation receipt is not durable acceptance.
+Report tests as retained unless actually rerun; no new total follows from this draft.
+Only successful amendment acceptance and Git durability authorize the bounded repair
+and a newly prepared technical-entry command pinned to the actual amendment commit.
+
+Before that later command writes candidates, verify the native approved-host raw hash,
+canonical normalized digest and three baseline source pins. Add tests for native and
+explicitly modeled legacy schemas, exact expected digest, input-tree preservation,
+unknown node/field rejection including empty or None extras, nonempty type parameters
+not erased, preserved None/list semantics, and the existing inverse-delta mutations.
+Label modeled or assistant-side interpreter evidence honestly; test the actual project
+Python 3.11.9 during the eventual local technical gate.
+
+No valid v054 TDD red exists to retain. The later command must establish the two real
+missing-router/optional-host-input RED cases from the still-clean approved source tree,
+then author the seven candidates and run the accepted focused, predecessor, impacted,
+full-regression and Alembic gates. Record actual counts; the retained baseline is 1527.
+Do not rerun the incompatible frozen v054 command or claim that draft creation repairs
+the candidate. Technical review, technical commit/push and compact closure remain
+separate subsequent gates. Default HTTP/ingestion and all operational limits remain.
+
+
+---
+
+## RFC-084 — AD-070 A1 AST normalization amendment proposal
+
+Status: PROPOSED / REVIEW PENDING. AD-070 remains accepted and RFC-084 remains selected.
+Technical resumption is paused pending review and separate acceptance of this narrow A1.
+Accepted baseline: 75d09f287e6c2a670ee1d4fe7e782010803aa8a2. The v054 driver stopped at ENTRY with no writes reported.
+The completed v055 read-only diagnostic reports Python 3.11.9, all 462 saved tracked files
+and Git modes exact, index/HEAD/branch/cached tracking stable, no untracked or candidate paths.
+Approved host bytes are unchanged. Its interpreter-dependent AST dump is 6056 bytes with
+SHA-256 30f76d9ec9b4c54ba2af7a55bb7a491b5940df8614d8dbdadcb1a2bcc40c30a1.
+A1 proposes explicit cross-version normalization while preserving the original frozen
+AST digest 0f63323383e0f57d70c1ffd1617dedb495dcf613e0e753a9a2394bb220947eb7.
+A1 draft SHA-256: f5d7a87f396d928d3ee66a25af610ffcf67a25776232041108afdf17bfabee9e. The exact original AD-070 and predecessor blocks remain intact.
+The seven-file technical scope and application behavior do not expand. No source, test,
+guard, interpreter, dependency or configuration change is performed by this draft.
+The previous exception type was not captured; the incompatible assertion is reproducible
+from the observed original bytes and AST digest. No malicious file or source damage is inferred.
+Test baseline 1527 and Alembic 0005 are retained from v053, not rerun here.
+No application import, network, staging, commit or push is performed. No technical PASS is claimed.
+Next: review the exact five-document A1 draft, then separate acceptance and governed TDD resumption.
+Default HTTP mount: NONE. Default ingestion: NOT CONFIGURED. PostgreSQL deployment: NOT VERIFIED.
+RFC-078/RFC-080/RFC-081/RFC-082/RFC-083 remain closed. Other copies and recovery backups are untouched.
+
+
+---
+
+## RFC-084 — AD-070 A1 formal acceptance gate
+
+Amendment review: PASS. AD-070 A1 accepted subject to its complete amendment Git gate.
+Parent baseline: 75d09f287e6c2a670ee1d4fe7e782010803aa8a2. RFC-084 remains the selected active workstream.
+Reviewed A1 draft SHA-256: f5d7a87f396d928d3ee66a25af610ffcf67a25776232041108afdf17bfabee9e.
+Accepted A1 SHA-256: 5f9a7c991c68e488f6ef96bfac0de42df97d2866a54227b0423ea2ac487e610a.
+Only the A1 status line changes; its normalization, immutable digest, structural
+constraints, repair limits and separate completion gates remain substantively identical.
+Original accepted AD-070 SHA-256: 9383fa0e14f0cd0f935f3e294bb9ad87fd566ebf182c62401b75a837c956db60.
+The original AD-070, AD-069, AD-068 and its A1 remain byte-exact historical contracts.
+The fixed host AST digest remains 0f63323383e0f57d70c1ffd1617dedb495dcf613e0e753a9a2394bb220947eb7.
+This acceptance changes exactly five documents. No source, test, guard, interpreter,
+dependency or configuration is changed, and no technical candidate is written here.
+Full regression 1527 and Alembic 0005 are retained from the actual v053 gate;
+neither product tests nor Alembic is rerun by this amendment acceptance gate.
+Commit exactly these five documents with the parent above, then verify local,
+tracking and live-remote identity, ahead/behind 0/0 and a clean saved source tree.
+Only successful completion and Git durability make A1 effective and authorize
+the bounded normalization repair and a new technical-entry command at that commit.
+The seven-file technical scope is unchanged. Preserve the six unaffected v054
+candidate identities and the original new-architecture candidate as historical evidence.
+No valid v054 TDD red exists. Fresh missing-router/host-input RED, accepted technical
+gates, technical review/publication and compact closure still follow separately.
+Earlier A1 proposal records remain historical; this gate does not claim technical PASS.
+Default HTTP mount: NONE. Default ingestion: NOT CONFIGURED.
+RFC-078/RFC-080/RFC-081/RFC-082/RFC-083 remain closed. PostgreSQL deployment: NOT VERIFIED.

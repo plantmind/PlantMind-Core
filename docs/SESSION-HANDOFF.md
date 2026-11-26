@@ -7,7 +7,7 @@
 | Project | PlantMind PM-001 |
 | Branch | `feature/engineering-platform` |
 | Last Fully Closed RFC | RFC-083 — Explicit Opt-In Document Knowledge Ingestion HTTP Host — Fully Closed and Source-of-Truth Reconciled |
-| Active RFC | RFC-084 — AD-070 accepted; implementation requires successful Git gate |
+| Active RFC | RFC-084 — AD-070 accepted; A1 accepted; technical entry requires successful amendment Git gate |
 | Selected Architecture Workstream | RFC-084 — Opt-In HTTP Document Registration and Content Establishment |
 | Proposed Successor RFC | None — RFC-084 selected; no later successor selected |
 | RFC-078 Predecessor Baseline | `36832df98433231095e257092f3b8815d1cfa573` — RFC-077 terminal closure |
@@ -70,7 +70,7 @@
 | RFC-075 State | Fully Closed and Source-of-Truth Reconciled |
 | RFC-075 Architecture Decision Candidate | AD-061 — Accepted / Committed / Pushed / Exact Identity Verified |
 | RFC-075 Architecture Contract State | Accepted / Architecture Review Passed / Committed / Pushed / Exact Identity Verified |
-| Architecture Decision | AD-070 — Accepted for RFC-084; external Git durability gate required |
+| Architecture Decision | AD-070 — Accepted / Git Durable; A1 accepted subject to amendment Git gate |
 | RFC-074 Selection State | Durable — Committed, Pushed and Exact Identity Verified |
 | RFC-074 Selection Commit | `b5d1e7fe434378ac7ee90912ac40932d5c5451eb` — committed / pushed / exact identity verified |
 | RFC-074 Architecture Contract State | Accepted / Architecture Review Passed / Committed / Pushed / Exact Identity Verified |
@@ -140,7 +140,7 @@
 | Alembic Head | `0005` |
 | Authoritative Environment | `PlantMind-Core/.venv` |
 | RFC-069 State | Fully Closed and Source-of-Truth Reconciled |
-| Successor RFC Selection | RFC-084 selected under AD-070; external Git gate required |
+| Successor RFC Selection | RFC-084 selected under AD-070 and A1; amendment Git gate required |
 ## Recent Engineering Sequence
 
 - RFC-025 — Core Plugin Framework
@@ -6883,3 +6883,58 @@ No additional documentation-only entry record is required. Next: governed TDD te
 RFC-078/RFC-080/RFC-081/RFC-082/RFC-083 remain closed; accepted AD-069/AD-068/A1 remain byte-exact.
 Default HTTP mount: NONE. Default ingestion: NOT CONFIGURED.
 No schema/migration change, PostgreSQL deployment verification or production security claim.
+
+
+---
+
+## RFC-084 — AD-070 A1 AST normalization amendment proposal
+
+Status: PROPOSED / REVIEW PENDING. AD-070 remains accepted and RFC-084 remains selected.
+Technical resumption is paused pending review and separate acceptance of this narrow A1.
+Accepted baseline: 75d09f287e6c2a670ee1d4fe7e782010803aa8a2. The v054 driver stopped at ENTRY with no writes reported.
+The completed v055 read-only diagnostic reports Python 3.11.9, all 462 saved tracked files
+and Git modes exact, index/HEAD/branch/cached tracking stable, no untracked or candidate paths.
+Approved host bytes are unchanged. Its interpreter-dependent AST dump is 6056 bytes with
+SHA-256 30f76d9ec9b4c54ba2af7a55bb7a491b5940df8614d8dbdadcb1a2bcc40c30a1.
+A1 proposes explicit cross-version normalization while preserving the original frozen
+AST digest 0f63323383e0f57d70c1ffd1617dedb495dcf613e0e753a9a2394bb220947eb7.
+A1 draft SHA-256: f5d7a87f396d928d3ee66a25af610ffcf67a25776232041108afdf17bfabee9e. The exact original AD-070 and predecessor blocks remain intact.
+The seven-file technical scope and application behavior do not expand. No source, test,
+guard, interpreter, dependency or configuration change is performed by this draft.
+The previous exception type was not captured; the incompatible assertion is reproducible
+from the observed original bytes and AST digest. No malicious file or source damage is inferred.
+Test baseline 1527 and Alembic 0005 are retained from v053, not rerun here.
+No application import, network, staging, commit or push is performed. No technical PASS is claimed.
+Next: review the exact five-document A1 draft, then separate acceptance and governed TDD resumption.
+Default HTTP mount: NONE. Default ingestion: NOT CONFIGURED. PostgreSQL deployment: NOT VERIFIED.
+RFC-078/RFC-080/RFC-081/RFC-082/RFC-083 remain closed. Other copies and recovery backups are untouched.
+
+
+---
+
+## RFC-084 — AD-070 A1 formal acceptance gate
+
+Amendment review: PASS. AD-070 A1 accepted subject to its complete amendment Git gate.
+Parent baseline: 75d09f287e6c2a670ee1d4fe7e782010803aa8a2. RFC-084 remains the selected active workstream.
+Reviewed A1 draft SHA-256: f5d7a87f396d928d3ee66a25af610ffcf67a25776232041108afdf17bfabee9e.
+Accepted A1 SHA-256: 5f9a7c991c68e488f6ef96bfac0de42df97d2866a54227b0423ea2ac487e610a.
+Only the A1 status line changes; its normalization, immutable digest, structural
+constraints, repair limits and separate completion gates remain substantively identical.
+Original accepted AD-070 SHA-256: 9383fa0e14f0cd0f935f3e294bb9ad87fd566ebf182c62401b75a837c956db60.
+The original AD-070, AD-069, AD-068 and its A1 remain byte-exact historical contracts.
+The fixed host AST digest remains 0f63323383e0f57d70c1ffd1617dedb495dcf613e0e753a9a2394bb220947eb7.
+This acceptance changes exactly five documents. No source, test, guard, interpreter,
+dependency or configuration is changed, and no technical candidate is written here.
+Full regression 1527 and Alembic 0005 are retained from the actual v053 gate;
+neither product tests nor Alembic is rerun by this amendment acceptance gate.
+Commit exactly these five documents with the parent above, then verify local,
+tracking and live-remote identity, ahead/behind 0/0 and a clean saved source tree.
+Only successful completion and Git durability make A1 effective and authorize
+the bounded normalization repair and a new technical-entry command at that commit.
+The seven-file technical scope is unchanged. Preserve the six unaffected v054
+candidate identities and the original new-architecture candidate as historical evidence.
+No valid v054 TDD red exists. Fresh missing-router/host-input RED, accepted technical
+gates, technical review/publication and compact closure still follow separately.
+Earlier A1 proposal records remain historical; this gate does not claim technical PASS.
+Default HTTP mount: NONE. Default ingestion: NOT CONFIGURED.
+RFC-078/RFC-080/RFC-081/RFC-082/RFC-083 remain closed. PostgreSQL deployment: NOT VERIFIED.
