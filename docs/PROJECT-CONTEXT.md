@@ -9,10 +9,10 @@
 | Status | Active Development |
 | Deployment Model | On-Premise |
 | Development Branch | `feature/engineering-platform` |
-| Last Fully Closed RFC | RFC-082 — Opt-In Document Knowledge Ingestion in Canonical Platform Composition — Fully Closed and Source-of-Truth Reconciled |
-| Active RFC | RFC-083 — AD-069 accepted; implementation requires successful Git gate |
-| Selected Architecture Workstream | RFC-083 — Explicit Opt-In Document Knowledge Ingestion HTTP Host |
-| Proposed Successor RFC | None — RFC-083 selected; no later successor selected |
+| Last Fully Closed RFC | RFC-083 — Explicit Opt-In Document Knowledge Ingestion HTTP Host — Fully Closed and Source-of-Truth Reconciled |
+| Active RFC | None — RFC-083 completed; successor not selected |
+| Selected Architecture Workstream | None — RFC-083 completed |
+| Proposed Successor RFC | None — successor selection not started |
 | RFC-078 Predecessor Baseline | `36832df98433231095e257092f3b8815d1cfa573` — RFC-077 terminal closure |
 | RFC-078 Selection State | Durable — Accepted Contract Committed / Pushed / Exact Identity Verified |
 | RFC-078 Architecture Decision Candidate | AD-064 — Accepted / Committed / Pushed / Exact Identity Verified; Amendment A1 — Accepted / Committed / Pushed / Exact Identity Verified |
@@ -74,7 +74,7 @@
 | RFC-075 Architecture Contract State | Accepted / Architecture Review Passed / Committed / Pushed / Exact Identity Verified |
 | RFC-069 Selection Commit | `5d7794352029576e0b62c2ac8cbfa248fe11961d` |
 | RFC-070 Selection Commit | `13cfccc08d8c0a3b891990d38edaf9fc48874a5e` |
-| Architecture Decision | AD-069 — Accepted for RFC-083; external Git durability gate required |
+| Architecture Decision | AD-069 — Accepted / Git Durable; RFC-083 implementation complete |
 | RFC-074 Selection State | Durable — Committed, Pushed and Exact Identity Verified |
 | RFC-074 Selection Commit | `b5d1e7fe434378ac7ee90912ac40932d5c5451eb` — committed / pushed / exact identity verified |
 | RFC-074 Architecture Contract State | Accepted / Architecture Review Passed / Committed / Pushed / Exact Identity Verified |
@@ -118,7 +118,7 @@
 | RFC-069 Engineering Closure Commit | `63790de5312c69c709e2249b56e91995a00426b6` |
 | RFC-069 Post-Closure Reconciliation Commit | `231e0cc66862c797e299fdb71ff20da8a39e8ae2` |
 | RFC-069 Reconciliation Verification | PASS — Committed, Pushed, Exact Local / Tracking / Remote Identity Verified |
-| Test Baseline | 1459 passed |
+| Test Baseline | 1527 passed |
 | RFC-070 Engineering Closure Commit | `ab4438b02a8f34f83b462e3d8a86b4b5ab5d1092` |
 | RFC-070 Engineering Closure State | Complete, Pushed and Verified |
 | RFC-070 Post-Closure Reconciliation | Complete, Pushed and Verified |
@@ -7591,6 +7591,9 @@ Next: draft review, then separate formal selection and acceptance Git gate.
 
 ---
 
+> Historical selection and acceptance checkpoint; its Git gate and technical implementation
+> completed, as recorded in the compact closure below.
+
 ## RFC-083 — Formal selection and AD-069 acceptance
 
 Architecture review: PASS. RFC-083 selected; AD-069 accepted, subject to the complete Git gate.
@@ -7611,3 +7614,51 @@ No additional documentation-only entry record is required. Next: governed TDD te
 RFC-078/RFC-080/RFC-081/RFC-082 remain closed; accepted AD-068 and A1 remain byte-exact.
 Default HTTP mount: NONE. Default ingestion: NOT CONFIGURED.
 No dependency/schema change, PostgreSQL deployment verification or production security claim.
+
+
+---
+
+## RFC-083 — Compact engineering closure and source-of-truth reconciliation
+
+Classification: completion evidence under accepted AD-069; no new architecture decision.
+AD-069 accepted and Git durable at `151632413ca61c36821abe682b7f25ad4c401af4`; SHA-256 `bc6e4b85f044d099796604236d281cfa6b2b18a619bc8639db57dbfdaf00e672`.
+Reviewed technical implementation is Git durable at `eea79298a191ee29b31394984bb1f329d2817664`,
+parent `151632413ca61c36821abe682b7f25ad4c401af4`; technical diff SHA-256 `bbc29eb1460a4dff51169f6a15085b5e95c5408df545f272d326b74b77b0dde4`.
+Accepted AD-069, AD-068 and A1 contract blocks remain byte-exact.
+Delivered: create_app(*, platform: PlatformComposition) in the separate opt-in HTTP host.
+It requires the canonical platform type before assembly, accepts canonical subclasses
+without truth testing, and creates a fresh FastAPI app using the exact supplied components.
+The existing ingestion and operational-transition routers share the supplied facade/Runtime
+and service identities. Existing admission exemptions, live status/health and metadata remain.
+Assembly runs no lifecycle or business use case. The managed lifespan calls bootstrap startup
+before its active body and shutdown once after successful startup, including exceptional exit.
+Startup failure adds no shutdown; body/shutdown failures retain the accepted Python propagation.
+Bootstrap owns admission/readiness. Caller-owned ingestion resources, engines, sessions and
+filesystems remain caller-owned and usable after host shutdown; no graph or lifecycle sharing
+registry is introduced. One supplied platform serves one active host lifespan at a time.
+Unconfigured supplied platforms retain the existing not-configured transport response.
+Technical scope: four new files only, one host module and three test files. All 458 previously
+tracked files remained byte/Git-mode exact, including main, package initializers and guards.
+No existing production/test/guard adaptation or documentation change occurred in that commit.
+TDD red for the missing host module is retained and was not replayed. The initial focused
+65-pass/3-failure checkpoint is historical: the test expectations compared JSON to HealthStatus.
+The two new test files were corrected with jsonable_encoder, preserving full-field equality;
+the host and architecture candidate stayed byte-exact. No contract amendment was required.
+Successful retained evidence: RFC-083 focused 68; RFC-078 guard 20; governed predecessor
+guards 9; RFC-081 focused 84; RFC-082 focused 98; existing API 27; impacted host/predecessors 80;
+full regression 1527 passed; Alembic head 0005. Groups overlap and are included in the full count.
+The technical publisher verified those successful witnesses against the exact committed source.
+This five-document closure revalidates retained evidence and protected source; it does not rerun
+pytest or Alembic. Current test baseline is 1527; historical 1459 evidence remains unchanged.
+Managed integration evidence uses both canonical composition factories and caller-owned temporary
+SQLite/filesystem resources, persisted Knowledge/lineage, closed-admission/invalid-input no-write
+behavior, independent content-state cases, rollback and committed/unknown outcome semantics.
+Default HTTP mount: NONE. Default ingestion: NOT CONFIGURED. No dependency/schema/migration change.
+No server or deployment, PostgreSQL verification, production authentication/RBAC or security claim.
+RFC-078/RFC-080/RFC-081/RFC-082 remain closed. Recovery backups and other project copies are untouched.
+RFC-083 state: FULLY_CLOSED_AND_SOURCE_OF_TRUTH_RECONCILED. Active RFC: NONE.
+Selected successor: NONE. Next: separate successor-workstream selection.
+This terminal declaration takes effect only after the exact five-document commit/push gate
+verifies local HEAD, tracking and live remote identity, ahead/behind 0/0, and a clean saved tree.
+Its future commit hash is intentionally not predicted. No additional RFC-083 closure or
+reconciliation record is required after that gate succeeds.
