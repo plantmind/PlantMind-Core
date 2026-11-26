@@ -25379,3 +25379,420 @@ This terminal declaration takes effect only after the exact five-document commit
 verifies local HEAD, tracking and live remote identity, ahead/behind 0/0, and a clean saved tree.
 Its future commit hash is intentionally not predicted. No additional RFC-083 closure or
 reconciliation record is required after that gate succeeds.
+
+
+---
+
+# AD-070 — Opt-In HTTP Document Registration and Content Establishment
+
+Status: ACCEPTED; effectiveness requires the complete selection/acceptance Git gate below.
+Related selected workstream: RFC-084; selection takes effect only when that gate succeeds.
+Baseline: `f9a55b55f2aa5fe8800e20f4f3d5b3c2d6ed991f`.
+RFC-083 remains fully closed. Technical implementation entry is authorized only after successful selection/acceptance verification and Git durability.
+
+## Evidence and integrated delivery
+
+RFC-083 supplies an explicit host for a caller-built platform. Its reviewed local
+integration journey registers a document and establishes its content in fixture
+setup before calling the accepted knowledge-ingestion HTTP endpoint. The v051
+static catalogue found direct registration/establishment service references only
+in those two production service modules; this is static evidence, not a proof
+about dynamic imports, external applications or deployed route exposure.
+
+Use the existing canonical services to make that preparation available through
+the same opt-in host. Deliver registration, content establishment, host assembly,
+containment and a complete local HTTP journey as one bounded workstream. Preserve
+the existing knowledge endpoint and its facade/composition/lifecycle boundaries.
+Do not introduce another business orchestrator or persistence composition owner.
+
+Reviewed source report: PLANTMIND-POST-RFC083-CONTRACT-INPUTS-v051.txt,
+SHA-256 `6c9e18ef49e3bfed22f79d288f1423ad2996ed63424f25322ab84dfcdde0a826`.
+The full registration and establishment service sources and canonical domain/port
+contracts were read as data. The preceding v050 report remains supporting evidence.
+Current retained baseline is 1527 passed / Alembic 0005; neither source export reran
+tests or Alembic, and neither verified the live remote again.
+
+## Two explicit operations and their persistence meaning
+
+Expose POST /documents for registration, followed by PUT /documents/{document_id}/content
+for content establishment. Knowledge ingestion remains the existing separate
+POST /documents/{document_id}/knowledge operation and is invoked only by an explicit
+caller request. The delivery is integrated, but the three operations are not one
+transaction and are not automatically chained by any endpoint or lifecycle hook.
+
+Registration generates a new EntityId and calls the canonical repository once.
+Equal source_reference values do not deduplicate registration. A successful
+registration response supplies the identity for subsequent content requests. A lost
+response or unexpected registration failure does not prove that registration did
+not persist; the adapter must not invent a recoverable identity, retry registration,
+claim rollback, or introduce an idempotency-key/lookup protocol.
+
+Content establishment preserves the existing payload-first state machine. A later
+descriptor failure can leave a payload; a postcommit/cleanup failure can occur after
+descriptor persistence. Exact content repeated explicitly against a known identity
+can verify a complete state or recover a payload-only state according to the existing
+service. Descriptor-only state is an integrity failure; differing canonical content
+is a conflict. No layer added here deletes, replaces, compensates, repairs corrupted
+content, or automatically repeats a service call. HTTP PUT does not grant overwrite
+semantics or exactly-once delivery. Earlier successful operations survive later
+failures according to their existing contracts.
+
+## New router and direct application-service boundary
+
+Add backend/app/api/document_preparation.py. Its only public factory is:
+create_router(*, document_registration_service: EnterpriseDocumentRegistrationApplicationService,
+document_content_establishment_service: DocumentContentEstablishmentApplicationService,
+runtime: Runtime) -> APIRouter.
+
+All three inputs are required and keyword-only. Validate canonical instance types
+before constructing the router; accept canonical subclasses and falsey instances
+without truth-value substitution. Preserve each supplied instance exactly. Importing
+the module or constructing the router performs no use case, Runtime mutation or
+resource acquisition. Do not construct either application service or an adapter.
+
+The router translates HTTP inputs and delegates register/establish directly to these
+existing public application services. This follows the existing operational-transition
+router's direct application-service injection pattern. It is not a new route around
+the parsed/lower-ingestion containment rules: the new router imports or calls neither
+ingestion service, parser, coordinator, engine, repository implementation nor filesystem
+store. It uses no private facade fields. ApplicationFacade and both canonical platform
+factories remain byte-preserved; no new facade command or root dependency is needed.
+
+Permitted nonstdlib modules in the new router are fastapi, pydantic,
+starlette.concurrency, app.core.runtime, app.domain.base, app.domain.document,
+app.domain.document_content, app.document.repository (the duplicate error only),
+and the two canonical registration/establishment application-service modules.
+Standard-library HTTP parsing, JSON, UUID, dataclass, hashing and in-memory stream
+utilities may support transport validation/serialization; none may open user paths,
+fetch URLs, inspect environment configuration or own persistent resources. Public
+HTTP request/response models are transport schemas, not duplicate domain entities.
+
+## Admission, bounded bodies and dispatch
+
+Both new operations first inspect the same live supplied Runtime. Admission observed
+closed at this initial check returns the existing 503 body exactly:
+{"detail": "PlantMind is not accepting operational requests."}
+That initial rejection consumes no body, validates no input and calls no application
+service. This precedence applies to the standalone router as well as the full host,
+including malformed JSON, invalid identifiers, bad headers and oversized input.
+The existing host middleware remains unchanged and retains its default exemptions.
+
+Use explicit Request handling so framework body/path validation cannot precede this
+router admission check. Parse metadata JSON and canonical IDs only after that check.
+Read body chunks incrementally and check the accumulated size before retaining a
+chunk that would exceed the applicable limit. Do not use an unbounded body(), an
+UploadFile/multipart parser, base64 JSON content or a temporary upload file.
+
+Set transport limits to 65,536 bytes for metadata JSON and 8,388,608 bytes for content.
+These are fixed endpoint limits, not new domain limits or configurable platform policy.
+Exactly-at-limit input is allowed; larger input receives 413 before a use case call.
+Enforce actual received bytes regardless of Content-Length. Content-Encoding is absent
+or exactly one header with the sole case-insensitive token identity; reject nonidentity,
+duplicate or combined encodings with 415. Do not decompress or reinterpret content. The
+bounded-buffer guarantee concerns bytes retained by this adapter, not ASGI server,
+network or framework buffering. Do not claim an entire-server memory limit.
+
+The HTTP adapter consumes the complete permitted body before dispatch. Blocking
+register/establish work runs through the installed Starlette threadpool facility,
+without blocking the event loop or adding a worker system. After body/input validation,
+the dispatched synchronous helper checks the same live admission again immediately
+before the service call. A closed second check returns the unchanged 503 without a
+service call; keep it outside the unknown-outcome service-error translation. These
+checks are point-in-time decisions, not an atomic admission lease or in-flight draining
+protocol; they cannot forbid a state change immediately after a successful check.
+Cancellation/disconnect
+before dispatch produces no application call. Once dispatched, cancellation is not
+proof of rollback or cancellation of a blocking write; do not retry or compensate.
+
+For establishment, create a BytesIO owned by the HTTP operation from the exact body
+bytes. The dispatched synchronous helper owns and closes that stream in a finally
+or context-manager scope, including success, service failure and result-validation
+failure. It starts reading at byte zero. Closing the HTTP-owned stream must not close
+caller-owned services, stores, engines, sessions, transactions or filesystem roots.
+
+## POST /documents
+
+Require a JSON object with exactly four required strict string fields:
+document_type, title, source_type, source_reference. Forbid additional fields and
+coercion from booleans/numbers/null/containers. Require nonempty values after stripping
+outer whitespace. Accept application/json, optionally with charset=utf-8; no alternate
+charset, ambiguous duplicate Content-Type, multipart or arbitrary media type is
+accepted. Treat invalid UTF-8, malformed JSON and duplicate JSON object keys as invalid
+input. Classifications remain open strings; add no enum or source-type allowlist.
+
+Before delegation, validate classifications/source through the existing DocumentType,
+DocumentSourceType and DocumentSource contracts, plus the strict nonempty stripped
+title rule above. This validation generates no identity and performs no persistence.
+Construct EnterpriseDocumentRegistrationRequest and call register exactly once.
+The canonical domain/service retains normalization of classifications and source/title
+values. source_reference is opaque text; the adapter never reads it as a path or URL.
+The caller does not supply an EntityId, digest, byte length, storage location or content
+in this request. Registration does not call establishment or knowledge ingestion.
+
+Return 201 with exactly these flat fields from the returned canonical EnterpriseDocument:
+document_id, document_type, title, source_type, source_reference.
+Serialize document_id as the canonical UUID string, classifications using their
+normalized .value values, and title/reference using canonical domain values.
+Return no Location header implying that an unimplemented retrieval route exists.
+
+Validate the result's canonical entity/ID/value-object surface, an actual UUID value
+inside EntityId, and returned metadata matching the canonical normalized requested
+values inside the operation boundary before returning success. A malformed or unserializable
+result is an unknown-outcome server failure; it is not a successful registration,
+a client validation error or evidence of rollback. Do not synthesize a document ID.
+
+## PUT /documents/{document_id}/content
+
+Parse document_id through the existing canonical EntityId contract after admission.
+Require exactly one Content-Type header whose value is accepted by the existing
+DocumentContentMediaType; its parameter-free normalized value is the requested
+canonical media type. Missing, duplicate, empty, parameterized or otherwise invalid
+values receive a fixed 422 response before dispatch. No default media type is inferred.
+
+The body is the original raw binary content. Preserve every byte, including zero-byte
+content, UTF-8 BOM, Arabic text, CRLF and nontext bytes. Do not decode, trim, normalize,
+parse, sniff or claim support for ingestion of every accepted storage media type.
+Existing parsing/ingestion rejects unsupported or invalid content independently.
+
+Call establish exactly once with DocumentContentEstablishmentRequest(document_id,
+media_type, source). Return 200 with exactly document_id, media_type, byte_length and
+digest, taken from the returned canonical DocumentContentDescriptor. digest is its
+normalized 64-character SHA-256 value, not a caller-supplied checksum. Use 200 for
+fresh establishment, exact verification and payload-only recovery, because this
+service does not report a reliable created-versus-existing discriminator.
+
+Validate the descriptor's canonical types/values, an actual UUID value inside EntityId,
+matching requested document_id and normalized media_type, and a nonnegative integer
+length excluding bool. Its byte_length and digest must match the exact received body
+length and independently measured SHA-256 before success; this is response integrity
+validation and does not replace the service's persisted-payload validation.
+A malformed/mismatching result is a 500 unknown-outcome failure. Do not inspect storage
+to infer whether a failed call committed or whether another call should be attempted.
+
+## Fixed error translation and outcome honesty
+
+Adapter-owned error bodies contain only {"detail": {"code": "<fixed code>"}}.
+Do not expose exception text, stack traces, request-body fragments, source paths or
+database details. Admission keeps its existing distinct body stated above. Status/health,
+operational-transition and knowledge-ingestion responses remain unchanged.
+
+- 413 DOCUMENT_REQUEST_TOO_LARGE: either endpoint's byte limit exceeded before dispatch.
+- 415 DOCUMENT_TRANSPORT_ENCODING_UNSUPPORTED: nonidentity Content-Encoding.
+- 415 DOCUMENT_REGISTRATION_MEDIA_TYPE_UNSUPPORTED: POST Content-Type is not the
+  accepted unambiguous UTF-8 JSON form.
+- 422 DOCUMENT_REGISTRATION_INVALID: POST input/shape/domain validation failure.
+- 422 DOCUMENT_ID_INVALID: content path is not a valid canonical EntityId.
+- 422 DOCUMENT_CONTENT_MEDIA_TYPE_INVALID: PUT Content-Type fails the rule above.
+- 409 DOCUMENT_IDENTITY_CONFLICT: EnterpriseDocumentAlreadyExistsError from register.
+- 404 DOCUMENT_NOT_FOUND: DocumentContentEstablishmentDocumentNotFoundError.
+- 409 DOCUMENT_CONTENT_CONFLICT: DocumentContentEstablishmentConflictError.
+- 409 DOCUMENT_CONTENT_INTEGRITY_FAILURE: DocumentContentEstablishmentIntegrityError.
+- 500 DOCUMENT_REGISTRATION_OUTCOME_UNKNOWN: unexpected registration exception or
+  invalid registration result after dispatch.
+- 500 DOCUMENT_CONTENT_OUTCOME_UNKNOWN: unexpected establishment exception or invalid
+  descriptor result after dispatch.
+
+Catch DomainException as the fixed registration 422 only during explicit canonical
+metadata validation before delegation. Canonical content ID/media validation likewise
+occurs before dispatch. Any DomainException, TypeError or ValueError raised inside
+register/establish or their result validation is an unexpected service failure with
+unknown outcome. Only the specifically named duplicate/not-found/conflict/integrity
+exceptions receive their named postdispatch mappings. A known error code does not
+assert that arbitrary caller-supplied collaborators performed no writes; content
+conflicts can occur after payload publication. Pre-dispatch rejection does establish
+that this adapter did not call either service.
+
+Apply the named application-error mappings only to exceptions from the service call.
+Handle result access, integrity checks and serialization in a separate validation
+scope: any failure there is unknown outcome, even if a malformed result raises an
+exception class that has a named service-error mapping.
+
+Keep dispatch/result-validation catches separate from request-read/transport-validation
+handling. Catch ordinary Exception only at the defined operation boundary. Never catch
+BaseException or suppress cancellation/lifecycle failures. Do not classify arbitrary
+runtime, repository, store, postpublication, postcommit or serialization failures as
+input errors or rollback. No result includes an invented committed=false, atomic,
+safe-to-repeat, deduplicated or automatically-recovered guarantee.
+
+## Extend the existing opt-in host, preserving its original branch
+
+Extend backend/app/api/document_knowledge_ingestion_host.py's create_app with two
+optional keyword-only inputs, in this order after required platform:
+document_registration_service: EnterpriseDocumentRegistrationApplicationService | None = None;
+document_content_establishment_service: DocumentContentEstablishmentApplicationService | None = None.
+
+Both omitted/None retains the existing factory branch and its route set exactly.
+Both supplied canonical service instances opts into one preparation router. Supplying
+only one, or any wrong type, raises TypeError before constructing FastAPI, any router,
+middleware or lifecycle. Check absence with is None; do not evaluate service truthiness.
+Validate and retain the same required canonical platform exactly as RFC-083 does.
+
+With the valid pair, mount create_router from app.api.document_preparation once,
+passing the exact pair and platform.runtime. Do not build/register/copy/replace
+services or mutate platform/container/facade fields. Preserve the existing ingestion
+and operational-transition router calls, metadata, status and health functions,
+middleware/exemptions and lifespan body exactly. Startup/shutdown/resource ownership
+and failure propagation remain those of AD-069. The new pair is not lifecycle-managed.
+
+The caller is responsible for supplying a coherent document repository/content store
+graph shared with its optional ingestion dependency. The host does not inspect private
+fields or repair a mismatched graph. An unconfigured ingestion facade retains the
+existing ingestion not-configured response; preparation does not activate it.
+
+This successor explicitly extends only AD-069's required-platform-only public surface,
+no-additional-dependency and no-extra-business-endpoint clauses for this paired opt-in
+branch. The accepted AD-069 text/hash remains intact as historical evidence. No predecessor
+RFC is reopened. All other AD-069 obligations and the original platform-only call remain.
+
+## Exact technical scope after formal acceptance
+
+Modify only:
+- backend/app/api/document_knowledge_ingestion_host.py
+- tests/api/test_document_knowledge_ingestion_host.py
+- tests/api/test_document_knowledge_ingestion_host_architecture.py
+
+Add only:
+- backend/app/api/document_preparation.py
+- tests/api/test_document_preparation_api.py
+- tests/api/test_document_preparation_architecture.py
+- tests/integration/test_document_preparation_host_local_pipeline.py
+
+This is one existing production host, two governed existing test adaptations, one new
+router and three new test files. No changes to application services, facade, composition,
+domain, persistence, main, migrations, dependencies, configuration or package initializers.
+The separate drafting/acceptance/closure scope remains the established five documents.
+
+Govern the two existing test adaptations precisely:
+
+1. In tests/api/test_document_knowledge_ingestion_host.py, preserve all existing bytes
+   except the body of test_factory_requires_only_the_keyword_only_canonical_platform
+   and the two canonical service-type import declarations needed by that test. Keep
+   its name and assert required keyword-only platform plus the exact two optional
+   keyword-only typed inputs with None defaults. Preserve every other test/helper.
+2. In tests/api/test_document_knowledge_ingestion_host_architecture.py, adapt only the
+   three test bodies named test_imports_are_only_existing_transport_and_platform_contracts,
+   test_import_defines_only_the_required_factory_without_executing_a_graph, and
+   test_calls_delegate_transport_and_lifecycle_without_resource_ownership. Permit only
+   the two service-type imports, the new router factory import/call, the exact optional
+   inputs and early validation/conditional mount. Keep the complete PRESERVED mapping,
+   helpers, imports and both remaining containment/preservation tests byte-exact.
+
+Do not drop checks, expand a directory-wide exception, accept arbitrary dependencies,
+skip/xfail tests, change fixed fingerprints of unrelated sources or compute preservation
+expectations from current disk files. The new architecture tests must constrain the
+authorized host delta structurally: remove only the specific three imports, two optional
+arguments, preassembly pair/type checks and one conditional preparation-router mount;
+the remaining normalized AST must equal the original host's frozen normalized AST hash
+`0f63323383e0f57d70c1ffd1617dedb495dcf613e0e753a9a2394bb220947eb7`.
+Hash definition: sha256(ast.dump(ast.parse(source), include_attributes=False).encode()).
+Validate the removed nodes' exact purpose/shape/arguments; a permissive remover that
+discards any new statements is not sufficient. Add mutation cases proving unrelated
+lifecycle, dependency, runtime, default-route and resource-owner edits are rejected.
+
+Freeze all other existing source/test bytes, including the old RFC083 integration
+tests, the registration service tests, the RFC072 establishment architecture guard,
+and RFC065/078/079/080/081/082 guards. Reconfirm the two adapted files against their
+current approved bytes before authoring. An additional conflict requires explicit
+scope review before an edit; this contract is not permission for generic guard repair.
+
+## Evidence and completion gates
+
+First establish TDD red for the absent preparation router/host inputs, then focused
+green after the accepted bounded implementation. Add tests for strict metadata,
+canonical normalization, invalid/duplicate JSON, valid/invalid UUID/header forms,
+both size boundaries, absent/misleading Content-Length, binary and empty bodies,
+unsupported/duplicate encoding, admission-before-read/validation, admission closing
+during upload or before the queued service call, live admission changes and
+one-call dispatch. Verify fixed codes, no exception/body leakage, unknown outcomes,
+result validation and owned-stream closure on success/failure. Verify canonical
+falsey services, invalid/incomplete pairs rejected before assembly, original routes
+when omitted and exact pair/runtime identity when enabled. No extra automatic calls.
+
+Use both canonical platform factories with a temporary SQLite/filesystem graph and
+the real managed host lifecycle. In the successful journey the fixture builds only
+caller-owned infrastructure/services; the test itself registers through HTTP, deposits
+content through HTTP and invokes the existing knowledge endpoint through HTTP. Assert
+the canonical document/content descriptors and exact payload, Knowledge/lineage IDs
+and associations, startup-driven admission, and caller-resource usability after shutdown.
+Do not use a pre-registered document as the only happy-path evidence.
+
+Test no-dedup registration explicitly. Test content complete-repeat, changed-byte and
+media conflicts, missing document, descriptor-only integrity, payload-only matching
+recovery and mismatch without overwrites. Inject failures before publication, after
+payload publication, during descriptor persistence and after descriptor commit; verify
+actual persisted state, no inferred rollback/retry and explicit recovery only where
+the existing service permits it. Include unknown registration result/exception after
+a simulated successful write. Verify a subsequent knowledge failure does not erase
+registered document/content and preserves the existing knowledge/lineage transaction
+semantics. Fixture-owned corruption/cleanup stays confined to temporary resources.
+
+Rerun the adapted RFC083 tests/guard, unchanged RFC083 integration tests, registration
+and establishment service tests/guards, RFC078 and governed predecessor guards,
+RFC081/RFC082 focused and existing API/impacted lifecycle tests, full regression and
+Alembic 0005. Record actual counts; test groups overlap and no new total is promised.
+Do not replace existing real pipeline evidence with mock-only tests.
+
+Formal RFC084 selection and AD070 acceptance require review of this exact draft,
+a separate five-document acceptance commit, baseline regression/Alembic verification,
+and local/tracking/live-remote identity with clean saved state and ahead/behind 0/0.
+Only that successful gate authorizes the seven technical files above. Review the
+green candidate before separate technical commit/push; perform compact five-document
+closure after technical Git durability. A prepared command or green test report alone
+does not establish formal selection, publication or terminal closure.
+
+## Operational limits
+
+Default main and its HTTP routes remain byte-preserved; default ingestion stays
+unconfigured. No server listener/deployment, external download, source-reference fetch,
+authentication/RBAC claim, parser expansion, file upload dependency, schema/migration
+change or PostgreSQL deployment verification is introduced. This is an opt-in application
+transport capability with local pipeline evidence, not production rollout approval.
+Preserve the canonical repository, other copies, Downloads, recovery backups, environments,
+caches and unsaved editor buffers. Existing accepted contracts/history remain intact.
+
+
+---
+
+> Historical proposal record; superseded by the formal selection and acceptance below.
+
+## RFC-084 — Opt-In HTTP Document Registration and Content Establishment proposal
+
+Status: PROPOSED / REVIEW PENDING. Draft AD-070 SHA-256: d4bfcbd7b319bfad6b98c6508ba0561d0eb47ed1c8069271aa038b270cb51c88.
+Baseline: f9a55b55f2aa5fe8800e20f4f3d5b3c2d6ed991f. RFC-083 remains fully closed; accepted AD-069/AD-068/A1 remain unchanged.
+Propose two explicit HTTP preparation operations through caller-built canonical services on the existing optional host. Registration generates an identity; content establishment preserves payload-first recovery and unknown outcomes; knowledge ingestion remains an explicit existing request. The paired opt-in branch preserves the original host call, facade and composition. No automatic retry, combined transaction, default mount or new persistence owner.
+Proposed technical scope: 1 EXISTING HOST + 2 GOVERNED TEST ADAPTATIONS + 4 NEW FILES.
+Proposed governed guard adaptations: RFC083 host signature test and three host architecture test bodies only; all other existing source and guards preserved.
+Active RFC: NONE. Selected successor: NONE. Formal selection/acceptance: PENDING.
+Implementation: NOT AUTHORIZED. This is a five-document proposal only.
+Historical full regression: 1527 passed; Alembic head: 0005. Neither rerun here.
+Default HTTP mount: NONE. Default ingestion: NOT CONFIGURED.
+No dependency installation, schema migration, deployment or PostgreSQL verification claim.
+Next: draft review, then separate formal selection and acceptance Git gate.
+
+
+---
+
+## RFC-084 — Formal selection and AD-070 acceptance
+
+Architecture review: PASS. RFC-084 selected; AD-070 accepted, subject to the complete Git gate.
+Parent baseline: `f9a55b55f2aa5fe8800e20f4f3d5b3c2d6ed991f`. Reviewed draft contract SHA-256: `d4bfcbd7b319bfad6b98c6508ba0561d0eb47ed1c8069271aa038b270cb51c88`.
+Accepted contract SHA-256: `9383fa0e14f0cd0f935f3e294bb9ad87fd566ebf182c62401b75a837c956db60`.
+Substantive requirements are unchanged; only the status/selection preamble and scope heading are reconciled.
+Deliver POST /documents and PUT /documents/{document_id}/content through the existing
+canonical application services and a paired opt-in extension of the existing host.
+Knowledge ingestion remains an explicit existing request. Preserve unknown outcomes,
+payload-first state/recovery, bounded bodies, live admission and caller-resource ownership.
+The accepted technical scope is exactly seven files: one existing host, two governed
+existing test adaptations, one new router and three new test files, as enumerated in AD-070.
+The two guard adaptations are authorized only after this complete acceptance gate; neither is performed here.
+ApplicationFacade, both platform factories, canonical services, default main and all other guards remain exact.
+Technical implementation has not started. No production/test/configuration/dependency change occurs here.
+The acceptance gate requires fresh predecessor/host/API/service baselines, full regression
+1527 passed and Alembic head 0005. Groups overlap; no pass is claimed before the driver succeeds.
+Commit exactly the five accepted documents, verify local/tracking/live remote identity,
+ahead/behind 0/0 and a clean saved tree. This decision takes effect only after that gate.
+After success, entry into the seven technical files is authorized within the accepted scope.
+No additional documentation-only entry record is required. Next: governed TDD technical candidate.
+RFC-078/RFC-080/RFC-081/RFC-082/RFC-083 remain closed; accepted AD-069/AD-068/A1 remain byte-exact.
+Default HTTP mount: NONE. Default ingestion: NOT CONFIGURED.
+No schema/migration change, PostgreSQL deployment verification or production security claim.
