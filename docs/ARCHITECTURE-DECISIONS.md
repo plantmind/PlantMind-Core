@@ -26030,3 +26030,208 @@ gates, technical review/publication and compact closure still follow separately.
 Earlier A1 proposal records remain historical; this gate does not claim technical PASS.
 Default HTTP mount: NONE. Default ingestion: NOT CONFIGURED.
 RFC-078/RFC-080/RFC-081/RFC-082/RFC-083 remain closed. PostgreSQL deployment: NOT VERIFIED.
+
+
+---
+
+# AD-070 Amendment A2 — Pytest Parameter ID and Partial TDD Entry
+
+Status: ACCEPTED; effectiveness requires the complete amendment acceptance Git gate below.
+Related active workstream: RFC-084.
+Current accepted baseline: `6cb3acb7ab88881eb725c523d4b9bb619d66946f`.
+Original accepted AD-070 SHA-256: `9383fa0e14f0cd0f935f3e294bb9ad87fd566ebf182c62401b75a837c956db60`.
+Accepted AD-070 A1 SHA-256: `5f9a7c991c68e488f6ef96bfac0de42df97d2866a54227b0423ea2ac487e610a`.
+Both accepted blocks and all predecessor contracts/history remain byte-exact.
+
+## Observed v058 stop and retained evidence
+
+The actual v058 command passed its canonical AST preflight on the project interpreter,
+then completed only tests/api/test_document_preparation_api.py before invoking TDD_RED.
+Pytest reported one collection error from DuckInput.__getattr__ with the message
+"No duck input inspection is needed." Neither requested RED test was collected.
+This is not the two required missing-router/optional-host-input failures and is not
+valid RED evidence. No GREEN, new full-regression result, technical commit or closure
+was established. Test-module dependencies were imported during collection; do not
+describe that attempt as performing no project imports.
+
+The reported source tree has one untracked candidate. V058 verified its writes and
+the approved tracked baseline before starting pytest. A separate post-stop whole-tree
+audit was not reported; the next draft command must recheck the complete state.
+Retain v058 logs and candidate backups at:
+`/private/var/folders/lc/fp0wl92n30vdj4jv80sspp1h0000gn/T/PlantMind-RFC084-A1-technical-hpuziczl`.
+The original unit candidate SHA-256 is
+`9b28cc11ae0de6d82dad5e349443d92707a2d140098d5e0b53292b085de2dadc`
+(44,676 bytes, mode 644). The other three new candidate paths must remain absent.
+The three governed existing files must still match the approved Git baseline.
+
+The official pytest source documents explicit parameter IDs before automatic value
+inspection; automatic ID generation can read __name__, which triggers this object's
+intentional attribute trap. That mechanism is consistent with the observed collection
+error. The installed Mac pytest still must demonstrate successful collection and the
+required real RED failures after the separately accepted repair.
+Reference: https://docs.pytest.org/en/stable/_modules/_pytest/python.html
+(IdMaker._resolve_ids and IdMaker._idval_from_value).
+Assistant source-data/inverse/trap checks are not pytest or product-regression results.
+The actual product baseline remains 1527 passed / Alembic 0005, retained from v053.
+
+## Exact bounded exception to A1's candidate freeze
+
+A1 freezes the six prepared candidates other than the new architecture test. The
+affected unit candidate is one of those six. A2, only after separate acceptance and
+Git durability, permits this one exact test-data declaration correction:
+
+Before:
+```python
+@pytest.mark.parametrize("value", [None, False, 0, "service", object(), DuckInput()])
+```
+
+After:
+```python
+@pytest.mark.parametrize("value", [None, False, 0, "service", object(), pytest.param(DuckInput(), id="duck-input")])
+```
+
+Replace that complete decorator exactly once in
+tests/api/test_document_preparation_api.py. The reviewed resulting SHA-256 is
+`5c68f7fd6c7d4387675ce157129b39d12c3d4ab4cf44e7dde01d16674b6af585`
+(44,707 bytes, mode 644). The inverse must reconstruct every original byte.
+Preserve all 42 test functions, signatures and bodies, the two RED selectors, imports,
+fixtures, assertions, parameter values and order. The same three collaborators and six
+values still produce 18 invalid-input cases; only the hostile value's ID is explicit.
+DuckInput.__bool__ and DuckInput.__getattr__ remain unchanged and must still raise
+their original assertions. Do not permit getattr fallbacks, remove the hostile value,
+skip/xfail tests, suppress collection errors, weaken any assertion or patch pytest.
+Do not change dependencies, interpreter, pytest configuration or application behavior.
+
+The total technical scope remains the same seven files. Preserve the other six v058
+candidate sources at these exact reviewed identities:
+
+- backend/app/api/document_knowledge_ingestion_host.py:
+  `10e514ecad1243e6b9b33eda3cb963beba2404c69442b294da5712c83930d5eb`.
+- tests/api/test_document_knowledge_ingestion_host.py:
+  `9288fd4b5241675ad87f9f860d3037e81c24e4d7a18c2a1c7dc0ffc7a93502d0`.
+- tests/api/test_document_knowledge_ingestion_host_architecture.py:
+  `bee3a4566ff42f501deb972d359cb19af633efff758c38a4122faefa9972cc9a`.
+- backend/app/api/document_preparation.py:
+  `c656b6cb5ee5e14451bd9238ad4b70bdcda699972a6194aa0dd23a39ac95673e`.
+- tests/api/test_document_preparation_architecture.py:
+  `75c91ba6fe508939f80caa8af79516cbf356cff87079206910954d814febb8af`.
+- tests/integration/test_document_preparation_host_local_pipeline.py:
+  `9d035f99c7814d33943274ae891a67c31571204d10e31e16ef58206f2bd50245`.
+
+The shared A1 canonical normalizer, its closed schema, 6120-byte immutable host digest
+`0f63323383e0f57d70c1ffd1617dedb495dcf613e0e753a9a2394bb220947eb7`,
+all original source pins and all structural/inverse guards remain unchanged.
+The three governed existing-file baselines remain the accepted Git versions.
+
+## Separate draft, acceptance and partial-state technical resumption
+
+The draft changes exactly the established five documents. Before and after authoring,
+verify HEAD/branch/index/cached tracking and all approved tracked bytes/Git modes,
+allowing only the five prepared document changes. Require exactly the original
+untracked unit candidate above, preserve its bytes/mode, and require the other three
+new paths absent even if ignored. This draft does not correct the unit, run tests,
+import the project, access the network, stage, commit, push or authorize the repair.
+
+After exact draft review, a separate docs-only acceptance gate must preserve the five
+original accepted blocks and the one original untracked unit. Publish only the five
+documents with parent 6cb3acb7ab88881eb725c523d4b9bb619d66946f; record the actual
+amendment/diff hashes, local/tracking/live-remote identity and ahead/behind 0/0.
+The index must equal HEAD. The working tree intentionally retains that one unit;
+never claim it is clean or stage the unit with the documents. No product tests or
+Alembic rerun is required for this docs-only acceptance; retain v053 evidence honestly.
+Only completed acceptance and Git durability authorize the later scoped repair.
+
+The later technical command must be pinned to the actual A2 acceptance commit. This
+amendment permits entry from exactly the preserved one-unit state instead of requiring
+an empty candidate set. Reverify the entire approved tracked tree, index, branch,
+cached tracking, original unit hash/mode, absence of the other three new paths and the
+unchanged A1 preflight. Any extra or differing source stops without cleanup or writes.
+Back up the original unit and reviewed candidates outside the repository. V058 backup
+sources may be read as data only after checking their hard-coded reviewed fingerprints;
+never execute a historical driver or trust an unverified manifest as authority.
+
+Apply only the decorator correction, verify the exact corrected hash and inverse, then
+run the two real RED selectors while the router remains absent and the host unchanged:
+- test_preparation_router_factory_is_available: the exact missing preparation module.
+- test_existing_host_has_optional_preparation_inputs: the missing optional host inputs.
+Require exactly those two failures, no collection errors, skips or unrelated failures.
+If RED fails, stop with the corrected unit and backups preserved; write no remaining
+candidate. A rerun of a fresh-entry historical driver is not an authorized recovery.
+
+Only valid fresh RED permits the other six candidate writes. Run actual RFC084 focused
+tests, RFC078 guard (20), governed predecessor guards (9), RFC081 focused (84), RFC082
+focused (98), RFC083 focused (68), existing API (27), document preparation services
+(55), predecessor host impacted (80), full regression and Alembic. These groups overlap.
+Require the full total to equal 1527 plus the actual new RFC084 focused count, with no
+failures/errors/skips, and Alembic head 0005. Do not invent new test counts from this
+draft or treat collection success alone as technical PASS. Report actual results.
+
+Preserve partial actions and evidence on any failure; no automatic rollback, reset,
+restore, clean, dependency installation or forced push. The technical authoring gate
+does not stage/commit/push; review, technical publication and compact closure follow
+separately. RFC-084 remains active. RFC-078/RFC-080/RFC-081/RFC-082/RFC-083 remain closed.
+Default HTTP mount remains NONE; default ingestion remains NOT CONFIGURED. PostgreSQL
+deployment remains NOT VERIFIED. Downloads, other clones and recovery backups are
+outside the action scope.
+
+
+---
+
+## RFC-084 — AD-070 A2 parameter-ID and partial-entry amendment proposal
+
+Status: PROPOSED / REVIEW PENDING. AD-070 and A1 remain accepted / Git Durable.
+RFC-084 remains selected; technical resumption is paused pending separate A2 acceptance.
+Accepted baseline: 6cb3acb7ab88881eb725c523d4b9bb619d66946f. The actual v058 AST preflight passed, then pytest
+collection stopped in DuckInput.__getattr__ before either required RED test was collected.
+V058 completed only the new unit candidate; no valid RED, GREEN or technical PASS exists.
+Its test-module dependencies were imported during collection. This draft does not import them.
+The post-stop tracked tree is rechecked by this draft driver; preserve all 462 approved
+tracked bytes/modes except these five drafted documents, plus the original untracked unit.
+Preserved unit SHA-256: 9b28cc11ae0de6d82dad5e349443d92707a2d140098d5e0b53292b085de2dadc (44676 bytes, mode 644).
+A1 explicitly freezes that candidate; A2 proposes one exact pytest.param explicit ID
+declaration correction and later entry from this exact one-unit state. Hostile methods,
+all test bodies/assertions/cases and the other six v058 candidate identities remain unchanged.
+A2 draft SHA-256: 6f9d0c8b81077a1d850aa0c5a12588c34a3ff614c517a9f70ba75ff17b8cab99. All five accepted contract blocks remain intact.
+This step changes exactly five documents. The existing unit is preserved, not repaired.
+No source/test/guard/interpreter/dependency/configuration change, test execution, application
+import, network, staging, commit or push is performed. No new technical file is created.
+Test baseline 1527 and Alembic 0005 are retained from v053, not rerun here.
+Next: review the exact A2 draft; separate docs-only acceptance must preserve the original
+unstaged unit, then a new scoped command performs the correction and fresh two-case RED.
+Technical review, publication and compact closure remain separate later gates.
+Default HTTP mount: NONE. Default ingestion: NOT CONFIGURED. PostgreSQL deployment: NOT VERIFIED.
+RFC-078/RFC-080/RFC-081/RFC-082/RFC-083 remain closed. Other copies and recovery backups are untouched.
+
+
+---
+
+## RFC-084 — AD-070 A2 formal acceptance gate
+
+Amendment review: PASS. AD-070 A2 accepted subject to its complete amendment Git gate.
+Parent baseline: 6cb3acb7ab88881eb725c523d4b9bb619d66946f. RFC-084 remains the selected active workstream.
+Reviewed A2 draft SHA-256: 6f9d0c8b81077a1d850aa0c5a12588c34a3ff614c517a9f70ba75ff17b8cab99.
+Accepted A2 SHA-256: 4783ed1d705f1daf2a080e0b2742bee28a6619f674445a524e67a65a5d4e5584.
+Only the A2 status line changes; all correction limits, candidate fingerprints,
+partial-state entry requirements, RED conditions and later gates remain identical.
+Original accepted AD-070 SHA-256: 9383fa0e14f0cd0f935f3e294bb9ad87fd566ebf182c62401b75a837c956db60.
+Accepted A1 SHA-256: 5f9a7c991c68e488f6ef96bfac0de42df97d2866a54227b0423ea2ac487e610a. All five accepted predecessor blocks remain byte-exact.
+V059 created the reviewed five-document draft and preserved the original unit.
+This acceptance changes exactly those five documents and preserves that unit at
+SHA-256 9b28cc11ae0de6d82dad5e349443d92707a2d140098d5e0b53292b085de2dadc (44676 bytes, mode 644), untracked and unstaged.
+No production source, test, guard, interpreter, dependency or configuration changes.
+The proposed explicit pytest parameter ID is not applied by this acceptance gate.
+Other three new technical candidate paths remain absent, including ignored paths.
+Full regression 1527 and Alembic 0005 are retained from v053; neither is rerun here.
+The successful v058 project-interpreter AST preflight is retained, not rerun here.
+V058 collection error is not valid RED and does not establish a technical PASS.
+Commit exactly these five documents with the parent above, then verify local,
+tracking and live-remote identity and ahead/behind 0/0. The index must equal HEAD.
+The working tree intentionally retains the single original unit and is not clean.
+Only complete acceptance and Git durability authorize a new technical command
+pinned to the actual A2 acceptance commit and the exact preserved one-unit state.
+That later command applies the one-decorator correction, proves exact inverse
+preservation, and requires two real expected RED failures before other candidate writes.
+Fresh technical gates, technical review/publication and compact closure remain separate.
+Earlier proposal and attempted-entry records remain historical; no technical closure is claimed.
+Default HTTP mount: NONE. Default ingestion: NOT CONFIGURED. PostgreSQL deployment: NOT VERIFIED.
+RFC-078/RFC-080/RFC-081/RFC-082/RFC-083 remain closed. Other copies and recovery backups are untouched.

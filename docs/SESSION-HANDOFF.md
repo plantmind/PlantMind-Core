@@ -7,7 +7,7 @@
 | Project | PlantMind PM-001 |
 | Branch | `feature/engineering-platform` |
 | Last Fully Closed RFC | RFC-083 — Explicit Opt-In Document Knowledge Ingestion HTTP Host — Fully Closed and Source-of-Truth Reconciled |
-| Active RFC | RFC-084 — AD-070 accepted; A1 accepted; technical entry requires successful amendment Git gate |
+| Active RFC | RFC-084 — AD-070 and A1 accepted; A2 accepted; technical resumption requires successful A2 Git gate |
 | Selected Architecture Workstream | RFC-084 — Opt-In HTTP Document Registration and Content Establishment |
 | Proposed Successor RFC | None — RFC-084 selected; no later successor selected |
 | RFC-078 Predecessor Baseline | `36832df98433231095e257092f3b8815d1cfa573` — RFC-077 terminal closure |
@@ -70,7 +70,7 @@
 | RFC-075 State | Fully Closed and Source-of-Truth Reconciled |
 | RFC-075 Architecture Decision Candidate | AD-061 — Accepted / Committed / Pushed / Exact Identity Verified |
 | RFC-075 Architecture Contract State | Accepted / Architecture Review Passed / Committed / Pushed / Exact Identity Verified |
-| Architecture Decision | AD-070 — Accepted / Git Durable; A1 accepted subject to amendment Git gate |
+| Architecture Decision | AD-070 and A1 — Accepted / Git Durable; A2 accepted subject to amendment Git gate |
 | RFC-074 Selection State | Durable — Committed, Pushed and Exact Identity Verified |
 | RFC-074 Selection Commit | `b5d1e7fe434378ac7ee90912ac40932d5c5451eb` — committed / pushed / exact identity verified |
 | RFC-074 Architecture Contract State | Accepted / Architecture Review Passed / Committed / Pushed / Exact Identity Verified |
@@ -140,7 +140,7 @@
 | Alembic Head | `0005` |
 | Authoritative Environment | `PlantMind-Core/.venv` |
 | RFC-069 State | Fully Closed and Source-of-Truth Reconciled |
-| Successor RFC Selection | RFC-084 selected under AD-070 and A1; amendment Git gate required |
+| Successor RFC Selection | RFC-084 selected under AD-070, A1 and A2; A2 amendment Git gate required |
 ## Recent Engineering Sequence
 
 - RFC-025 — Core Plugin Framework
@@ -6938,3 +6938,65 @@ gates, technical review/publication and compact closure still follow separately.
 Earlier A1 proposal records remain historical; this gate does not claim technical PASS.
 Default HTTP mount: NONE. Default ingestion: NOT CONFIGURED.
 RFC-078/RFC-080/RFC-081/RFC-082/RFC-083 remain closed. PostgreSQL deployment: NOT VERIFIED.
+
+
+---
+
+## RFC-084 — AD-070 A2 parameter-ID and partial-entry amendment proposal
+
+Status: PROPOSED / REVIEW PENDING. AD-070 and A1 remain accepted / Git Durable.
+RFC-084 remains selected; technical resumption is paused pending separate A2 acceptance.
+Accepted baseline: 6cb3acb7ab88881eb725c523d4b9bb619d66946f. The actual v058 AST preflight passed, then pytest
+collection stopped in DuckInput.__getattr__ before either required RED test was collected.
+V058 completed only the new unit candidate; no valid RED, GREEN or technical PASS exists.
+Its test-module dependencies were imported during collection. This draft does not import them.
+The post-stop tracked tree is rechecked by this draft driver; preserve all 462 approved
+tracked bytes/modes except these five drafted documents, plus the original untracked unit.
+Preserved unit SHA-256: 9b28cc11ae0de6d82dad5e349443d92707a2d140098d5e0b53292b085de2dadc (44676 bytes, mode 644).
+A1 explicitly freezes that candidate; A2 proposes one exact pytest.param explicit ID
+declaration correction and later entry from this exact one-unit state. Hostile methods,
+all test bodies/assertions/cases and the other six v058 candidate identities remain unchanged.
+A2 draft SHA-256: 6f9d0c8b81077a1d850aa0c5a12588c34a3ff614c517a9f70ba75ff17b8cab99. All five accepted contract blocks remain intact.
+This step changes exactly five documents. The existing unit is preserved, not repaired.
+No source/test/guard/interpreter/dependency/configuration change, test execution, application
+import, network, staging, commit or push is performed. No new technical file is created.
+Test baseline 1527 and Alembic 0005 are retained from v053, not rerun here.
+Next: review the exact A2 draft; separate docs-only acceptance must preserve the original
+unstaged unit, then a new scoped command performs the correction and fresh two-case RED.
+Technical review, publication and compact closure remain separate later gates.
+Default HTTP mount: NONE. Default ingestion: NOT CONFIGURED. PostgreSQL deployment: NOT VERIFIED.
+RFC-078/RFC-080/RFC-081/RFC-082/RFC-083 remain closed. Other copies and recovery backups are untouched.
+
+
+---
+
+## RFC-084 — AD-070 A2 formal acceptance gate
+
+Amendment review: PASS. AD-070 A2 accepted subject to its complete amendment Git gate.
+Parent baseline: 6cb3acb7ab88881eb725c523d4b9bb619d66946f. RFC-084 remains the selected active workstream.
+Reviewed A2 draft SHA-256: 6f9d0c8b81077a1d850aa0c5a12588c34a3ff614c517a9f70ba75ff17b8cab99.
+Accepted A2 SHA-256: 4783ed1d705f1daf2a080e0b2742bee28a6619f674445a524e67a65a5d4e5584.
+Only the A2 status line changes; all correction limits, candidate fingerprints,
+partial-state entry requirements, RED conditions and later gates remain identical.
+Original accepted AD-070 SHA-256: 9383fa0e14f0cd0f935f3e294bb9ad87fd566ebf182c62401b75a837c956db60.
+Accepted A1 SHA-256: 5f9a7c991c68e488f6ef96bfac0de42df97d2866a54227b0423ea2ac487e610a. All five accepted predecessor blocks remain byte-exact.
+V059 created the reviewed five-document draft and preserved the original unit.
+This acceptance changes exactly those five documents and preserves that unit at
+SHA-256 9b28cc11ae0de6d82dad5e349443d92707a2d140098d5e0b53292b085de2dadc (44676 bytes, mode 644), untracked and unstaged.
+No production source, test, guard, interpreter, dependency or configuration changes.
+The proposed explicit pytest parameter ID is not applied by this acceptance gate.
+Other three new technical candidate paths remain absent, including ignored paths.
+Full regression 1527 and Alembic 0005 are retained from v053; neither is rerun here.
+The successful v058 project-interpreter AST preflight is retained, not rerun here.
+V058 collection error is not valid RED and does not establish a technical PASS.
+Commit exactly these five documents with the parent above, then verify local,
+tracking and live-remote identity and ahead/behind 0/0. The index must equal HEAD.
+The working tree intentionally retains the single original unit and is not clean.
+Only complete acceptance and Git durability authorize a new technical command
+pinned to the actual A2 acceptance commit and the exact preserved one-unit state.
+That later command applies the one-decorator correction, proves exact inverse
+preservation, and requires two real expected RED failures before other candidate writes.
+Fresh technical gates, technical review/publication and compact closure remain separate.
+Earlier proposal and attempted-entry records remain historical; no technical closure is claimed.
+Default HTTP mount: NONE. Default ingestion: NOT CONFIGURED. PostgreSQL deployment: NOT VERIFIED.
+RFC-078/RFC-080/RFC-081/RFC-082/RFC-083 remain closed. Other copies and recovery backups are untouched.
