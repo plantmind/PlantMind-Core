@@ -26205,6 +26205,9 @@ RFC-078/RFC-080/RFC-081/RFC-082/RFC-083 remain closed. Other copies and recovery
 
 ---
 
+> Historical A2 acceptance checkpoint; its Git gate and technical implementation
+> completed, as recorded in the compact closure below.
+
 ## RFC-084 — AD-070 A2 formal acceptance gate
 
 Amendment review: PASS. AD-070 A2 accepted subject to its complete amendment Git gate.
@@ -26235,3 +26238,46 @@ Fresh technical gates, technical review/publication and compact closure remain s
 Earlier proposal and attempted-entry records remain historical; no technical closure is claimed.
 Default HTTP mount: NONE. Default ingestion: NOT CONFIGURED. PostgreSQL deployment: NOT VERIFIED.
 RFC-078/RFC-080/RFC-081/RFC-082/RFC-083 remain closed. Other copies and recovery backups are untouched.
+
+
+---
+
+## RFC-084 — Compact engineering closure and source-of-truth reconciliation
+
+Classification: completion evidence under accepted AD-070, A1 and A2; no new architecture decision.
+The original AD-070, both amendments and all three protected predecessor contract blocks remain byte-exact.
+AD-070 A2 acceptance is Git durable at `915db96423d513326418dae5cd9d8ca3803c16c2`.
+Reviewed and tested technical implementation is Git durable at `199c137377cfec7965779d25df829178ca73ea79`,
+parent `915db96423d513326418dae5cd9d8ca3803c16c2`; technical diff SHA-256 `09c98e2063f641f39fa57eaf4f9b36b2c305ffea6b087c92d475212a6cee05d7`.
+That technical commit changes exactly three existing files and adds four files; it changes no documents.
+Delivered: POST /documents for canonical registration and PUT /documents/{document_id}/content
+for canonical content establishment, through the paired opt-in extension of the existing HTTP host.
+Canonical service and Runtime identities, bounded request bodies, live admission, unknown-outcome
+semantics, existing host lifecycle/routes and caller-owned resources remain governed by the accepted contracts.
+Knowledge ingestion remains a separate explicit request; no automatic ingestion or default mount is introduced.
+Managed HTTP integration evidence covers both canonical platform factories and the journey from
+registration through content establishment to explicit Knowledge ingestion with temporary SQLite/filesystem resources.
+Persisted partial states and post-shutdown usability of caller-owned resources are covered.
+The v058 collection error is historical and is not RED evidence. Under accepted A2, the one explicit
+pytest parameter-ID correction preserved all other unit bytes and enabled the actual V063 technical gate.
+V063 established both required fresh missing-capability RED failures before the other six candidate writes.
+Its actual Python 3.11.9 canonical AST preflight passed with the accepted immutable digest and 6120-byte form.
+Retained actual V063 results: RFC-084 focused 340; RFC-078 guard 20; governed predecessor guards 9;
+RFC-081 focused 84; RFC-082 focused 98; RFC-083 focused 68; existing API 27; preparation services 55;
+impacted host/predecessors 80; full regression 1867 passed; Alembic head 0005.
+The full count is 1527 plus 340 new focused cases. Groups overlap and must not be added together.
+V064 verified and copied the 55 retained V063 evidence files and published the same seven tested sources.
+This closure revalidates retained publication/test evidence and protected source; pytest and Alembic
+are not rerun. Current test baseline becomes 1867; all historical 1527 text remains historical evidence.
+Closure scope: exactly the established five documents. All 461 existing non-document tracked files,
+including the seven published technical files, remain byte/Git-mode exact; the tracked total remains 466.
+No source, test, guard, dependency, interpreter, configuration, schema or migration change occurs here.
+Default HTTP mount: NONE. Default ingestion: NOT CONFIGURED. PostgreSQL deployment: NOT VERIFIED.
+No server, deployment, production security or operational-readiness claim is established by this closure.
+RFC-078/RFC-080/RFC-081/RFC-082/RFC-083 remain closed. Other project copies and recovery backups are untouched.
+RFC-084 terminal state: FULLY_CLOSED_AND_SOURCE_OF_TRUTH_RECONCILED. Active RFC: NONE.
+Selected workstream and successor: NONE. Next: separate successor-workstream selection.
+These terminal declarations and updated current control rows take effect only after the exact
+five-document closure commit/push gate verifies local HEAD, tracking and live-remote identity,
+ahead/behind 0/0, a clean saved tree and index equal to HEAD. Its future commit hash is not predicted.
+No additional RFC-084 closure or reconciliation record is required after that gate succeeds.
