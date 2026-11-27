@@ -10,6 +10,9 @@ from fastapi import FastAPI
 from app.api.document_knowledge_ingestion import (
     create_router as create_document_knowledge_ingestion_router,
 )
+from app.api.document_preparation import (
+    create_router as create_document_preparation_router,
+)
 from app.api.operational_transition import (
     create_router as create_operational_transition_router,
 )
@@ -17,12 +20,43 @@ from app.api.request_admission import RequestAdmissionMiddleware
 from app.config import settings
 from app.core.composition import PlatformComposition
 from app.schemas.platform import PlatformInfo, PlatformStatus, RuntimeInfo
+from app.services.document_content_establishment_application_service import (
+    DocumentContentEstablishmentApplicationService,
+)
+from app.services.enterprise_document_registration_application_service import (
+    EnterpriseDocumentRegistrationApplicationService,
+)
 
 
-def create_app(*, platform: PlatformComposition) -> FastAPI:
+def create_app(
+    *,
+    platform: PlatformComposition,
+    document_registration_service: EnterpriseDocumentRegistrationApplicationService | None = None,
+    document_content_establishment_service: DocumentContentEstablishmentApplicationService | None = None,
+) -> FastAPI:
     """Host this platform; the caller dedicates it to one active lifespan."""
     if not isinstance(platform, PlatformComposition):
         raise TypeError("platform must be a PlatformComposition.")
+
+    if (
+        (document_registration_service is None)
+        != (document_content_establishment_service is None)
+        or (
+            document_registration_service is not None
+            and not isinstance(
+                document_registration_service,
+                EnterpriseDocumentRegistrationApplicationService,
+            )
+        )
+        or (
+            document_content_establishment_service is not None
+            and not isinstance(
+                document_content_establishment_service,
+                DocumentContentEstablishmentApplicationService,
+            )
+        )
+    ):
+        raise TypeError("Both preparation services must be supplied together as canonical instances.")
 
     @asynccontextmanager
     async def lifespan(app: FastAPI) -> AsyncIterator[None]:
@@ -50,6 +84,15 @@ def create_app(*, platform: PlatformComposition) -> FastAPI:
             runtime=platform.runtime,
         )
     )
+
+    if document_registration_service is not None:
+        app.include_router(
+            create_document_preparation_router(
+                document_registration_service=document_registration_service,
+                document_content_establishment_service=document_content_establishment_service,
+                runtime=platform.runtime,
+            )
+        )
 
     @app.get("/", response_model=PlatformStatus)
     def root() -> PlatformStatus:

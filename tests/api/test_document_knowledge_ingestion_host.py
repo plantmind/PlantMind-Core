@@ -27,6 +27,12 @@ from app.schemas.platform import PlatformStatus
 from app.services.document_knowledge_ingestion_application_service import (
     DocumentKnowledgeIngestionResult,
 )
+from app.services.document_content_establishment_application_service import (
+    DocumentContentEstablishmentApplicationService,
+)
+from app.services.enterprise_document_registration_application_service import (
+    EnterpriseDocumentRegistrationApplicationService,
+)
 
 
 MODULE = "app.api.document_knowledge_ingestion_host"
@@ -80,11 +86,18 @@ def forbid(*args, **kwargs):
 
 def test_factory_requires_only_the_keyword_only_canonical_platform(host, platform):
     parameters = signature(host.create_app).parameters
-    assert tuple(parameters) == ("platform",)
-    assert parameters["platform"].kind is Parameter.KEYWORD_ONLY
+    assert tuple(parameters) == (
+        "platform", "document_registration_service", "document_content_establishment_service",
+    )
+    assert all(item.kind is Parameter.KEYWORD_ONLY for item in parameters.values())
     assert parameters["platform"].default is Parameter.empty
+    assert parameters["document_registration_service"].default is None
+    assert parameters["document_content_establishment_service"].default is None
     assert get_type_hints(host.create_app) == {
-        "platform": PlatformComposition, "return": FastAPI,
+        "platform": PlatformComposition,
+        "document_registration_service": EnterpriseDocumentRegistrationApplicationService | None,
+        "document_content_establishment_service": DocumentContentEstablishmentApplicationService | None,
+        "return": FastAPI,
     }
     with pytest.raises(TypeError):
         host.create_app()

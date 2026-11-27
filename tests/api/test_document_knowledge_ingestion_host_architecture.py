@@ -51,11 +51,18 @@ def test_imports_are_only_existing_transport_and_platform_contracts():
         "contextlib": {"asynccontextmanager"},
         "fastapi": {"FastAPI"},
         "app.api.document_knowledge_ingestion": {"create_router"},
+        "app.api.document_preparation": {"create_router"},
         "app.api.operational_transition": {"create_router"},
         "app.api.request_admission": {"RequestAdmissionMiddleware"},
         "app.config": {"settings"},
         "app.core.composition": {"PlatformComposition"},
         "app.schemas.platform": {"PlatformInfo", "PlatformStatus", "RuntimeInfo"},
+        "app.services.document_content_establishment_application_service": {
+            "DocumentContentEstablishmentApplicationService",
+        },
+        "app.services.enterprise_document_registration_application_service": {
+            "EnterpriseDocumentRegistrationApplicationService",
+        },
     }
     assert not any(isinstance(node, ast.Import) for node in ast.walk(tree))
     declarations = [node for node in ast.walk(tree) if isinstance(node, ast.ImportFrom)]
@@ -87,10 +94,23 @@ def test_import_defines_only_the_required_factory_without_executing_a_graph():
     args = factory.args
     assert not args.posonlyargs and not args.args and not args.defaults
     assert args.vararg is None and args.kwarg is None
-    assert [item.arg for item in args.kwonlyargs] == ["platform"]
-    assert args.kw_defaults == [None]
+    assert [item.arg for item in args.kwonlyargs] == [
+        "platform", "document_registration_service", "document_content_establishment_service",
+    ]
+    assert args.kw_defaults[0] is None
+    assert all(isinstance(value, ast.Constant) and value.value is None
+               for value in args.kw_defaults[1:])
     bindings = _imports(tree)
     assert _name(args.kwonlyargs[0].annotation, bindings) == "app.core.composition.PlatformComposition"
+    expected = (
+        "app.services.enterprise_document_registration_application_service.EnterpriseDocumentRegistrationApplicationService",
+        "app.services.document_content_establishment_application_service.DocumentContentEstablishmentApplicationService",
+    )
+    for argument, canonical in zip(args.kwonlyargs[1:], expected):
+        annotation = argument.annotation
+        assert isinstance(annotation, ast.BinOp) and isinstance(annotation.op, ast.BitOr)
+        assert _name(annotation.left, bindings) == canonical
+        assert isinstance(annotation.right, ast.Constant) and annotation.right.value is None
     assert _name(factory.returns, bindings) == "fastapi.FastAPI"
     assert not any(isinstance(node, ast.ClassDef) for node in ast.walk(tree))
 
@@ -107,6 +127,7 @@ def test_calls_delegate_transport_and_lifecycle_without_resource_ownership():
     allowed = {
         "isinstance", "TypeError", "fastapi.FastAPI",
         "app.api.document_knowledge_ingestion.create_router",
+        "app.api.document_preparation.create_router",
         "app.api.operational_transition.create_router",
         "app.schemas.platform.PlatformInfo", "app.schemas.platform.PlatformStatus",
         "app.schemas.platform.RuntimeInfo", "<host>.add_middleware", "<host>.include_router",
@@ -116,7 +137,9 @@ def test_calls_delegate_transport_and_lifecycle_without_resource_ownership():
     calls = [_name(node.func, bindings) for node in ast.walk(tree) if isinstance(node, ast.Call)]
     assert set(calls) <= allowed
     assert calls.count("app.api.document_knowledge_ingestion.create_router") == 1
+    assert calls.count("app.api.document_preparation.create_router") == 1
     assert calls.count("app.api.operational_transition.create_router") == 1
+    assert calls.count("<host>.include_router") == 3
     assert calls.count("<host>.add_middleware") == 1
     assert calls.count("platform.bootstrap.startup") == 1
     assert calls.count("platform.bootstrap.shutdown") == 1
